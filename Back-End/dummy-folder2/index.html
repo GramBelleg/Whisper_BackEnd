@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Messaging App</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        padding: 20px;
+      }
+      #messages {
+        border: 1px solid #ccc;
+        padding: 10px;
+        height: 300px;
+        overflow-y: scroll;
+        margin-bottom: 10px;
+        background-color: white;
+      }
+      #message-input {
+        width: 80%;
+        padding: 10px;
+      }
+      #send-button {
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Messaging App</h1>
+    <div id="messages"></div>
+    <input
+      type="text"
+      id="message-input"
+      placeholder="Type your message here..."
+    />
+    <button id="send-button">Send</button>
+
+    <script src="app.js"></script>
+  </body>
+</html>
