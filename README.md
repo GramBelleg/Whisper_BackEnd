@@ -1,4 +1,3 @@
-# احلى مسا عليكواا ايها العالم
 Alpha State -- all rights to GramBell Egypt
 
 
