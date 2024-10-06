@@ -1,4 +1,6 @@
 # احلى مسا عليكواا ايها العالم
 * Alpha State *
 all rights to GramBell Egypt
-![wp icon black sqr ](https://github.com/user-attachments/assets/954d736b-6ff0-4030-a9a9-0650717da6b0)
+
+
+![footer2](https://github.com/user-attachments/assets/abc7bc27-8c87-4f3b-a27c-ca9f330cab4c)
