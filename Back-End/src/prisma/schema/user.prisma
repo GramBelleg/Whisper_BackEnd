@@ -1,0 +1,8 @@
+model User {
+  id               Int          @id @default(autoincrement())
+  email            String       @unique
+  name             String
+  password         String       @db.VarChar(256)
+  email_status     String       @default("Deactivated")
+  verfication_code Verification?
+}
