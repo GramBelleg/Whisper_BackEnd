@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 async function main() {
     // Clear the database by truncating all tables
     await prisma.chatMessage.deleteMany({});
-    await prisma.message.deleteMany({});
     await prisma.chatParticipant.deleteMany({});
     await prisma.chat.deleteMany({});
     await prisma.user.deleteMany({});

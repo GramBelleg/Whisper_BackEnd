@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser";
 import indexRouter from "@routes/index-routes";
 import swaggerSpec from "./swagger";
 import swaggerUi from "swagger-ui-express";
-import { initWebSocketServer } from "@socket/web-socket";
+import { initWebSocketServer } from "@socket/web.socket";
 
 dotenv.config();
 
@@ -22,7 +22,7 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser(process.env.COOKIE_SECRET));
+//app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api", indexRouter);
 

@@ -1,14 +1,14 @@
-const socket = new WebSocket("ws://localhost:5000");
+const socket = new io("http://localhost:5000");
 
 const apiUrl = "http://127.0.0.1:5000/api/message/send";
 
-socket.addEventListener("open", (event) => {
-  console.log("Connected to WebSocket server");
-});
+socket.on("connect", () => {
+  console.log("Connected to Socket.IO server");
 
-socket.addEventListener("message", (event) => {
-  const message = JSON.parse(event.data);
-  displayMessage(message);
+  socket.on("receive", (message) => {
+    const recMessage = JSON.parse(message);
+    displayMessage(recMessage);
+  });
 });
 
 document.getElementById("send-button").addEventListener("click", async () => {
@@ -18,15 +18,16 @@ document.getElementById("send-button").addEventListener("click", async () => {
   const receiverID = "Mohamed";
 
   try {
-    // Send the message to the backend using fetch
-    socket.send(JSON.stringify({ senderID, receiverID, messageContent }));
+    const message = JSON.stringify({ senderID, receiverID, messageContent });
+    socket.emit("send", message);
+
     displayMessage({ senderID, receiverID, messageContent });
     const response = await fetch(`${apiUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ senderID, receiverID, messageContent }),
+      body: message,
     });
 
     if (!response.ok) {
