@@ -7,9 +7,9 @@ import { findUser, upsertUser } from "@services/AuthenRegist/signup.service";
 const signup = async (req: Request, res: Response): Promise<void> => {
     try {
         //validate user data recieved from request body
-        const { name, email, phone_number, password, confirm_pass }: Record<string, string> = req.body;
-        validateSingUp(name, email, phone_number, password, confirm_pass);
-
+        const { name, email, password, confirm_pass }: Record<string, string> = req.body;
+        let phone_number: string = req.body.phone_number;
+        phone_number = validateSingUp(name, email, phone_number, password, confirm_pass);
         //check if user is found in database
         await findUser(email, password);
 

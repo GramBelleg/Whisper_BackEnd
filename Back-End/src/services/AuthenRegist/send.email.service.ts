@@ -1,4 +1,4 @@
-import transporter from "@config/email-config";
+import transporter from "@config/email.config";
 
 const sendEmail = async (code: string, email: string): Promise<string | undefined> => {
     try {

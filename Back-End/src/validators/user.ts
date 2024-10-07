@@ -1,5 +1,6 @@
 import Joi, { ObjectSchema } from "joi";
 import { ValidationError } from "joi";
+import { phone } from 'phone';
 
 const validateSingUp = (name: string, email: string, phone_number: string, password: string, confirm_pass: string) => {
     const schema: ObjectSchema = Joi.object({
@@ -8,7 +9,6 @@ const validateSingUp = (name: string, email: string, phone_number: string, passw
             .email()
             .required(),
         phone_number: Joi.string()
-            .pattern(/^(011|010|012|015)\d{8}$/)
             .required(),
         password: Joi.string().min(3).max(50).required(),
         confirm_pass: Joi.string()
@@ -23,6 +23,12 @@ const validateSingUp = (name: string, email: string, phone_number: string, passw
     if (error) {
         throw new Error(error.details[0].message);
     }
+    //check structure and format of phone_number
+    const { isValid, phoneNumber } = phone(phone_number);
+    if (!isValid) {
+        throw new Error('Phone number structure is not valid');
+    }
+    return phoneNumber;
 };
 
 const validateLogIn = (email: string, password: string) => {

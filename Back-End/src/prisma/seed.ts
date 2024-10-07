@@ -1,23 +1,20 @@
-import { PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
 import { User, Chat, ChatMessage, ChatParticipant } from "@prisma/client";
 import bcrypt from "bcrypt";
+import db from "./PrismaClient";
 
-const prisma = new PrismaClient();
-
-// Passwords and phone numbers of 5 users in order. 
+// Passwords of 5 users in order. 
 const passwords: string[] = ['abcdefg', '1234567', 'aaaabbb', '1111111', '2222222'];
-const phone_numbers: string[] = ['01111111111', '01045972201', '01266687540', '01222245798', '01000045873'];
 
 // Utility function to create random users
 async function createUsers(numUsers: number) {
     const users: User[] = [];
     for (let i = 0; i < numUsers; i++) {
-        const user = await prisma.user.create({
+        const user = await db.user.create({
             data: {
                 email: faker.internet.email(),
                 name: faker.person.fullName(),
-                phone_number: phone_numbers[i],
+                phone_number: faker.phone.number({style: 'international'}),
                 password: bcrypt.hashSync(passwords[i], 10),
                 email_status: faker.helpers.arrayElement(["Activated", "Deactivated"]),
             },
@@ -31,7 +28,7 @@ async function createUsers(numUsers: number) {
 async function createChats(numChats: number, users: any[]) {
     const chats = [];
     for (let i = 0; i < numChats; i++) {
-        const chat = await prisma.chat.create({
+        const chat = await db.chat.create({
             data: {
                 lastActivity: faker.date.recent(),
             },
@@ -42,7 +39,7 @@ async function createChats(numChats: number, users: any[]) {
 
         // Add participants to chat
         for (const user of participants) {
-            await prisma.chatParticipant.create({
+            await db.chatParticipant.create({
                 data: {
                     chatId: chat.id,
                     userId: user.id,
@@ -62,7 +59,7 @@ async function createChatMessages(chats: any[]) {
 
         for (let i = 0; i < numMessages; i++) {
             const sender: User = faker.helpers.arrayElement(chat.participants); // Randomly pick a sender
-            const message = await prisma.chatMessage.create({
+            const message = await db.chatMessage.create({
                 data: {
                     content: faker.lorem.sentence(),
                     senderId: sender.id,
@@ -92,11 +89,7 @@ async function main() {
     console.log("Created messages for all chats.");
 }
 
-main()
-    .catch((e) => {
-        console.error(e);
-        process.exit(1);
-    })
-    .finally(async () => {
-        await prisma.$disconnect();
-    });
+main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+});
