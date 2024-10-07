@@ -19,7 +19,7 @@ model User {
   password         String       @db.VarChar(256)
   email_status     String       @default("Deactivated")
   verfication_code Verification?
-  messages    Message[]       // One-to-many relationship with Message
+  messages    ChatMessage[]       // One-to-many relationship with Message
   participants ChatParticipant[] // One-to-many relationship with ChatParticipant
 }
 
@@ -39,16 +39,6 @@ model Chat {
   messages     ChatMessage[] 
 }
 
-// Message Model
-model Message {
-  id        Int           @id @default(autoincrement())
-  content   String
-  senderId  Int           // Reference to the User who sent the message
-  createdAt DateTime      @default(now()) 
-  sender    User          @relation(fields: [senderId], references: [id])
-  chatMessage ChatMessage? // One-to-one relationship with ChatMessage
-}
-
 // ChatParticipant Model
 model ChatParticipant {
   id      Int    @id @default(autoincrement())
@@ -64,9 +54,11 @@ model ChatParticipant {
 // did it this way since there will also be group and community messages
 model ChatMessage {
   id        Int       @id @default(autoincrement())
-  messageId Int       @unique // Ensures one-to-one relationship with Message
   chatId    Int       // Reference to the Chat
-  message   Message   @relation(fields: [messageId], references: [id]) // Relation to Message
+  senderId  Int           // Reference to the User who sent the message
+  content   String
+  createdAt DateTime      @default(now()) 
+  sender    User          @relation(fields: [senderId], references: [id])
   chat      Chat      @relation(fields: [chatId], references: [id])    // Relation to Chat
 }
 
