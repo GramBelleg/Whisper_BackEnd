@@ -51,25 +51,18 @@ async function createChats(numChats: number, users: any[]) {
 }
 
 // Utility function to create messages for chats
-async function createMessages(chats: any[]) {
+async function createChatMessages(chats: any[]) {
     for (const chat of chats) {
         const numMessages = faker.number.int({ min: 1, max: 10 }); // Random number of messages per chat
 
         for (let i = 0; i < numMessages; i++) {
             const sender: User = faker.helpers.arrayElement(chat.participants); // Randomly pick a sender
-            const message = await prisma.message.create({
+            const message = await prisma.chatMessage.create({
                 data: {
                     content: faker.lorem.sentence(),
                     senderId: sender.id,
                     createdAt: faker.date.recent(),
-                },
-            });
-
-            // Associate message with chat
-            await prisma.chatMessage.create({
-                data: {
                     chatId: chat.chat.id,
-                    messageId: message.id,
                 },
             });
         }
@@ -90,7 +83,7 @@ async function main() {
     console.log(`Created ${chats.length} chats.`);
 
     // Step 3: Create Messages for each chat
-    await createMessages(chats);
+    await createChatMessages(chats);
     console.log("Created messages for all chats.");
 }
 
