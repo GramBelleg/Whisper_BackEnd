@@ -1,15 +1,13 @@
-import { PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
 import { User, Chat, ChatMessage, ChatParticipant } from "@prisma/client";
 import bcrypt from "bcrypt";
-
-const prisma = new PrismaClient();
+import db from "./PrismaClient";
 
 // Utility function to create random users
 async function createUsers(numUsers: number) {
     const users = [];
     for (let i = 0; i < numUsers; i++) {
-        const user = await prisma.user.create({
+        const user = await db.user.create({
             data: {
                 email: faker.internet.email(),
                 name: faker.person.fullName(),
@@ -26,7 +24,7 @@ async function createUsers(numUsers: number) {
 async function createChats(numChats: number, users: any[]) {
     const chats = [];
     for (let i = 0; i < numChats; i++) {
-        const chat = await prisma.chat.create({
+        const chat = await db.chat.create({
             data: {
                 lastActivity: faker.date.recent(),
             },
@@ -37,7 +35,7 @@ async function createChats(numChats: number, users: any[]) {
 
         // Add participants to chat
         for (const user of participants) {
-            await prisma.chatParticipant.create({
+            await db.chatParticipant.create({
                 data: {
                     chatId: chat.id,
                     userId: user.id,
@@ -57,7 +55,7 @@ async function createChatMessages(chats: any[]) {
 
         for (let i = 0; i < numMessages; i++) {
             const sender: User = faker.helpers.arrayElement(chat.participants); // Randomly pick a sender
-            const message = await prisma.chatMessage.create({
+            const message = await db.chatMessage.create({
                 data: {
                     content: faker.lorem.sentence(),
                     senderId: sender.id,
@@ -87,11 +85,7 @@ async function main() {
     console.log("Created messages for all chats.");
 }
 
-main()
-    .catch((e) => {
-        console.error(e);
-        process.exit(1);
-    })
-    .finally(async () => {
-        await prisma.$disconnect();
-    });
+main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+});

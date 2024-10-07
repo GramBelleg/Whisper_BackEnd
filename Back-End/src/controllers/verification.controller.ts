@@ -1,13 +1,13 @@
 import Randomstring from "randomstring";
 import { Request, Response } from "express";
-import sendEmail from "@services/send-email-service";
+import sendEmail from "@services/send.email.service";
 import { validateEmail, validateCode } from "@validators/verification";
 import {
     findUser,
     findVerifiedUser,
     updateUser,
     updateVerifiedUser,
-} from "@services/verification-service";
+} from "@services/verification.service";
 
 const generateCode = async (req: Request, res: Response): Promise<void> => {
     try {

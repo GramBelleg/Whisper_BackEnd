@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import http from "http";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import indexRouter from "@routes/index-routes";
+import indexRouter from "@routes/index.routes";
 import swaggerSpec from "./swagger";
 import swaggerUi from "swagger-ui-express";
 import { initWebSocketServer } from "@socket/web.socket";
