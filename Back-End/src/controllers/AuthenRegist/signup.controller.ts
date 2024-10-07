@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import Randomstring from "randomstring";
-import sendEmail from "@services/AuthenRegist/send-email-service";
+import sendEmail from "@services/AuthenRegist/send.email.service";
 import { validateSingUp } from "@validators/user";
-import { findUser, upsertUser } from "@services/AuthenRegist/signup-service";
+import { findUser, upsertUser } from "@services/AuthenRegist/signup.service";
 
 const signup = async (req: Request, res: Response): Promise<void> => {
     try {
