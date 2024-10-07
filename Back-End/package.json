@@ -12,6 +12,7 @@
     "seed": "ts-node src/prisma/seed.ts",
     "reset": "npx prisma migrate reset",
     "migrate:deploy": "npx prisma migrate deploy",
+    "clear": "ts-node src/prisma/clear.ts",
     "migrate": "npx prisma migrate dev --name create"
   },
   "prisma": {
@@ -22,6 +23,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^9.0.3",
     "@prisma/client": "^5.20.0",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
