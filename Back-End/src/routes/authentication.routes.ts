@@ -136,9 +136,9 @@
  */
 
 import { Router } from "express";
-import login from "@controllers/login-controller";
-import signup from "@controllers/signup-controller";
-import { generateCode, verifyCode } from "@controllers/verification-controller";
+import login from "@controllers/login.controller";
+import signup from "@controllers/signup.controller";
+import { generateCode, verifyCode } from "@controllers/verification.controller";
 const router: Router = Router();
 
 router.post("/login", login);

@@ -33,7 +33,7 @@
  */
 
 import { Router, Request, Response } from "express";
-import logout from "@controllers/logout-controller";
+import logout from "@controllers/logout.controller";
 
 const router: Router = Router();
 

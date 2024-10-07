@@ -40,7 +40,7 @@
  *
  */
 
-import googleAuth from "@controllers/google-auth-controller";
+import googleAuth from "@controllers/google.auth.controller";
 import { Router } from "express";
 
 const router: Router = Router();

@@ -12,7 +12,7 @@
         "seed": "ts-node src/prisma/seed.ts",
         "reset": "npx prisma migrate reset",
         "migrate:deploy": "npx prisma migrate deploy",
-        "clear": "ts-node src/prisma/clear.ts",
+        "clearDB": "ts-node src/prisma/clear.ts",
         "migrate": "npx prisma migrate dev --name init"
     },
     "prisma": {
