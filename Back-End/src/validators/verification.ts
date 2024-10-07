@@ -3,10 +3,7 @@ import { ValidationError } from "joi";
 
 const validateEmail = (email: string) => {
     const schema: ObjectSchema = Joi.object({
-        email: Joi.string()
-            .email()
-            .pattern(/@gmail\.com$/)
-            .required(),
+        email: Joi.string().email().required(),
     });
     const error: ValidationError | undefined = schema.validate(
         { email },
