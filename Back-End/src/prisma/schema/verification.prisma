@@ -1,7 +1,0 @@
-model Verification {
-    id         Int      @id @default(autoincrement())
-    code       String   @unique
-    user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-    user_id    Int      @unique
-    created_at DateTime @default(now())
-}

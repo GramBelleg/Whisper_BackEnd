@@ -1,43 +1,104 @@
-import db from "./PrismaClient";
+import { PrismaClient } from "@prisma/client";
+import { faker } from "@faker-js/faker";
+import { User, Chat, ChatMessage, ChatParticipant } from "@prisma/client";
 import bcrypt from "bcrypt";
 
-const Email_verified: { Activated: string; Deactivated: string } = {
-    Activated: "Activated",
-    Deactivated: "Deactivated",
-};
+const prisma = new PrismaClient();
 
-interface User {
-    name: string;
-    email: string;
-    password: string;
-    email_status: string;
+// Utility function to create random users
+async function createUsers(numUsers: number) {
+    const users = [];
+    for (let i = 0; i < numUsers; i++) {
+        const user = await prisma.user.create({
+            data: {
+                email: faker.internet.email(),
+                name: faker.person.fullName(),
+                password: bcrypt.hashSync(faker.internet.password(), 10),
+                email_status: faker.helpers.arrayElement(["Activated", "Deactivated"]),
+            },
+        });
+        users.push(user);
+    }
+    return users;
 }
-interface Message {
-    content: string;
-    from_user_id: number;
-    to_user_id: number;
+
+// Utility function to create random chats
+async function createChats(numChats: number, users: any[]) {
+    const chats = [];
+    for (let i = 0; i < numChats; i++) {
+        const chat = await prisma.chat.create({
+            data: {
+                lastActivity: faker.date.recent(),
+            },
+        });
+
+        // Randomly select participants for this chat
+        const participants = faker.helpers.arrayElements(users, 2); // Pick 2 random users
+
+        // Add participants to chat
+        for (const user of participants) {
+            await prisma.chatParticipant.create({
+                data: {
+                    chatId: chat.id,
+                    userId: user.id,
+                },
+            });
+        }
+
+        chats.push({ chat, participants });
+    }
+    return chats;
 }
 
-const user_data: User[] = [
-    {
-        name: "omar",
-        email: "omar@gmail.com",
-        password: bcrypt.hashSync("123456", 10),
-        email_status: "Activated",
-    },
-    {
-        name: "amr",
-        email: "amr@gmail.com",
-        password: bcrypt.hashSync("123456", 10),
-        email_status: "Activated",
-    },
-];
+// Utility function to create messages for chats
+async function createMessages(chats: any[]) {
+    for (const chat of chats) {
+        const numMessages = faker.number.int({ min: 1, max: 10 }); // Random number of messages per chat
 
+        for (let i = 0; i < numMessages; i++) {
+            const sender: User = faker.helpers.arrayElement(chat.participants); // Randomly pick a sender
+            const message = await prisma.message.create({
+                data: {
+                    content: faker.lorem.sentence(),
+                    senderId: sender.id,
+                    createdAt: faker.date.recent(),
+                },
+            });
+
+            // Associate message with chat
+            await prisma.chatMessage.create({
+                data: {
+                    chatId: chat.chat.id,
+                    messageId: message.id,
+                },
+            });
+        }
+    }
+}
+
+// Main function to orchestrate the seeding
 async function main() {
-    await db.user.createMany({
-        data: user_data,
-        skipDuplicates: true,
-    });
+    const numUsers = 5; // Number of users to create
+    const numChats = 3; // Number of chats to create
+
+    // Step 1: Create Users
+    const users = await createUsers(numUsers);
+    console.log(`Created ${users.length} users.`);
+
+    // Step 2: Create Chats
+    const chats = await createChats(numChats, users);
+    console.log(`Created ${chats.length} chats.`);
+
+    // Step 3: Create Messages for each chat
+    await createMessages(chats);
+    console.log("Created messages for all chats.");
 }
 
-main();
+main()
+    .catch((e) => {
+        console.error(e);
+        process.exit(1);
+    })
+    .finally(async () => {
+        await prisma.$disconnect();
+    });

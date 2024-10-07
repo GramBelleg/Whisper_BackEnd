@@ -12,7 +12,8 @@
         "seed": "ts-node src/prisma/seed.ts",
         "reset": "npx prisma migrate reset",
         "migrate:deploy": "npx prisma migrate deploy",
-        "migrate": "npx prisma migrate dev --name create"
+        "clear": "ts-node src/prisma/clear.ts",
+        "migrate": "npx prisma migrate dev --name init"
     },
     "prisma": {
         "seed": "ts-node ./src/prisma/seed.ts",
@@ -22,7 +23,8 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@prisma/client": "^5.19.1",
+        "@faker-js/faker": "^9.0.3",
+        "@prisma/client": "^5.20.0",
         "bcrypt": "^5.1.1",
         "cookie-parser": "^1.4.6",
         "cors": "^2.8.5",
@@ -50,6 +52,7 @@
         "@types/swagger-ui-express": "^4.1.6",
         "nodemon": "^3.1.4",
         "prettier": "^3.3.3",
+        "prisma": "^5.20.0",
         "swagger-jsdoc": "^6.2.8",
         "swagger-ui-express": "^5.0.1",
         "ts-node": "^10.9.2",
