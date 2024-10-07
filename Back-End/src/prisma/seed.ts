@@ -5,15 +5,20 @@ import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
+// Passwords and phone numbers of 5 users in order. 
+const passwords: string[] = ['abcdefg', '1234567', 'aaaabbb', '1111111', '2222222'];
+const phone_numbers: string[] = ['01111111111', '01045972201', '01266687540', '01222245798', '01000045873'];
+
 // Utility function to create random users
 async function createUsers(numUsers: number) {
-    const users = [];
+    const users: User[] = [];
     for (let i = 0; i < numUsers; i++) {
         const user = await prisma.user.create({
             data: {
                 email: faker.internet.email(),
                 name: faker.person.fullName(),
-                password: bcrypt.hashSync(faker.internet.password(), 10),
+                phone_number: phone_numbers[i],
+                password: bcrypt.hashSync(passwords[i], 10),
                 email_status: faker.helpers.arrayElement(["Activated", "Deactivated"]),
             },
         });

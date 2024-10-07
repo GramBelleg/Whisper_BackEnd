@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getUserData, upsertUser } from "@services/google-auth-service";
+import { getUserData, upsertUser } from "@services/AuthenRegist/google-auth-service";
 import jwt from "jsonwebtoken";
 import createCookie from "@services/cookie-service";
 import { User } from "@prisma/client";
@@ -16,7 +16,7 @@ async function googleAuth(req: Request, res: Response): Promise<void> {
         if (!data) {
             throw new Error("Invalid token");
         }
-
+        console.log(data);
         //upsert user into db
         const user: User = await upsertUser(data);
 

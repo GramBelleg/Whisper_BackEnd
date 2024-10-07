@@ -1,12 +1,14 @@
 import Joi, { ObjectSchema } from "joi";
 import { ValidationError } from "joi";
 
-const validateSingUp = (name: string, email: string, password: string, confirm_pass: string) => {
+const validateSingUp = (name: string, email: string, phone_number: string, password: string, confirm_pass: string) => {
     const schema: ObjectSchema = Joi.object({
         name: Joi.string().alphanum().min(3).max(30).required(),
         email: Joi.string()
             .email()
-            .pattern(/@gmail\.com$/)
+            .required(),
+        phone_number: Joi.string()
+            .pattern(/^(011|010|012|015)\d{8}$/)
             .required(),
         password: Joi.string().min(3).max(50).required(),
         confirm_pass: Joi.string()
@@ -15,7 +17,7 @@ const validateSingUp = (name: string, email: string, password: string, confirm_p
             .messages({ "any.only": "Passwords don't match" }),
     });
     const error: ValidationError | undefined = schema.validate(
-        { name, email, password, confirm_pass },
+        { name, email, phone_number, password, confirm_pass },
         { abortEarly: false }
     ).error;
     if (error) {
