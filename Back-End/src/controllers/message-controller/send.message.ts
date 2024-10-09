@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { saveMessage } from "@services/messaging.service";
+import { saveMessage } from "@services/chat-service/chat.service";
 
 export const sendMessage = async (req: Request, res: Response) => {
   const { senderID, receiverID, message } = req.body;

@@ -197,11 +197,11 @@
  */
 
 import { Router } from "express";
-import login from "@controllers/AuthenRegist/login.controller";
-import signup from "@controllers/AuthenRegist/signup.controller";
-import { generateCode, verifyCode } from "@controllers/AuthenRegist/verification.controller";
-import googleAuth from "@controllers/AuthenRegist/google.auth.controller";
-import logout from "@controllers/AuthenRegist/logout.controller";
+import login from "@controllers/authen-regist/login.controller";
+import signup from "@controllers/authen-regist/signup.controller";
+import { generateCode, verifyCode } from "@controllers/authen-regist/verification.controller";
+import googleAuth from "@controllers/authen-regist/google.auth.controller";
+import logout from "@controllers/authen-regist/logout.controller";
 import userAuth from "@middlewares/auth.middleware";
 
 

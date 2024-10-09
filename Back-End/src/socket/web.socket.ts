@@ -1,32 +1,31 @@
 import { Server as IOServer, Socket } from "socket.io";
 import { Server as HTTPServer } from "http";
-import Client from "./interfaces/client.interface";
-import { sendMessage } from "./handlers/message.handlers";
-import { startConnection, endConnection } from "./handlers/connection.handlers";
+import * as messageHandler from "./handlers/message.handlers";
+import * as connectionHandler from "./handlers/connection.handlers";
 
-const clients: Client[] = [];
+const clients: Map<number, Socket> = new Map();
 
 export const initWebSocketServer = (server: HTTPServer) => {
   const io = new IOServer(server, {
     cors: {
-      origin: "*",
+      origin: "http://127.0.0.1:5500",
+      credentials: true,
       methods: ["GET", "POST"],
     },
   });
-
   io.on("connection", (socket: Socket) => {
-    let userID: string = socket.handshake.query.userID as string;
+    let userID: number = parseInt(socket.handshake.query.userID as string, 10);
 
-    startConnection(userID);
-
-    clients.push({ id: userID, socket: socket });
+    connectionHandler.startConnection(userID, clients, socket);
 
     socket.on("send", (message: string) => {
-      sendMessage(message, clients);
+      console.log(socket.handshake.headers.cookie);
+      console.log(socket.request.headers.cookie);
+      messageHandler.sendMessage(message, clients);
     });
 
     socket.on("close", () => {
-      endConnection(userID, clients);
+      connectionHandler.endConnection(userID, clients);
     });
   });
 };

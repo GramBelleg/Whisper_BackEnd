@@ -4,6 +4,7 @@ import { Request, Response, NextFunction } from "express";
 const userAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         let token: string | null = null;
+        console.log(req.signedCookies.token);
         if (req.signedCookies.token) {
             token = req.signedCookies.token;
         } else if (req.headers.authorization) {

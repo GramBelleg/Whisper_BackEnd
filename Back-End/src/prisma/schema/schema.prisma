@@ -62,5 +62,5 @@ model ChatMessage {
   createdAt DateTime @default(now())
   sender    User     @relation(fields: [senderId], references: [id])
   chat      Chat     @relation(fields: [chatId], references: [id]) // Relation to Chat
-  lastMessageChats Chat[] @relation("LastMessageInChat") // Relation to Chat's lastMessageId
+  lastMessageChats Chat? @relation("LastMessageInChat") // Relation to Chat's lastMessageId
 }

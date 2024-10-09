@@ -15,14 +15,14 @@ const server = http.createServer(app);
 
 app.use(
   cors({
-    origin: "*", // Allow this origin to send request to server and recieve response from server
+    origin: "http://127.0.0.1:5500", // Allow this origin to send request to server and recieve response from server
     credentials: true, // Allow cookies to be sent in cross-origin requests
   })
 );
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-//app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api", indexRouter);
 
