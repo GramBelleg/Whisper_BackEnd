@@ -14,6 +14,7 @@ const findUser = async (email: string, password: string): Promise<void> => {
 const upsertUser = async (
     name: string,
     email: string,
+    phone_number: string,
     password: string,
     verification_code: string
 ): Promise<void> => {
@@ -21,6 +22,7 @@ const upsertUser = async (
         where: { email },
         update: {
             name,
+            phone_number,
             password: bcrypt.hashSync(password, 10),
             verfication_code: {
                 update: {
@@ -31,6 +33,7 @@ const upsertUser = async (
         create: {
             name,
             email,
+            phone_number,
             password: bcrypt.hashSync(password, 10),
             verfication_code: {
                 create: {

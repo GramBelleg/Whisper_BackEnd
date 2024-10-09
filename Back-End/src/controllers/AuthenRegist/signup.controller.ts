@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
 import Randomstring from "randomstring";
-import sendEmail from "@services/send.email.service";
+import sendEmail from "@services/AuthenRegist/send.email.service";
 import { validateSingUp } from "@validators/user";
-import { findUser, upsertUser } from "@services/signup.service";
+import { findUser, upsertUser } from "@services/AuthenRegist/signup.service";
 
 const signup = async (req: Request, res: Response): Promise<void> => {
     try {
         //validate user data recieved from request body
         const { name, email, password, confirm_pass }: Record<string, string> = req.body;
-        validateSingUp(name, email, password, confirm_pass);
-
+        let phone_number: string = req.body.phone_number;
+        phone_number = validateSingUp(name, email, phone_number, password, confirm_pass);
         //check if user is found in database
         await findUser(email, password);
 
@@ -21,7 +21,7 @@ const signup = async (req: Request, res: Response): Promise<void> => {
         }
 
         //upsert user in db
-        await upsertUser(name, email, password, verification_code);
+        await upsertUser(name, email, phone_number, password, verification_code);
         res.status(200).json({
             status: "success",
             user_data: {

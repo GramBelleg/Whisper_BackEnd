@@ -21,11 +21,13 @@ const upsertUser = async (data: Record<string, any>): Promise<User> => {
     const user_data: {
         name: string;
         email: string;
+        phone_number: string,
         password: string;
         email_status: string;
     } = {
         name: data.name,
         email: data.email,
+        phone_number: data.phone_number,
         password: bcrypt.hashSync(randomstring.generate({ length: 250 }), 10),
         email_status: "Activated",
     };

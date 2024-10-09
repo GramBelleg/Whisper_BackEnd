@@ -4,6 +4,7 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "password" VARCHAR(256) NOT NULL,
+    "phone_number" TEXT NOT NULL,
     "email_status" TEXT NOT NULL DEFAULT 'Deactivated',
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -49,6 +50,9 @@ CREATE TABLE "ChatMessage" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_phone_number_key" ON "User"("phone_number");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Verification_code_key" ON "Verification"("code");
