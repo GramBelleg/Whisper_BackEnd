@@ -15,7 +15,7 @@ const server = http.createServer(app);
 
 app.use(
   cors({
-    origin: "http://127.0.0.1:5500", // Allow this origin to send request to server and recieve response from server
+    origin: "http://localhost:3000", // Allow this origin to send request to server and recieve response from server
     credentials: true, // Allow cookies to be sent in cross-origin requests
   })
 );

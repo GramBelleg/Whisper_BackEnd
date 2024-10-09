@@ -1,5 +1,6 @@
 import { Server as IOServer, Socket } from "socket.io";
 import { Server as HTTPServer } from "http";
+import { validateCookie } from "@validators/socket";
 import * as messageHandler from "./handlers/message.handlers";
 import * as connectionHandler from "./handlers/connection.handlers";
 
@@ -8,24 +9,25 @@ const clients: Map<number, Socket> = new Map();
 export const initWebSocketServer = (server: HTTPServer) => {
   const io = new IOServer(server, {
     cors: {
-      origin: "http://127.0.0.1:5500",
+      origin: "http://localhost:3000",
       credentials: true,
       methods: ["GET", "POST"],
     },
   });
+
   io.on("connection", (socket: Socket) => {
-    let userID: number = parseInt(socket.handshake.query.userID as string, 10);
+    socket.data.userId = validateCookie(socket) as number;
 
-    connectionHandler.startConnection(userID, clients, socket);
+    const userId = socket.data.userId;
 
-    socket.on("send", (message: string) => {
-      console.log(socket.handshake.headers.cookie);
-      console.log(socket.request.headers.cookie);
-      messageHandler.sendMessage(message, clients);
+    connectionHandler.startConnection(userId, clients, socket);
+
+    socket.on("sendMessage", (message: { message: string; chatId: number }) => {
+      messageHandler.sendMessage(userId, message, clients);
     });
 
     socket.on("close", () => {
-      connectionHandler.endConnection(userID, clients);
+      connectionHandler.endConnection(userId, clients);
     });
   });
 };

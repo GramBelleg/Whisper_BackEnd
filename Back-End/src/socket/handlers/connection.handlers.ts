@@ -1,12 +1,12 @@
 import { Socket } from "socket.io";
 
 export const startConnection = (
-  userID: number,
+  userId: number,
   clients: Map<number, Socket>,
   socket: Socket
 ): void => {
-  console.log(`User ${userID} connected`);
-  clients.set(userID, socket);
+  console.log(`User ${userId} connected`);
+  clients.set(userId, socket);
 };
 
 export const endConnection = (

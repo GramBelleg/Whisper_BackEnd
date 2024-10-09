@@ -1,26 +1,28 @@
 import { Socket } from "socket.io";
-import { getChatParticipantsIDs } from "@services/chat-service/chat.participant.service";
+import { getChatParticipantsIds } from "@services/chat-service/chat.participant.service";
 
 export const sendMessage = async (
-  message: string,
+  senderId: number,
+  message: { message: string; chatId: number },
   clients: Map<number, Socket>
 ): Promise<void> => {
   try {
-    const messageObject = JSON.parse(message);
-    const participants: number[] = await getChatParticipantsIDs(
-      messageObject.chatID
-    );
+    const participants: number[] = await getChatParticipantsIds(message.chatId);
 
     const receivers = participants.filter(
-      (participant) => participant !== messageObject.senderID
+      (participant) => participant !== senderId
     );
-
+    const messageSent = {
+      ...message,
+      senderId,
+      createdAt: new Date().toISOString(),
+    };
     receivers &&
       receivers.forEach((receiver) => {
         if (clients.has(receiver)) {
           const client = clients.get(receiver);
           if (client) {
-            client.emit("receive", message);
+            client.emit("receiveMessage", messageSent);
           }
         }
       });

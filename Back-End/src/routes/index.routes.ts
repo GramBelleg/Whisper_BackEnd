@@ -7,7 +7,7 @@ import messageRouter from "./message.routes";
 const router: Router = Router();
 
 router.use("/", authenticationRouter);
-//router.use(userAuth);
+router.use(userAuth);
 router.use("/", userRouter);
 router.use("/message", messageRouter);
 
