@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import {
-  saveMessage,
+  saveChatMessage,
   setLastMessage,
 } from "@services/chat-service/chat.service";
+import { sendMessageSockets } from "@socket/web.socket";
 
 export const sendMessage = async (req: Request, res: Response) => {
   try {
@@ -21,10 +22,12 @@ export const sendMessage = async (req: Request, res: Response) => {
       createdAt: new Date(),
     };
 
-    const messageId = await saveMessage(formattedMessage);
+    const messageId = await saveChatMessage(formattedMessage);
     await setLastMessage(chatId, messageId);
 
-    return res.status(201).json({ messageId, ...formattedMessage });
+    sendMessageSockets({ id: messageId, ...formattedMessage });
+
+    return res.status(201).json({ messageId });
   } catch (error) {
     console.error("Error sending message:", error);
     return res.status(500).json({ message: "Internal server error." });
