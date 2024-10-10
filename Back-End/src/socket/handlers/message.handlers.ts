@@ -1,9 +1,10 @@
 import { Socket } from "socket.io";
 import { getChatParticipantsIds } from "@services/chat-service/chat.participant.service";
+import { SentMessage } from "../socket.interfaces";
 
 export const sendMessage = async (
   senderId: number,
-  message: { message: string; chatId: number },
+  message: SentMessage,
   clients: Map<number, Socket>
 ): Promise<void> => {
   try {
@@ -15,7 +16,7 @@ export const sendMessage = async (
     const messageSent = {
       ...message,
       senderId,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date(),
     };
     receivers &&
       receivers.forEach((receiver) => {

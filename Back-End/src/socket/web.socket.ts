@@ -1,6 +1,7 @@
 import { Server as IOServer, Socket } from "socket.io";
 import { Server as HTTPServer } from "http";
 import { validateCookie } from "@validators/socket";
+import { SentMessage } from "./socket.interfaces";
 import * as messageHandler from "./handlers/message.handlers";
 import * as connectionHandler from "./handlers/connection.handlers";
 
@@ -22,7 +23,7 @@ export const initWebSocketServer = (server: HTTPServer) => {
 
     connectionHandler.startConnection(userId, clients, socket);
 
-    socket.on("sendMessage", (message: { message: string; chatId: number }) => {
+    socket.on("sendMessage", (message: SentMessage) => {
       messageHandler.sendMessage(userId, message, clients);
     });
 
