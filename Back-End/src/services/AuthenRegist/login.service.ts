@@ -12,7 +12,7 @@ const findUser = async (email: string, password: string): Promise<User> => {
     if (!bcrypt.compareSync(password, user.password)) {
         throw new Error("Incorrect password. Try again");
     }
-    if (user.email_status !== "Activated") {
+    if (user.emailStatus !== "Activated") {
         throw new Error("Email is not verified");
     }
     return user;

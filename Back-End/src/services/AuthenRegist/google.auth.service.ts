@@ -18,24 +18,24 @@ const getUserData = async (token: string): Promise<Record<string, any> | undefin
 };
 
 const upsertUser = async (data: Record<string, any>): Promise<User> => {
-    const user_data: {
+    const userData: {
         name: string;
         email: string;
-        phone_number: string,
+        phoneNumber: string;
         password: string;
-        email_status: string;
+        emailStatus: string;
     } = {
         name: data.name,
         email: data.email,
-        phone_number: data.phone_number,
+        phoneNumber: data.phone_number,
         password: bcrypt.hashSync(randomstring.generate({ length: 250 }), 10),
-        email_status: "Activated",
+        emailStatus: "Activated",
     };
 
     const user: User = await db.user.upsert({
-        where: { email: user_data.email },
+        where: { email: userData.email },
         update: {},
-        create: user_data,
+        create: userData,
     });
     return user;
 };

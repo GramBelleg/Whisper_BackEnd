@@ -6,7 +6,7 @@ const findUser = async (email: string, password: string): Promise<void> => {
     const found_user: User | null = await db.user.findUnique({
         where: { email },
     });
-    if (found_user && found_user.email_status === "Activated") {
+    if (found_user && found_user.emailStatus === "Activated") {
         throw new Error("Email is already found");
     }
 };
@@ -14,7 +14,7 @@ const findUser = async (email: string, password: string): Promise<void> => {
 const upsertUser = async (
     name: string,
     email: string,
-    phone_number: string,
+    phoneNumber: string,
     password: string,
     verification_code: string
 ): Promise<void> => {
@@ -22,9 +22,9 @@ const upsertUser = async (
         where: { email },
         update: {
             name,
-            phone_number,
+            phoneNumber,
             password: bcrypt.hashSync(password, 10),
-            verfication_code: {
+            verficationCode: {
                 update: {
                     code: verification_code,
                 },
@@ -33,9 +33,9 @@ const upsertUser = async (
         create: {
             name,
             email,
-            phone_number,
+            phoneNumber,
             password: bcrypt.hashSync(password, 10),
-            verfication_code: {
+            verficationCode: {
                 create: {
                     code: verification_code,
                 },

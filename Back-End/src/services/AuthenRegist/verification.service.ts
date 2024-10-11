@@ -26,7 +26,7 @@ const findVerifiedUser = async (email: string, code: string) => {
     }
     let expire_date: Date = new Date();
     expire_date.setDate(expire_date.getDate() - 1);
-    if (expire_date > data.created_at) {
+    if (expire_date > data.createdAt) {
         throw new Error("Expried code");
     }
 };
@@ -35,7 +35,7 @@ const updateUser = async (email: string, code: string) => {
     await db.user.update({
         where: { email },
         data: {
-            verfication_code: {
+            verficationCode: {
                 upsert: {
                     update: { code },
                     create: { code },
@@ -48,7 +48,7 @@ const updateUser = async (email: string, code: string) => {
 const updateVerifiedUser = async (email: string) => {
     await db.user.update({
         where: { email },
-        data: { email_status: "Activated" },
+        data: { emailStatus: "Activated" },
     });
 };
 
