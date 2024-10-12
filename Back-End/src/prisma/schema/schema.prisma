@@ -17,9 +17,9 @@ model User {
   email            String            @unique
   name             String
   password         String            @db.VarChar(256)
-  phone_number     String            @unique
-  email_status     String            @default("Deactivated")
-  verfication_code Verification?
+  phoneNumber     String            @unique
+  emailStatus     String            @default("Deactivated")
+  verficationCode Verification?
   messages         ChatMessage[] // One-to-many relationship with Message
   participants     ChatParticipant[] // One-to-many relationship with ChatParticipant
 }
@@ -27,9 +27,9 @@ model User {
 model Verification {
   id         Int      @id @default(autoincrement())
   code       String   @unique
-  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  user_id    Int      @unique
-  created_at DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId    Int      @unique
+  createdAt DateTime @default(now())
 }
 
 // Chat Model

@@ -9,7 +9,6 @@
     "build": "tsc --build",
     "start": "node -r module-alias/register ./dist/app.js",
     "start:dev": "nodemon -r tsconfig-paths/register src/app.ts",
-    "redis": "docker run --name redis-container -p 6379:6379 -v D:/Whisper/Back-End/redis.conf:/usr/local/etc/redis/redis.conf redis redis-server /usr/local/etc/redis/redis.conf",
     "studio": "npx prisma studio",
     "seed": "ts-node src/prisma/seed.ts",
     "reset": "npx prisma migrate reset",
