@@ -4,8 +4,6 @@ import {
   removeTempMessage,
 } from "@services/redis-service/chat.service";
 import { getChatParticipantsIds } from "@services/chat-service/chat.participant.service";
-import { ChatMessage } from "@prisma/client";
-import { EditChatMessages } from "@models/chat.models";
 
 export const broadCast = async (
   chatId: number,
@@ -15,8 +13,6 @@ export const broadCast = async (
 ): Promise<void> => {
   try {
     const participants: number[] = await getChatParticipantsIds(chatId);
-
-    console.log(participants);
     
     participants &&
     participants.forEach((participant) => {
@@ -42,6 +38,6 @@ export const notifyExpiry = async (
   const id: number = Number(match[0]);
   const chatId: number = await getChatId(id);
   await removeTempMessage(id);
-
+  
   broadCast(chatId, clients, "deleteMessage", id);
 };

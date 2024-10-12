@@ -43,7 +43,7 @@ export const initWebSocketServer = (server: HTTPServer) => {
             message.chatId,
             clients,
             "receiveMessage",
-            message
+            savedMessage
           );
         }
       }
@@ -71,7 +71,7 @@ export const initWebSocketServer = (server: HTTPServer) => {
 
     socket.on("deleteMessage", async (id: number, chatId: number) => {
       await deleteMessageController.deleteMessage(id, chatId);
-      messageHandler.broadCast(chatId, clients, "deleteMessage", id);;
+      messageHandler.broadCast(chatId, clients, "deleteMessage", id);
     });
 
     socket.on("close", () => {
