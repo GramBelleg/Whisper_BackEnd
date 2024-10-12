@@ -20,8 +20,12 @@ model User {
   phoneNumber     String            @unique
   emailStatus     String            @default("Deactivated")
   verficationCode Verification?
-  messages         ChatMessage[] // One-to-many relationship with Message
-  participants     ChatParticipant[] // One-to-many relationship with ChatParticipant
+  chatMessages         ChatMessage[] // One-to-many relationship with Message
+  groupMessages         GroupMessage[] // One-to-many relationship with Message
+  channelMessages         ChannelMessage[] // One-to-many relationship with Message
+  chats     ChatParticipant[] // One-to-many relationship with ChatParticipant
+  groups           GroupParticipant[]
+  channels           ChannelParticipant[]
 }
 
 model Verification {
@@ -35,7 +39,7 @@ model Verification {
 // Chat Model
 model Chat {
   id           Int               @id @default(autoincrement())
-  lastMessageId  Int?              @unique // Making it optional to handle cases when there is no message yet
+  lastMessageId  Int?              @unique 
   lastMessage    ChatMessage?      @relation("LastMessageInChat", fields: [lastMessageId], references: [id])
   participants ChatParticipant[]
   messages     ChatMessage[]
@@ -62,5 +66,78 @@ model ChatMessage {
   createdAt DateTime @default(now())
   sender    User     @relation(fields: [senderId], references: [id])
   chat      Chat     @relation(fields: [chatId], references: [id]) // Relation to Chat
-  lastMessageChats Chat[] @relation("LastMessageInChat") // Relation to Chat's lastMessageId
+  lastMessageChats Chat? @relation("LastMessageInChat") // Relation to Chat's lastMessageId
+}
+
+
+model Group {
+  id Int @id @default(autoincrement())
+  maxSize Int 
+  privacy String
+  lastMessageId Int?   @unique
+  participant GroupParticipant[]
+  messages GroupMessage[]
+  lastMessage GroupMessage? @relation("LastMessageInGroup",fields: [lastMessageId],references: [id])
+}
+
+model GroupParticipant {
+  id Int @id @default(autoincrement())
+  groupId Int
+  userId Int
+  isAdmin  Boolean @default(false)
+  isMuted  Boolean @default(false)
+  canDownload  Boolean @default(true)
+  canDelete  Boolean @default(true)
+  canPost  Boolean @default(true)
+  canEdit  Boolean @default(true)
+  group Group @relation(fields:[groupId],references: [id])
+  participant User @relation(fields:[userId],references: [id])
+
+  @@unique([groupId, userId])
+}
+
+model GroupMessage {
+  id        Int      @id @default(autoincrement())
+  groupId    Int // Reference to the Chat
+  senderId  Int // Reference to the User who sent the message
+  content   String
+  createdAt DateTime @default(now())
+  sender    User     @relation(fields: [senderId], references: [id])
+  group     Group     @relation(fields: [groupId], references: [id]) // Relation to Chat
+  lastMessageGroup Group? @relation("LastMessageInGroup") // Relation to Chat's lastMessageId
+}
+
+model Channel {
+  id Int @id @default(autoincrement())
+  privacy String
+  inviteLink String
+  lastMessageId Int?   @unique
+  participant ChannelParticipant[]
+  messages ChannelMessage[]
+  lastMessage ChannelMessage? @relation("LastMessageInChannel",fields: [lastMessageId],references: [id])
+}
+
+model ChannelParticipant {
+  id Int @id @default(autoincrement())
+  channelId Int
+  userId Int
+  isAdmin  Boolean @default(false)
+  isMuted  Boolean @default(false)
+  canDownload  Boolean @default(true)
+  canComment  Boolean @default(true)
+  Channel Channel @relation(fields:[channelId],references: [id])
+  participant User @relation(fields:[userId],references: [id])
+
+  @@unique([channelId, userId])
+}
+
+model ChannelMessage {
+  id        Int      @id @default(autoincrement())
+  ChannelId    Int // Reference to the Chat
+  senderId  Int // Reference to the User who sent the message
+  content   String
+  createdAt DateTime @default(now())
+  sender    User     @relation(fields: [senderId], references: [id])
+  Channel     Channel     @relation(fields: [ChannelId], references: [id]) // Relation to Chat
+  lastMessageChannel Channel? @relation("LastMessageInChannel") // Relation to Chat's lastMessageId
 }
