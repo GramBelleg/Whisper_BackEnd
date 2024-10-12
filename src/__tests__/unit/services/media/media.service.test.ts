@@ -1,5 +1,6 @@
 // src/__tests__/unit/services/media.service.test.ts
-import { uploadBlob, deleteBlob, retrieveBlob } from "@services/media.service";
+import { uploadBlob, deleteBlob, retrieveBlob } from "@services/Media/blob.service";
+import { Readable } from "stream";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -17,10 +18,10 @@ describe("Azure Blob Storage (Actual) Tests", () => {
 
     it("should download blob from Azure Blob Storage", async () => {
         // Perform the actual upload
-        const result = await retrieveBlob(testBlobName);
+        const blobStream = await retrieveBlob(testBlobName);
 
         // Verify the result
-        expect(result).toContain(testBlobName);
+        expect(blobStream).toBeInstanceOf(Readable);
     });
 
     it("should delete blob from Azure Blob Storage", async () => {
@@ -31,12 +32,3 @@ describe("Azure Blob Storage (Actual) Tests", () => {
         expect(result).toContain(testBlobName);
     });
 });
-
-// Optionally, add cleanup
-// afterAll(async () => {
-//     try {
-//         await deleteBlob(testBlobName);
-//     } catch (error) {
-//         console.error(`Failed to delete blob: ${testBlobName}`, error);
-//     }
-// });

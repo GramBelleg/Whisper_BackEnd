@@ -5,8 +5,8 @@ import dotenv from "dotenv";
 // // Load environment variables from .env file
 dotenv.config();
 
-const BLOB_URL = process.env.TEST_BLOB_URL;
-const CONTAINER_NAME = process.env.CONTAINER_NAME;
+const BLOB_URL = process.env.BLOB_URL;
+const CONTAINER_NAME = process.env.TEST_CONTAINER_NAME;
 
 if (!BLOB_URL) {
     throw new Error("Azure Storage connection string is missing.");
@@ -20,13 +20,13 @@ const blobServiceClient = BlobServiceClient.fromConnectionString(BLOB_URL);
 const containerClient = blobServiceClient.getContainerClient(CONTAINER_NAME);
 
 // Function to upload a file to Azure Blob Storage
-const uploadBlob = async (filePath: string, blobName: string): Promise<string> => {
+const uploadBlob = async (file: string, blobName: string): Promise<string> => {
     try {
         // Get a block blob client
         const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
         // Upload the file
-        await blockBlobClient.uploadFile(filePath);
+        await blockBlobClient.uploadFile(file);
         console.log(`Blob "${blobName}" uploaded successfully`);
 
         return `Blob "${blobName}" uploaded successfully`;
