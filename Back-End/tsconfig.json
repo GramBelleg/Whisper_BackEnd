@@ -38,7 +38,9 @@
       "@config/*": ["src/config/*"],
       "@validators/*": ["src/validators/*"],
       "@routes/*": ["src/routes/*"],
-      "@socket/*": ["src/socket/*"]
+      "@socket/*": ["src/socket/*"],
+      "@redis/*": ["src/redis/*"],
+      "@models/*": ["src/models/*"]
     },
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     "typeRoots": [

@@ -7,6 +7,7 @@ import indexRouter from "@routes/index.routes";
 import swaggerSpec from "./swagger";
 import swaggerUi from "swagger-ui-express";
 import { initWebSocketServer } from "@socket/web.socket";
+import { redisExpirySubscribe } from "@redis/redis.sub.handlers";
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api", indexRouter);
 
 initWebSocketServer(server);
+redisExpirySubscribe();
 
 server.listen(parseInt(process.env.PORT as string), () => {
   console.log(`Listening on port ${process.env.PORT}`);

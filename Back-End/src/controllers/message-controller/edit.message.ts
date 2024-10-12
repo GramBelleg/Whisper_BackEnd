@@ -1,30 +1,22 @@
-import { Request, Response } from "express";
 import { editChatMessage } from "@services/chat-service/chat.service";
-import { editMessageSockets } from "@socket/web.socket";
+import { ChatMessage } from "@prisma/client";
+import { EditChatMessages, OmitSender } from "@models/chat.models";
 
-export const editMessage = async (req: Request, res: Response) => {
+export const editMessage = async (
+  userId: number,
+  message: OmitSender<EditChatMessages<ChatMessage>>
+): Promise<EditChatMessages<ChatMessage> | undefined> => {
   try {
-    const { id, chatId, content } = req.body;
-
-    if (!id || !content) {
-      return res.status(400).json({ message: "Id and Content are required." });
-    }
-
-    await editChatMessage(id, content);
+    await editChatMessage(message.id, message.content);
 
     const formattedMessage = {
-      id,
-      senderId: req.userId,
-      chatId,
-      content,
+      ...message,
+      senderId: userId,
     };
 
-    editMessageSockets(formattedMessage);
-
-    return res.status(201).json({ id });
+    return formattedMessage;
   } catch (error) {
     console.error("Error editing message:", error);
-    return res.status(500).json({ message: "Internal server error." });
   }
 };
 

@@ -2,22 +2,17 @@ import { Server as IOServer, Socket } from "socket.io";
 import { Server as HTTPServer } from "http";
 import { validateCookie } from "@validators/socket";
 import { ChatMessage } from "@prisma/client";
-import { OmitDate } from "./socket.types";
+import * as types from "@models/chat.models";
+import * as sendMessageController from "@controllers/message-controller/send.message";
+import * as editMessageController from "@controllers/message-controller/edit.message";
+import * as deleteMessageController from "@controllers/message-controller/delete.message";
 import * as messageHandler from "./handlers/message.handlers";
 import * as connectionHandler from "./handlers/connection.handlers";
 
 const clients: Map<number, Socket> = new Map();
 
-export const sendMessageSockets = (message: ChatMessage) => {
-  messageHandler.sendMessage(message, clients);
-};
-
-export const editMessageSockets = (message: OmitDate<ChatMessage>) => {
-  messageHandler.editMessage(message, clients);
-};
-
-export const deleteMessageSockets = (id: number, senderId: number, chatId: number) => {
-  messageHandler.deleteMessage(id, senderId, chatId, clients);
+export const notifyExpiry = (key: string) => {
+  messageHandler.notifyExpiry(key, clients);
 };
 
 export const initWebSocketServer = (server: HTTPServer) => {
@@ -35,6 +30,25 @@ export const initWebSocketServer = (server: HTTPServer) => {
     const userId = socket.data.userId;
 
     connectionHandler.startConnection(userId, clients, socket);
+
+    socket.on("sendMessage", async (message: types.SentMessage<ChatMessage>) => {
+      const savedMessage = await sendMessageController.sendMessage(userId, message);
+      if(savedMessage) {
+        messageHandler.sendMessage(savedMessage, clients);
+      }
+    });
+
+    socket.on("editMessage", async (message: types.OmitSender<types.EditChatMessages<ChatMessage>>) => {
+      const editedMessage = await editMessageController.editMessage(userId, message);
+      if(editedMessage) {
+        messageHandler.editMessage(editedMessage, clients);
+      }
+    });
+
+    socket.on("deleteMessage", async (id: number, chatId: number) => {
+      await deleteMessageController.deleteMessage(id, chatId);
+      messageHandler.deleteMessage(id, userId, chatId, clients);
+    });
 
     socket.on("close", () => {
       connectionHandler.endConnection(userId, clients);

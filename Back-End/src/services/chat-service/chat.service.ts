@@ -23,7 +23,7 @@ export async function editChatMessage(
   id: number,
   content: string
 ): Promise<void> {
-  const x = await db.chatMessage.update({
+  await db.chatMessage.update({
     where: { id },
     data: { content },
   });
@@ -49,3 +49,4 @@ export async function setNewLastMessage(
   });
   return lastMessageId;
 }
+
