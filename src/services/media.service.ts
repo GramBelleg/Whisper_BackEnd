@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 // // Load environment variables from .env file
 dotenv.config();
 
-const BLOB_URL = process.env.BLOB_URL;
+const BLOB_URL = process.env.TEST_BLOB_URL;
 const CONTAINER_NAME = process.env.CONTAINER_NAME;
 
 if (!BLOB_URL) {
@@ -20,19 +20,13 @@ const blobServiceClient = BlobServiceClient.fromConnectionString(BLOB_URL);
 const containerClient = blobServiceClient.getContainerClient(CONTAINER_NAME);
 
 // Function to upload a file to Azure Blob Storage
-const uploadBlob = async (
-    filePath: string,
-    blobName: string,
-    metaData: Record<string, string>
-): Promise<string> => {
+const uploadBlob = async (filePath: string, blobName: string): Promise<string> => {
     try {
         // Get a block blob client
         const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
         // Upload the file
-        await blockBlobClient.uploadFile(filePath, {
-            metadata: metaData, // Set the metadata
-        });
+        await blockBlobClient.uploadFile(filePath);
         console.log(`Blob "${blobName}" uploaded successfully`);
 
         return `Blob "${blobName}" uploaded successfully`;
@@ -69,4 +63,17 @@ const retrieveBlob = async (blobName: string): Promise<Readable | null> => {
     return null; // Return null if the blob does not exist
 };
 
-export { uploadBlob, retrieveBlob };
+const deleteBlob = async (blobName: string): Promise<string> => {
+    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+    try {
+        await blockBlobClient.delete();
+        console.log(`blob ${blobName} deleted successfully`);
+        return `blob ${blobName} deleted successfully`;
+    } catch (error) {
+        const errorMessage =
+            (error as Error).message || "Unknown error occurred during blob deletion";
+        throw new Error("Error deleting blob: " + errorMessage);
+    }
+};
+
+export { uploadBlob, retrieveBlob, deleteBlob };
