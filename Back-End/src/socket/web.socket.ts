@@ -31,40 +31,19 @@ export const initWebSocketServer = (server: HTTPServer) => {
 
     connectionHandler.startConnection(userId, clients, socket);
 
-    socket.on(
-      "sendMessage",
-      async (message: types.SentMessage<ChatMessage>) => {
-        const savedMessage = await sendMessageController.sendMessage(
-          userId,
-          message
-        );
-        if (savedMessage) {
-          messageHandler.broadCast(
-            message.chatId,
-            clients,
-            "receiveMessage",
-            savedMessage
-          );
-        }
+    socket.on("sendMessage", async (message: types.SentMessage<ChatMessage>) => {
+      const savedMessage = await sendMessageController.sendMessage(userId, message);
+      if (savedMessage) {
+        messageHandler.broadCast(message.chatId, clients, "receiveMessage", savedMessage);
       }
-    );
+    });
 
     socket.on(
       "editMessage",
-      async (
-        message: types.OmitSender<types.EditChatMessages<ChatMessage>>
-      ) => {
-        const editedMessage = await editMessageController.editMessage(
-          userId,
-          message
-        );
+      async (message: types.OmitSender<types.EditChatMessages<ChatMessage>>) => {
+        const editedMessage = await editMessageController.editMessage(userId, message);
         if (editedMessage) {
-          messageHandler.broadCast(
-            message.chatId,
-            clients,
-            "editMessage",
-            message
-          );
+          messageHandler.broadCast(message.chatId, clients, "editMessage", message);
         }
       }
     );

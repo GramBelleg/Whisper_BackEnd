@@ -9,10 +9,7 @@ export const startConnection = (
   clients.set(userId, socket);
 };
 
-export const endConnection = (
-  userId: number,
-  clients: Map<number, Socket>
-): void => {
+export const endConnection = (userId: number, clients: Map<number, Socket>): void => {
   console.log(`User ${userId} disconnected`);
   if (clients.has(userId)) {
     clients.delete(userId);

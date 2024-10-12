@@ -10,10 +10,7 @@ export const cookieParse = (cookie: string, socket: Socket): number | undefined 
     if (token) {
       const tokenValue = token.split("=")[1];
       const id: number = (
-        jwt.verify(
-          tokenValue as string,
-          process.env.JWT_SECRET as string
-        ) as Record<string, any>
+        jwt.verify(tokenValue as string, process.env.JWT_SECRET as string) as Record<string, any>
       ).id;
       return id;
     }

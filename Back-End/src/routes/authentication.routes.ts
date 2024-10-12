@@ -175,7 +175,7 @@
  *               properties:
  *                status:
  *                 type: string
- * 
+ *
  *  /logout:
  *   get:
  *    summary: Logout and delete token cookie
@@ -204,7 +204,6 @@ import googleAuth from "@controllers/authen-regist/google.auth.controller";
 import logout from "@controllers/authen-regist/logout.controller";
 import userAuth from "@middlewares/auth.middleware";
 
-
 const router: Router = Router();
 
 router.post("/login", login);
@@ -214,6 +213,5 @@ router.post("/verifyCode", verifyCode);
 router.post("/googleToken", googleAuth);
 
 router.get("/logout", userAuth, logout);
-
 
 export default router;
