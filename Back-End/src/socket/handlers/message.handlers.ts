@@ -12,20 +12,16 @@ const broadCast = async (
   clients: Map<number, Socket>,
   emitEvent: string,
   emitMessage: any,
-  senderId: number,
-  sendToAll: boolean = false
 ): Promise<void> => {
   try {
     const participants: number[] = await getChatParticipantsIds(chatId);
 
-    const receivers = sendToAll
-      ? participants
-      : participants.filter((participant) => participant !== senderId);
-
-    receivers &&
-      receivers.forEach((receiver) => {
-        if (clients.has(receiver)) {
-          const client = clients.get(receiver);
+    console.log(participants);
+    
+    participants &&
+    participants.forEach((participant) => {
+        if (clients.has(participant)) {
+          const client = clients.get(participant);
           if (client) {
             client.emit(emitEvent, emitMessage);
           }
@@ -45,7 +41,6 @@ export const sendMessage = async (
     clients,
     "receiveMessage",
     message,
-    message.senderId
   );
 };
 
@@ -53,7 +48,7 @@ export const editMessage = async (
   message: EditChatMessages<ChatMessage>,
   clients: Map<number, Socket>
 ): Promise<void> => {
-  broadCast(message.chatId, clients, "editMessage", message, message.senderId);
+  broadCast(message.chatId, clients, "editMessage", message);
 };
 
 export const deleteMessage = async (
@@ -62,7 +57,7 @@ export const deleteMessage = async (
   chatId: number,
   clients: Map<number, Socket>
 ): Promise<void> => {
-  broadCast(chatId, clients, "deleteMessage", id, senderId);
+  broadCast(chatId, clients, "deleteMessage", id);
 };
 
 export const notifyExpiry = async (
@@ -76,5 +71,5 @@ export const notifyExpiry = async (
   const chatId: number = await getChatId(id);
   await removeTempMessage(id);
 
-  broadCast(chatId, clients, "deleteMessage", id, 0, true);
+  broadCast(chatId, clients, "deleteMessage", id);
 };
