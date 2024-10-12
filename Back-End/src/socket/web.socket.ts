@@ -31,23 +31,47 @@ export const initWebSocketServer = (server: HTTPServer) => {
 
     connectionHandler.startConnection(userId, clients, socket);
 
-    socket.on("sendMessage", async (message: types.SentMessage<ChatMessage>) => {
-      const savedMessage = await sendMessageController.sendMessage(userId, message);
-      if(savedMessage) {
-        messageHandler.sendMessage(savedMessage, clients);
+    socket.on(
+      "sendMessage",
+      async (message: types.SentMessage<ChatMessage>) => {
+        const savedMessage = await sendMessageController.sendMessage(
+          userId,
+          message
+        );
+        if (savedMessage) {
+          messageHandler.broadCast(
+            message.chatId,
+            clients,
+            "receiveMessage",
+            message
+          );
+        }
       }
-    });
+    );
 
-    socket.on("editMessage", async (message: types.OmitSender<types.EditChatMessages<ChatMessage>>) => {
-      const editedMessage = await editMessageController.editMessage(userId, message);
-      if(editedMessage) {
-        messageHandler.editMessage(editedMessage, clients);
+    socket.on(
+      "editMessage",
+      async (
+        message: types.OmitSender<types.EditChatMessages<ChatMessage>>
+      ) => {
+        const editedMessage = await editMessageController.editMessage(
+          userId,
+          message
+        );
+        if (editedMessage) {
+          messageHandler.broadCast(
+            message.chatId,
+            clients,
+            "editMessage",
+            message
+          );
+        }
       }
-    });
+    );
 
     socket.on("deleteMessage", async (id: number, chatId: number) => {
       await deleteMessageController.deleteMessage(id, chatId);
-      messageHandler.deleteMessage(id, userId, chatId, clients);
+      messageHandler.broadCast(chatId, clients, "deleteMessage", id);;
     });
 
     socket.on("close", () => {

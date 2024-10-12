@@ -7,7 +7,7 @@ import { getChatParticipantsIds } from "@services/chat-service/chat.participant.
 import { ChatMessage } from "@prisma/client";
 import { EditChatMessages } from "@models/chat.models";
 
-const broadCast = async (
+export const broadCast = async (
   chatId: number,
   clients: Map<number, Socket>,
   emitEvent: string,
@@ -30,34 +30,6 @@ const broadCast = async (
   } catch (error) {
     console.error(error);
   }
-};
-
-export const sendMessage = async (
-  message: ChatMessage,
-  clients: Map<number, Socket>
-): Promise<void> => {
-  broadCast(
-    message.chatId,
-    clients,
-    "receiveMessage",
-    message,
-  );
-};
-
-export const editMessage = async (
-  message: EditChatMessages<ChatMessage>,
-  clients: Map<number, Socket>
-): Promise<void> => {
-  broadCast(message.chatId, clients, "editMessage", message);
-};
-
-export const deleteMessage = async (
-  id: number,
-  senderId: number,
-  chatId: number,
-  clients: Map<number, Socket>
-): Promise<void> => {
-  broadCast(chatId, clients, "deleteMessage", id);
 };
 
 export const notifyExpiry = async (
