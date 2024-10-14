@@ -19,7 +19,7 @@ model User {
   password         String            @db.VarChar(256)
   phoneNumber     String            @unique
   emailStatus     String            @default("Deactivated")
-  verficationCode Verification?
+  verificationCode Verification?
   messages         ChatMessage[] // One-to-many relationship with Message
   participants     ChatParticipant[] // One-to-many relationship with ChatParticipant
 }

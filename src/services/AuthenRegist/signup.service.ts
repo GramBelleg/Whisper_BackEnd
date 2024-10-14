@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import db from "src/prisma/PrismaClient";
+import db from "@DB";
 import bcrypt from "bcrypt";
 
 const findUser = async (email: string, password: string): Promise<void> => {
@@ -24,7 +24,7 @@ const upsertUser = async (
             name,
             phoneNumber,
             password: bcrypt.hashSync(password, 10),
-            verficationCode: {
+            verificationCode: {
                 update: {
                     code: verification_code,
                 },
@@ -35,7 +35,7 @@ const upsertUser = async (
             email,
             phoneNumber,
             password: bcrypt.hashSync(password, 10),
-            verficationCode: {
+            verificationCode: {
                 create: {
                     code: verification_code,
                 },
@@ -45,3 +45,4 @@ const upsertUser = async (
 };
 
 export { findUser, upsertUser };
+

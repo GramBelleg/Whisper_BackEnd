@@ -35,7 +35,7 @@ const updateUser = async (email: string, code: string) => {
     await db.user.update({
         where: { email },
         data: {
-            verficationCode: {
+            verificationCode: {
                 upsert: {
                     update: { code },
                     create: { code },
@@ -53,3 +53,4 @@ const updateVerifiedUser = async (email: string) => {
 };
 
 export { findUser, updateUser, findVerifiedUser, updateVerifiedUser };
+
