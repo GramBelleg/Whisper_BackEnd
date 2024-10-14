@@ -1,40 +1,27 @@
 import { Request, Response } from "express";
-import { uploadBlob, retrieveBlob } from "@services/Media/blob.service";
-import fs from "fs";
+import { getPresignedUrl } from "@services/Media/blob.service";
 
 const uploadAudio = async (req: Request, res: Response) => {
-    if (!req.file) {
-        console.log("no file");
-        return res.status(400).send("No audio file uploaded.");
-    }
-    const audioFile = req.file;
-    const blobName = `${Date.now()}.webm`;
-
     try {
-        // Upload the recorded audio file to Azure Blob Storage
-        await uploadBlob(audioFile.path, blobName);
-        res.json({ blobName });
+        // Generate a presigned URL for uploading
+        const blobName = `${Date.now()}.webm`;
+        const presignedUrl = await getPresignedUrl(blobName, "write");
+        res.json({ presignedUrl, blobName });
     } catch (error) {
-        console.error("Error uploading blob:", error);
-        res.status(500).send("Error uploading audio file.");
+        console.error("Error generating presigned URL:", error);
+        res.status(500).send("Error generating presigned URL.");
     }
 };
 
 const streamAudio = async (req: Request, res: Response) => {
     const blobName = req.params.blobName;
-    console.log(blobName);
     try {
-        const blobStream = await retrieveBlob(blobName);
-
-        if (!blobStream) {
-            res.status(404).send("Audio file not found");
-            return;
-        }
-
-        blobStream.pipe(res);
+        // Generate a presigned URL for streaming
+        const presignedUrl = await getPresignedUrl(blobName, "read");
+        res.json({ presignedUrl });
     } catch (error) {
-        console.error("Error streaming audio:", error);
-        res.status(500).send("Error streaming audio");
+        console.error("Error generating presigned URL:", error);
+        res.status(500).send("Error generating presigned URL.");
     }
 };
 

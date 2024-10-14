@@ -1,4 +1,9 @@
-import { BlobServiceClient } from "@azure/storage-blob";
+import {
+    BlobServiceClient,
+    BlobSASPermissions,
+    generateBlobSASQueryParameters,
+    StorageSharedKeyCredential,
+} from "@azure/storage-blob";
 import { Readable } from "stream";
 import dotenv from "dotenv";
 
@@ -7,6 +12,8 @@ dotenv.config();
 
 const BLOB_URL = process.env.BLOB_URL;
 const CONTAINER_NAME = process.env.TEST_CONTAINER_NAME;
+const ACCOUNT_NAME = process.env.ACCOUNT_NAME;
+const ACCOUNT_KEY = process.env.ACCOUNT_KEY;
 
 if (!BLOB_URL) {
     throw new Error("Azure Storage connection string is missing.");
@@ -14,10 +21,16 @@ if (!BLOB_URL) {
 if (!CONTAINER_NAME) {
     throw new Error("Container name is missing.");
 }
-
+if (!ACCOUNT_NAME) {
+    throw new Error("Account name is missing.");
+}
+if (!ACCOUNT_KEY) {
+    throw new Error("Key is missing.");
+}
 // Initialize the BlobServiceClient and ContainerClient once, at the module level
 const blobServiceClient = BlobServiceClient.fromConnectionString(BLOB_URL);
 const containerClient = blobServiceClient.getContainerClient(CONTAINER_NAME);
+const sharedKeyCredential = new StorageSharedKeyCredential(ACCOUNT_NAME, ACCOUNT_KEY);
 
 // Function to upload a file to Azure Blob Storage
 const uploadBlob = async (file: string, blobName: string): Promise<string> => {
@@ -76,4 +89,47 @@ const deleteBlob = async (blobName: string): Promise<string> => {
     }
 };
 
-export { uploadBlob, retrieveBlob, deleteBlob };
+const getPresignedUrl = async (blobName: string, action: "read" | "write") => {
+    const blobClient = containerClient.getBlobClient(blobName);
+
+    const expiryTime = new Date(new Date().valueOf() + 60 * 60 * 1000); // 1 hour expiry
+
+    if (action === "write") {
+        const permissions = new BlobSASPermissions();
+        permissions.create = true; // Allow create permission for upload
+        permissions.write = true; // Allow create permission for upload
+
+        const sasToken = generateBlobSASQueryParameters(
+            {
+                containerName: CONTAINER_NAME,
+                blobName,
+                permissions,
+                expiresOn: expiryTime,
+            },
+            sharedKeyCredential
+        ).toString();
+
+        // The full SAS URL
+        const presignedUrl = `https://${ACCOUNT_NAME}.blob.core.windows.net/${CONTAINER_NAME}/${blobName}?${sasToken}`;
+        return presignedUrl;
+    } else {
+        const permissions = new BlobSASPermissions();
+        permissions.read = true; // Allow read permission for streaming
+
+        const sasToken = generateBlobSASQueryParameters(
+            {
+                containerName: CONTAINER_NAME,
+                blobName,
+                permissions,
+                expiresOn: expiryTime,
+            },
+            sharedKeyCredential
+        ).toString();
+
+        // The full SAS URL
+        const presignedUrl = `https://${ACCOUNT_NAME}.blob.core.windows.net/${CONTAINER_NAME}/${blobName}?${sasToken}`;
+        return presignedUrl;
+    }
+};
+
+export { uploadBlob, retrieveBlob, deleteBlob, getPresignedUrl };
