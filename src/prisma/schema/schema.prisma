@@ -16,6 +16,7 @@ model User {
   id               Int               @id @default(autoincrement())
   email            String            @unique
   name             String
+  lastSeen         DateTime          @default(now())
   password         String            @db.VarChar(256)
   phoneNumber     String            @unique
   emailStatus     String            @default("Deactivated")
@@ -46,6 +47,7 @@ model ChatParticipant {
   id     Int  @id @default(autoincrement())
   chatId Int
   userId Int
+  contact Boolean
   chat   Chat @relation(fields: [chatId], references: [id])
   user   User @relation(fields: [userId], references: [id])
 
