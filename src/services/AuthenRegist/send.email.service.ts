@@ -7,7 +7,7 @@ const sendEmail = async (code: string, email: string): Promise<string | undefine
         const info = await transporter.sendMail({
             from: process.env.AUTH_EMAIL,
             to: email,
-            subject: "Email verfication",
+            subject: "Email verification",
             html: email_body,
         });
         return info;
