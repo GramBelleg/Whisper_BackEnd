@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import db from "src/prisma/PrismaClient";
+import db from "@DB";
 import bcrypt from "bcrypt";
 import randomstring from "randomstring";
 
@@ -41,3 +41,4 @@ const upsertUser = async (data: Record<string, any>): Promise<User> => {
 };
 
 export { getUserData, upsertUser };
+

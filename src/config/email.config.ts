@@ -1,7 +1,7 @@
-import nodemailer, { Transporter } from 'nodemailer';
+import nodemailer, { Transporter } from "nodemailer";
 
 /**
- * This is the configuration of object which send emails on gmail 
+ * This is the configuration of object which send emails on gmail
  */
 
 const transporter: Transporter = nodemailer.createTransport({
@@ -10,9 +10,9 @@ const transporter: Transporter = nodemailer.createTransport({
     secure: true,
     auth: {
         user: process.env.AUTH_EMAIL as string,
-        pass: process.env.EMAIL_PASSWORD as string
-    }
+        pass: process.env.EMAIL_PASSWORD as string,
+    },
 });
 
-
 export default transporter;
+

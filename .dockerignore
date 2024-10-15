@@ -1,2 +1,6 @@
-*.env
-dockerfile
+node_modules
+npm-debug.log
+.git
+.env
+dist
+Dockerfile

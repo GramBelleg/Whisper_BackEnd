@@ -1,84 +1,58 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-// we can make multi-schema files in a folder but need config in generator or merge all models in one schema file
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters", "fullTextIndex", "fullTextSearch", "prismaSchemaFolder"]
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch", "fullTextIndex", "driverAdapters", "prismaSchemaFolder"]
-}
-
 model User {
   id               Int               @id @default(autoincrement())
   email            String            @unique
   name             String
-  lastSeen         DateTime          @default(now())
   password         String            @db.VarChar(256)
-  phoneNumber     String            @unique
-  emailStatus     String            @default("Deactivated")
+  phoneNumber      String            @unique
+  emailStatus      String            @default("Deactivated")
+  messages         ChatMessage[]
+  participants     ChatParticipant[]
   verificationCode Verification?
-  messages         ChatMessage[] // One-to-many relationship with Message
-  participants     ChatParticipant[] // One-to-many relationship with ChatParticipant
 }
 
 model Verification {
-  id         Int      @id @default(autoincrement())
-  code       String   @unique
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id        Int      @id @default(autoincrement())
+  code      String   @unique
   userId    Int      @unique
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// Chat Model
 model Chat {
-  id           Int               @id @default(autoincrement())
-  lastMessageId  Int?              @unique // Making it optional to handle cases when there is no message yet
-  lastMessage    ChatMessage?      @relation("LastMessageInChat", fields: [lastMessageId], references: [id])
-  participants ChatParticipant[]
-  messages     ChatMessage[]
+  id            Int               @id @default(autoincrement())
+  lastMessageId Int?              @unique
+  lastMessage   ChatMessage?      @relation("LastMessageInChat", fields: [lastMessageId], references: [id])
+  messages      ChatMessage[]
+  participants  ChatParticipant[]
 }
 
-// ChatParticipant Model
 model ChatParticipant {
   id     Int  @id @default(autoincrement())
   chatId Int
   userId Int
-  contact Boolean
   chat   Chat @relation(fields: [chatId], references: [id])
   user   User @relation(fields: [userId], references: [id])
 
   @@unique([chatId, userId])
 }
 
-// ChatMessage Model 
-// did it this way since there will also be group and community messages
 model ChatMessage {
-  id                Int                @id @default(autoincrement())
-  chatId            Int                // Reference to the Chat
-  senderId          Int                // Reference to the User who sent the message
-  content           String
-  createdAt         DateTime           @default(now())
-  read              DateTime           @default(now())
-  delivered         DateTime           @default(now())
-  forwarded         Boolean            @default(false)
-  pinned            Boolean            @default(false)
-  type              String
-  profilePic        String
-  parentMessageId   Int?               
-  sender            User               @relation(fields: [senderId], references: [id])
-  chat              Chat               @relation(fields: [chatId], references: [id]) // Relation to Chat
-  lastMessageChats  Chat[]            @relation("LastMessageInChat") // Relation to Chat's lastMessageId
-  voiceChatMessage  VoiceChatMessage?  
-  parentMessage     ChatMessage?       @relation("ReplyToMessage", fields: [parentMessageId], references: [id]) 
-  reply           ChatMessage[]      @relation("ReplyToMessage") // To get all replies
-}
-
-model VoiceChatMessage {
-  id                Int                @id @default(autoincrement())
-  chatMessageId     Int                @unique
-  chatMessage       ChatMessage       @relation(fields: [chatMessageId], references: [id])   
+  id               Int      @id @default(autoincrement())
+  chatId           Int
+  senderId         Int
+  content          String
+  createdAt        DateTime @default(now())
+  lastMessageChats Chat?    @relation("LastMessageInChat")
+  chat             Chat     @relation(fields: [chatId], references: [id])
+  sender           User     @relation(fields: [senderId], references: [id])
 }

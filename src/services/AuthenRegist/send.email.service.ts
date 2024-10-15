@@ -2,21 +2,24 @@ import transporter from "@config/email.config";
 
 const sendEmail = async (code: string, email: string): Promise<string | undefined> => {
     try {
-        const email_body: string = `<h3>Hello from Omar,</h3>
-            <p>Thanks for joining our family. Use this code: <b>   ${code}     </b> for verifing your email</p>`;
-        const info = await transporter.sendMail({
+        const email_body: string = `
+            <h3>Hello from Omar,</h3>
+            <p>Thanks for joining our family. Use this code: <b>${code}</b> to verify your email.</p>
+        `;
+
+        // Send email
+        await transporter.sendMail({
             from: process.env.AUTH_EMAIL,
             to: email,
-            subject: "Email verification",
+            subject: "Email Verification",
             html: email_body,
         });
-        return info;
-    } catch (e: any) {
-        console.log(e.message);
+
+        return "Verification email sent successfully.";
+    } catch (error) {
+        console.error("Error sending email:", error);
         return undefined;
     }
 };
 
-// module.exports = sendEmail;
 export default sendEmail;
-

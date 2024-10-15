@@ -4,3 +4,5 @@ migrations
 dist/
 tsconfig.tsbuildinfo
 frontend/
+Dockerfile
+.dockerignore

@@ -1,4 +1,4 @@
-import db from "src/prisma/PrismaClient";
+import db from "@DB";
 import { User, Verification } from "@prisma/client";
 
 const findUser = async (email: string) => {
@@ -53,4 +53,3 @@ const updateVerifiedUser = async (email: string) => {
 };
 
 export { findUser, updateUser, findVerifiedUser, updateVerifiedUser };
-

@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import db from "src/prisma/PrismaClient";
+import db from "@DB";
 import bcrypt from "bcrypt";
 
 const findUser = async (email: string, password: string): Promise<User> => {
@@ -19,3 +19,4 @@ const findUser = async (email: string, password: string): Promise<User> => {
 };
 
 export default findUser;
+

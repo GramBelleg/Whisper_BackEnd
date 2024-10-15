@@ -1,47 +1,25 @@
-import { User } from "@prisma/client";
+import { Chat, ChatParticipant } from "@prisma/client";
 import db from "@DB";
 import bcrypt from "bcrypt";
 
-const findUser = async (email: string, password: string): Promise<void> => {
-    const found_user: User | null = await db.user.findUnique({
-        where: { email },
-    });
-    if (found_user && found_user.emailStatus === "Activated") {
-        throw new Error("Email is already found");
-    }
-};
-
-const upsertUser = async (
-    name: string,
-    email: string,
-    phoneNumber: string,
-    password: string,
-    verification_code: string
-): Promise<User> => {
-    return await db.user.upsert({
-        where: { email },
-        update: {
-            name,
-            phoneNumber,
-            password: bcrypt.hashSync(password, 10),
-            verificationCode: {
-                update: {
-                    code: verification_code,
-                },
-            },
-        },
-        create: {
-            name,
-            email,
-            phoneNumber,
-            password: bcrypt.hashSync(password, 10),
-            verificationCode: {
-                create: {
-                    code: verification_code,
-                },
-            },
+const getChatsService = async (userId: number): Promise<void> => {
+    const chatParticipants: ChatParticipant[] | null = await db.chatParticipant.findMany({
+        where: {
+            userId,
         },
     });
+    const participantIds = chatParticipants.map((participant) => participant.id);
+    const chats: Chat[] = await db.chat.findMany({
+        where: {
+            id: {
+                in: participantIds,
+            },
+        },
+        orderBy: {
+            id: "desc",
+        },
+    });
+    console.log(chats);
 };
 
-export { findUser, upsertUser };
+export { getChatsService };
