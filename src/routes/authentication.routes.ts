@@ -176,7 +176,7 @@
  *               properties:
  *                status:
  *                 type: string
- * 
+ *
  *  /apis/auth-regst/logout:
  *   get:
  *    summary: Logout and delete token cookie
@@ -205,9 +205,8 @@ import googleAuth from "@controllers/AuthenRegist/google.auth.controller";
 import { githubAuth, githubRedirect } from "@controllers/AuthenRegist/github.auth.controller";
 import { facebookAuth, facebookRedirect } from "@controllers/AuthenRegist/facebook.auth.controller";
 import userAuth from "@middlewares/auth.middleware";
-import { logoutAll, logoutOne } from "@controllers/authen-regist/logout.controller";
+import { logoutAll, logoutOne } from "@controllers/AuthenRegist/logout.controller";
 import { resetPassword, sendResetCode } from "@controllers/AuthenRegist/reset.password.controller";
-
 
 const router: Router = Router();
 
@@ -220,7 +219,6 @@ router.post("/confirmEmail", confirmEmail);
 router.post("/sendResetPass", sendResetCode);
 router.post("/resetPass", resetPassword);
 
-
 router.post("/google", googleAuth);
 router.get("/facebook", facebookRedirect);
 router.get("/facebook/callback", facebookAuth);
@@ -229,6 +227,5 @@ router.get("/github/callback", githubAuth);
 
 router.get("/logoutOne", userAuth, logoutOne);
 router.get("/logoutAll", userAuth, logoutAll);
-
 
 export default router;
