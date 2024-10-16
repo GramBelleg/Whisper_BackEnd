@@ -16,7 +16,6 @@ async function createUsers(numUsers: number) {
                 name: faker.person.fullName(),
                 phoneNumber: faker.phone.number({ style: "international" }),
                 password: bcrypt.hashSync(passwords[i], 10),
-                emailStatus: faker.helpers.arrayElement(["Activated", "Deactivated"]),
             },
         });
         users.push(user);

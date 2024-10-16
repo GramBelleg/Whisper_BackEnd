@@ -5,8 +5,8 @@ import userAuth from "@middlewares/auth.middleware";
 
 const router: Router = Router();
 
-router.use("/", authenticationRouter);
+router.use("/auth-regst", authenticationRouter);
 router.use(userAuth);
-router.use("/", userRouter);
+router.use("/user", userRouter);
 
 export default router;

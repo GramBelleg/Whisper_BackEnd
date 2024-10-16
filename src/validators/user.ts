@@ -2,39 +2,41 @@ import Joi, { ObjectSchema } from "joi";
 import { ValidationError } from "joi";
 import { phone } from 'phone';
 
-const validateSingUp = (name: string, email: string, phone_number: string, password: string, confirm_pass: string) => {
+const validateSingUp = (requestBody: Record<string, string>) => {
     const schema: ObjectSchema = Joi.object({
         name: Joi.string().alphanum().min(3).max(30).required(),
         email: Joi.string()
             .email()
             .required(),
-        phone_number: Joi.string()
+        phoneNumber: Joi.string()
             .required(),
-        password: Joi.string().min(3).max(50).required(),
-        confirm_pass: Joi.string()
+        password: Joi.string().min(6).max(50).required(),
+        confirmPass: Joi.string()
             .valid(Joi.ref("password"))
             .required()
             .messages({ "any.only": "Passwords don't match" }),
+        robotToken: Joi.string()
+            .required()
     });
     const error: ValidationError | undefined = schema.validate(
-        { name, email, phone_number, password, confirm_pass },
+        requestBody,
         { abortEarly: false }
     ).error;
     if (error) {
         throw new Error(error.details[0].message);
     }
     //check structure and format of phone_number
-    const { isValid, phoneNumber } = phone(phone_number);
-    if (!isValid) {
+    const phoneValidate = phone(requestBody.phoneNumber);
+    if (!phoneValidate.isValid) {
         throw new Error('Phone number structure is not valid');
     }
-    return phoneNumber;
+    return phoneValidate.phoneNumber;
 };
 
 const validateLogIn = (email: string, password: string) => {
     const schema: ObjectSchema = Joi.object({
         email: Joi.string().email().required(),
-        password: Joi.string().min(3).max(50).required(),
+        password: Joi.string().min(6).max(50).required(),
     });
 };
 

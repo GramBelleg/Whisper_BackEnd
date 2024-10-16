@@ -1,27 +1,23 @@
 import { Request, Response } from "express";
-import Randomstring from "randomstring";
-import sendEmail from "@services/AuthenRegist/send.email.service";
 import { validateSingUp } from "@validators/user";
-import { findUser, upsertUser } from "@services/AuthenRegist/signup.service";
+import { checkEmailNotExist, saveUser, verifyRobotToken } from "@services/AuthenRegist/signup.service";
+import { createCode, sendCode } from "@services/AuthenRegist/confirmation.service";
 
 const signup = async (req: Request, res: Response): Promise<void> => {
     try {
-        //validate user data recieved from request body
-        const { name, email, password, confirm_pass }: Record<string, string> = req.body;
-        let phone_number: string = req.body.phone_number;
-        phone_number = validateSingUp(name, email, phone_number, password, confirm_pass);
-        //check if user is found in database
-        await findUser(email, password);
+        const { name, email, password }: Record<string, string> = req.body;
+        const phoneNumber = validateSingUp(req.body);
+        // in DB
+        await checkEmailNotExist(email);
 
-        //send verification code to email
-        const verification_code: string = Randomstring.generate(8);
-        const info: string | undefined = await sendEmail(verification_code, email);
-        if (!info) {
-            throw new Error("Error in sending email");
-        }
+        await verifyRobotToken(req.body.robotToken);
 
-        //upsert user in db
-        await upsertUser(name, email, phone_number, password, verification_code);
+        const code = await createCode(email, 'confrimEmail');
+        const emailBody = `<h3>Hello, </h3> <p>Thanks for joining our family. Use this code: <b>${code}</b> for verifing your email</p>`;
+        await sendCode(email, emailBody);
+
+        await saveUser(name, email, phoneNumber, password);
+
         res.status(200).json({
             status: "success",
             user_data: {

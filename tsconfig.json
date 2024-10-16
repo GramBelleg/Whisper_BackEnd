@@ -33,14 +33,18 @@
       /* Specify a set of entries that re-map imports to additional lookup locations in typescript section. Module-aliasing in typescript*/
       "@controllers/*": ["src/controllers/*"],
       "@middlewares/*": ["src/middlewares/*"], // Alias of folder
-      "@DB": ["src/prisma/prismaClient"], // Alias of file
+      "@DB": ["src/prisma/PrismaClient"], // Alias of file
       "@services/*": ["src/services/*"],
       "@config/*": ["src/config/*"],
       "@validators/*": ["src/validators/*"],
-      "@routes/*": ["src/routes/*"]
+      "@routes/*": ["src/routes/*"],
+      "@redis": ["src/redis/index"]
     },
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
-    "typeRoots": ["./src/@types", "./node_modules/@types"],             /* Specify multiple folders that act like './node_modules/@types'. */
+    "typeRoots": [
+      "./src/@types",
+      "./node_modules/@types"
+    ] /* Specify multiple folders that act like './node_modules/@types'. */,
     // "types": [],                                      /* Specify type package names to be included without being referenced in a source file. */
     // "allowUmdGlobalAccess": true,                     /* Allow accessing UMD globals from modules. */
     // "moduleSuffixes": [],                             /* List of file name suffixes to search when resolving a module. */
@@ -66,7 +70,7 @@
     // "inlineSourceMap": true,                          /* Include sourcemap files inside the emitted JavaScript. */
     // "noEmit": true,                                   /* Disable emitting files from a compilation. */
     // "outFile": "./",                                  /* Specify a file that bundles all outputs into one JavaScript file. If 'declaration' is true, also designates a file that bundles all .d.ts output. */
-    "outDir": "./dist"                                   /* Specify an output folder for all emitted files. Folder which contains built javascript file*/,
+    "outDir": "./dist" /* Specify an output folder for all emitted files. Folder which contains built javascript file*/,
     // "removeComments": true,                           /* Disable emitting comments. */
     // "importHelpers": true,                            /* Allow importing helper functions from tslib once per project, instead of including them per-file. */
     // "downlevelIteration": true,                       /* Emit more compliant, but verbose and less performant JavaScript for iteration. */
