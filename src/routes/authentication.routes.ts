@@ -205,7 +205,7 @@ import googleAuth from "@controllers/AuthenRegist/google.auth.controller";
 import { githubAuth, githubRedirect } from "@controllers/AuthenRegist/github.auth.controller";
 import { facebookAuth, facebookRedirect } from "@controllers/AuthenRegist/facebook.auth.controller";
 import userAuth from "@middlewares/auth.middleware";
-import { logoutAll, logoutOne } from "@controllers/AuthenRegist/logout.controller";
+import { logoutAll, logoutOne } from "@controllers/authen-regist/logout.controller";
 import { resetPassword, sendResetCode } from "@controllers/AuthenRegist/reset.password.controller";
 
 

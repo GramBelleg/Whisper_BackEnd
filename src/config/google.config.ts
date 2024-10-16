@@ -10,9 +10,9 @@ const redirectURL: string = process.env.GOOGLE_REDIRECT_URI as string;
 // in Google Cloud console, when I create OAuth consent screen for the project, I include scopes of data which I want to get and see
 
 const authClient: OAuth2Client = new OAuth2Client(
-    process.env.GOOGLE_CLIENT_ID as string,
-    process.env.GOOGLE_CLIENT_SECRET as string,
-    redirectURL as string
+  process.env.GOOGLE_CLIENT_ID as string,
+  process.env.GOOGLE_CLIENT_SECRET as string,
+  redirectURL as string
 );
 
 export default authClient;
