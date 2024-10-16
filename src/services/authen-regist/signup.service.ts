@@ -24,7 +24,7 @@ const upsertUser = async (
       name,
       phoneNumber,
       password: bcrypt.hashSync(password, 10),
-      verficationCode: {
+      verificationCode: {
         update: {
           code: verification_code,
         },
@@ -35,7 +35,7 @@ const upsertUser = async (
       email,
       phoneNumber,
       password: bcrypt.hashSync(password, 10),
-      verficationCode: {
+      verificationCode: {
         create: {
           code: verification_code,
         },

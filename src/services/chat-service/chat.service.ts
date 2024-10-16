@@ -2,38 +2,30 @@ import db from "src/prisma/PrismaClient";
 import { Chat } from "@prisma/client";
 
 export const getChats = async (userId: number): Promise<Chat[]> => {
-    try {
-        const chats = await db.chat.findMany({
-            where: { participants: { some: { userId } } },
-            include: {
-                lastMessage: {
-                    select: { createdAt: true },
-                },
+    const chats = await db.chat.findMany({
+        where: { participants: { some: { userId } } },
+        include: {
+            lastMessage: {
+                select: { createdAt: true },
             },
-            orderBy: {
-                lastMessage: { createdAt: "desc" },
-            },
-        });
-        return chats;
-    } catch (error) {
-        throw new Error("Error getting chats: " + error);
-    }
+        },
+        orderBy: {
+            lastMessage: { createdAt: "desc" },
+        },
+    });
+    return chats;
 };
 
 export const getChatId = async (messageId: number): Promise<number> => {
-    try {
-        const result = await db.chatMessage.findUnique({
-            where: { id: messageId },
-            select: { chatId: true },
-        });
-        if (!result) {
-            throw new Error("Message not found");
-        }
-
-        return result.chatId;
-    } catch (error) {
-        throw new Error("Error getting chat id: " + error);
+    const result = await db.chatMessage.findUnique({
+        where: { id: messageId },
+        select: { chatId: true },
+    });
+    if (!result) {
+        throw new Error("Message not found");
     }
+
+    return result.chatId;
 };
 
 export const getChatParticipantsIds = async (chatId: number): Promise<number[]> => {
@@ -45,29 +37,20 @@ export const getChatParticipantsIds = async (chatId: number): Promise<number[]> 
 };
 
 export const setLastMessage = async (chatId: number, messageId: number | null): Promise<void> => {
-    try {
-        await db.chat.update({
-            where: { id: chatId },
-            data: { lastMessageId: messageId },
-        });
-    } catch (error) {
-        console.error("Error setting last message:", error);
-    }
+    await db.chat.update({
+        where: { id: chatId },
+        data: { lastMessageId: messageId },
+    });
 };
 
 export const setNewLastMessage = async (chatId: number): Promise<number | null> => {
-    try {
-        const lastMessage = await db.chatMessage.findFirst({
-            where: { chatId },
-            orderBy: { createdAt: "desc" },
-        });
-        const lastMessageId = lastMessage ? lastMessage.id : null;
+    const lastMessage = await db.chatMessage.findFirst({
+        where: { chatId },
+        orderBy: { createdAt: "desc" },
+    });
+    const lastMessageId = lastMessage ? lastMessage.id : null;
 
-        await setLastMessage(chatId, lastMessageId);
+    await setLastMessage(chatId, lastMessageId);
 
-        return lastMessageId;
-    } catch (error) {
-        console.error("Error setting new last message:", error);
-        return null;
-    }
+    return lastMessageId;
 };
