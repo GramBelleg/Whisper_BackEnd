@@ -78,6 +78,7 @@
         "@routes": "./dist/routes",
         "@socket": "./dist/socket",
         "@redis": "./dist/redis",
-        "@models": "./dist/models"
+        "@models": "./dist/models",
+        "@prisma": "./dist/prisma"
     }
 }

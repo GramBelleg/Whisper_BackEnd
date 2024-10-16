@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import { prismaMock } from "../../../../prisma/PrismaMock";
+import { prismaMock } from "@prisma/PrismaMock";
 import bcrypt from "bcrypt";
 import { findUser, upsertUser } from "@services/AuthenRegist/signup.service"; // Adjust the path to your user service
 

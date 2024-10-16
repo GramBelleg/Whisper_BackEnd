@@ -40,7 +40,8 @@
             "@routes/*": ["src/routes/*"],
             "@socket/*": ["src/socket/*"],
             "@redis/*": ["src/redis/*"],
-            "@models/*": ["src/models/*"]
+            "@models/*": ["src/models/*"],
+            "@prisma/*": ["src/prisma/*"],
         },
         // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
         "typeRoots": [
