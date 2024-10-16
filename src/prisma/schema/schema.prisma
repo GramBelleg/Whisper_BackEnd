@@ -99,12 +99,12 @@ model GroupMessage {
   group     Group     @relation(fields: [groupId], references: [id]) // Relation to Chat
   lastMessageGroup Group? @relation("LastMessageInGroup") // Relation to Chat's lastMessageId
 }
+
 model VoiceChatMessage {
   id                Int                @id @default(autoincrement())
   chatMessageId     Int                @unique
   chatMessage       ChatMessage        @relation(fields: [chatMessageId], references: [id])   
 }
-
 
 model Channel {
   id Int @id @default(autoincrement())
