@@ -5,7 +5,7 @@ import { OAuth2Client } from "google-auth-library";
  */
 
 // url of request which will be redirected to after sign-up or log-in using google service and contains a code as query string
-const redirectURL: string = "http://127.0.0.1:5000/auth/google/callback";
+const redirectURL: string = "http://localhost:3000";
 
 // in Google Cloud console, when I create OAuth consent screen for the project, I include scopes of data which I want to get and see
 
@@ -16,3 +16,4 @@ const authClient: OAuth2Client = new OAuth2Client(
 );
 
 export default authClient;
+

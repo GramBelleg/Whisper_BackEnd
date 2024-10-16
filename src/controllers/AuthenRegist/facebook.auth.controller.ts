@@ -3,12 +3,12 @@ import {
     getAccessToken,
     getUserData,
     upsertUser,
-} from "@services/AuthenRegist/google.auth.service";
+} from "@services/AuthenRegist/facebook.auth.service"; // You'll need to create this service
 import jwt from "jsonwebtoken";
 import createCookie from "@services/AuthenRegist/cookie.service";
 import { User } from "@prisma/client";
 
-async function googleAuth(req: Request, res: Response): Promise<void> {
+async function facebookAuth(req: Request, res: Response): Promise<void> {
     try {
         const authCode: string | undefined = req.body.code;
         if (!authCode) {
@@ -24,7 +24,7 @@ async function googleAuth(req: Request, res: Response): Promise<void> {
 
         const user: User = await upsertUser(userData);
 
-        //create a jwt and store it in a cookie
+        // Create a JWT and store it in a cookie
         const userToken: string = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, {
             expiresIn: "1h",
         });
@@ -49,5 +49,4 @@ async function googleAuth(req: Request, res: Response): Promise<void> {
     }
 }
 
-export default googleAuth;
-
+export default facebookAuth;

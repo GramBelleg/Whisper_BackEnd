@@ -42,4 +42,3 @@ const validateLogIn = (email: string, password: string) => {
 };
 
 export { validateSingUp, validateLogIn };
-

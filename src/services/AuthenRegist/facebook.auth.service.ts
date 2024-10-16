@@ -8,26 +8,23 @@ import authClient from "@config/google.config";
 //This is a service for making a request to get user data of google account based on specified scopes using google tokenThis is a service for making a request to get user data of google account based on specified scopes using google token
 
 const getAccessToken = async (authCode: string): Promise<string> => {
+    const FB_APP_ID = process.env.FB_CLIENT_ID;
+    const FB_APP_SECRET = process.env.FB_CLIENT_SECRET;
     try {
-        const { tokens } = await authClient.getToken(authCode);
+        const url = `https://graph.facebook.com/v10.0/oauth/access_token?client_id=${FB_APP_ID}&client_secret=${FB_APP_SECRET}&code=${authCode}&redirect_uri=http://localhost:3000`;
 
-        //tokens contain {access_token,refresh_token,id_tokens}
-        const accessToken = tokens.access_token;
-
-        if (!accessToken) throw new Error("Failed to exchange Auth Code for Access Token");
-        return accessToken;
+        const response = await axios.get(url);
+        return response.data.access_token;
     } catch (err: any) {
         throw new Error(err.message);
     }
 };
 
-const getUserData = async (token: string): Promise<Record<string, any> | undefined> => {
+const getUserData = async (accessToken: string): Promise<Record<string, any> | undefined> => {
     try {
-        const response: Response = await fetch(
-            `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`
-        );
-        const data: Record<string, any> = await response.json();
-        return data;
+        const url = `https://graph.facebook.com/me?access_token=${accessToken}&fields=id,name,email`;
+        const response = await axios.get(url);
+        return response.data;
     } catch (err: any) {
         console.log(err.message);
         return undefined;

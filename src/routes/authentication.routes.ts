@@ -175,7 +175,7 @@
  *               properties:
  *                status:
  *                 type: string
- * 
+ *
  *  /logout:
  *   get:
  *    summary: Logout and delete token cookie
@@ -201,9 +201,9 @@ import login from "@controllers/AuthenRegist/login.controller";
 import signup from "@controllers/AuthenRegist/signup.controller";
 import { generateCode, verifyCode } from "@controllers/AuthenRegist/verification.controller";
 import googleAuth from "@controllers/AuthenRegist/google.auth.controller";
+import facebookAuth from "@controllers/AuthenRegist/facebook.auth.controller";
 import logout from "@controllers/AuthenRegist/logout.controller";
 import userAuth from "@middlewares/auth.middleware";
-
 
 const router: Router = Router();
 
@@ -211,9 +211,9 @@ router.post("/login", login);
 router.post("/signup", signup);
 router.post("/generateCode", generateCode);
 router.post("/verifyCode", verifyCode);
-router.post("/googleToken", googleAuth);
+router.post("/google", googleAuth);
+router.post("/facebook", facebookAuth);
 
 router.get("/logout", userAuth, logout);
-
 
 export default router;
