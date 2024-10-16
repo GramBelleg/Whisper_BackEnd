@@ -6,9 +6,9 @@ import userAuth from "@middlewares/auth.middleware";
 
 const router: Router = Router();
 
-router.use("/auth", authenticationRouter);
+router.use("/auth-regst", authenticationRouter);
 router.use(userAuth);
-router.use("/", userRouter);
+router.use("/user", userRouter);
 router.use("/", chatRouter);
 
 export default router;

@@ -9,23 +9,14 @@ datasource db {
 }
 
 model User {
-  id               Int               @id @default(autoincrement())
-  email            String            @unique
-  name             String
-  password         String            @db.VarChar(256)
-  phoneNumber      String?           @unique
-  emailStatus      String            @default("Deactivated")
-  messages         ChatMessage[]
-  participants     ChatParticipant[]
-  verificationCode Verification?
-}
-
-model Verification {
-  id        Int      @id @default(autoincrement())
-  code      String   @unique
-  userId    Int      @unique
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              Int               @id @default(autoincrement())
+  email           String            @unique
+  name            String
+  password        String            @db.VarChar(256)
+  phoneNumber     String?           @unique
+  loggedInDevices Int               @default(0)
+  messages        ChatMessage[] 
+  participants    ChatParticipant[] 
 }
 
 model Chat {

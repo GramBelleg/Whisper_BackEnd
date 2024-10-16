@@ -2,10 +2,10 @@ import { Request, Response } from "express";
 import {
     getAccessToken,
     getUserData,
-    upsertUser,
 } from "@services/AuthenRegist/google.auth.service";
+import { upsertUser } from "@services/AuthenRegist/signup.service";
 import jwt from "jsonwebtoken";
-import createCookie from "@services/AuthenRegist/cookie.service";
+import { createCookie } from "@services/AuthenRegist/cookie.service";
 import { User } from "@prisma/client";
 
 async function googleAuth(req: Request, res: Response): Promise<void> {

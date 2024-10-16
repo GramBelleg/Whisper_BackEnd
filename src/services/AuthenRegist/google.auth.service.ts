@@ -1,7 +1,3 @@
-import { User } from "@prisma/client";
-import db from "@DB";
-import bcrypt from "bcrypt";
-import randomstring from "randomstring";
 import authClient from "@config/google.config";
 
 //This is a service for making a request to get user data of google account based on specified scopes using google tokenThis is a service for making a request to get user data of google account based on specified scopes using google token
@@ -33,25 +29,5 @@ const getUserData = async (token: string): Promise<Record<string, any> | undefin
     }
 };
 
-const upsertUser = async (data: Record<string, any>): Promise<User> => {
-    const userData: {
-        name: string;
-        email: string;
-        password: string;
-        emailStatus: string;
-    } = {
-        name: data.name,
-        email: data.email,
-        password: bcrypt.hashSync(randomstring.generate({ length: 250 }), 10),
-        emailStatus: "Activated",
-    };
 
-    const user: User = await db.user.upsert({
-        where: { email: userData.email },
-        update: {},
-        create: userData,
-    });
-    return user;
-};
-
-export { getUserData, upsertUser, getAccessToken };
+export { getUserData, getAccessToken };

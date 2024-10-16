@@ -47,25 +47,5 @@ const getUserData = async (accessToken: string): Promise<Record<string, any> | u
     }
 };
 
-const upsertUser = async (data: Record<string, any>): Promise<User> => {
-    const userData: {
-        name: string;
-        email: string;
-        password: string;
-        emailStatus: string;
-    } = {
-        name: data.login,
-        email: data.email, //Fix Doesnt read email
-        password: bcrypt.hashSync(randomstring.generate({ length: 250 }), 10),
-        emailStatus: "Activated",
-    };
 
-    const user: User = await db.user.upsert({
-        where: { email: userData.email },
-        update: {},
-        create: userData,
-    });
-    return user;
-};
-
-export { getUserData, upsertUser, getAccessToken };
+export { getUserData, getAccessToken };
