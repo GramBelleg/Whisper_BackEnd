@@ -1,10 +1,10 @@
 import { Server as IOServer, Socket } from "socket.io";
 import { Server as HTTPServer } from "http";
 import { validateCookie } from "@validators/socket";
-import * as types from "@models/message.models";
-import * as sendController from "@controllers/message-controller/send.message";
-import * as editController from "@controllers/message-controller/edit.message";
-import * as deleteController from "@controllers/message-controller/delete.message";
+import * as types from "@models/chat.models";
+import * as sendController from "@controllers/chat-controller/send.message";
+import * as editController from "@controllers/chat-controller/edit.message";
+import * as deleteController from "@controllers/chat-controller/delete.message";
 import * as messageHandler from "./handlers/message.handlers";
 import * as connectionHandler from "./handlers/connection.handlers";
 
@@ -47,6 +47,20 @@ export const initWebSocketServer = (server: HTTPServer) => {
             });
             if (editedMessage) {
                 messageHandler.broadCast(message.chatId, clients, "edit", editedMessage);
+            }
+        });
+
+        socket.on("pin", async(message: types.MessageReference) => {
+            const pinnedMessage = await editController.pinMessage(message);
+            if (pinnedMessage) {
+                messageHandler.broadCast(message.chatId, clients, "pin", pinnedMessage);
+            }
+        })
+
+        socket.on("unpin", async(message: types.MessageReference) => {
+            const unpinnedMessage = await editController.unpinMessage(message);
+            if (unpinnedMessage) {
+                messageHandler.broadCast(message.chatId, clients, "unpin", unpinnedMessage);
             }
         });
 

@@ -18,4 +18,5 @@ export type MessageReference = Pick<ChatMessage, "id" | "senderId" | "chatId">;
 
 export type EditableMessage = MessageReference & Pick<ChatMessage, "content">;
 
+
 export {};

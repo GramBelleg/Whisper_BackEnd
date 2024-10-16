@@ -1,7 +1,8 @@
-import { saveChatMessage, setLastMessage } from "@services/chat-service/chat.service";
+import { saveChatMessage } from "@services/chat-service/message.service";
+import { setLastMessage } from "@services/chat-service/chat.service";
 import { ChatMessage } from "@prisma/client";
 import { saveExpiringMessage } from "@services/redis-service/chat.service";
-import { SaveableMessage } from "@models/message.models";
+import { SaveableMessage } from "@models/chat.models";
 
 const saveMessage = async (message: SaveableMessage): Promise<ChatMessage> => {
     const savedMessage: ChatMessage = await saveChatMessage(message);
