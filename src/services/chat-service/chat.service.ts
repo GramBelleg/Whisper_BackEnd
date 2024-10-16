@@ -13,7 +13,7 @@ export async function saveChatMessage(message: SaveableMessage): Promise<ChatMes
     }
 }
 
-export async function setLastMessage(chatId: number, messageId: number): Promise<void> {
+export async function setLastMessage(chatId: number, messageId: number | null): Promise<void> {
     try {
         await db.chat.update({
             where: { id: chatId },
@@ -42,7 +42,7 @@ export async function deleteChatMessage(id: number): Promise<void> {
             where: { id },
         });
     } catch (error) {
-        console.error("Error deleting chat message:", error);
+        throw new Error("Error deleting chat message:" + error);
     }
 }
 
@@ -54,14 +54,27 @@ export async function setNewLastMessage(chatId: number): Promise<number | null> 
         });
         const lastMessageId = lastMessage ? lastMessage.id : null;
 
-        await db.chat.update({
-            where: { id: chatId },
-            data: { lastMessageId },
-        });
+        setLastMessage(chatId, lastMessageId);
 
         return lastMessageId;
     } catch (error) {
         console.error("Error setting new last message:", error);
         return null;
+    }
+}
+
+export async function getChatId(messageId: number): Promise<number> {
+    try {
+        const result = await db.chatMessage.findUnique({
+            where: { id: messageId },
+            select: { chatId: true },
+        });
+        if (!result) {
+            throw new Error("Message not found");
+        }
+        
+        return result.chatId;
+    } catch (error) {
+        throw new Error("Error getting chat id:" + error);
     }
 }

@@ -1,5 +1,6 @@
 import { Socket } from "socket.io";
-import { getChatId, removeTempMessage } from "@services/redis-service/chat.service";
+import { getChatId } from "@services/chat-service/chat.service";
+import { deleteMessage } from "@controllers/message-controller/delete.message";
 import { getChatParticipantsIds } from "@services/chat-service/chat.participant.service";
 
 export const broadCast = async (
@@ -31,7 +32,7 @@ export const notifyExpiry = async (key: string, clients: Map<number, Socket>): P
 
   const id: number = Number(match[0]);
   const chatId: number = await getChatId(id);
-  await removeTempMessage(id);
+  await deleteMessage(id, chatId);
 
   broadCast(chatId, clients, "delete", id);
 };
