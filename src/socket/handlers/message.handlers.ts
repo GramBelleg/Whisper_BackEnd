@@ -31,7 +31,8 @@ export const notifyExpiry = async (key: string, clients: Map<number, Socket>): P
     if (!match) return;
 
     const id: number = Number(match[0]);
-    const chatId: number = await getChatId(id);
+    const chatId = await getChatId(id);
+    if(!chatId) return;
     await deleteMessage(id, chatId);
 
     broadCast(chatId, clients, "expire", id);

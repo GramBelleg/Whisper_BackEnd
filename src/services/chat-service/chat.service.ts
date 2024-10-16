@@ -16,16 +16,14 @@ export const getChats = async (userId: number): Promise<Chat[]> => {
     return chats;
 };
 
-export const getChatId = async (messageId: number): Promise<number> => {
+export const getChatId = async (messageId: number): Promise<number | undefined> => {
     const result = await db.chatMessage.findUnique({
         where: { id: messageId },
         select: { chatId: true },
     });
-    if (!result) {
-        throw new Error("Message not found");
+    if (result) {
+        return result.chatId;
     }
-
-    return result.chatId;
 };
 
 export const getChatParticipantsIds = async (chatId: number): Promise<number[]> => {

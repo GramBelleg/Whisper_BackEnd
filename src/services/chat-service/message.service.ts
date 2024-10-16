@@ -42,7 +42,13 @@ export const unpinChatMessage = async (id: number): Promise<ChatMessage> => {
 };
 
 export const deleteChatMessage = async (id: number): Promise<void> => {
-    await db.chatMessage.delete({
+    const message = await db.chatMessage.findUnique({
         where: { id },
     });
+
+    if (message) {
+        await db.chatMessage.delete({
+            where: { id },
+        });
+    }
 };
