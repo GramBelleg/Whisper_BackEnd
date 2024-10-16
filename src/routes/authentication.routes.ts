@@ -201,7 +201,7 @@ import login from "@controllers/AuthenRegist/login.controller";
 import signup from "@controllers/AuthenRegist/signup.controller";
 import { generateCode, verifyCode } from "@controllers/AuthenRegist/verification.controller";
 import googleAuth from "@controllers/AuthenRegist/google.auth.controller";
-import facebookAuth from "@controllers/AuthenRegist/facebook.auth.controller";
+import { facebookAuth, facebookRedirect } from "@controllers/AuthenRegist/facebook.auth.controller";
 import logout from "@controllers/AuthenRegist/logout.controller";
 import userAuth from "@middlewares/auth.middleware";
 
@@ -212,7 +212,8 @@ router.post("/signup", signup);
 router.post("/generateCode", generateCode);
 router.post("/verifyCode", verifyCode);
 router.post("/google", googleAuth);
-router.post("/facebook", facebookAuth);
+router.get("/facebook", facebookRedirect);
+router.get("/facebook/callback", facebookAuth);
 
 router.get("/logout", userAuth, logout);
 

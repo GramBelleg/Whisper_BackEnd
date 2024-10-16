@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import indexRouter from "@routes/index.routes";
 import swaggerSpec from "./swagger";
 import swaggerUi from "swagger-ui-express";
+import session from "express-session";
 
 dotenv.config();
 
@@ -19,9 +20,17 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(
+    session({
+        secret: process.env.JWT_SECRET as string, // Change this to your secret
+        resave: false,
+        saveUninitialized: true,
+    })
+);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/", indexRouter);
 
 app.listen(parseInt(process.env.PORT as string), () => {
     console.log(`Listening on port ${process.env.PORT}`);
 });
+

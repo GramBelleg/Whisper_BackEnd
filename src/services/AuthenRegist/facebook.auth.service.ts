@@ -3,15 +3,12 @@ import db from "@DB";
 import bcrypt from "bcrypt";
 import randomstring from "randomstring";
 import axios from "axios";
-import authClient from "@config/google.config";
 
 //This is a service for making a request to get user data of google account based on specified scopes using google tokenThis is a service for making a request to get user data of google account based on specified scopes using google token
 
 const getAccessToken = async (authCode: string): Promise<string> => {
-    const FB_APP_ID = process.env.FB_CLIENT_ID;
-    const FB_APP_SECRET = process.env.FB_CLIENT_SECRET;
     try {
-        const url = `https://graph.facebook.com/v10.0/oauth/access_token?client_id=${FB_APP_ID}&client_secret=${FB_APP_SECRET}&code=${authCode}&redirect_uri=http://localhost:3000`;
+        const url = `https://graph.facebook.com/v10.0/oauth/access_token?client_id=${process.env.FB_CLIENT_ID}&client_secret=${process.env.FB_CLIENT_SECRET}&code=${authCode}&redirect_uri=${process.env.FB_REDIRECT_URI}`;
 
         const response = await axios.get(url);
         return response.data.access_token;
