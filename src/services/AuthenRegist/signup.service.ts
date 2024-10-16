@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import db from "src/prisma/PrismaClient";
+import db from "@DB";
 import axios from 'axios';
 import redis from '@redis';
 import bcrypt from "bcrypt";

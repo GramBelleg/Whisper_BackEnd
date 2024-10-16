@@ -3,3 +3,6 @@ migrations
 .env
 dist/
 tsconfig.tsbuildinfo
+frontend/
+Dockerfile
+.dockerignore

@@ -1,6 +1,6 @@
 import Joi, { ObjectSchema } from "joi";
 import { ValidationError } from "joi";
-import { phone } from 'phone';
+import { phone } from "phone";
 
 const validateSingUp = (requestBody: Record<string, string>) => {
     const schema: ObjectSchema = Joi.object({
@@ -41,3 +41,4 @@ const validateLogIn = (email: string, password: string) => {
 };
 
 export { validateSingUp, validateLogIn };
+

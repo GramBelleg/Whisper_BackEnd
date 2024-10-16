@@ -1,15 +1,11 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-// we can make multi-schema files in a folder but need config in generator or merge all models in one schema file
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters", "fullTextIndex", "fullTextSearch", "prismaSchemaFolder"]
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch", "fullTextIndex", "driverAdapters", "prismaSchemaFolder"]
 }
 
 model User {
@@ -19,20 +15,18 @@ model User {
   password        String            @db.VarChar(256)
   phoneNumber     String?           @unique
   loggedInDevices Int               @default(0)
-  messages        ChatMessage[] // One-to-many relationship with Message
-  participants    ChatParticipant[] // One-to-many relationship with ChatParticipant
+  messages        ChatMessage[] 
+  participants    ChatParticipant[] 
 }
 
-// Chat Model
 model Chat {
   id            Int               @id @default(autoincrement())
-  lastMessageId Int?              @unique // Making it optional to handle cases when there is no message yet
+  lastMessageId Int?              @unique
   lastMessage   ChatMessage?      @relation("LastMessageInChat", fields: [lastMessageId], references: [id])
-  participants  ChatParticipant[]
   messages      ChatMessage[]
+  participants  ChatParticipant[]
 }
 
-// ChatParticipant Model
 model ChatParticipant {
   id     Int  @id @default(autoincrement())
   chatId Int
@@ -43,15 +37,13 @@ model ChatParticipant {
   @@unique([chatId, userId])
 }
 
-// ChatMessage Model 
-// did it this way since there will also be group and community messages
 model ChatMessage {
   id               Int      @id @default(autoincrement())
-  chatId           Int // Reference to the Chat
-  senderId         Int // Reference to the User who sent the message
+  chatId           Int
+  senderId         Int
   content          String
   createdAt        DateTime @default(now())
+  lastMessageChats Chat?    @relation("LastMessageInChat")
+  chat             Chat     @relation(fields: [chatId], references: [id])
   sender           User     @relation(fields: [senderId], references: [id])
-  chat             Chat     @relation(fields: [chatId], references: [id]) // Relation to Chat
-  lastMessageChats Chat[]   @relation("LastMessageInChat") // Relation to Chat's lastMessageId
 }
