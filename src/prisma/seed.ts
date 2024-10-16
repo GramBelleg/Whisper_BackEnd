@@ -61,6 +61,7 @@ async function createChatMessages(chats: any[]) {
                     senderId: sender.id,
                     createdAt: faker.date.recent(),
                     chatId: chat.chat.id,
+                    type: "text",
                 },
             });
 

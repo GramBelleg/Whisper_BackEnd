@@ -17,24 +17,24 @@ model User {
   email            String            @unique
   name             String
   password         String            @db.VarChar(256)
-  phoneNumber     String            @unique
-  emailStatus     String            @default("Deactivated")
+  phoneNumber     String             @unique
+  emailStatus     String             @default("Deactivated")
   verificationCode Verification?
   messages         ChatMessage[] // One-to-many relationship with Message
   participants     ChatParticipant[] // One-to-many relationship with ChatParticipant
 }
 
 model Verification {
-  id         Int      @id @default(autoincrement())
-  code       String   @unique
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId    Int      @unique
-  createdAt DateTime @default(now())
+  id         Int        @id @default(autoincrement())
+  code       String     @unique
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId    Int         @unique
+  createdAt DateTime    @default(now())
 }
 
 // Chat Model
 model Chat {
-  id           Int               @id @default(autoincrement())
+  id           Int                @id @default(autoincrement())
   lastMessageId  Int?              @unique // Making it optional to handle cases when there is no message yet
   lastMessage    ChatMessage?      @relation("LastMessageInChat", fields: [lastMessageId], references: [id])
   participants ChatParticipant[]
@@ -60,26 +60,25 @@ model ChatMessage {
   senderId          Int                // Reference to the User who sent the message
   content           String
   createdAt         DateTime           @default(now())
-  read              DateTime           @default(now())
-  delivered         DateTime           @default(now())
+  read              DateTime?          @default(now())
+  delivered         DateTime?          @default(now())
   forwarded         Boolean            @default(false)
   pinned            Boolean            @default(false)
   selfDestruct      Boolean            @default(false)
   expiresAfter      Int?
   type              String
-  profilePic        String
-  parentMessageId   Int?               
+  parentMessageId   Int?
   sender            User               @relation(fields: [senderId], references: [id])
   chat              Chat               @relation(fields: [chatId], references: [id]) // Relation to Chat
-  lastMessageChat  Chat?            @relation("LastMessageInChat") // Relation to Chat's lastMessageId
+  lastMessageChat   Chat?              @relation("LastMessageInChat") // Relation to Chat's lastMessageId
   voiceChatMessage  VoiceChatMessage?  
   parentMessage     ChatMessage?       @relation("ReplyToMessage", fields: [parentMessageId], references: [id]) 
-  reply           ChatMessage[]      @relation("ReplyToMessage") // To get all replies
+  reply           ChatMessage[]        @relation("ReplyToMessage") // To get all replies
 }
 
 model VoiceChatMessage {
   id                Int                @id @default(autoincrement())
   chatMessageId     Int                @unique
-  chatMessage       ChatMessage       @relation(fields: [chatMessageId], references: [id])   
+  chatMessage       ChatMessage        @relation(fields: [chatMessageId], references: [id])   
 }
 

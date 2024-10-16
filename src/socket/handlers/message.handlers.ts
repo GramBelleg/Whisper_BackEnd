@@ -33,5 +33,5 @@ export const notifyExpiry = async (key: string, clients: Map<number, Socket>): P
   const chatId: number = await getChatId(id);
   await removeTempMessage(id);
 
-  broadCast(chatId, clients, "deleteMessage", id);
+  broadCast(chatId, clients, "delete", id);
 };

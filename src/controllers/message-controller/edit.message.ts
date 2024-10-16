@@ -1,23 +1,15 @@
 import { editChatMessage } from "@services/chat-service/chat.service";
 import { ChatMessage } from "@prisma/client";
-import { EditChatMessages, OmitSender } from "@models/chat.models";
+import { EditableMessage } from "@models/message.models";
 
-export const editMessage = async (
-  userId: number,
-  message: OmitSender<EditChatMessages<ChatMessage>>
-): Promise<EditChatMessages<ChatMessage> | undefined> => {
-  try {
-    await editChatMessage(message.id, message.content);
-
-    const formattedMessage = {
-      ...message,
-      senderId: userId,
-    };
-
-    return formattedMessage;
-  } catch (error) {
-    console.error("Error editing message:", error);
-  }
+export const editContent = async (message: EditableMessage): Promise<ChatMessage | null> => {
+    try {
+        const editedMessage = await editChatMessage(message.id, message.content);
+        return editedMessage;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
 };
 
-export default editMessage;
+export default editContent;
