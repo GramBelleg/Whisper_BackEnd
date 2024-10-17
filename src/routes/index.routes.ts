@@ -6,7 +6,7 @@ import userAuth from "@middlewares/auth.middleware";
 import mediaRouter from "@routes/media.routes";
 const router: Router = Router();
 
-router.use("/auth-regst", authenticationRouter);
+router.use("/auth", authenticationRouter);
 router.use(userAuth);
 router.use("/user", userRouter);
 router.use("/chats", chatsRouter);

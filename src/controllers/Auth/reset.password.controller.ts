@@ -1,8 +1,8 @@
 import { validateEmail, validateResetCode } from "@validators/confirm.reset";
 import { Request, Response } from "express";
-import { updatePassword } from '@services/AuthenRegist/reset.password.service';
-import { verifyCode, createCode, sendCode } from "@services/AuthenRegist/confirmation.service";
-import { checkEmailExist } from "@services/AuthenRegist/login.service";
+import { updatePassword } from "@services/Auth/reset.password.service";
+import { verifyCode, createCode, sendCode } from "@services/Auth/confirmation.service";
+import { checkEmailExist } from "@services/Auth/login.service";
 
 async function sendResetCode(req: Request, res: Response) {
     try {
@@ -12,7 +12,7 @@ async function sendResetCode(req: Request, res: Response) {
         //in DB
         await checkEmailExist(email);
 
-        const code = await createCode(email, 'resetPass');
+        const code = await createCode(email, "resetPass");
         const emailBody = `<h3>Hello, </h3> <p>Use this code: <b>${code}</b> for reset your password</p>`;
         await sendCode(email, emailBody);
 
@@ -22,8 +22,8 @@ async function sendResetCode(req: Request, res: Response) {
     } catch (err: any) {
         console.log(err.message);
         res.status(400).json({
-            status: 'failed',
-            message: err.message
+            status: "failed",
+            message: err.message,
         });
     }
 }
@@ -36,7 +36,7 @@ async function resetPassword(req: Request, res: Response) {
         //in DB
         await checkEmailExist(email);
 
-        await verifyCode(email, code, 'resetPass');
+        await verifyCode(email, code, "resetPass");
 
         updatePassword(email, password);
 
@@ -52,4 +52,4 @@ async function resetPassword(req: Request, res: Response) {
     }
 }
 
-export { sendResetCode, resetPassword }
+export { sendResetCode, resetPassword };

@@ -11,7 +11,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const BLOB_URL = process.env.BLOB_URL;
-const CONTAINER_NAME = process.env.TEST_CONTAINER_NAME;
+const CONTAINER_NAME = process.env.CONTAINER_NAME;
 const ACCOUNT_NAME = process.env.ACCOUNT_NAME;
 const ACCOUNT_KEY = process.env.ACCOUNT_KEY;
 

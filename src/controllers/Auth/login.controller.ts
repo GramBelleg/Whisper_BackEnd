@@ -1,8 +1,12 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { User } from "@prisma/client";
-import { createCookie } from "@services/AuthenRegist/cookie.service";
-import { checkEmailExist, checkPasswordCorrect, incrementUserDevices } from "@services/AuthenRegist/login.service";
+import { createCookie } from "@services/Auth/cookie.service";
+import {
+    checkEmailExist,
+    checkPasswordCorrect,
+    incrementUserDevices,
+} from "@services/Auth/login.service";
 import { validateLogIn } from "@validators/user";
 
 const login = async (req: Request, res: Response) => {

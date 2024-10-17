@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { validateSingUp } from "@validators/user";
-import { checkEmailNotExist, saveUser, verifyRobotToken } from "@services/AuthenRegist/signup.service";
-import { createCode, sendCode } from "@services/AuthenRegist/confirmation.service";
+import { checkEmailNotExist, saveUser, verifyRobotToken } from "@services/Auth/signup.service";
+import { createCode, sendCode } from "@services/Auth/confirmation.service";
 
 const signup = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -12,7 +12,7 @@ const signup = async (req: Request, res: Response): Promise<void> => {
 
         await verifyRobotToken(req.body.robotToken);
 
-        const code = await createCode(email, 'confrimEmail');
+        const code = await createCode(email, "confrimEmail");
         const emailBody = `<h3>Hello, </h3> <p>Thanks for joining our family. Use this code: <b>${code}</b> for verifing your email</p>`;
         await sendCode(email, emailBody);
 

@@ -1,11 +1,8 @@
 import { Request, Response } from "express";
-import {
-    getAccessToken,
-    getUserData,
-} from "@services/AuthenRegist/facebook.auth.service"; // You'll need to create this service
-import { upsertUser } from "@services/AuthenRegist/signup.service";
+import { getAccessToken, getUserData } from "@services/Auth/facebook.auth.service"; // You'll need to create this service
+import { upsertUser } from "@services/Auth/signup.service";
 import jwt from "jsonwebtoken";
-import { createCookie } from "@services/AuthenRegist/cookie.service";
+import { createCookie } from "@services/Auth/cookie.service";
 import { User } from "@prisma/client";
 import querystring from "querystring";
 import crypto from "crypto";

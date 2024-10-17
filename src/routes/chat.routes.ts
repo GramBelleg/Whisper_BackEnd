@@ -1,7 +1,7 @@
 import { Router } from "express";
 import asyncHandler from "express-async-handler";
-import { getAllChats } from "@controllers/chat-controller/get.chats";
-import { getAllMessages } from "@controllers/chat-controller/get.messages";
+import { getAllChats } from "@controllers/Chat/get.chats";
+import { getAllMessages } from "@controllers/Chat/get.messages";
 
 const router: Router = Router();
 

@@ -1,5 +1,5 @@
 import db from "src/prisma/PrismaClient";
-import redis from "@redis";
+import redis from "@redis/index";
 import Randomstring from "randomstring";
 import transporter from "@config/email.config";
 
@@ -15,8 +15,8 @@ async function createCode(email: string, operation: string) {
     const code: string = Randomstring.generate(8);
     const expireAt = new Date(Date.now() + 300000).toString(); // after 5 minutes
 
-    await redis.hSet(operation + ':' + code, { email, expireAt });
-    await redis.expire(operation + ':' + code, 600); // expire in 10 minutes
+    await redis.hSet(operation + ":" + code, { email, expireAt });
+    await redis.expire(operation + ":" + code, 600); // expire in 10 minutes
     return code;
 }
 
@@ -33,16 +33,15 @@ async function sendCode(email: string, emailBody: string) {
 }
 
 const verifyCode = async (email: string, code: string, operation: string) => {
-    // check if the code is exist and related to this email and not expired 
-    const foundEmail = await redis.hGetAll(operation + ':' + code);
+    // check if the code is exist and related to this email and not expired
+    const foundEmail = await redis.hGetAll(operation + ":" + code);
     if (Object.keys(foundEmail).length === 0 || foundEmail.email !== email) {
         throw new Error("Invalid code");
     }
-    if (new Date > new Date(foundEmail.expireAt)) {
+    if (new Date() > new Date(foundEmail.expireAt)) {
         throw new Error("Expried code");
     }
 };
-
 
 const confirmAddUser = async (email: string) => {
     const foundData = await redis.hGetAll(email);
@@ -53,10 +52,10 @@ const confirmAddUser = async (email: string) => {
         name: foundData.name,
         email: foundData.email,
         phoneNumber: foundData.phoneNumber,
-        password: foundData.password
-    }
+        password: foundData.password,
+    };
     await db.user.create({
-        data: { ...userData }
+        data: { ...userData },
     });
 };
 

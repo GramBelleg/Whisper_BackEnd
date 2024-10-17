@@ -1,7 +1,7 @@
 import { User } from "@prisma/client";
 import db from "@DB";
 import axios from "axios";
-import redis from "@redis";
+import redis from "@redis/index";
 import bcrypt from "bcrypt";
 import randomstring from "randomstring";
 

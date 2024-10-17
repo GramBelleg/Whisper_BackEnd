@@ -1,5 +1,5 @@
-import { saveChatMessage } from "@services/chat-service/message.service";
-import { setLastMessage } from "@services/chat-service/chat.service";
+import { saveChatMessage } from "@services/Chat/message.service";
+import { setLastMessage } from "@services/Chat/chat.service";
 import { ChatMessage } from "@prisma/client";
 import { saveExpiringMessage } from "@services/redis-service/chat.service";
 import { SaveableMessage } from "@models/chat.models";

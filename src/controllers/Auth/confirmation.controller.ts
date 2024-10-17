@@ -5,9 +5,9 @@ import {
     verifyCode,
     confirmAddUser,
     createCode,
-    sendCode
-} from "@services/AuthenRegist/confirmation.service";
-import { checkEmailNotExist } from "@services/AuthenRegist/signup.service";
+    sendCode,
+} from "@services/Auth/confirmation.service";
+import { checkEmailNotExist } from "@services/Auth/signup.service";
 
 const sendConfirmCode = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -20,7 +20,7 @@ const sendConfirmCode = async (req: Request, res: Response): Promise<void> => {
         //in redis
         await checkEmailExist(email);
 
-        const code = await createCode(email, 'confrimEmail');
+        const code = await createCode(email, "confrimEmail");
         const emailBody = `<h3>Hello, </h3> <p>Thanks for joining our family. Use this code: <b>${code}</b> for verifing your email</p>`;
         await sendCode(email, emailBody);
 
@@ -44,7 +44,7 @@ const confirmEmail = async (req: Request, res: Response): Promise<void> => {
         //in DB
         await checkEmailNotExist(email);
 
-        await verifyCode(email, code, 'confrimEmail');
+        await verifyCode(email, code, "confrimEmail");
 
         await confirmAddUser(email);
 

@@ -1,11 +1,8 @@
 import { Request, Response } from "express";
-import {
-    getAccessToken,
-    getUserData,
-} from "@services/AuthenRegist/google.auth.service";
-import { upsertUser } from "@services/AuthenRegist/signup.service";
+import { getAccessToken, getUserData } from "@services/Auth/google.auth.service";
+import { upsertUser } from "@services/Auth/signup.service";
 import jwt from "jsonwebtoken";
-import { createCookie } from "@services/AuthenRegist/cookie.service";
+import { createCookie } from "@services/Auth/cookie.service";
 import { User } from "@prisma/client";
 
 async function googleAuth(req: Request, res: Response): Promise<void> {
@@ -50,4 +47,3 @@ async function googleAuth(req: Request, res: Response): Promise<void> {
 }
 
 export default googleAuth;
-
