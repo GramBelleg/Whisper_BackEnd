@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { validateSingUp } from "@validators/user";
 import { checkEmailNotExist, saveUser, verifyRobotToken } from "@services/auth/signup.service";
 import { createCode, sendCode } from "@services/auth/confirmation.service";
-
+//TODO: add userName
 const signup = async (req: Request, res: Response): Promise<void> => {
     try {
         const { name, email, password }: Record<string, string> = req.body;

@@ -7,7 +7,7 @@ const updateUser = async (req: Request, res: Response) => {
     {
         let { email = "", bio="", name="", userName="", profilePic="" }: { email: string; bio: string; name: string; userName: string, profilePic: string } = req.body;
         let id: number = req.userId;
-        userServices.updateUser(id, email, bio, name, userName, profilePic);
+        userServices.updateUser(id, email, bio, name, /*TODO: userName,*/ profilePic);
         res.status(200).json({
             status: "success",
         });

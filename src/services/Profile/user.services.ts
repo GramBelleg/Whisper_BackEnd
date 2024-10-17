@@ -1,7 +1,7 @@
 import db from "src/prisma/PrismaClient";
-import { User, Story ,Verification } from "@prisma/client";
+import { User, Story } from "@prisma/client";
 
-const updateUser = async ( id: number ,email: string, bio: string, name: string, userName: string,  profilePic: string) => {
+const updateUser = async ( id: number ,email: string, bio: string, name: string, /*TODO: userName: string,*/  profilePic: string) => {
     if(!id)
     {
         throw new Error("User id is required");
@@ -34,13 +34,14 @@ const updateUser = async ( id: number ,email: string, bio: string, name: string,
             data: { profilePic },
         });
     }
-    if(userName)
+    /*TODO: if(userName)
     {
         const user: User | null = await db.user.update({
             where: { id },
             data: { userName },
         });
     }
+    */
 };
 
 const setStory = async (id: number, content: string, media: string) => {
@@ -81,7 +82,7 @@ const userInfo = async (email: string) => {
         where: { email },
         select: {
             name: true,
-            userName: true,
+            /*TODO: userName: true,*/  
             email: true,
             bio: true,
             profilePic: true,

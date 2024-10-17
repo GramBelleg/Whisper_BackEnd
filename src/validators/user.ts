@@ -1,7 +1,7 @@
 import Joi, { ObjectSchema } from "joi";
 import { ValidationError } from "joi";
 import { phone } from "phone";
-
+//TODO: add userName
 const validateSingUp = (requestBody: Record<string, string>) => {
     const schema: ObjectSchema = Joi.object({
         name: Joi.string().alphanum().min(3).max(30).required(),

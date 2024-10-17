@@ -12,7 +12,7 @@ model User {
   id               Int                  @id @default(autoincrement())
   email            String               @unique
   name             String
-  userName         String               @unique
+  //TODO: userName         String               @unique
   password         String               @db.VarChar(256)
   phoneNumber      String?              @unique
   loggedInDevices  Int                  @default(0)
@@ -25,7 +25,7 @@ model User {
   Story            Story[] // One-to-many relationship with stories
   lastSeen         DateTime             @default(now())
   profilePic       String               @default("NULL")
-  bio              String
+  bio              String               @default("NULL")
 }
 
 model Chat {
