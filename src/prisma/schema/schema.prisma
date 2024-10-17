@@ -9,18 +9,23 @@ datasource db {
 }
 
 model User {
-  id              Int               @id @default(autoincrement())
-  email           String            @unique
-  name            String
-  password        String            @db.VarChar(256)
-  phoneNumber     String?           @unique
-  loggedInDevices Int               @default(0)
-  chatMessages         ChatMessage[] // One-to-many relationship with Message
-  chatParticipants     ChatParticipant[] // One-to-many relationship with ChatParticipant
-  groupMessages         GroupMessage[] // One-to-many relationship with Message
-  channelMessages         ChannelMessage[] // One-to-many relationship with Message
+  id               Int                  @id @default(autoincrement())
+  email            String               @unique
+  name             String
+  userName         String               @unique
+  password         String               @db.VarChar(256)
+  phoneNumber      String?              @unique
+  loggedInDevices  Int                  @default(0)
+  chatMessages     ChatMessage[] // One-to-many relationship with Message
+  chatParticipants ChatParticipant[] // One-to-many relationship with ChatParticipant
+  groupMessages    GroupMessage[] // One-to-many relationship with Message
+  channelMessages  ChannelMessage[] // One-to-many relationship with Message
   groups           GroupParticipant[]
-  channels           ChannelParticipant[]
+  channels         ChannelParticipant[]
+  Story            Story[] // One-to-many relationship with stories
+  lastSeen         DateTime             @default(now())
+  profilePic       String               @default("NULL")
+  bio              String
 }
 
 model Chat {
@@ -42,101 +47,109 @@ model ChatParticipant {
 }
 
 model ChatMessage {
-  id                Int                @id @default(autoincrement())
-  chatId            Int                // Reference to the Chat
-  senderId          Int                // Reference to the User who sent the message
-  content           String
-  createdAt         DateTime           @default(now())
-  read              DateTime?          @default(now())
-  delivered         DateTime?          @default(now())
-  forwarded         Boolean            @default(false)
-  pinned            Boolean            @default(false)
-  selfDestruct      Boolean            @default(false)
-  expiresAfter      Int?
-  type              String
-  parentMessageId   Int?
-  sender            User               @relation(fields: [senderId], references: [id])
-  chat              Chat               @relation(fields: [chatId], references: [id]) // Relation to Chat
-  lastMessageChat   Chat?              @relation("LastMessageInChat") // Relation to Chat's lastMessageId
-  voiceChatMessage  VoiceChatMessage?  
-  parentMessage     ChatMessage?       @relation("ReplyToMessage", fields: [parentMessageId], references: [id]) 
-  reply           ChatMessage[]        @relation("ReplyToMessage") // To get all replies
+  id               Int               @id @default(autoincrement())
+  chatId           Int // Reference to the Chat
+  senderId         Int // Reference to the User who sent the message
+  content          String
+  createdAt        DateTime          @default(now())
+  read             DateTime?         @default(now())
+  delivered        DateTime?         @default(now())
+  forwarded        Boolean           @default(false)
+  pinned           Boolean           @default(false)
+  selfDestruct     Boolean           @default(false)
+  expiresAfter     Int?
+  type             String
+  parentMessageId  Int?
+  sender           User              @relation(fields: [senderId], references: [id])
+  chat             Chat              @relation(fields: [chatId], references: [id]) // Relation to Chat
+  lastMessageChat  Chat?             @relation("LastMessageInChat") // Relation to Chat's lastMessageId
+  voiceChatMessage VoiceChatMessage?
+  parentMessage    ChatMessage?      @relation("ReplyToMessage", fields: [parentMessageId], references: [id])
+  reply            ChatMessage[]     @relation("ReplyToMessage") // To get all replies
 }
 
 model Group {
-  id Int @id @default(autoincrement())
-  maxSize Int 
-  privacy String
-  lastMessageId Int?   @unique
-  participant GroupParticipant[]
-  messages GroupMessage[]
-  lastMessage GroupMessage? @relation("LastMessageInGroup",fields: [lastMessageId],references: [id])
+  id            Int                @id @default(autoincrement())
+  maxSize       Int
+  privacy       String
+  lastMessageId Int?               @unique
+  participant   GroupParticipant[]
+  messages      GroupMessage[]
+  lastMessage   GroupMessage?      @relation("LastMessageInGroup", fields: [lastMessageId], references: [id])
 }
 
 model GroupParticipant {
-  id Int @id @default(autoincrement())
-  groupId Int
-  userId Int
-  isAdmin  Boolean @default(false)
-  isMuted  Boolean @default(false)
-  canDownload  Boolean @default(true)
-  canDelete  Boolean @default(true)
-  canPost  Boolean @default(true)
-  canEdit  Boolean @default(true)
-  group Group @relation(fields:[groupId],references: [id])
-  participant User @relation(fields:[userId],references: [id])
+  id          Int     @id @default(autoincrement())
+  groupId     Int
+  userId      Int
+  isAdmin     Boolean @default(false)
+  isMuted     Boolean @default(false)
+  canDownload Boolean @default(true)
+  canDelete   Boolean @default(true)
+  canPost     Boolean @default(true)
+  canEdit     Boolean @default(true)
+  group       Group   @relation(fields: [groupId], references: [id])
+  participant User    @relation(fields: [userId], references: [id])
 
   @@unique([groupId, userId])
 }
 
 model GroupMessage {
-  id        Int      @id @default(autoincrement())
-  groupId    Int // Reference to the Chat
-  senderId  Int // Reference to the User who sent the message
-  content   String
-  createdAt DateTime @default(now())
-  sender    User     @relation(fields: [senderId], references: [id])
-  group     Group     @relation(fields: [groupId], references: [id]) // Relation to Chat
-  lastMessageGroup Group? @relation("LastMessageInGroup") // Relation to Chat's lastMessageId
+  id               Int      @id @default(autoincrement())
+  groupId          Int // Reference to the Chat
+  senderId         Int // Reference to the User who sent the message
+  content          String
+  createdAt        DateTime @default(now())
+  sender           User     @relation(fields: [senderId], references: [id])
+  group            Group    @relation(fields: [groupId], references: [id]) // Relation to Chat
+  lastMessageGroup Group?   @relation("LastMessageInGroup") // Relation to Chat's lastMessageId
 }
 
 model VoiceChatMessage {
-  id                Int                @id @default(autoincrement())
-  chatMessageId     Int                @unique
-  chatMessage       ChatMessage        @relation(fields: [chatMessageId], references: [id])   
+  id            Int         @id @default(autoincrement())
+  chatMessageId Int         @unique
+  chatMessage   ChatMessage @relation(fields: [chatMessageId], references: [id])
 }
 
 model Channel {
-  id Int @id @default(autoincrement())
-  privacy String
-  inviteLink String
-  lastMessageId Int?   @unique
-  participant ChannelParticipant[]
-  messages ChannelMessage[]
-  lastMessage ChannelMessage? @relation("LastMessageInChannel",fields: [lastMessageId],references: [id])
+  id            Int                  @id @default(autoincrement())
+  privacy       String
+  inviteLink    String
+  lastMessageId Int?                 @unique
+  participant   ChannelParticipant[]
+  messages      ChannelMessage[]
+  lastMessage   ChannelMessage?      @relation("LastMessageInChannel", fields: [lastMessageId], references: [id])
 }
 
 model ChannelParticipant {
-  id Int @id @default(autoincrement())
-  channelId Int
-  userId Int
-  isAdmin  Boolean @default(false)
-  isMuted  Boolean @default(false)
-  canDownload  Boolean @default(true)
+  id          Int     @id @default(autoincrement())
+  channelId   Int
+  userId      Int
+  isAdmin     Boolean @default(false)
+  isMuted     Boolean @default(false)
+  canDownload Boolean @default(true)
   canComment  Boolean @default(true)
-  Channel Channel @relation(fields:[channelId],references: [id])
-  participant User @relation(fields:[userId],references: [id])
+  Channel     Channel @relation(fields: [channelId], references: [id])
+  participant User    @relation(fields: [userId], references: [id])
 
   @@unique([channelId, userId])
 }
 
 model ChannelMessage {
-  id        Int      @id @default(autoincrement())
-  ChannelId    Int // Reference to the Chat
-  senderId  Int // Reference to the User who sent the message
-  content   String
-  createdAt DateTime @default(now())
-  sender    User     @relation(fields: [senderId], references: [id])
-  Channel     Channel     @relation(fields: [ChannelId], references: [id]) // Relation to Chat
+  id                 Int      @id @default(autoincrement())
+  ChannelId          Int // Reference to the Chat
+  senderId           Int // Reference to the User who sent the message
+  content            String
+  createdAt          DateTime @default(now())
+  sender             User     @relation(fields: [senderId], references: [id])
+  Channel            Channel  @relation(fields: [ChannelId], references: [id]) // Relation to Chat
   lastMessageChannel Channel? @relation("LastMessageInChannel") // Relation to Chat's lastMessageId
+}
+
+model Story {
+  id      Int    @id @default(autoincrement())
+  userId  Int
+  user    User   @relation(fields: [userId], references: [id])
+  content String
+  media   String
 }
