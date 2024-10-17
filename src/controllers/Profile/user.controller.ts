@@ -2,39 +2,60 @@ import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import * as userServices from "@services/Profile/user.services";
 
-const updateUser = async (req: Request, res: Response) => {
+//TODO: const updateUserName
+
+const updateBio = async (req: Request, res: Response) => {
     try 
     {
-        let { email = "", bio="", name="", userName="", profilePic="" }: { email: string; bio: string; name: string; userName: string, profilePic: string } = req.body;
+        let { bio = "" }: { bio: string } = req.body;
         let id: number = req.userId;
-        userServices.updateUser(id, email, bio, name, /*TODO: userName,*/ profilePic);
+        await userServices.updateBio(id, bio);
         res.status(200).json({
             status: "success",
+            data: bio
         });
     } 
     catch (e: any) 
     {
-        console.log(e.message);
         res.status(400).json({
             status: "failed",
             message: e.message,
         });
     }
-};
+}
+
+const updateName = async (req: Request, res: Response) => {
+    try 
+    {
+        let { name = "" }: { name: string } = req.body;
+        let id: number = req.userId;
+        await userServices.updateName(id, name);
+        res.status(200).json({
+            status: "success",
+            data: name
+        });
+    } 
+    catch (e: any) 
+    {
+        res.status(400).json({
+            status: "failed",
+            message: e.message,
+        });
+    }
+}
 
 const setStory = async (req: Request, res: Response) => {
     try 
     {
         let { content = "", media = ""}: { content:string, media: string } = req.body;
         let id: number = req.userId;
-        userServices.setStory(id, content, media);
+        await userServices.setStory(id, content, media);
         res.status(200).json({
             status: "success",
         });
     } 
     catch (e: any) 
     {
-        console.log(e.message);
         res.status(400).json({
             status: "failed",
             message: e.message,
@@ -47,14 +68,13 @@ const deleteStory = async (req: Request, res: Response) => {
     {
         let id: number = req.userId;
         let storyId: number = req.body.storyId;
-        userServices.deleteStory(id, storyId);
+        await userServices.deleteStory(id, storyId);
         res.status(200).json({
             status: "success",
         });
     } 
     catch (e: any) 
     {
-        console.log(e.message);
         res.status(400).json({
             status: "failed",
             message: e.message,
@@ -63,7 +83,7 @@ const deleteStory = async (req: Request, res: Response) => {
     
 };
 
-const getUserInfo = async (req: Request, res: Response) => {
+const UserInfo = async (req: Request, res: Response) => {
     try 
     {
         let user = await userServices.userInfo(req.body.email);
@@ -74,7 +94,6 @@ const getUserInfo = async (req: Request, res: Response) => {
     } 
     catch (e: any) 
     {
-        console.log(e.message);
         res.status(400).json({
             status: "failed",
             message: e.message,
@@ -82,4 +101,4 @@ const getUserInfo = async (req: Request, res: Response) => {
     }
 };
 
-export { updateUser, setStory, deleteStory, getUserInfo };
+export { setStory, deleteStory, UserInfo, updateBio, updateName };

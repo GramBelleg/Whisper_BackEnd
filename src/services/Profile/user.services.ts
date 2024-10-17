@@ -1,48 +1,41 @@
 import db from "src/prisma/PrismaClient";
 import { User, Story } from "@prisma/client";
 
-const updateUser = async ( id: number ,email: string, bio: string, name: string, /*TODO: userName: string,*/  profilePic: string) => {
-    if(!id)
-    {
-        throw new Error("User id is required");
-    }
-    if(email)
-    {
-        const user: User | null = await db.user.update({
-            where: { id },
-            data: { email },
-        });
-    }
-    if(bio)
-    {
-        const user: User | null = await db.user.update({
+
+//TODO: const updateUserName
+
+const updateBio = async (id: number, bio: string) => {
+    try {
+        const user = await db.user.update({
             where: { id },
             data: { bio },
         });
+        return user; // Return updated user
+    } catch (error) {
+        console.error("Error updating bio:", error);
+        throw new Error("Unable to update bio");
     }
-    if(name)
-    {
-        const user: User | null = await db.user.update({
+};
+
+
+const updateName = async (id: number, name: string) => {
+    if (!name) {
+        throw new Error("Name is required");
+    }
+
+    try {
+        const user = await db.user.update({
             where: { id },
             data: { name },
         });
+        return user; // Return the updated user
+    } catch (error) {
+        console.error("Error updating name:", error);
+        throw new Error("Unable to update name");
     }
-    if(profilePic)
-    {
-        const user: User | null = await db.user.update({
-            where: { id },
-            data: { profilePic },
-        });
-    }
-    /*TODO: if(userName)
-    {
-        const user: User | null = await db.user.update({
-            where: { id },
-            data: { userName },
-        });
-    }
-    */
 };
+
+
 
 const setStory = async (id: number, content: string, media: string) => {
     if (!id) {
@@ -89,8 +82,12 @@ const userInfo = async (email: string) => {
             lastSeen: true,
         }
     });
+    if(!User || !User.email)
+    {
+        throw new Error("User not found");
+    }
     return User;
 };
 
 
-export { updateUser, setStory, deleteStory, userInfo };
+export {setStory, deleteStory, userInfo, updateBio, updateName };

@@ -36,11 +36,11 @@ import { Router, Request, Response } from "express";
 import * as userController from "@controllers/Profile/user.controller";
 const router: Router = Router();
 
-router.route("/").get((req: Request, res: Response) => {
-    res.sendStatus(200);
-});
-router.put("/user", userController.updateUser);
-router.get("/user", userController.getUserInfo);
+
+//router.put("/user", userController.updateUser);
+router.put("/name", userController.updateName);
+router.put("/bio", userController.updateBio);
+router.get("", userController.UserInfo);
 router.post("/story", userController.setStory);
 router.delete("/story", userController.deleteStory);
 export default router;
