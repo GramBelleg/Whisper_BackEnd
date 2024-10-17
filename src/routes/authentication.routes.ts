@@ -198,15 +198,15 @@
  */
 
 import { Router } from "express";
-import login from "@controllers/Auth/login.controller";
-import signup from "@controllers/Auth/signup.controller";
-import { sendConfirmCode, confirmEmail } from "@controllers/Auth/confirmation.controller";
-import googleAuth from "@controllers/Auth/google.auth.controller";
-import { githubAuth, githubRedirect } from "@controllers/Auth/github.auth.controller";
-import { facebookAuth, facebookRedirect } from "@controllers/Auth/facebook.auth.controller";
+import login from "@controllers/auth/login.controller";
+import signup from "@controllers/auth/signup.controller";
+import { sendConfirmCode, confirmEmail } from "@controllers/auth/confirmation.controller";
+import googleAuth from "@controllers/auth/google.auth.controller";
+import { githubAuth, githubRedirect } from "@controllers/auth/github.auth.controller";
+import { facebookAuth, facebookRedirect } from "@controllers/auth/facebook.auth.controller";
 import userAuth from "@middlewares/auth.middleware";
-import { logoutAll, logoutOne } from "@controllers/Auth/logout.controller";
-import { resetPassword, sendResetCode } from "@controllers/Auth/reset.password.controller";
+import { logoutAll, logoutOne } from "@controllers/auth/logout.controller";
+import { resetPassword, sendResetCode } from "@controllers/auth/reset.password.controller";
 
 const router: Router = Router();
 

@@ -6,8 +6,8 @@ import {
     confirmAddUser,
     createCode,
     sendCode,
-} from "@services/Auth/confirmation.service";
-import { checkEmailNotExist } from "@services/Auth/signup.service";
+} from "@services/auth/confirmation.service";
+import { checkEmailNotExist } from "@services/auth/signup.service";
 
 const sendConfirmCode = async (req: Request, res: Response): Promise<void> => {
     try {

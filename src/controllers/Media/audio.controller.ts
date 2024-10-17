@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getPresignedUrl } from "@services/Media/blob.service";
+import { getPresignedUrl } from "@services/media/blob.service";
 
 const uploadAudio = async (req: Request, res: Response) => {
     try {

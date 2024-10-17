@@ -15,7 +15,7 @@
  */
 
 import { Router, Request, Response } from "express";
-import { streamAudio, uploadAudio } from "@controllers/Media/audio.controller";
+import { streamAudio, uploadAudio } from "@controllers/media/audio.controller";
 import upload from "@config/multer.config";
 
 const router: Router = Router();

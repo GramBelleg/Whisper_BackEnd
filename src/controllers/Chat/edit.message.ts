@@ -1,4 +1,4 @@
-import { editChatMessage, pinChatMessage, unpinChatMessage } from "@services/Chat/message.service";
+import { editChatMessage, pinChatMessage, unpinChatMessage } from "@services/chat/message.service";
 import { ChatMessage } from "@prisma/client";
 import { EditableMessage, MessageReference } from "@models/chat.models";
 

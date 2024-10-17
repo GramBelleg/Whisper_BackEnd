@@ -1,5 +1,5 @@
-import { deleteChatMessage } from "@services/Chat/message.service";
-import { setNewLastMessage } from "@services/Chat/chat.service";
+import { deleteChatMessage } from "@services/chat/message.service";
+import { setNewLastMessage } from "@services/chat/chat.service";
 
 export const deleteMessage = async (id: number, chatId: number) => {
     try {
