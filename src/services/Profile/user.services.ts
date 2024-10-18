@@ -42,7 +42,7 @@ const updateEmail = async (id: number, email: string, code: string) => {
         throw new Error("Email is required");
     }
     try {
-        await verifyCode(email, code, "confirmEmail");        
+        await verifyCode(email, code, "confirmEmail");   
         await db.user.update({
             where: { id },
             data: { email },

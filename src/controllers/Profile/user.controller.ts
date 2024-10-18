@@ -1,6 +1,9 @@
 import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import * as userServices from "@services/Profile/user.services";
+import { validateEmail } from "@validators/confirm.reset";
+import { createCode, sendCode } from "@services/auth/confirmation.service";
+import { checkEmailNotExist } from "@services/auth/signup.service";
 
 //TODO: const updateUserName
 
@@ -57,6 +60,28 @@ const updateEmail = async (req: Request, res: Response) => {
     } 
     catch (e: any) 
     {
+        res.status(400).json({
+            status: "failed",
+            message: e.message,
+        });
+    }
+};
+const emailCode = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { email } = req.body as Record<string, string>;
+        validateEmail(email);
+
+        //in DB
+        await checkEmailNotExist(email);
+        const code = await createCode(email, "confirmEmail");
+        const emailBody = `<h3>Hello, </h3> <p>Thanks for joining our family. Use this code: <b>${code}</b> for verifing your email</p>`;
+        await sendCode(email, emailBody);
+
+        res.status(200).json({
+            status: "success",
+        });
+    } catch (e: any) {
+        console.log(e.message);
         res.status(400).json({
             status: "failed",
             message: e.message,
@@ -121,4 +146,4 @@ const UserInfo = async (req: Request, res: Response) => {
     }
 };
 
-export { setStory, deleteStory, UserInfo, updateBio, updateName, updateEmail };
+export { setStory, deleteStory, UserInfo, updateBio, updateName, updateEmail, emailCode };

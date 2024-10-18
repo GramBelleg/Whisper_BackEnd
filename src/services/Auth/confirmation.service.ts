@@ -14,7 +14,6 @@ const checkEmailExist = async (email: string) => {
 async function createCode(email: string, operation: string) {
     const code: string = Randomstring.generate(8);
     const expireAt = new Date(Date.now() + 300000).toString(); // after 5 minutes
-
     await redis.hSet(operation + ":" + code, { email, expireAt });
     await redis.expire(operation + ":" + code, 600); // expire in 10 minutes
     return code;
@@ -35,6 +34,7 @@ async function sendCode(email: string, emailBody: string) {
 const verifyCode = async (email: string, code: string, operation: string) => {
     // check if the code is exist and related to this email and not expired
     const foundEmail = await redis.hGetAll(operation + ":" + code);
+    console.log(foundEmail);
     if (Object.keys(foundEmail).length === 0 || foundEmail.email !== email) {
         throw new Error("Invalid code");
     }
