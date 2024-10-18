@@ -17,13 +17,6 @@ dotenv.config();
 const app: Express = express();
 const server = http.createServer(app);
 
-// app.use(
-//     cors({
-//         origin: "*", // Allow this origin to send request to server and recieve response from server
-//         credentials: true, // Allow cookies to be sent in cross-origin requests
-//     })
-// );
-
 app.use(
     cors({
         origin: function (origin, callback) {
@@ -37,7 +30,6 @@ app.use(
         optionsSuccessStatus: 200,
     })
 );
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
