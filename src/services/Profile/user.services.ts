@@ -3,6 +3,7 @@ import { User, Story } from "@prisma/client";
 import { verify } from "crypto";
 import { verifyCode } from "@services/auth/confirmation.service";
 import {checkEmailNotExist} from "@services/auth/signup.service";
+import {validatePhone} from "@validators/user";
 
 
 //TODO: const updateUserName
@@ -55,6 +56,22 @@ const updateEmail = async (id: number, email: string, code: string) => {
 
 };
 
+const updatePhone = async (id: number, phoneNumber: string) => {
+    if (!phoneNumber) {
+        throw new Error("Phone is required");
+    }
+    try {
+        const phone = validatePhone({phoneNumber: phoneNumber});
+        await db.user.update({
+            where: { id },
+            data: { phoneNumber: phone },
+        });
+        return phone; // Return the updated user
+    } catch (error) {
+        console.error("Error updating phone:", error);
+        throw new Error("Unable to update phone");
+    }
+};
 
 
 const setStory = async (id: number, content: string, media: string) => {
@@ -110,4 +127,4 @@ const userInfo = async (email: string) => {
 };
 
 
-export {setStory, deleteStory, userInfo, updateBio, updateName, updateEmail};
+export {setStory, deleteStory, userInfo, updateBio, updateName, updateEmail, updatePhone};

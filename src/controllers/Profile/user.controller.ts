@@ -89,6 +89,26 @@ const emailCode = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
+const updatePhone = async (req: Request, res: Response) => {
+    //TODO: fix Phone number structure is not valid
+    try{
+        let { phoneNumber = "" }: { phoneNumber: string } = req.body;
+        let id: number = req.userId;
+        let updatedPhone = await userServices.updatePhone(id, phoneNumber);
+        res.status(200).json({
+            status: "success",
+            data: updatedPhone
+        });
+    }
+    catch (e: any) 
+    {
+        res.status(400).json({
+            status: "failed",
+            message: e.message,
+        });
+    };
+};
+
 const setStory = async (req: Request, res: Response) => {
     try 
     {
@@ -146,4 +166,4 @@ const UserInfo = async (req: Request, res: Response) => {
     }
 };
 
-export { setStory, deleteStory, UserInfo, updateBio, updateName, updateEmail, emailCode };
+export { setStory, deleteStory, UserInfo, updateBio, updateName, updateEmail, emailCode, updatePhone };

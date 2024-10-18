@@ -43,6 +43,7 @@ router.put("/bio", userController.updateBio);
 router.get("", userController.UserInfo);
 router.put("/email", userController.updateEmail);
 router.post("/emailcode", userController.emailCode);
+router.put("/phone", userController.updatePhone);
 router.post("/story", userController.setStory);
 router.delete("/story", userController.deleteStory);
 export default router;
