@@ -17,9 +17,15 @@ export const notifyExpiry = (key: string) => {
 export const initWebSocketServer = (server: HTTPServer) => {
     const io = new IOServer(server, {
         cors: {
-            origin: "http://localhost:3000",
+            origin: (origin, callback) => {
+                if (origin) {
+                    callback(null, origin);
+                } else {
+                    callback(null, "*");
+                }
+            },
             credentials: true,
-            methods: ["GET", "POST"],
+            methods: ["GET", "POST"], 
         },
     });
 
@@ -50,14 +56,14 @@ export const initWebSocketServer = (server: HTTPServer) => {
             }
         });
 
-        socket.on("pin", async(message: types.MessageReference) => {
+        socket.on("pin", async (message: types.MessageReference) => {
             const pinnedMessage = await editController.pinMessage(message);
             if (pinnedMessage) {
                 messageHandler.broadCast(message.chatId, clients, "pin", pinnedMessage);
             }
-        })
+        });
 
-        socket.on("unpin", async(message: types.MessageReference) => {
+        socket.on("unpin", async (message: types.MessageReference) => {
             const unpinnedMessage = await editController.unpinMessage(message);
             if (unpinnedMessage) {
                 messageHandler.broadCast(message.chatId, clients, "unpin", unpinnedMessage);
