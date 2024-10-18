@@ -13,6 +13,7 @@ async function createUsers(numUsers: number) {
         const user = await db.user.create({
             data: {
                 email: faker.internet.email(),
+                userName: faker.internet.userName(),
                 name: faker.person.fullName(),
                 phoneNumber: faker.phone.number({ style: "international" }),
                 password: bcrypt.hashSync(passwords[i], 10),

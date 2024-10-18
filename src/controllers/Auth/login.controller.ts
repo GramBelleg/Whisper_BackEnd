@@ -14,6 +14,7 @@ const login = async (req: Request, res: Response) => {
         const { email, password }: Record<string, string> = req.body;
         validateLogIn(email, password);
 
+        //in DB
         const user: User = await checkEmailExist(email);
         checkPasswordCorrect(password, user.password);
 
@@ -27,6 +28,7 @@ const login = async (req: Request, res: Response) => {
             user: {
                 id: user.id,
                 name: user.name,
+                userName: user.userName,
                 email: user.email,
             },
             userToken,

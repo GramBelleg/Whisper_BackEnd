@@ -4,7 +4,8 @@ import { phone } from "phone";
 
 const validateSingUp = (requestBody: Record<string, string>) => {
     const schema: ObjectSchema = Joi.object({
-        name: Joi.string().alphanum().min(3).max(30).required(),
+        name: Joi.string().regex(/^[a-zA-Z\s]+$/).min(6).max(30).required(),
+        userName: Joi.string().alphanum().min(6).max(30).required(),
         email: Joi.string().email().required(),
         phoneNumber: Joi.string().required(),
         password: Joi.string().min(6).max(50).required(),

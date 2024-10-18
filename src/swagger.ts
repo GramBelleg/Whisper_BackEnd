@@ -2,7 +2,27 @@ import swaggerJsDoc from "swagger-jsdoc";
 /**
  * @swagger
  * components:
+ *   securitySchemes:
+ *    cookieAuth:
+ *     type: apiKey
+ *     in: cookie
+ *     name: token
  *   schemas:
+ *    Error:
+ *     type: object
+ *     properties:
+ *      status:
+ *       type: string
+ *       default: "failed"
+ *      message:
+ *       type: string
+ *       description: message described the reason of the error
+ *   responses:   
+ *    requestError:
+ *       content:
+ *        application/json:
+ *         schema:
+ *          $ref: "#/components/schemas/Error"
  *
  *
  * @swagger

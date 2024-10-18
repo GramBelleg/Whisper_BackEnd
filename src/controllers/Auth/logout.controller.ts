@@ -2,6 +2,11 @@ import { Request, Response } from "express";
 import { clearCookie } from "@services/auth/cookie.service";
 import { decrementUserDevices, resetUserDevices } from "@services/auth/logout.service";
 
+
+/**
+ * TODO: the idea of making counter for logged in devices is not correct
+ */
+
 async function logoutOne(req: Request, res: Response): Promise<void> {
     try {
         decrementUserDevices(req.userId);
