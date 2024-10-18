@@ -5,9 +5,7 @@ export const getChats = async (userId: number): Promise<Chat[]> => {
     const chats = await db.chat.findMany({
         where: { participants: { some: { userId } } },
         include: {
-            lastMessage: {
-                select: { createdAt: true },
-            },
+            lastMessage: true,
         },
         orderBy: {
             lastMessage: { createdAt: "desc" },
