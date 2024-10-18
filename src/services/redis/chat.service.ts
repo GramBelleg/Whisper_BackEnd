@@ -1,4 +1,4 @@
-import redisClient from "@redis/redis.client";
+import redisClient from "@src/redis/redis.client";
 import { ChatMessage } from "@prisma/client";
 
 export const saveExpiringMessage = async (message: ChatMessage): Promise<void> => {

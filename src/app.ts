@@ -10,7 +10,7 @@ import swaggerUi from "swagger-ui-express";
 import session from "express-session";
 import errorHandler from "@middlewares/error.handler";
 import { initWebSocketServer } from "@socket/web.socket";
-import { redisExpirySubscribe } from "@redis/redis.sub.handlers";
+import { redisExpirySubscribe } from "@src/redis/redis.sub.handlers";
 
 dotenv.config();
 
@@ -45,4 +45,3 @@ app.use(errorHandler);
 server.listen(parseInt(process.env.PORT as string), () => {
     console.log(`Listening on port ${process.env.PORT}`);
 });
-

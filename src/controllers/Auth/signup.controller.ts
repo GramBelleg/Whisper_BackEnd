@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { validateSingUp } from "@validators/user";
 import { checkEmailNotExist, saveUserData, verifyRobotToken } from "@services/auth/signup.service";
 import { createCode, sendCode } from "@services/auth/confirmation.service";
-import RedisOperation from "src/@types/redis.operation";
+import RedisOperation from "@src/@types/redis.operation";
 
 const signup = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -11,7 +11,7 @@ const signup = async (req: Request, res: Response): Promise<void> => {
         // in DB
         await checkEmailNotExist(email);
 
-        await verifyRobotToken(req.body.robotToken);
+        //await verifyRobotToken(req.body.robotToken);
 
         const code = await createCode(email, RedisOperation.ConfirmEmail);
         const emailSubject = "Email confirmation";

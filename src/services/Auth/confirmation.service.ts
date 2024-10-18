@@ -1,8 +1,8 @@
-import db from "src/prisma/PrismaClient";
-import redis from "@redis/index";
+import db from "@DB";
+import redis from "@src/redis/index";
 import Randomstring from "randomstring";
 import transporter from "@config/email.config";
-import RedisOperation from "src/@types/redis.operation";
+import RedisOperation from "@src/@types/redis.operation";
 
 const checkEmailExist = async (email: string) => {
     // Check if there is a data for this email (signup data) in redis for new account

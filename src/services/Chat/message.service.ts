@@ -1,4 +1,4 @@
-import db from "src/prisma/PrismaClient";
+import db from "@DB";
 import { ChatMessage } from "@prisma/client";
 import { SaveableMessage } from "@models/chat.models";
 

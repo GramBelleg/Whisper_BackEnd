@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { updatePassword } from "@services/auth/reset.password.service";
 import { verifyCode, createCode, sendCode } from "@services/auth/confirmation.service";
 import { checkEmailExist } from "@services/auth/login.service";
-import RedisOperation from "src/@types/redis.operation";
+import RedisOperation from "@src/@types/redis.operation";
 
 async function sendResetCode(req: Request, res: Response) {
     try {
@@ -14,7 +14,7 @@ async function sendResetCode(req: Request, res: Response) {
         await checkEmailExist(email);
 
         const code = await createCode(email, RedisOperation.ResetPassword);
-        const emailSubject = "Password reset"
+        const emailSubject = "Password reset";
         const emailBody = `<h3>Hello, </h3> <p>Use this code: <b>${code}</b> for reset your password</p>`;
         await sendCode(email, emailSubject, emailBody);
 

@@ -1,10 +1,10 @@
 import { User } from "@prisma/client";
 import db from "@DB";
 import axios from "axios";
-import redis from "@redis/index";
+import redis from "@src/redis/index";
 import bcrypt from "bcrypt";
 import randomstring from "randomstring";
-import RedisOperation from "src/@types/redis.operation";
+import RedisOperation from "@src/@types/redis.operation";
 
 const checkEmailNotExist = async (email: string): Promise<void> => {
     const foundUser: User | null = await db.user.findUnique({
@@ -28,9 +28,15 @@ const saveUserData = async (
     userName: string,
     email: string,
     phoneNumber: string,
-    password: string,
+    password: string
 ): Promise<void> => {
-    await redis.hSet(RedisOperation.AddNewUser + ":" + email, { name, userName, email, phoneNumber, password: bcrypt.hashSync(password, 10) });
+    await redis.hSet(RedisOperation.AddNewUser + ":" + email, {
+        name,
+        userName,
+        email,
+        phoneNumber,
+        password: bcrypt.hashSync(password, 10),
+    });
     await redis.expire(RedisOperation.AddNewUser + ":" + email, 10800); // expire in 3 hours
 };
 

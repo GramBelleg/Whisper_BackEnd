@@ -1,4 +1,4 @@
-import db from "src/prisma/PrismaClient";
+import db from "@DB";
 import { Chat } from "@prisma/client";
 
 export const getChats = async (userId: number): Promise<Chat[]> => {
