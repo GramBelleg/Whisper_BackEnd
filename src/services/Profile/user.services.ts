@@ -1,16 +1,18 @@
 import db from "src/prisma/PrismaClient";
 import { User, Story } from "@prisma/client";
+import { verify } from "crypto";
+import { verifyCode } from "@services/auth/confirmation.service";
+import {checkEmailNotExist} from "@services/auth/signup.service";
 
 
 //TODO: const updateUserName
 
 const updateBio = async (id: number, bio: string) => {
     try {
-        const user = await db.user.update({
-            where: { id },
-            data: { bio },
+            await db.user.update({
+                where: { id },
+                data: { bio },
         });
-        return user; // Return updated user
     } catch (error) {
         console.error("Error updating bio:", error);
         throw new Error("Unable to update bio");
@@ -24,15 +26,33 @@ const updateName = async (id: number, name: string) => {
     }
 
     try {
-        const user = await db.user.update({
-            where: { id },
-            data: { name },
+            await db.user.update({
+                where: { id },
+                data: { name },
         });
-        return user; // Return the updated user
+        return name; // Return the updated name
     } catch (error) {
         console.error("Error updating name:", error);
         throw new Error("Unable to update name");
     }
+};
+
+const updateEmail = async (id: number, email: string, code: string) => {
+    if (!email) {
+        throw new Error("Email is required");
+    }
+    try {
+        await verifyCode(email, code, "confirmEmail");        
+        await db.user.update({
+            where: { id },
+            data: { email },
+        });
+        return email; // Return the updated user
+    } catch (error) {
+        console.error("Error updating email:", error);
+        throw new Error("Unable to update email");
+    }
+
 };
 
 
@@ -90,4 +110,4 @@ const userInfo = async (email: string) => {
 };
 
 
-export {setStory, deleteStory, userInfo, updateBio, updateName };
+export {setStory, deleteStory, userInfo, updateBio, updateName, updateEmail};

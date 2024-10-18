@@ -41,6 +41,7 @@ const router: Router = Router();
 router.put("/name", userController.updateName);
 router.put("/bio", userController.updateBio);
 router.get("", userController.UserInfo);
+router.put("/email", userController.updateEmail);
 router.post("/story", userController.setStory);
 router.delete("/story", userController.deleteStory);
 export default router;

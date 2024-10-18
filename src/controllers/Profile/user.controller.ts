@@ -44,6 +44,26 @@ const updateName = async (req: Request, res: Response) => {
     }
 }
 
+const updateEmail = async (req: Request, res: Response) => {
+    let { email = "", code = "" }: { email: string, code: string } = req.body;
+    let id: number = req.userId;
+    try 
+    {
+        await userServices.updateEmail(id, email, code);
+        res.status(200).json({
+            status: "success",
+            data: email
+        });
+    } 
+    catch (e: any) 
+    {
+        res.status(400).json({
+            status: "failed",
+            message: e.message,
+        });
+    }
+};
+
 const setStory = async (req: Request, res: Response) => {
     try 
     {
@@ -101,4 +121,4 @@ const UserInfo = async (req: Request, res: Response) => {
     }
 };
 
-export { setStory, deleteStory, UserInfo, updateBio, updateName };
+export { setStory, deleteStory, UserInfo, updateBio, updateName, updateEmail };
