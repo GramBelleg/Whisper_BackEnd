@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { clearCookie } from "@services/auth/cookie.service";
-import { decrementUserDevices, resetUserDevices } from "@services/auth/logout.service";
+import { clearCookie } from "@services/Auth/cookie.service";
+import { decrementUserDevices, resetUserDevices } from "@services/Auth/logout.service";
 
 
 /**

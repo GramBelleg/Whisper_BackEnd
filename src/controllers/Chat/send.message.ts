@@ -1,10 +1,10 @@
-import { saveChatMessage } from "@services/chat/message.service";
-import { setLastMessage } from "@services/chat/chat.service";
+import { saveMessage } from "@services/Chat/message.service";
+import { setLastMessage } from "@services/Chat/chat.service";
 import { Message } from "@prisma/client";
 import { saveExpiringMessage } from "@services/redis/chat.service";
 import { SaveableMessage } from "@models/chat.models";
 
-const saveMessage = async (message: SaveableMessage): Promise<Message> => {
+const handleSaveMessage = async (message: SaveableMessage): Promise<Message> => {
     const savedMessage: Message = await saveMessage(message);
     await setLastMessage(message.chatId, savedMessage.id);
     return savedMessage;
@@ -12,7 +12,7 @@ const saveMessage = async (message: SaveableMessage): Promise<Message> => {
 
 export const handleSend = async (message: SaveableMessage): Promise<Message | null> => {
     try {
-        const savedMessage: Message | null = await saveMessage(message);
+        const savedMessage: Message | null = await handleSaveMessage(message);
 
         if (message.selfDestruct) {
             await saveExpiringMessage(savedMessage);

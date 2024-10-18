@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { validateSingUp } from "@validators/user";
-import { checkEmailNotExist, saveUserData, verifyRobotToken } from "@services/auth/signup.service";
-import { createCode, sendCode } from "@services/auth/confirmation.service";
+import { checkEmailNotExist, saveUserData, verifyRobotToken } from "@services/Auth/signup.service";
+import { createCode, sendCode } from "@services/Auth/confirmation.service";
 import RedisOperation from "@src/@types/redis.operation";
 
 const signup = async (req: Request, res: Response): Promise<void> => {

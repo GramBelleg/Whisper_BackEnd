@@ -6,8 +6,8 @@ import {
     confirmAddUser,
     createCode,
     sendCode,
-} from "@services/auth/confirmation.service";
-import { checkEmailNotExist } from "@services/auth/signup.service";
+} from "@services/Auth/confirmation.service";
+import { checkEmailNotExist } from "@services/Auth/signup.service";
 import RedisOperation from "@src/@types/redis.operation";
 
 const resendConfirmCode = async (req: Request, res: Response): Promise<void> => {

@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import { checkLogoutAll, getToken } from "@services/auth.service";
-import { clearCookie } from "@services/auth/cookie.service";
+import { clearCookie } from "@services/Auth/cookie.service";
 
 const userAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {

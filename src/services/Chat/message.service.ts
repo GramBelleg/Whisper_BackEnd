@@ -2,7 +2,7 @@ import db from "@DB";
 import { Message } from "@prisma/client";
 import { SaveableMessage } from "@models/chat.models";
 
-export const getChatMessages = async (chatId: number): Promise<Message[]> => {
+export const getMessages = async (chatId: number): Promise<Message[]> => {
     const messages = await db.message.findMany({
         where: { chatId },
         orderBy: { createdAt: "asc" },
@@ -10,14 +10,14 @@ export const getChatMessages = async (chatId: number): Promise<Message[]> => {
     return messages;
 };
 
-export const saveChatMessage = async (message: SaveableMessage): Promise<Message> => {
+export const saveMessage = async (message: SaveableMessage): Promise<Message> => {
     const savedMessage = await db.message.create({
         data: { ...message },
     });
     return savedMessage;
 };
 
-export const editChatMessage = async (id: number, content: string): Promise<Message> => {
+export const editMessage = async (id: number, content: string): Promise<Message> => {
     const editedMessage: Message = await db.message.update({
         where: { id },
         data: { content },
@@ -25,7 +25,7 @@ export const editChatMessage = async (id: number, content: string): Promise<Mess
     return editedMessage;
 };
 
-export const pinChatMessage = async (id: number): Promise<Message> => {
+export const pinMessage = async (id: number): Promise<Message> => {
     const pinnedMessage: Message = await db.message.update({
         where: { id },
         data: { pinned: true },
@@ -33,7 +33,7 @@ export const pinChatMessage = async (id: number): Promise<Message> => {
     return pinnedMessage;
 };
 
-export const unpinChatMessage = async (id: number): Promise<Message> => {
+export const unpinMessage = async (id: number): Promise<Message> => {
     const unpinnedMessage: Message = await db.message.update({
         where: { id },
         data: { pinned: false },
@@ -41,7 +41,7 @@ export const unpinChatMessage = async (id: number): Promise<Message> => {
     return unpinnedMessage;
 };
 
-export const deleteChatMessage = async (id: number): Promise<void> => {
+export const deleteMessage = async (id: number): Promise<void> => {
     const message = await db.message.findUnique({
         where: { id },
     });
