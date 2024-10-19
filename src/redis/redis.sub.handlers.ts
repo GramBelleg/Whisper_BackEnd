@@ -3,7 +3,7 @@ import { notifyExpiry } from "@socket/web.socket";
 
 const expiredEvent = "__keyevent@0__:expired";
 
-export const redisExpirySubscribe = (): void => {
+export const redisSubscribe = (): void => {
     redisSubscriber.subscribe(expiredEvent);
     redisSubscriber.on("message", (channel, key) => {
         if (channel === expiredEvent) {

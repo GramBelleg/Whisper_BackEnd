@@ -5,71 +5,72 @@ enum ChatType {
 }
 
 model Chat {
-  id            Int               @id @default(autoincrement())
-  type          ChatType           
-  lastMessageId Int?              @unique
-  lastMessage   Message?          @relation("LastMessageInChat", fields: [lastMessageId], references: [id])
-  messages      Message[]
-  participants  ChatParticipant[]
+  id                    Int               @id @default(autoincrement())
+  type                  ChatType           
+  unreadMessageCount    Int?
+  lastMessageId         Int?              @unique
+  lastMessage           Message?          @relation("LastMessageInChat", fields: [lastMessageId], references: [id])
+  messages              Message[]
+  participants          ChatParticipant[]
 
-  group         Group?  
-  channel         Channel?           
+  group                 Group?  
+  channel               Channel?           
 }
 
 model Group {
-  chatId   Int     @id
-  maxSize  Int
-  privacy  String
-  chat     Chat    @relation(fields: [chatId], references: [id])
+  chatId                Int               @id
+  maxSize               Int
+  privacy               String
+  chat                  Chat              @relation(fields: [chatId], references: [id])
 
-  participants GroupParticipant[]
+  participants          GroupParticipant[]
 }
 
 model Channel {
-  chatId        Int    @id
-  privacy       String
-  inviteLink    String
-  chat     Chat    @relation(fields: [chatId], references: [id])
+  chatId                Int               @id
+  privacy               String
+  inviteLink            String
+  chat                  Chat              @relation(fields: [chatId], references: [id])
 
   participants   ChannelParticipant[]
 }
 
 model ChatParticipant {
-  id     Int  @id @default(autoincrement())
-  chatId Int
-  userId Int
-  chat   Chat @relation(fields: [chatId], references: [id])
-  user   User @relation(fields: [userId], references: [id])
+  id                    Int               @id @default(autoincrement())
+  chatId                Int
+  userId                Int
+  chat                  Chat              @relation(fields: [chatId], references: [id])
+  user                  User              @relation(fields: [userId], references: [id])
 
   @@unique([chatId, userId])
 }
 
 model GroupParticipant {
-  id          Int     @id @default(autoincrement())
-  groupId     Int
-  userId      Int
-  isAdmin     Boolean @default(false)
-  isMuted     Boolean @default(false)
-  canDownload Boolean @default(true)
-  canDelete   Boolean @default(true)
-  canPost     Boolean @default(true)
-  canEdit     Boolean @default(true)
-  group       Group   @relation(fields: [groupId], references: [chatId])
-  participant User    @relation(fields: [userId], references: [id])
+  id                    Int               @id @default(autoincrement())
+  groupId               Int
+  userId                Int
+  isAdmin               Boolean           @default(false)
+  isMuted               Boolean           @default(false)
+  canDownload           Boolean           @default(true)
+  canDelete             Boolean           @default(true)
+  canPost               Boolean           @default(true)
+  canEdit               Boolean           @default(true)
+  group                 Group             @relation(fields: [groupId], references: [chatId])
+  participant           User              @relation(fields: [userId], references: [id])
 
   @@unique([groupId, userId])
 }
 
 model ChannelParticipant {
-  id          Int     @id @default(autoincrement())
-  channelId   Int
-  userId      Int
-  isAdmin     Boolean @default(false)
-  isMuted     Boolean @default(false)
-  canDownload Boolean @default(true)
-  canComment  Boolean @default(true)
-  Channel     Channel @relation(fields: [channelId], references: [chatId])
-  participant User    @relation(fields: [userId], references: [id])
+  id                    Int               @id @default(autoincrement())
+  channelId             Int
+  userId                Int
+  isAdmin               Boolean           @default(false)
+  isMuted               Boolean           @default(false)
+  canDownload           Boolean           @default(true)
+  canComment            Boolean           @default(true)
+  Channel               Channel           @relation(fields: [channelId], references: [chatId])
+  participant           User              @relation(fields: [userId], references: [id])
 
   @@unique([channelId, userId])
 }

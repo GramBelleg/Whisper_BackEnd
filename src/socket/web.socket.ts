@@ -17,9 +17,15 @@ export const notifyExpiry = (key: string) => {
 export const initWebSocketServer = (server: HTTPServer) => {
     const io = new IOServer(server, {
         cors: {
-            origin: "http://localhost:3000",
+            origin: (origin, callback) => {
+                if (origin) {
+                    callback(null, origin);
+                } else {
+                    callback(null, "*");
+                }
+            },
             credentials: true,
-            methods: ["GET", "POST"],
+            methods: ["GET", "POST"], 
         },
     });
 
@@ -30,6 +36,7 @@ export const initWebSocketServer = (server: HTTPServer) => {
 
         connectionHandler.startConnection(userId, clients, socket);
 
+
         socket.on("send", async (message: types.OmitSender<types.SaveableMessage>) => {
             const savedMessage = await sendController.handleSend({
                 ...message,
@@ -39,9 +46,9 @@ export const initWebSocketServer = (server: HTTPServer) => {
                 messageHandler.broadCast(message.chatId, clients, "receive", savedMessage);
             }
         });
-
+        
         socket.on("edit", async (message: types.OmitSender<types.EditableMessage>) => {
-            const editedMessage = await editController.editContent({
+            const editedMessage = await editController.handleEditContent({
                 ...message,
                 senderId: userId,
             });
@@ -51,21 +58,21 @@ export const initWebSocketServer = (server: HTTPServer) => {
         });
 
         socket.on("pin", async (message: types.MessageReference) => {
-            const pinnedMessage = await editController.pinMessage(message);
+            const pinnedMessage = await editController.handlePinMessage(message);
             if (pinnedMessage) {
                 messageHandler.broadCast(message.chatId, clients, "pin", pinnedMessage);
             }
         });
 
         socket.on("unpin", async (message: types.MessageReference) => {
-            const unpinnedMessage = await editController.unpinMessage(message);
+            const unpinnedMessage = await editController.handleUnpinMessage(message);
             if (unpinnedMessage) {
                 messageHandler.broadCast(message.chatId, clients, "unpin", unpinnedMessage);
             }
         });
 
         socket.on("delete", async (id: number, chatId: number) => {
-            await deleteController.deleteMessage(id, chatId);
+            await deleteController.handleDeleteMessage(id, chatId);
             messageHandler.broadCast(chatId, clients, "delete", id);
         });
 

@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { getChatMessages } from "@services/chat/message.service";
+import { getMessages } from "@services/chat/message.service";
 
-export const getAllMessages = async (req: Request, res: Response) => {
+export const handleGetAllMessages = async (req: Request, res: Response) => {
     const chatId = parseInt(req.params.chatId, 10);
-    const messages = await getChatMessages(chatId);
+    const messages = await getMessages(chatId);
     res.status(200).json(messages);
 };

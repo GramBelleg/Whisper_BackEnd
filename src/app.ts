@@ -10,7 +10,7 @@ import swaggerUi from "swagger-ui-express";
 import session from "express-session";
 import errorHandler from "@middlewares/error.handler";
 import { initWebSocketServer } from "@socket/web.socket";
-import { redisExpirySubscribe } from "@src/redis/redis.sub.handlers";
+import { redisSubscribe } from "@src/redis/redis.sub.handlers";
 
 dotenv.config();
 
@@ -19,8 +19,15 @@ const server = http.createServer(app);
 
 app.use(
     cors({
-        origin: "http://localhost:3000", // Must specify origin when sending cookies with request
-        credentials: true, // Allow cookies to be sent in cross-origin requests
+        origin: function (origin, callback) {
+            if (origin) {
+                callback(null, origin); 
+            } else {
+                callback(null, "*"); 
+            }
+        },
+        credentials: true, 
+        optionsSuccessStatus: 200,
     })
 );
 
@@ -38,7 +45,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api", asyncHandler(indexRouter));
 
 initWebSocketServer(server);
-redisExpirySubscribe();
+redisSubscribe();
 
 app.use(errorHandler);
 
