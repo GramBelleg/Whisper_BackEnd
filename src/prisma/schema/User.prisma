@@ -6,6 +6,9 @@ model User {
   password           String               @db.VarChar(256)
   phoneNumber        String?              @unique
   loggedInDevices    Int                  @default(0)
+  profilePic         String?
+  lastSeen           DateTime             @default(now())
+  bio                String?
   Messages           Message[]
   chatParticipant    ChatParticipant[]
   groupParticipant   GroupParticipant[]

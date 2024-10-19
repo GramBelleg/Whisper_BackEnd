@@ -1,9 +1,10 @@
 import { User } from "@prisma/client";
 import { Request, Response } from "express";
-import * as userServices from "@services/Profile/user.services";
+import * as userServices from "@services/Profile/user.service";
 import { validateEmail } from "@validators/confirm.reset";
 import { createCode, sendCode } from "@services/auth/confirmation.service";
 import { checkEmailNotExist } from "@services/auth/signup.service";
+import RedisOperation from "@src/@types/redis.operation";
 
 //TODO: const updateUserName
 
@@ -73,9 +74,9 @@ const emailCode = async (req: Request, res: Response): Promise<void> => {
 
         //in DB
         await checkEmailNotExist(email);
-        const code = await createCode(email, "confirmEmail");
+        const code = await createCode(email, RedisOperation.ConfirmEmail);
         const emailBody = `<h3>Hello, </h3> <p>Thanks for joining our family. Use this code: <b>${code}</b> for verifing your email</p>`;
-        await sendCode(email, emailBody);
+        await sendCode(email, "confirmation code" ,emailBody);
 
         res.status(200).json({
             status: "success",

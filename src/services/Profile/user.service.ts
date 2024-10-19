@@ -4,6 +4,8 @@ import { verify } from "crypto";
 import { verifyCode } from "@services/auth/confirmation.service";
 import {checkEmailNotExist} from "@services/auth/signup.service";
 import {validatePhone} from "@validators/user";
+import RedisOperation from "@src/@types/redis.operation";
+
 
 
 //TODO: const updateUserName
@@ -43,7 +45,7 @@ const updateEmail = async (id: number, email: string, code: string) => {
         throw new Error("Email is required");
     }
     try {
-        await verifyCode(email, code, "confirmEmail");   
+        await verifyCode(email, code, RedisOperation.ConfirmEmail);   
         await db.user.update({
             where: { id },
             data: { email },
