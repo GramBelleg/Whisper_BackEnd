@@ -1,5 +1,5 @@
 // prisma/clear.ts
-import db from "@DB";
+import db from "./PrismaClient";
 
 async function main() {
     // Clear the database by truncating all tables

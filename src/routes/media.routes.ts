@@ -15,10 +15,9 @@
  */
 
 import { Router, Request, Response } from "express";
-import { streamAudio, uploadAudio } from "@controllers/media/audio.controller";
-import upload from "@config/multer.config";
+import { writeBlob, readBlob } from "@controllers/media/blob.controller";
 
 const router: Router = Router();
-router.post("/upload", upload.single("audio"), uploadAudio);
-router.get("/stream/:blobName", streamAudio);
+router.post("/write", writeBlob);
+router.get("/read", readBlob);
 export default router;

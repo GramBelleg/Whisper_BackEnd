@@ -1,7 +1,7 @@
 import { User } from "@prisma/client";
 import db from "@DB";
 import axios from "axios";
-import redis from "@src/redis/index";
+import redis from "@src/redis/redis.client";
 import bcrypt from "bcrypt";
 import randomstring from "randomstring";
 import RedisOperation from "@src/@types/redis.operation";
@@ -30,14 +30,14 @@ const saveUserData = async (
     phoneNumber: string,
     password: string
 ): Promise<void> => {
-    await redis.hSet(RedisOperation.AddNewUser + ":" + email, {
+    await redis.hmset(`${RedisOperation.AddNewUser}:${email}`, {
         name,
         userName,
         email,
         phoneNumber,
         password: bcrypt.hashSync(password, 10),
     });
-    await redis.expire(RedisOperation.AddNewUser + ":" + email, 10800); // expire in 3 hours
+    await redis.expire(`${RedisOperation.AddNewUser}:${email}`, 10800); // expire in 3 hours
 };
 
 const upsertUser = async (data: Record<string, any>): Promise<User> => {
@@ -50,8 +50,8 @@ const upsertUser = async (data: Record<string, any>): Promise<User> => {
         email: data.email,
         password: bcrypt.hashSync(randomstring.generate({ length: 250 }), 10),
     };
-    // update in case user is already existed and just login
-    // create in case user is not existed and login
+    // update in case user already exists and just logs in
+    // create in case user does not exist and logs in
     const user: User = await db.user.upsert({
         where: { email: userData.email },
         update: { loggedInDevices: { increment: 1 } },

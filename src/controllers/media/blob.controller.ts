@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { getPresignedUrl } from "@services/media/blob.service";
 
-const uploadAudio = async (req: Request, res: Response) => {
+const writeBlob = async (req: Request, res: Response) => {
     try {
         // Generate a presigned URL for uploading
         const blobName = `${Date.now()}.webm`;
@@ -13,8 +13,8 @@ const uploadAudio = async (req: Request, res: Response) => {
     }
 };
 
-const streamAudio = async (req: Request, res: Response) => {
-    const blobName = req.params.blobName;
+const readBlob = async (req: Request, res: Response) => {
+    const blobName = req.body.blobName;
     try {
         // Generate a presigned URL for streaming
         const presignedUrl = await getPresignedUrl(blobName, "read");
@@ -25,4 +25,4 @@ const streamAudio = async (req: Request, res: Response) => {
     }
 };
 
-export { uploadAudio, streamAudio };
+export { writeBlob, readBlob };

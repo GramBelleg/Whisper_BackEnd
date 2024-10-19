@@ -5,8 +5,8 @@ import * as types from "@models/chat.models";
 import * as sendController from "@controllers/chat/send.message";
 import * as editController from "@controllers/chat/edit.message";
 import * as deleteController from "@controllers/chat/delete.message";
-import * as messageHandler from "./Handlers/message.handlers";
-import * as connectionHandler from "./Handlers/connection.handlers";
+import * as messageHandler from "./handlers/message.handlers";
+import * as connectionHandler from "./handlers/connection.handlers";
 
 const clients: Map<number, Socket> = new Map();
 
@@ -25,7 +25,7 @@ export const initWebSocketServer = (server: HTTPServer) => {
                 }
             },
             credentials: true,
-            methods: ["GET", "POST"], 
+            methods: ["GET", "POST"],
         },
     });
 
@@ -36,7 +36,6 @@ export const initWebSocketServer = (server: HTTPServer) => {
 
         connectionHandler.startConnection(userId, clients, socket);
 
-
         socket.on("send", async (message: types.OmitSender<types.SaveableMessage>) => {
             const savedMessage = await sendController.handleSend({
                 ...message,
@@ -46,7 +45,7 @@ export const initWebSocketServer = (server: HTTPServer) => {
                 messageHandler.broadCast(message.chatId, clients, "receive", savedMessage);
             }
         });
-        
+
         socket.on("edit", async (message: types.OmitSender<types.EditableMessage>) => {
             const editedMessage = await editController.handleEditContent({
                 ...message,

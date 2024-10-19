@@ -32,6 +32,29 @@ const blobServiceClient = BlobServiceClient.fromConnectionString(BLOB_URL);
 const containerClient = blobServiceClient.getContainerClient(CONTAINER_NAME);
 const sharedKeyCredential = new StorageSharedKeyCredential(ACCOUNT_NAME, ACCOUNT_KEY);
 
+const getPresignedUrl = async (blobName: string, action: "read" | "write") => {
+    const expiryTime = new Date(new Date().valueOf() + 60 * 60 * 1000);
+
+    const permissions = new BlobSASPermissions();
+    if (action == "write") {
+        permissions.create = true;
+        permissions.write = true;
+    } else permissions.read = true;
+
+    const sasToken = generateBlobSASQueryParameters(
+        {
+            containerName: CONTAINER_NAME,
+            blobName,
+            permissions,
+            expiresOn: expiryTime,
+        },
+        sharedKeyCredential
+    ).toString();
+
+    const presignedUrl = `https://${ACCOUNT_NAME}.blob.core.windows.net/${CONTAINER_NAME}/${blobName}?${sasToken}`;
+    return presignedUrl;
+};
+
 const uploadBlob = async (file: string, blobName: string): Promise<string> => {
     try {
         const blockBlobClient = containerClient.getBlockBlobClient(blobName);
@@ -82,31 +105,6 @@ const deleteBlob = async (blobName: string): Promise<string> => {
             (error as Error).message || "Unknown error occurred during blob deletion";
         throw new Error("Error deleting blob: " + errorMessage);
     }
-};
-
-const getPresignedUrl = async (blobName: string, action: "read" | "write") => {
-    const blobClient = containerClient.getBlobClient(blobName);
-
-    const expiryTime = new Date(new Date().valueOf() + 60 * 60 * 1000);
-
-    const permissions = new BlobSASPermissions();
-    if (action == "write") {
-        permissions.create = true;
-        permissions.write = true;
-    } else permissions.read = true;
-
-    const sasToken = generateBlobSASQueryParameters(
-        {
-            containerName: CONTAINER_NAME,
-            blobName,
-            permissions,
-            expiresOn: expiryTime,
-        },
-        sharedKeyCredential
-    ).toString();
-
-    const presignedUrl = `https://${ACCOUNT_NAME}.blob.core.windows.net/${CONTAINER_NAME}/${blobName}?${sasToken}`;
-    return presignedUrl;
 };
 
 export { uploadBlob, retrieveBlob, deleteBlob, getPresignedUrl };
