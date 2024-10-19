@@ -2,9 +2,9 @@ import { Server as IOServer, Socket } from "socket.io";
 import { Server as HTTPServer } from "http";
 import { validateCookie } from "@validators/socket";
 import * as types from "@models/chat.models";
-import * as sendController from "@controllers/Chat/send.message";
-import * as editController from "@controllers/Chat/edit.message";
-import * as deleteController from "@controllers/Chat/delete.message";
+import * as sendController from "@controllers/chat/send.message";
+import * as editController from "@controllers/chat/edit.message";
+import * as deleteController from "@controllers/chat/delete.message";
 import * as messageHandler from "./Handlers/message.handlers";
 import * as connectionHandler from "./Handlers/connection.handlers";
 
