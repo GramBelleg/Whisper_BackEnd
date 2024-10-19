@@ -42,11 +42,11 @@ const saveUserData = async (
 
 const upsertUser = async (data: Record<string, any>): Promise<User> => {
     const userData: {
-        name: string;
+        userName: string;
         email: string;
         password: string;
     } = {
-        name: data.name,
+        userName: data.userName,
         email: data.email,
         password: bcrypt.hashSync(randomstring.generate({ length: 250 }), 10),
     };

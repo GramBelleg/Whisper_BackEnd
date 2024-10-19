@@ -1,8 +1,8 @@
 import { editChatMessage, pinChatMessage, unpinChatMessage } from "@services/chat/message.service";
-import { ChatMessage } from "@prisma/client";
+import { Message } from "@prisma/client";
 import { EditableMessage, MessageReference } from "@models/chat.models";
 
-export const editContent = async (message: EditableMessage): Promise<ChatMessage | null> => {
+export const editContent = async (message: EditableMessage): Promise<Message | null> => {
     try {
         const editedMessage = await editChatMessage(message.id, message.content);
         return editedMessage;
@@ -12,7 +12,7 @@ export const editContent = async (message: EditableMessage): Promise<ChatMessage
     }
 };
 
-export const pinMessage = async (message: MessageReference): Promise<ChatMessage | null> => {
+export const pinMessage = async (message: MessageReference): Promise<Message | null> => {
     try {
         const pinnedMessage = await pinChatMessage(message.id);
         return pinnedMessage;
@@ -22,7 +22,7 @@ export const pinMessage = async (message: MessageReference): Promise<ChatMessage
     }
 };
 
-export const unpinMessage = async (message: MessageReference): Promise<ChatMessage | null> => {
+export const unpinMessage = async (message: MessageReference): Promise<Message | null> => {
     try {
         const unpinnedMessage = await unpinChatMessage(message.id);
         return unpinnedMessage;

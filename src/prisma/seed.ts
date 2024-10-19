@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { User, Chat, ChatMessage, ChatParticipant } from "@prisma/client";
+import { User, Chat, Message, ChatParticipant } from "@prisma/client";
 import bcrypt from "bcrypt";
 import db from "./PrismaClient";
 
@@ -28,7 +28,11 @@ async function createUsers(numUsers: number) {
 async function createChats(numChats: number, users: any[]) {
     const chats = [];
     for (let i = 0; i < numChats; i++) {
-        const chat = await db.chat.create({});
+        const chat = await db.chat.create({
+            data: {
+                type: "DM",
+            },
+        });
 
         // Randomly select participants for this chat
         const participants = faker.helpers.arrayElements(users, 2); // Pick 2 random users
@@ -55,7 +59,7 @@ async function createChatMessages(chats: any[]) {
 
         for (let i = 0; i < numMessages; i++) {
             const sender: User = faker.helpers.arrayElement(chat.participants); // Randomly pick a sender
-            const message = await db.chatMessage.create({
+            const message = await db.message.create({
                 data: {
                     content: faker.lorem.sentence(),
                     senderId: sender.id,
@@ -98,4 +102,3 @@ main().catch((e) => {
     console.error(e);
     process.exit(1);
 });
-

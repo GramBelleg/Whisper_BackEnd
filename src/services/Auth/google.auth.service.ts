@@ -22,12 +22,12 @@ const getUserData = async (token: string): Promise<Record<string, any> | undefin
             `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`
         );
         const data: Record<string, any> = await response.json();
-        return data;
+        const wantedData = { userName: data.name, email: data.email };
+        return wantedData;
     } catch (err: any) {
         console.log(err.message);
         return undefined;
     }
 };
-
 
 export { getUserData, getAccessToken };

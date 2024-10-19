@@ -1,0 +1,39 @@
+model Message {
+  id               Int               @id @default(autoincrement())
+  chatId           Int 
+  senderId         Int 
+  content          String
+  createdAt        DateTime          @default(now())
+  read             DateTime?         @default(now())
+  delivered        DateTime?         @default(now())
+  forwarded        Boolean           @default(false)
+  pinned           Boolean           @default(false)
+  selfDestruct     Boolean           @default(false)
+  expiresAfter     Int?
+  type             String
+  parentMessageId  Int?              @unique
+  sender           User              @relation(fields: [senderId], references: [id])
+  chat             Chat              @relation(fields: [chatId], references: [id]) 
+  lastMessageChat  Chat?             @relation("LastMessageInChat") 
+  voiceMessage     VoiceMessage?
+  parentMessage    Message?      @relation("ReplyToMessage", fields: [parentMessageId], references: [id])
+  reply            Message?     @relation("ReplyToMessage") 
+  messageStatus    MessageStatus[]
+}
+
+model MessageStatus {
+  messageId Int    
+  userId    Int
+  read      Boolean
+  delivered Boolean
+  deleted Boolean
+  message Message @relation(fields: [messageId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  @@unique([messageId,userId])
+}
+
+model VoiceMessage {
+  id            Int         @id @default(autoincrement())
+  MessageId Int         @unique
+  Message   Message @relation(fields: [MessageId], references: [id])
+}

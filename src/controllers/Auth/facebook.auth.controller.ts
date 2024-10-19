@@ -58,15 +58,7 @@ async function facebookAuth(req: Request, res: Response): Promise<void> {
 
         createCookie(res, userToken);
 
-        res.status(200).json({
-            status: "success",
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-            },
-            userToken,
-        });
+        res.redirect(process.env.PROFILE_ENDPOINT as string);
     } catch (err: any) {
         console.log(err);
         res.status(400).json({

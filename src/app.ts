@@ -19,7 +19,7 @@ const server = http.createServer(app);
 
 app.use(
     cors({
-        origin: "*", // Allow this origin to send request to server and recieve response from server
+        origin: "http://localhost:3000", // Must specify origin when sending cookies with request
         credentials: true, // Allow cookies to be sent in cross-origin requests
     })
 );

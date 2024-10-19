@@ -28,7 +28,6 @@ async function githubAuth(req: Request, res: Response): Promise<void> {
         const accessToken = await getAccessToken(authCode);
 
         const userData: Record<string, any> | undefined = await getUserData(accessToken);
-        console.log(userData);
         if (!userData) {
             throw new Error("No User Data retrieved");
         }
@@ -42,15 +41,7 @@ async function githubAuth(req: Request, res: Response): Promise<void> {
 
         createCookie(res, userToken);
 
-        res.status(200).json({
-            status: "success",
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-            },
-            userToken,
-        });
+        res.redirect(process.env.PROFILE_ENDPOINT as string);
     } catch (err: any) {
         console.log(err.message);
         res.status(400).json({

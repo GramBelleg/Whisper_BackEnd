@@ -26,6 +26,7 @@ async function googleAuth(req: Request, res: Response): Promise<void> {
             expiresIn: "1h",
         });
 
+        //*IMPORTANT* Make sure frontend sets withcredential: true so that the cookies are sent with the request
         createCookie(res, userToken);
 
         res.status(200).json({
