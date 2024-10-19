@@ -1,3 +1,8 @@
+enum MessageType {
+  TEXT
+  MEDIA
+}
+
 model Message {
   id               Int               @id @default(autoincrement())
   chatId           Int 
@@ -8,7 +13,7 @@ model Message {
   pinned           Boolean           @default(false)
   selfDestruct     Boolean           @default(false)
   expiresAfter     Int?
-  type             String
+  type             MessageType
   parentMessageId  Int?              @unique
   sender           User              @relation(fields: [senderId], references: [id])
   chat             Chat              @relation(fields: [chatId], references: [id]) 
