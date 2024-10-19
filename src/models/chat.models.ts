@@ -1,5 +1,11 @@
 import { Message } from "@prisma/client";
 
+export type ChatSummary = {
+    chatName: string;
+    lastMessage: any;
+    unreadMessageCount: number;
+};
+
 export type SaveableMessage = Pick<
     Message,
     | "chatId"

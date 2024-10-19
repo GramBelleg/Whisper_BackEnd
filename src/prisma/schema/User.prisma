@@ -12,6 +12,7 @@ model User {
   channelParticipant ChannelParticipant[]
   tokens   UserToken[]
   messageStatus MessageStatus[]
+  userChat UserChat[]
 }
 
 model UserToken{

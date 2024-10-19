@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { User, Chat, Message, ChatParticipant } from "@prisma/client";
+import { User, Chat, Message, ChatParticipant,  } from "@prisma/client";
 import bcrypt from "bcrypt";
 import db from "./PrismaClient";
 
@@ -39,6 +39,12 @@ async function createChats(numChats: number, users: any[]) {
 
         // Add participants to chat
         for (const user of participants) {
+            await db.userChat.create({
+                data: {
+                    chatId: chat.id,
+                    userId: user.id,
+                },
+            })
             await db.chatParticipant.create({
                 data: {
                     chatId: chat.id,
@@ -53,32 +59,32 @@ async function createChats(numChats: number, users: any[]) {
 }
 
 // Utility function to create messages for chats
-async function createChatMessages(chats: any[]) {
-    for (const chat of chats) {
-        const numMessages = faker.number.int({ min: 1, max: 10 }); // Random number of messages per chat
+// async function createChatMessages(chats: any[]) {
+//     for (const chat of chats) {
+//         const numMessages = faker.number.int({ min: 1, max: 10 }); // Random number of messages per chat
 
-        for (let i = 0; i < numMessages; i++) {
-            const sender: User = faker.helpers.arrayElement(chat.participants); // Randomly pick a sender
-            const message = await db.message.create({
-                data: {
-                    content: faker.lorem.sentence(),
-                    senderId: sender.id,
-                    createdAt: faker.date.recent(),
-                    chatId: chat.chat.id,
-                    type: "text",
-                },
-            });
+//         for (let i = 0; i < numMessages; i++) {
+//             const sender: User = faker.helpers.arrayElement(chat.participants); // Randomly pick a sender
+//             const message = await db.message.create({
+//                 data: {
+//                     content: faker.lorem.sentence(),
+//                     senderId: sender.id,
+//                     createdAt: faker.date.recent(),
+//                     chatId: chat.chat.id,
+//                     type: "text",
+//                 },
+//             });
 
-            //update each chat with the created message
-            await db.chat.update({
-                where: { id: chat.chat.id },
-                data: {
-                    lastMessageId: message.id,
-                },
-            });
-        }
-    }
-}
+//             //update each chat with the created message
+//             await db.userChat.updateMany({
+//                 where: { chatId: chat.chat.id },
+//                 data: {
+//                     lastMessageId: message.id,
+//                 },
+//             });
+//         }
+//     }
+// }
 
 // Main function to implement the seeding
 async function main() {
@@ -94,8 +100,8 @@ async function main() {
     console.log(`Created ${chats.length} chats.`);
 
     //Create Messages for each chat
-    await createChatMessages(chats);
-    console.log("Created messages for all chats.");
+    //await createChatMessages(chats);
+    //console.log("Created messages for all chats.");
 }
 
 main().catch((e) => {

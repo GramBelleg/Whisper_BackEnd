@@ -10,13 +10,13 @@ model Message {
   expiresAfter     Int?
   type             String
   parentMessageId  Int?              @unique
+  lastMessageChat  UserChat[]        @relation("LastMessageInUserChat") 
   sender           User              @relation(fields: [senderId], references: [id])
   chat             Chat              @relation(fields: [chatId], references: [id]) 
-  lastMessageChat  Chat?             @relation("LastMessageInChat") 
   voiceMessage     VoiceMessage?
   parentMessage    Message?          @relation("ReplyToMessage", fields: [parentMessageId], references: [id])
   reply            Message?          @relation("ReplyToMessage") 
-  messageStatus    MessageStatus[]
+  messageStatus    MessageStatus[] 
 }
 
 model MessageStatus {
@@ -24,14 +24,14 @@ model MessageStatus {
   userId          Int
   read            DateTime?         
   delivered       DateTime?        
-  deleted         Boolean
-  message         Message @relation(fields: [messageId], references: [id])
-  user            User    @relation(fields: [userId], references: [id])
+  deleted         Boolean           @default(false)
+  message         Message           @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user            User              @relation(fields: [userId], references: [id])
   @@unique([messageId,userId])
 }
 
 model VoiceMessage {
-  id            Int         @id @default(autoincrement())
-  MessageId Int             @unique
+  id              Int               @id @default(autoincrement())
+  MessageId       Int               @unique
   Message   Message @relation(fields: [MessageId], references: [id])
 }
