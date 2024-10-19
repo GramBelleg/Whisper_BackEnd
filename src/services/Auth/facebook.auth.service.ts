@@ -21,12 +21,12 @@ const getUserData = async (accessToken: string): Promise<Record<string, any> | u
     try {
         const url = `https://graph.facebook.com/me?access_token=${accessToken}&fields=id,name,email`;
         const response = await axios.get(url);
-        return response.data;
+        const data = { userName: response.data.name, email: response.data.email };
+        return data;
     } catch (err: any) {
         console.log(err.message);
         return undefined;
     }
 };
-
 
 export { getUserData, getAccessToken };

@@ -6,3 +6,4 @@ tsconfig.tsbuildinfo
 frontend/
 Dockerfile
 .dockerignore
+docker-compose.yml

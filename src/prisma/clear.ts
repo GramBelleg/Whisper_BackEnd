@@ -1,13 +1,12 @@
 // prisma/clear.ts
-import db from "./PrismaClient";
+import db from "@DB";
 
 async function main() {
     // Clear the database by truncating all tables
-    await db.chatMessage.deleteMany({});
+    await db.message.deleteMany({});
     await db.chatParticipant.deleteMany({});
     await db.chat.deleteMany({});
     await db.user.deleteMany({});
-    await db.verification.deleteMany({});
 
     console.log("Database cleared!");
 }

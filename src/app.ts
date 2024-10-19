@@ -10,7 +10,7 @@ import swaggerUi from "swagger-ui-express";
 import session from "express-session";
 import errorHandler from "@middlewares/error.handler";
 import { initWebSocketServer } from "@socket/web.socket";
-import { redisExpirySubscribe } from "@redis/redis.sub.handlers";
+import { redisExpirySubscribe } from "@src/redis/redis.sub.handlers";
 
 dotenv.config();
 
@@ -19,7 +19,7 @@ const server = http.createServer(app);
 
 app.use(
     cors({
-        origin: "*", // Allow this origin to send request to server and recieve response from server
+        origin: "http://localhost:3000", // Must specify origin when sending cookies with request
         credentials: true, // Allow cookies to be sent in cross-origin requests
     })
 );
@@ -45,4 +45,3 @@ app.use(errorHandler);
 server.listen(parseInt(process.env.PORT as string), () => {
     console.log(`Listening on port ${process.env.PORT}`);
 });
-

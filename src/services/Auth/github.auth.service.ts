@@ -40,12 +40,21 @@ const getUserData = async (accessToken: string): Promise<Record<string, any> | u
                 Authorization: `Bearer ${accessToken}`,
             },
         });
-        return userResponse.data;
+
+        const emailResponse = await axios.get(`https://api.github.com/user/emails`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+
+        const emailData = emailResponse.data;
+        const userData = userResponse.data;
+        const userCompleteData = { userName: userData.login, email: emailData[0].email };
+        return userCompleteData;
     } catch (err: any) {
         console.log(err.message);
         return undefined;
     }
 };
-
 
 export { getUserData, getAccessToken };

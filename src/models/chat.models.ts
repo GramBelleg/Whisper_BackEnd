@@ -1,7 +1,7 @@
-import { ChatMessage } from "@prisma/client";
+import { Message } from "@prisma/client";
 
 export type SaveableMessage = Pick<
-    ChatMessage,
+    Message,
     | "chatId"
     | "senderId"
     | "content"
@@ -14,9 +14,8 @@ export type SaveableMessage = Pick<
 
 export type OmitSender<T> = Omit<T, "senderId">;
 
-export type MessageReference = Pick<ChatMessage, "id" | "senderId" | "chatId">;
+export type MessageReference = Pick<Message, "id" | "senderId" | "chatId">;
 
-export type EditableMessage = MessageReference & Pick<ChatMessage, "content">;
-
+export type EditableMessage = MessageReference & Pick<Message, "content">;
 
 export {};

@@ -86,8 +86,7 @@
         "@validators": "./dist/validators",
         "@routes": "./dist/routes",
         "@socket": "./dist/socket",
-        "@redis": "./dist/redis",
         "@models": "./dist/models",
-        "@prisma": "./dist/prisma"
+        "@src": "./dist"
     }
 }

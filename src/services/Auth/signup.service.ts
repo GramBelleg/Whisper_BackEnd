@@ -1,9 +1,10 @@
 import { User } from "@prisma/client";
 import db from "@DB";
 import axios from "axios";
-import redis from "@redis/index";
+import redis from "@src/redis/index";
 import bcrypt from "bcrypt";
 import randomstring from "randomstring";
+import RedisOperation from "@src/@types/redis.operation";
 
 const checkEmailNotExist = async (email: string): Promise<void> => {
     const foundUser: User | null = await db.user.findUnique({
@@ -22,23 +23,30 @@ async function verifyRobotToken(robotToken: string) {
     }
 }
 
-const saveUser = async (
+const saveUserData = async (
     name: string,
+    userName: string,
     email: string,
     phoneNumber: string,
     password: string
 ): Promise<void> => {
-    await redis.hSet(email, { name, email, phoneNumber, password: bcrypt.hashSync(password, 10) });
-    await redis.expire(email, 10800); // expire in 3 hours
+    await redis.hSet(RedisOperation.AddNewUser + ":" + email, {
+        name,
+        userName,
+        email,
+        phoneNumber,
+        password: bcrypt.hashSync(password, 10),
+    });
+    await redis.expire(RedisOperation.AddNewUser + ":" + email, 10800); // expire in 3 hours
 };
 
 const upsertUser = async (data: Record<string, any>): Promise<User> => {
     const userData: {
-        name: string;
+        userName: string;
         email: string;
         password: string;
     } = {
-        name: data.name,
+        userName: data.userName,
         email: data.email,
         password: bcrypt.hashSync(randomstring.generate({ length: 250 }), 10),
     };
@@ -55,4 +63,4 @@ const upsertUser = async (data: Record<string, any>): Promise<User> => {
     return user;
 };
 
-export { checkEmailNotExist, verifyRobotToken, saveUser, upsertUser };
+export { checkEmailNotExist, verifyRobotToken, saveUserData, upsertUser };

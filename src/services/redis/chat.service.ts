@@ -1,7 +1,7 @@
-import redisClient from "@redis/redis.client";
-import { ChatMessage } from "@prisma/client";
+import redisClient from "@src/redis/redis.client";
+import { Message } from "@prisma/client";
 
-export const saveExpiringMessage = async (message: ChatMessage): Promise<void> => {
+export const saveExpiringMessage = async (message: Message): Promise<void> => {
     if (!message.expiresAfter) {
         throw new Error("Expiry time not provided");
     }

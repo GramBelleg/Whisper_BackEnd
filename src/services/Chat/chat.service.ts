@@ -1,4 +1,4 @@
-import db from "src/prisma/PrismaClient";
+import db from "@DB";
 import { Chat } from "@prisma/client";
 
 export const getChats = async (userId: number): Promise<Chat[]> => {
@@ -17,7 +17,7 @@ export const getChats = async (userId: number): Promise<Chat[]> => {
 };
 
 export const getChatId = async (messageId: number): Promise<number | undefined> => {
-    const result = await db.chatMessage.findUnique({
+    const result = await db.message.findUnique({
         where: { id: messageId },
         select: { chatId: true },
     });
@@ -42,7 +42,7 @@ export const setLastMessage = async (chatId: number, messageId: number | null): 
 };
 
 export const setNewLastMessage = async (chatId: number): Promise<number | null> => {
-    const lastMessage = await db.chatMessage.findFirst({
+    const lastMessage = await db.message.findFirst({
         where: { chatId },
         orderBy: { createdAt: "desc" },
     });
