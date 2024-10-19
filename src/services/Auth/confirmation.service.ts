@@ -3,6 +3,7 @@ import redis from "@src/redis/redis.client";
 import Randomstring from "randomstring";
 import transporter from "@config/email.config";
 import RedisOperation from "@src/@types/redis.operation";
+import { User } from "@prisma/client";
 
 // Check if there is a data for this email (signup data) in redis for new account
 const checkEmailExist = async (email: string) => {
@@ -56,9 +57,10 @@ const confirmAddUser = async (email: string) => {
         phoneNumber: foundData.phoneNumber,
         password: foundData.password,
     };
-    await db.user.create({
+    const user: User = await db.user.create({
         data: { ...userData },
     });
+    return user;
 };
 
 export { checkEmailExist, createCode, sendCode, verifyCode, confirmAddUser };

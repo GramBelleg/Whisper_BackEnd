@@ -9,6 +9,10 @@ import {
 } from "@services/auth/confirmation.service";
 import { checkEmailNotExist } from "@services/auth/signup.service";
 import RedisOperation from "@src/@types/redis.operation";
+import { User } from "@prisma/client";
+import { createCookie } from "@services/auth/cookie.service";
+import { incrementUserDevices } from "@services/auth/login.service";
+import jwt from "jsonwebtoken";
 
 const resendConfirmCode = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -48,10 +52,23 @@ const confirmEmail = async (req: Request, res: Response): Promise<void> => {
 
         await verifyCode(email, code, RedisOperation.ConfirmEmail);
 
-        await confirmAddUser(email);
+        const user: User = await confirmAddUser(email);
 
+        const userToken: string = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, {
+            expiresIn: process.env.JWT_EXPIRE,
+        });
+
+        incrementUserDevices(user.id);
+        createCookie(res, userToken);
         res.status(200).json({
             status: "success",
+            user: {
+                id: user.id,
+                name: user.name,
+                userName: user.userName,
+                email: user.email,
+            },
+            userToken,
         });
     } catch (e: any) {
         console.log(e.message);
