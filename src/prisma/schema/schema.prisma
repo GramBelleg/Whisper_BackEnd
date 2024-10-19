@@ -47,8 +47,8 @@ model ChatMessage {
   senderId          Int                // Reference to the User who sent the message
   content           String
   createdAt         DateTime           @default(now())
-  read              DateTime?          @default(now())
-  delivered         DateTime?          @default(now())
+  read              DateTime?          
+  delivered         DateTime?          
   forwarded         Boolean            @default(false)
   pinned            Boolean            @default(false)
   selfDestruct      Boolean            @default(false)
