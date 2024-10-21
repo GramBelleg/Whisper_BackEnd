@@ -113,7 +113,7 @@
  *                  email:
  *                   type: string
  *                   format: email
- * 
+ *
  *  /api/auth/resendConfirmCode:
  *   post:
  *     summary: Generate and resend confirmation code to confirm user's email to add new account
@@ -177,7 +177,7 @@
  *               properties:
  *                status:
  *                 type: string
- * 
+ *
  *  /api/auth/sendResetCode:
  *   post:
  *     summary: Generate and send reset code to change user's password
@@ -207,7 +207,7 @@
  *               properties:
  *                status:
  *                 type: string
- * 
+ *
  *  /api/auth/resetPassword:
  *   post:
  *     summary: Verify code to change user's password
@@ -250,7 +250,7 @@
  *               properties:
  *                status:
  *                 type: string
- *  
+ *
  *  /api/auth/google:
  *   post:
  *     summary: Login option using google api
@@ -293,7 +293,7 @@
  *              userToken:
  *               type: string
  *               description: token which will be used in authentication inside application
- * 
+ *
  *  /api/auth/facebook:
  *   get:
  *     summary: Login option using facebook api
@@ -303,10 +303,10 @@
  *     responses:
  *       302:
  *         description: redirection client to page of facebook login
- * 
+ *
  *  /api/auth/facebook/callback:
  *   get:
- *     summary: Authenticate facebook login 
+ *     summary: Authenticate facebook login
  *     operationID: Facebook Authentication
  *     tags:
  *      - Authentication - Registration
@@ -345,7 +345,7 @@
  *              userToken:
  *               type: string
  *               description: token which will be used in authentication inside application
- * 
+ *
  *  /api/auth/github:
  *   get:
  *     summary: Login option using github api
@@ -355,10 +355,10 @@
  *     responses:
  *       302:
  *         description: redirection client to page of github login
- * 
+ *
  *  /api/auth/github/callback:
  *   get:
- *     summary: Authenticate github login 
+ *     summary: Authenticate github login
  *     operationID: Github Authentication
  *     tags:
  *      - Authentication - Registration
@@ -392,7 +392,7 @@
  *              userToken:
  *               type: string
  *               description: token which will be used in authentication inside application
- * 
+ *
  *  /api/auth/logoutOne:
  *   get:
  *    summary: Logout from current device and delete token cookie of current device
@@ -416,7 +416,7 @@
  *             type: string
  *            message:
  *             type: string
- * 
+ *
  *  /api/auth/logoutAll:
  *   get:
  *    summary: Logout from all devices of this user and delete token cookie of current device
@@ -440,7 +440,7 @@
  *             type: string
  *            message:
  *             type: string
- * 
+ *
  */
 
 import { Router } from "express";
@@ -470,8 +470,5 @@ router.get("/facebook", facebookRedirect);
 router.get("/facebook/callback", facebookAuth);
 router.get("/github", githubRedirect);
 router.get("/github/callback", githubAuth);
-
-router.get("/logoutOne", userAuth, logoutOne);
-router.get("/logoutAll", userAuth, logoutAll);
 
 export default router;
