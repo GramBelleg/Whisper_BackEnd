@@ -1,23 +1,35 @@
 model User {
-  id               Int                  @id @default(autoincrement())
-  email            String               @unique
-  userName         String               //*CHANGE THIS* it has to be unique but fix with oAuth
-  name             String?
-  password         String               @db.VarChar(256)
-  phoneNumber      String?              @unique
-  loggedInDevices  Int                  @default(0)
-  Messages         Message[] 
-  chatParticipant  ChatParticipant[] 
-  groupParticipant GroupParticipant[]
+  id                 Int                  @id @default(autoincrement())
+  email              String               @unique
+  userName           String //*CHANGE THIS* it has to be unique but fix with oAuth
+  name               String?
+  password           String               @db.VarChar(256)
+  phoneNumber        String?              @unique
+  loggedInDevices    Int                  @default(0)
+  profilePic         String?
+  lastSeen           DateTime             @default(now())
+  bio                String?
+  Messages           Message[]
+  chatParticipant    ChatParticipant[]
+  groupParticipant   GroupParticipant[]
   channelParticipant ChannelParticipant[]
-  tokens   UserToken[]
-  messageStatus MessageStatus[]
+  tokens             UserToken[]
+  messageStatus      MessageStatus[]
+  story              Story[]
 }
 
-model UserToken{
-  userId Int   
-  token String
-  user User   @relation(fields: [userId], references: [id])
-  @@unique([userId,token])
+model UserToken {
+  userId Int
+  token  String
+  user   User   @relation(fields: [userId], references: [id])
 
+  @@unique([userId, token])
+}
+
+model Story {
+  id      Int    @id @default(autoincrement())
+  userId  Int
+  user    User   @relation(fields: [userId], references: [id])
+  content String
+  media   String
 }
