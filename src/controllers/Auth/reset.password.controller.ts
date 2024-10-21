@@ -1,17 +1,16 @@
 import { validateEmail, validateResetCode } from "@validators/confirm.reset";
 import { Request, Response } from "express";
-import { updatePassword } from "@services/auth/reset.password.service";
-import { verifyCode, createCode, sendCode } from "@services/auth/confirmation.service";
-import { checkEmailExist } from "@services/auth/login.service";
-import RedisOperation from "@src/@types/redis.operation";
+import { updatePassword } from "@services/Auth/reset.password.service";
+import { verifyCode, createCode, sendCode } from "@services/Auth/confirmation.service";
+import { checkEmailExistDB } from "@services/Auth/login.service";
+import RedisOperation from "src/@types/redis.operation";
 
 async function sendResetCode(req: Request, res: Response) {
     try {
         const { email } = req.body as Record<string, string>;
         validateEmail(email);
 
-        //in DB
-        await checkEmailExist(email);
+        await checkEmailExistDB(email);
 
         const code = await createCode(email, RedisOperation.ResetPassword);
         const emailSubject = "Password reset";
@@ -35,12 +34,11 @@ async function resetPassword(req: Request, res: Response) {
         const { email, password, code } = req.body as Record<string, string>;
         validateResetCode(req.body);
 
-        //in DB
-        await checkEmailExist(email);
+        await checkEmailExistDB(email);
 
         await verifyCode(email, code, RedisOperation.ResetPassword);
 
-        updatePassword(email, password);
+        await updatePassword(email, password);
 
         res.status(200).json({
             status: "success",

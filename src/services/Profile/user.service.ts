@@ -1,8 +1,5 @@
 import db from "src/prisma/PrismaClient";
-import { User, Story } from "@prisma/client";
-import { verify } from "crypto";
-import { verifyCode } from "@services/auth/confirmation.service";
-import {checkEmailNotExist} from "@services/auth/signup.service";
+import { verifyCode } from "@services/Auth/confirmation.service";
 import {validatePhone} from "@validators/user";
 import RedisOperation from "@src/@types/redis.operation";
 

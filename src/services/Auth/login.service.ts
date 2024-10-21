@@ -1,7 +1,8 @@
 import db from "@DB";
 import bcrypt from "bcrypt";
 
-async function checkEmailExist(email: string) {
+
+async function checkEmailExistDB(email: string) {
     const user = await db.user.findUnique({
         where: { email },
     });
@@ -11,19 +12,10 @@ async function checkEmailExist(email: string) {
     return user;
 }
 
-async function checkPasswordCorrect(password: string, hashedPassword: string) {
+function checkPasswordCorrect(password: string, hashedPassword: string) {
     if (!bcrypt.compareSync(password, hashedPassword)) {
         throw new Error("Incorrect password. Try again");
     }
 }
 
-async function incrementUserDevices(userId: number) {
-    await db.user.update({
-        where: { id: userId },
-        data: {
-            loggedInDevices: { increment: 1 },
-        },
-    });
-}
-
-export { checkEmailExist, checkPasswordCorrect, incrementUserDevices };
+export { checkEmailExistDB, checkPasswordCorrect };

@@ -1,16 +1,13 @@
 import { Request, Response } from "express";
-import { clearCookie } from "@services/auth/cookie.service";
-import { decrementUserDevices, resetUserDevices } from "@services/auth/logout.service";
-
-
-/**
- * TODO: the idea of making counter for logged in devices is not correct
- */
+import { clearTokenCookie } from "@services/Auth/token.service";
+import { deleteUserToken, deleteAllUserTokens } from "@services/Auth/token.service";
+import { getToken } from "@services/auth.service";
 
 async function logoutOne(req: Request, res: Response): Promise<void> {
     try {
-        decrementUserDevices(req.userId);
-        clearCookie(res);
+        const userToken = getToken(req);
+        await deleteUserToken(req.userId, userToken);
+        clearTokenCookie(res);
         res.status(200).json({
             status: "success",
             message: "Logged out from this device",
@@ -26,8 +23,8 @@ async function logoutOne(req: Request, res: Response): Promise<void> {
 
 async function logoutAll(req: Request, res: Response): Promise<void> {
     try {
-        resetUserDevices(req.userId);
-        clearCookie(res);
+        await deleteAllUserTokens(req.userId);
+        clearTokenCookie(res);
         res.status(200).json({
             status: "success",
             message: "Logged out from all devices",

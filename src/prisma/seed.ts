@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { User, Chat, Message, ChatParticipant } from "@prisma/client";
+import { User } from "@prisma/client";
 import bcrypt from "bcrypt";
 import db from "./PrismaClient";
 
@@ -15,7 +15,6 @@ async function createUsers(numUsers: number) {
                 email: faker.internet.email(),
                 userName: faker.internet.userName(),
                 name: faker.person.fullName(),
-                //TODO: userName: faker.internet.userName(),
                 password: bcrypt.hashSync(passwords[i], 10),
                 bio: faker.lorem.sentence(),
                 phoneNumber: faker.phone.number({ style: "international" })
