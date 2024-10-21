@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { User, Chat, Message, ChatParticipant } from "@prisma/client";
+import { User, MessageType } from "@prisma/client";
 import bcrypt from "bcrypt";
 import db from "./PrismaClient";
 
@@ -65,7 +65,7 @@ async function createChatMessages(chats: any[]) {
                     senderId: sender.id,
                     createdAt: faker.date.recent(),
                     chatId: chat.chat.id,
-                    type: "text",
+                    type: MessageType.TEXT,
                 },
             });
 

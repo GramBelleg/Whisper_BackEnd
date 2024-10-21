@@ -6,8 +6,8 @@ import RedisOperation from "@src/@types/redis.operation";
 import { User } from "@prisma/client";
 
 // Check if there is a data for this email (signup data) in redis for new account
-const checkEmailExist = async (email: string) => {
-    const foundUser = await redis.hgetall(`${RedisOperation.AddNewUser}:${email}`); // hGetAll -> hgetall in ioredis
+const checkEmailExistRedis = async (email: string) => {
+    const foundUser = await redis.hgetall(`${RedisOperation.AddNewUser}:${email}`);
     if (Object.keys(foundUser).length === 0) {
         throw new Error("Email is not found in redis");
     }
@@ -45,7 +45,7 @@ const verifyCode = async (email: string, code: string, operation: RedisOperation
     }
 };
 
-const confirmAddUser = async (email: string) => {
+const addUser = async (email: string) => {
     const foundData = await redis.hgetall(`${RedisOperation.AddNewUser}:${email}`);
     if (Object.keys(foundData).length === 0) {
         throw new Error("User's data is not found in redis");
@@ -63,4 +63,4 @@ const confirmAddUser = async (email: string) => {
     return user;
 };
 
-export { checkEmailExist, createCode, sendCode, verifyCode, confirmAddUser };
+export { checkEmailExistRedis, createCode, sendCode, verifyCode, addUser };

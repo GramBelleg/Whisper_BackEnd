@@ -1,5 +1,6 @@
 import { Request } from "express";
-import db from '@DB';
+import jwt, { TokenExpiredError } from 'jsonwebtoken';
+import { checkUserTokenExist, deleteUserToken } from "./Auth/token.service";
 
 function getToken(req: Request) {
     let token: string;
@@ -13,16 +14,24 @@ function getToken(req: Request) {
     return token;
 }
 
-async function checkLogoutAll(userId: number) {
-    const user = await db.user.findUnique({
-        where: { id: userId }
-    });
-    if (!user) {
-        throw new Error('User is not existed');
-    }
-    if (user.loggedInDevices <= 0) {
-        throw new Error('All devices are logged out. Login again');
+async function verifyUserToken(userToken: string) {
+    let userId: number | undefined = undefined;
+    try {
+        userId = (jwt.verify(userToken, process.env.JWT_SECRET as string, { ignoreExpiration: true }) as Record<string, any>).id;
+        if (!userId)
+            throw new Error()
+        await checkUserTokenExist(userId, userToken);
+        // check expiration of token
+        jwt.verify(userToken, process.env.JWT_SECRET as string);
+        return userId;
+    } catch (err: any) {
+        if (err instanceof TokenExpiredError) {
+            console.log('expired');
+            if (userId)
+                deleteUserToken(userId, userToken);
+        }
+        throw new Error('Login again.');
     }
 }
 
-export { getToken, checkLogoutAll };
+export { getToken, verifyUserToken };

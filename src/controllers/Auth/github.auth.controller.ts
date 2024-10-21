@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
-import { getAccessToken, getUserData } from "@services/auth/github.auth.service";
-import { upsertUser } from "@services/auth/signup.service";
-import jwt from "jsonwebtoken";
-import { createCookie } from "@services/auth/cookie.service";
+import { getAccessToken, getUserData } from "@services/Auth/github.auth.service";
+import { upsertUser } from "@services/Auth/signup.service";
+import { createTokenCookie, createAddToken } from "@services/Auth/token.service";
 import { User } from "@prisma/client";
 
 async function githubRedirect(req: Request, res: Response): Promise<void> {
@@ -34,12 +33,8 @@ async function githubAuth(req: Request, res: Response): Promise<void> {
 
         const user: User = await upsertUser(userData);
 
-        //create a jwt and store it in a cookie
-        const userToken: string = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, {
-            expiresIn: "1h",
-        });
-
-        createCookie(res, userToken);
+        const userToken = await createAddToken(user.id);
+        createTokenCookie(res, userToken);
 
         res.redirect(process.env.PROFILE_ENDPOINT as string);
     } catch (err: any) {

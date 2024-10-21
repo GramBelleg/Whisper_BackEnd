@@ -1,28 +1,22 @@
 import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
 import { User } from "@prisma/client";
-import { createCookie } from "@services/auth/cookie.service";
+import { createTokenCookie, createAddToken } from "@services/Auth/token.service";
 import {
-    checkEmailExist,
-    checkPasswordCorrect,
-    incrementUserDevices,
-} from "@services/auth/login.service";
+    checkEmailExistDB,
+    checkPasswordCorrect
+} from "@services/Auth/login.service";
 import { validateLogIn } from "@validators/user";
 
 const login = async (req: Request, res: Response) => {
     try {
         const { email, password }: Record<string, string> = req.body;
-        validateLogIn(email, password);
+        validateLogIn(req.body);
 
-        //in DB
-        const user: User = await checkEmailExist(email);
+        const user: User = await checkEmailExistDB(email);
         checkPasswordCorrect(password, user.password);
 
-        const userToken: string = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, {
-            expiresIn: process.env.JWT_EXPIRE,
-        });
-        incrementUserDevices(user.id);
-        createCookie(res, userToken);
+        const userToken = await createAddToken(user.id);
+        createTokenCookie(res, userToken);
         res.status(200).json({
             status: "success",
             user: {
