@@ -6,7 +6,7 @@ import { User } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import { checkEmailExistDB } from "@services/auth/login.service";
 import { createCode, sendCode, verifyCode } from "@services/auth/confirmation.service";
-import { createTokenCookie } from "@services/auth/token.service";
+import { createAddToken, createTokenCookie } from "@services/auth/token.service";
 
 async function sendResetCode(req: Request, res: Response) {
     try {
@@ -45,8 +45,8 @@ async function resetPassword(req: Request, res: Response) {
         const userToken: string = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, {
             expiresIn: process.env.JWT_EXPIRE,
         });
-        await updatePassword(email, password);
 
+        await createAddToken(user.id);
         createTokenCookie(res, userToken);
         res.status(200).json({
             status: "success",
