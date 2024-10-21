@@ -4,9 +4,9 @@ import { updatePassword } from "@services/auth/reset.password.service";
 import RedisOperation from "@src/@types/redis.operation";
 import { User } from "@prisma/client";
 import jwt from "jsonwebtoken";
-import { checkEmailExistDB } from "@services/Auth/login.service";
-import { createCode, sendCode, verifyCode } from "@services/Auth/confirmation.service";
-import { createTokenCookie } from "@services/Auth/token.service";
+import { checkEmailExistDB } from "@services/auth/login.service";
+import { createCode, sendCode, verifyCode } from "@services/auth/confirmation.service";
+import { createTokenCookie } from "@services/auth/token.service";
 
 async function sendResetCode(req: Request, res: Response) {
     try {

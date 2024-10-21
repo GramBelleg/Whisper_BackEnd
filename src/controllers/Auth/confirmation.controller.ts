@@ -1,15 +1,16 @@
 import { Request, Response } from "express";
 import { validateEmail, validateConfirmCode } from "@validators/confirm.reset";
+
+import RedisOperation from "src/@types/redis.operation";
+import { createTokenCookie, createAddToken } from "@services/auth/token.service";
+import { checkEmailNotExistDB } from "@services/auth/signup.service";
 import {
-    checkEmailExistRedis,
-    verifyCode,
     addUser,
+    checkEmailExistRedis,
     createCode,
     sendCode,
-} from "@services/Auth/confirmation.service";
-import { checkEmailNotExistDB } from "@services/Auth/signup.service";
-import RedisOperation from "src/@types/redis.operation";
-import { createTokenCookie, createAddToken } from "@services/Auth/token.service";
+    verifyCode,
+} from "@services/auth/confirmation.service";
 
 const resendConfirmCode = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -50,7 +51,7 @@ const confirmEmail = async (req: Request, res: Response): Promise<void> => {
 
         const userToken: string = await createAddToken(user.id);
         createTokenCookie(res, userToken);
-        
+
         res.status(200).json({
             status: "success",
             user: {

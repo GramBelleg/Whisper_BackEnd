@@ -2,8 +2,8 @@ import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import * as userServices from "@services/Profile/user.service";
 import { validateEmail } from "@validators/confirm.reset";
-import { createCode, sendCode } from "@services/Auth/confirmation.service";
-import { checkEmailNotExistDB } from "@services/Auth/signup.service";
+import { createCode, sendCode } from "@services/auth/confirmation.service";
+import { checkEmailNotExistDB } from "@services/auth/signup.service";
 import RedisOperation from "@src/@types/redis.operation";
 
 //TODO: const updateUserName
@@ -15,16 +15,15 @@ const updateBio = async (req: Request, res: Response) => {
         await userServices.updateBio(id, bio);
         res.status(200).json({
             status: "success",
-            data: bio
+            data: bio,
         });
-    }
-    catch (e: any) {
+    } catch (e: any) {
         res.status(400).json({
             status: "failed",
             message: e.message,
         });
     }
-}
+};
 
 const updateName = async (req: Request, res: Response) => {
     try {
@@ -33,28 +32,26 @@ const updateName = async (req: Request, res: Response) => {
         await userServices.updateName(id, name);
         res.status(200).json({
             status: "success",
-            data: name
+            data: name,
         });
-    }
-    catch (e: any) {
+    } catch (e: any) {
         res.status(400).json({
             status: "failed",
             message: e.message,
         });
     }
-}
+};
 
 const updateEmail = async (req: Request, res: Response) => {
-    let { email = "", code = "" }: { email: string, code: string } = req.body;
+    let { email = "", code = "" }: { email: string; code: string } = req.body;
     let id: number = req.userId;
     try {
         await userServices.updateEmail(id, email, code);
         res.status(200).json({
             status: "success",
-            data: email
+            data: email,
         });
-    }
-    catch (e: any) {
+    } catch (e: any) {
         res.status(400).json({
             status: "failed",
             message: e.message,
@@ -92,27 +89,25 @@ const updatePhone = async (req: Request, res: Response) => {
         let updatedPhone = await userServices.updatePhone(id, phoneNumber);
         res.status(200).json({
             status: "success",
-            data: updatedPhone
+            data: updatedPhone,
         });
-    }
-    catch (e: any) {
+    } catch (e: any) {
         res.status(400).json({
             status: "failed",
             message: e.message,
         });
-    };
+    }
 };
 
 const setStory = async (req: Request, res: Response) => {
     try {
-        let { content = "", media = "" }: { content: string, media: string } = req.body;
+        let { content = "", media = "" }: { content: string; media: string } = req.body;
         let id: number = req.userId;
         await userServices.setStory(id, content, media);
         res.status(200).json({
             status: "success",
         });
-    }
-    catch (e: any) {
+    } catch (e: any) {
         res.status(400).json({
             status: "failed",
             message: e.message,
@@ -128,14 +123,12 @@ const deleteStory = async (req: Request, res: Response) => {
         res.status(200).json({
             status: "success",
         });
-    }
-    catch (e: any) {
+    } catch (e: any) {
         res.status(400).json({
             status: "failed",
             message: e.message,
         });
     }
-
 };
 
 const UserInfo = async (req: Request, res: Response) => {
@@ -145,8 +138,7 @@ const UserInfo = async (req: Request, res: Response) => {
             status: "success",
             data: user,
         });
-    }
-    catch (e: any) {
+    } catch (e: any) {
         res.status(400).json({
             status: "failed",
             message: e.message,
@@ -154,4 +146,13 @@ const UserInfo = async (req: Request, res: Response) => {
     }
 };
 
-export { setStory, deleteStory, UserInfo, updateBio, updateName, updateEmail, emailCode, updatePhone };
+export {
+    setStory,
+    deleteStory,
+    UserInfo,
+    updateBio,
+    updateName,
+    updateEmail,
+    emailCode,
+    updatePhone,
+};

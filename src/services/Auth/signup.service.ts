@@ -56,7 +56,7 @@ const upsertUser = async (data: Record<string, any>): Promise<User> => {
         where: { email: userData.email },
         update: {},
         create: {
-            ...userData
+            ...userData,
         },
     });
     return user;

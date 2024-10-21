@@ -1,10 +1,7 @@
 import { Request, Response } from "express";
 import { User } from "@prisma/client";
-import { createTokenCookie, createAddToken } from "@services/Auth/token.service";
-import {
-    checkEmailExistDB,
-    checkPasswordCorrect
-} from "@services/Auth/login.service";
+import { createTokenCookie, createAddToken } from "@services/auth/token.service";
+import { checkEmailExistDB, checkPasswordCorrect } from "@services/auth/login.service";
 import { validateLogIn } from "@validators/user";
 
 const login = async (req: Request, res: Response) => {

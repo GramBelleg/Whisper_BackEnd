@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { getAccessToken, getUserData } from "@services/Auth/github.auth.service";
-import { upsertUser } from "@services/Auth/signup.service";
-import { createTokenCookie, createAddToken } from "@services/Auth/token.service";
+import { getAccessToken, getUserData } from "@services/auth/github.auth.service";
+import { upsertUser } from "@services/auth/signup.service";
+import { createTokenCookie, createAddToken } from "@services/auth/token.service";
 import { User } from "@prisma/client";
 
 async function githubRedirect(req: Request, res: Response): Promise<void> {

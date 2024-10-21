@@ -1,6 +1,7 @@
 import { Response } from "express";
 import jwt from "jsonwebtoken";
 import db from "@DB";
+import { UserToken } from "@prisma/client";
 
 function createTokenCookie(res: Response, token: string) {
     res.cookie("token", token, {
@@ -21,7 +22,7 @@ async function createAddToken(userId: number) {
             expiresIn: process.env.JWT_EXPIRE,
         });
         const expireAt = new Date(Date.now() + parseInt(process.env.TOKEN_EXPIRE as string) * 1000);
-        await db.userToken.create({
+        const token: UserToken = await db.userToken.create({
             data: {
                 token: userToken,
                 expireAt,
@@ -30,7 +31,7 @@ async function createAddToken(userId: number) {
         });
         return userToken;
     } catch (err: any) {
-        throw new Error("There is an error. Try login again.");
+        throw err;
     }
 }
 
