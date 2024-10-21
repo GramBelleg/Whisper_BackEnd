@@ -1,12 +1,10 @@
 import { Response } from "express";
-import jwt from 'jsonwebtoken';
-import db from '@DB';
+import jwt from "jsonwebtoken";
+import db from "@DB";
 
 function createTokenCookie(res: Response, token: string) {
     res.cookie("token", token, {
-        expires: new Date(
-            Date.now() + parseInt(process.env.COOKIE_EXPIRE as string) * 1000
-        ),
+        expires: new Date(Date.now() + parseInt(process.env.COOKIE_EXPIRE as string) * 1000),
         httpOnly: true, //the cookie to be accessible only by the web server.
     });
 }
@@ -27,12 +25,12 @@ async function createAddToken(userId: number) {
             data: {
                 token: userToken,
                 expireAt,
-                userId
-            }
-        })
+                userId,
+            },
+        });
         return userToken;
     } catch (err: any) {
-        throw new Error('There is an error. Try login again.')
+        throw new Error("There is an error. Try login again.");
     }
 }
 
@@ -43,13 +41,13 @@ async function deleteUserToken(userId: number, userToken: string) {
             data: {
                 tokens: {
                     deleteMany: {
-                        token: userToken
-                    }
-                }
-            }
+                        token: userToken,
+                    },
+                },
+            },
         });
     } catch (err) {
-        throw new Error('Error in deleting token')
+        throw new Error("Error in deleting token");
     }
 }
 
@@ -59,12 +57,12 @@ async function deleteAllUserTokens(userId: number) {
             where: { id: userId },
             data: {
                 tokens: {
-                    deleteMany: {}
-                }
-            }
+                    deleteMany: {},
+                },
+            },
         });
     } catch (err) {
-        throw new Error('Error in deleting all tokens of user')
+        throw new Error("Error in deleting all tokens of user");
     }
 }
 
@@ -74,25 +72,24 @@ async function checkUserTokenExist(userId: number, userToken: string) {
             id: userId,
             tokens: {
                 some: {
-                    token: userToken
-                }
-            }
-        }
+                    token: userToken,
+                },
+            },
+        },
     });
     if (!user) {
         throw new Error();
     }
 }
 
-
 async function deleteExpiredTokens() {
     try {
         await db.userToken.deleteMany({
             where: {
                 expireAt: {
-                    lte: new Date()
-                }
-            }
+                    lte: new Date(),
+                },
+            },
         });
     } catch (err: any) {
         console.log("Error in deleting expired tokens on database");
@@ -106,5 +103,5 @@ export {
     deleteUserToken,
     deleteAllUserTokens,
     checkUserTokenExist,
-    deleteExpiredTokens
+    deleteExpiredTokens,
 };
