@@ -5,6 +5,7 @@ import { validateEmail } from "@validators/confirm.reset";
 import { createCode, sendCode } from "@services/auth/confirmation.service";
 import { checkEmailNotExist } from "@services/auth/signup.service";
 import RedisOperation from "@src/@types/redis.operation";
+import { getPresignedUrl } from "@services/media/blob.service";
 
 //TODO: const updateUserName
 
@@ -110,6 +111,26 @@ const updatePhone = async (req: Request, res: Response) => {
     };
 };
 
+const changePic = async (req: Request, res: Response) => {
+    //to delete profilePic blobName = "profilePic.jpg"
+    const id: number = req.userId;
+    const blob = req.body.blobName;
+    try {
+        await getPresignedUrl(blob, "read");
+        await userServices.changePic(id, blob);
+        return res.status(200).json({
+            status: "success",
+            name: blob
+        });
+    }
+    catch (e: any) {
+        res.status(400).json({
+            status: "failed",
+            message: e.message,
+        });
+    }
+};
+
 const setStory = async (req: Request, res: Response) => {
     try 
     {
@@ -167,4 +188,4 @@ const UserInfo = async (req: Request, res: Response) => {
     }
 };
 
-export { setStory, deleteStory, UserInfo, updateBio, updateName, updateEmail, emailCode, updatePhone };
+export { setStory, deleteStory, UserInfo, updateBio, updateName, updateEmail, emailCode, updatePhone, changePic };

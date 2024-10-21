@@ -39,8 +39,17 @@ const getPresignedUrl = async (blobName: string, action: "read" | "write") => {
     if (action == "write") {
         permissions.create = true;
         permissions.write = true;
-    } else permissions.read = true;
+    } else {
+        // Check if blob exists before generating a read URL
+        const blobClient = containerClient.getBlobClient(blobName);
+        const exists = await blobClient.exists();
 
+        if (!exists) {
+            throw new Error(`Blob with name '${blobName}' does not exist.`);
+        }
+
+        permissions.read = true;
+    }
     const sasToken = generateBlobSASQueryParameters(
         {
             containerName: CONTAINER_NAME,

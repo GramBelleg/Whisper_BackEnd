@@ -46,6 +46,7 @@ router.get("", userController.UserInfo);
 router.put("/email", userController.updateEmail);
 router.post("/emailcode", userController.emailCode);
 router.put("/phone", userController.updatePhone);
+router.put("/profilepic", userController.changePic); //Use media route "/write" first to upload image
 router.post("/story", userController.setStory);
 router.delete("/story", userController.deleteStory);
 export default router;

@@ -128,5 +128,18 @@ const userInfo = async (email: string) => {
     return User;
 };
 
+const changePic = async (id: number, name: string) => {
+    try {
+        await db.user.update({
+            where: { id },
+            data: { profilePic: name },
+        });
+        return name; 
+    } catch (error) {
+        console.error("Error updating profile picture:", error);
+        throw new Error("Unable to update profile picture");
+    }
+}
 
-export {setStory, deleteStory, userInfo, updateBio, updateName, updateEmail, updatePhone};
+
+export {setStory, deleteStory, userInfo, updateBio, updateName, updateEmail, updatePhone, changePic};
