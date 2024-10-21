@@ -7,7 +7,7 @@ function getToken(req: Request) {
     if (req.cookies.token) {
         token = req.cookies.token;
     } else if (req.headers.authorization) {
-        token = req.headers.authorization.replace("Bearer ", "");
+        token = req.headers.authorization.replace("Bearer", "");
     } else {
         throw new Error("Token is not found");
     }
