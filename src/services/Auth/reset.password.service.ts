@@ -7,7 +7,9 @@ async function updatePassword(email: string, password: string) {
         where: { email },
         data: {
             password: bcrypt.hashSync(password, 10),
-            loggedInDevices: 0,
+            tokens: {
+                deleteMany: {},
+            },
         },
     });
     return user;

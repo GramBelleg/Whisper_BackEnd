@@ -1,29 +1,24 @@
 import { Request, Response } from "express";
 import { validateEmail, validateConfirmCode } from "@validators/confirm.reset";
 import {
-    checkEmailExist,
+    checkEmailExistRedis,
     verifyCode,
-    confirmAddUser,
+    addUser,
     createCode,
     sendCode,
-} from "@services/auth/confirmation.service";
-import { checkEmailNotExist } from "@services/auth/signup.service";
-import RedisOperation from "@src/@types/redis.operation";
-import { User } from "@prisma/client";
-import { createCookie } from "@services/auth/cookie.service";
-import { incrementUserDevices } from "@services/auth/login.service";
-import jwt from "jsonwebtoken";
+} from "@services/Auth/confirmation.service";
+import { checkEmailNotExistDB } from "@services/Auth/signup.service";
+import RedisOperation from "src/@types/redis.operation";
+import { createTokenCookie, createAddToken } from "@services/Auth/token.service";
 
 const resendConfirmCode = async (req: Request, res: Response): Promise<void> => {
     try {
         const { email } = req.body as Record<string, string>;
         validateEmail(email);
 
-        //in DB
-        await checkEmailNotExist(email);
+        await checkEmailNotExistDB(email);
 
-        //in redis
-        await checkEmailExist(email);
+        await checkEmailExistRedis(email);
 
         const code = await createCode(email, RedisOperation.ConfirmEmail);
         const emailSubject = "Email confirmation";
@@ -47,19 +42,15 @@ const confirmEmail = async (req: Request, res: Response): Promise<void> => {
         const { email, code } = req.body as Record<string, string>;
         validateConfirmCode(email, code);
 
-        //in DB
-        await checkEmailNotExist(email);
+        await checkEmailNotExistDB(email);
 
         await verifyCode(email, code, RedisOperation.ConfirmEmail);
 
-        const user: User = await confirmAddUser(email);
+        const user = await addUser(email);
 
-        const userToken: string = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, {
-            expiresIn: process.env.JWT_EXPIRE,
-        });
-
-        incrementUserDevices(user.id);
-        createCookie(res, userToken);
+        const userToken: string = await createAddToken(user.id);
+        createTokenCookie(res, userToken);
+        
         res.status(200).json({
             status: "success",
             user: {

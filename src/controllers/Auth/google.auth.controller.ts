@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
-import { getAccessToken, getUserData } from "@services/auth/google.auth.service";
-import { upsertUser } from "@services/auth/signup.service";
-import jwt from "jsonwebtoken";
-import { createCookie } from "@services/auth/cookie.service";
+import { getAccessToken, getUserData } from "@services/Auth/google.auth.service";
+import { upsertUser } from "@services/Auth/signup.service";
+import { createTokenCookie, createAddToken } from "@services/Auth/token.service";
 import { User } from "@prisma/client";
 
 async function googleAuth(req: Request, res: Response): Promise<void> {
@@ -21,13 +20,9 @@ async function googleAuth(req: Request, res: Response): Promise<void> {
 
         const user: User = await upsertUser(userData);
 
-        //create a jwt and store it in a cookie
-        const userToken: string = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, {
-            expiresIn: "1h",
-        });
-
+        const userToken = await createAddToken(user.id);
         //*IMPORTANT* Make sure frontend sets withcredential: true so that the cookies are sent with the request
-        createCookie(res, userToken);
+        createTokenCookie(res, userToken);
 
         res.status(200).json({
             status: "success",

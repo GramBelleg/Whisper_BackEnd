@@ -73,13 +73,17 @@
  *          name:
  *           type: string
  *           pattern: /^[a-zA-Z\s]+$/
+ *           description: allow only english characters and white spaces
  *          userName:
  *           type: string
+ *           description: allow only english characters and numbers
  *          email:
  *           type: string
  *           format: email
  *          phoneNumber:
  *           type: string
+ *           pattern: /^\+[0-9\-\s]+$/
+ *           description: start with + and allow only numbers and - and white spaces
  *          password:
  *           type: string
  *           format: password

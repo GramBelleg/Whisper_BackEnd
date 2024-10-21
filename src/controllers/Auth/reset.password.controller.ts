@@ -1,20 +1,19 @@
 import { validateEmail, validateResetCode } from "@validators/confirm.reset";
 import { Request, Response } from "express";
 import { updatePassword } from "@services/auth/reset.password.service";
-import { verifyCode, createCode, sendCode } from "@services/auth/confirmation.service";
-import { checkEmailExist, incrementUserDevices } from "@services/auth/login.service";
 import RedisOperation from "@src/@types/redis.operation";
 import { User } from "@prisma/client";
 import jwt from "jsonwebtoken";
-import { createCookie } from "@services/auth/cookie.service";
+import { checkEmailExistDB } from "@services/Auth/login.service";
+import { createCode, sendCode, verifyCode } from "@services/Auth/confirmation.service";
+import { createTokenCookie } from "@services/Auth/token.service";
 
 async function sendResetCode(req: Request, res: Response) {
     try {
         const { email } = req.body as Record<string, string>;
         validateEmail(email);
 
-        //in DB
-        await checkEmailExist(email);
+        await checkEmailExistDB(email);
 
         const code = await createCode(email, RedisOperation.ResetPassword);
         const emailSubject = "Password reset";
@@ -38,8 +37,7 @@ async function resetPassword(req: Request, res: Response) {
         const { email, password, code } = req.body as Record<string, string>;
         validateResetCode(req.body);
 
-        //in DB
-        await checkEmailExist(email);
+        await checkEmailExistDB(email);
 
         await verifyCode(email, code, RedisOperation.ResetPassword);
 
@@ -47,9 +45,9 @@ async function resetPassword(req: Request, res: Response) {
         const userToken: string = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, {
             expiresIn: process.env.JWT_EXPIRE,
         });
+        await updatePassword(email, password);
 
-        incrementUserDevices(user.id);
-        createCookie(res, userToken);
+        createTokenCookie(res, userToken);
         res.status(200).json({
             status: "success",
             user: {
