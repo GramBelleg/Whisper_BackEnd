@@ -14,7 +14,8 @@ const checkEmailExistRedis = async (email: string) => {
 };
 
 async function createCode(email: string, operation: RedisOperation) {
-    const code: string = Randomstring.generate(8);
+    const firstCode: string = Randomstring.generate(8);
+    const code = firstCode.replace(/[Il]/g, "s");
     const expireAt = new Date(Date.now() + 300000).toString(); // after 5 minutes
 
     await redis.hmset(`${operation}:${code}`, { email, expireAt });

@@ -4,22 +4,9 @@ import { upsertUser } from "@services/auth/signup.service";
 import { createTokenCookie, createAddToken } from "@services/auth/token.service";
 import { User } from "@prisma/client";
 
-async function githubRedirect(req: Request, res: Response): Promise<void> {
-    try {
-        const authUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&redirect_uri=${process.env.GITHUB_REDIRECT_URI}`;
-        res.redirect(authUrl);
-    } catch (err: any) {
-        console.log(err.message);
-        res.status(400).json({
-            status: "failed",
-            message: err.message,
-        });
-    }
-}
-
 async function githubAuth(req: Request, res: Response): Promise<void> {
     try {
-        const authCode: string = req.query.code as string;
+        const authCode: string = req.body.code;
         if (!authCode) {
             throw new Error("There is no Authorization Code");
         }
@@ -36,7 +23,16 @@ async function githubAuth(req: Request, res: Response): Promise<void> {
         const userToken = await createAddToken(user.id);
         createTokenCookie(res, userToken);
 
-        res.redirect(process.env.PROFILE_ENDPOINT as string);
+        res.status(200).json({
+            status: "success",
+            user: {
+                id: user.id,
+                name: user.name,
+                userName: user.userName,
+                email: user.email,
+            },
+            userToken,
+        });
     } catch (err: any) {
         console.log(err.message);
         res.status(400).json({
@@ -46,4 +42,4 @@ async function githubAuth(req: Request, res: Response): Promise<void> {
     }
 }
 
-export { githubAuth, githubRedirect };
+export { githubAuth };

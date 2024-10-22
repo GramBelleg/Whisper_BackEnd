@@ -13,7 +13,7 @@ const userAuth = async (req: Request, res: Response, next: NextFunction): Promis
         clearTokenCookie(res);
         res.status(401).json({
             status: "failed",
-            message: "Login again",
+            message: e.message,
         });
     }
 };

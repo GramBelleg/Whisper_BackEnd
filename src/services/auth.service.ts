@@ -6,8 +6,8 @@ function getToken(req: Request) {
     let token: string;
     if (req.cookies.token) {
         token = req.cookies.token;
-    } else if (req.headers.authorization) {
-        token = req.headers.authorization.replace("Bearer", "");
+    } else if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+        token = req.headers.authorization.replace("Bearer", "").trim();
     } else {
         throw new Error("Token is not found");
     }
