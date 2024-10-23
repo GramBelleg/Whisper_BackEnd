@@ -1,20 +1,15 @@
 import db from "src/prisma/PrismaClient";
-import { User, Story } from "@prisma/client";
-import { verify } from "crypto";
 import { verifyCode } from "@services/auth/confirmation.service";
-import {checkEmailNotExist} from "@services/auth/signup.service";
-import {validatePhone} from "@validators/user";
+import { validatePhone } from "@validators/user";
 import RedisOperation from "@src/@types/redis.operation";
-
-
 
 //TODO: const updateUserName
 
 const updateBio = async (id: number, bio: string) => {
     try {
-            await db.user.update({
-                where: { id },
-                data: { bio },
+        await db.user.update({
+            where: { id },
+            data: { bio },
         });
     } catch (error) {
         console.error("Error updating bio:", error);
@@ -22,16 +17,15 @@ const updateBio = async (id: number, bio: string) => {
     }
 };
 
-
 const updateName = async (id: number, name: string) => {
     if (!name) {
         throw new Error("Name is required");
     }
 
     try {
-            await db.user.update({
-                where: { id },
-                data: { name },
+        await db.user.update({
+            where: { id },
+            data: { name },
         });
         return name; // Return the updated name
     } catch (error) {
@@ -45,7 +39,7 @@ const updateEmail = async (id: number, email: string, code: string) => {
         throw new Error("Email is required");
     }
     try {
-        await verifyCode(email, code, RedisOperation.ConfirmEmail);   
+        await verifyCode(email, code, RedisOperation.ConfirmEmail);
         await db.user.update({
             where: { id },
             data: { email },
@@ -55,7 +49,6 @@ const updateEmail = async (id: number, email: string, code: string) => {
         console.error("Error updating email:", error);
         throw new Error("Unable to update email");
     }
-
 };
 
 const updatePhone = async (id: number, phoneNumber: string) => {
@@ -63,7 +56,7 @@ const updatePhone = async (id: number, phoneNumber: string) => {
         throw new Error("Phone is required");
     }
     try {
-        const phone = validatePhone({phoneNumber: phoneNumber});
+        const phone = validatePhone({ phoneNumber: phoneNumber });
         await db.user.update({
             where: { id },
             data: { phoneNumber: phone },
@@ -74,7 +67,6 @@ const updatePhone = async (id: number, phoneNumber: string) => {
         throw new Error("Unable to update phone");
     }
 };
-
 
 const setStory = async (id: number, content: string, media: string) => {
     if (!id) {
@@ -95,7 +87,7 @@ const setStory = async (id: number, content: string, media: string) => {
     }
 };
 
-const deleteStory = async (userId: number ,storyId: number) => {
+const deleteStory = async (userId: number, storyId: number) => {
     if (!userId || !storyId) {
         throw new Error("User ID and Story ID are required");
     }
@@ -114,15 +106,15 @@ const userInfo = async (email: string) => {
         where: { email },
         select: {
             name: true,
-            /*TODO: userName: true,*/  
+            /*TODO: userName: true,*/
             email: true,
             bio: true,
             profilePic: true,
             lastSeen: true,
-        }
+            phoneNumber: true,
+        },
     });
-    if(!User || !User.email)
-    {
+    if (!User || !User.email) {
         throw new Error("User not found");
     }
     return User;
@@ -141,5 +133,19 @@ const changePic = async (id: number, name: string) => {
     }
 }
 
+const changeUserName = async (id: number, userName: string) => {
+    try {
+        if(!id || !userName) {
+            throw new Error("User ID and username are required");
+        }
+        await db.user.update({
+            where: { id },
+            data: { userName },
+        });
+        return userName; 
+    } catch (error) {
+        throw new Error("Username is already taken");
+    }
+};
 
-export {setStory, deleteStory, userInfo, updateBio, updateName, updateEmail, updatePhone, changePic};
+export {setStory, deleteStory, userInfo, updateBio, updateName, updateEmail, updatePhone, changePic, changeUserName};

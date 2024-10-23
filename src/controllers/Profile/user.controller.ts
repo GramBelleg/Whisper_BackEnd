@@ -3,65 +3,56 @@ import { Request, Response } from "express";
 import * as userServices from "@services/Profile/user.service";
 import { validateEmail } from "@validators/confirm.reset";
 import { createCode, sendCode } from "@services/auth/confirmation.service";
-import { checkEmailNotExist } from "@services/auth/signup.service";
+import { checkEmailNotExistDB } from "@services/auth/signup.service";
 import RedisOperation from "@src/@types/redis.operation";
 import { getPresignedUrl } from "@services/media/blob.service";
 
 //TODO: const updateUserName
 
 const updateBio = async (req: Request, res: Response) => {
-    try 
-    {
+    try {
         let { bio = "" }: { bio: string } = req.body;
         let id: number = req.userId;
         await userServices.updateBio(id, bio);
         res.status(200).json({
             status: "success",
-            data: bio
+            data: bio,
         });
-    } 
-    catch (e: any) 
-    {
+    } catch (e: any) {
         res.status(400).json({
             status: "failed",
             message: e.message,
         });
     }
-}
+};
 
 const updateName = async (req: Request, res: Response) => {
-    try 
-    {
+    try {
         let { name = "" }: { name: string } = req.body;
         let id: number = req.userId;
         await userServices.updateName(id, name);
         res.status(200).json({
             status: "success",
-            data: name
+            data: name,
         });
-    } 
-    catch (e: any) 
-    {
+    } catch (e: any) {
         res.status(400).json({
             status: "failed",
             message: e.message,
         });
     }
-}
+};
 
 const updateEmail = async (req: Request, res: Response) => {
-    let { email = "", code = "" }: { email: string, code: string } = req.body;
+    let { email = "", code = "" }: { email: string; code: string } = req.body;
     let id: number = req.userId;
-    try 
-    {
+    try {
         await userServices.updateEmail(id, email, code);
         res.status(200).json({
             status: "success",
-            data: email
+            data: email,
         });
-    } 
-    catch (e: any) 
-    {
+    } catch (e: any) {
         res.status(400).json({
             status: "failed",
             message: e.message,
@@ -74,10 +65,10 @@ const emailCode = async (req: Request, res: Response): Promise<void> => {
         validateEmail(email);
 
         //in DB
-        await checkEmailNotExist(email);
+        await checkEmailNotExistDB(email);
         const code = await createCode(email, RedisOperation.ConfirmEmail);
         const emailBody = `<h3>Hello, </h3> <p>Thanks for joining our family. Use this code: <b>${code}</b> for verifing your email</p>`;
-        await sendCode(email, "confirmation code" ,emailBody);
+        await sendCode(email, "confirmation code", emailBody);
 
         res.status(200).json({
             status: "success",
@@ -93,22 +84,20 @@ const emailCode = async (req: Request, res: Response): Promise<void> => {
 
 const updatePhone = async (req: Request, res: Response) => {
     //TODO: fix Phone number structure is not valid
-    try{
+    try {
         let { phoneNumber = "" }: { phoneNumber: string } = req.body;
         let id: number = req.userId;
         let updatedPhone = await userServices.updatePhone(id, phoneNumber);
         res.status(200).json({
             status: "success",
-            data: updatedPhone
+            data: updatedPhone,
         });
-    }
-    catch (e: any) 
-    {
+    } catch (e: any) {
         res.status(400).json({
             status: "failed",
             message: e.message,
         });
-    };
+    }
 };
 
 const changePic = async (req: Request, res: Response) => {
@@ -132,17 +121,14 @@ const changePic = async (req: Request, res: Response) => {
 };
 
 const setStory = async (req: Request, res: Response) => {
-    try 
-    {
-        let { content = "", media = ""}: { content:string, media: string } = req.body;
+    try {
+        let { content = "", media = "" }: { content: string; media: string } = req.body;
         let id: number = req.userId;
         await userServices.setStory(id, content, media);
         res.status(200).json({
             status: "success",
         });
-    } 
-    catch (e: any) 
-    {
+    } catch (e: any) {
         res.status(400).json({
             status: "failed",
             message: e.message,
@@ -151,36 +137,29 @@ const setStory = async (req: Request, res: Response) => {
 };
 
 const deleteStory = async (req: Request, res: Response) => {
-    try 
-    {
+    try {
         let id: number = req.userId;
         let storyId: number = req.body.storyId;
         await userServices.deleteStory(id, storyId);
         res.status(200).json({
             status: "success",
         });
-    } 
-    catch (e: any) 
-    {
+    } catch (e: any) {
         res.status(400).json({
             status: "failed",
             message: e.message,
         });
     }
-    
 };
 
 const UserInfo = async (req: Request, res: Response) => {
-    try 
-    {
+    try {
         let user = await userServices.userInfo(req.body.email);
         res.status(200).json({
             status: "success",
             data: user,
         });
-    } 
-    catch (e: any) 
-    {
+    } catch (e: any) {
         res.status(400).json({
             status: "failed",
             message: e.message,
@@ -188,4 +167,32 @@ const UserInfo = async (req: Request, res: Response) => {
     }
 };
 
-export { setStory, deleteStory, UserInfo, updateBio, updateName, updateEmail, emailCode, updatePhone, changePic };
+const changeUserName = async (req: Request, res: Response) => {
+    try {
+        let { userName = "" }: { userName: string } = req.body;
+        let id: number = req.userId;
+        await userServices.changeUserName(id, userName);
+        res.status(200).json({
+            status: "success",
+            data: userName,
+        });
+    } catch (e: any) {
+        res.status(400).json({
+            status: "failed",
+            message: e.message,
+        });
+    }
+};
+
+export {
+    setStory,
+    deleteStory,
+    UserInfo,
+    updateBio,
+    updateName,
+    updateEmail,
+    emailCode,
+    updatePhone,
+    changePic,
+    changeUserName,
+};

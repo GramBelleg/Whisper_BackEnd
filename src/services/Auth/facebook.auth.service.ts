@@ -9,7 +9,6 @@ import axios from "axios";
 const getAccessToken = async (authCode: string): Promise<string> => {
     try {
         const url = `https://graph.facebook.com/v10.0/oauth/access_token?client_id=${process.env.FB_CLIENT_ID}&client_secret=${process.env.FB_CLIENT_SECRET}&code=${authCode}&redirect_uri=${process.env.FB_REDIRECT_URI}`;
-
         const response = await axios.get(url);
         return response.data.access_token;
     } catch (err: any) {

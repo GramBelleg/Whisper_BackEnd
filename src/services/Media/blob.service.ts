@@ -33,7 +33,7 @@ const containerClient = blobServiceClient.getContainerClient(CONTAINER_NAME);
 const sharedKeyCredential = new StorageSharedKeyCredential(ACCOUNT_NAME, ACCOUNT_KEY);
 
 const getPresignedUrl = async (blobName: string, action: "read" | "write") => {
-    const expiryTime = new Date(new Date().valueOf() + 60 * 60 * 1000);
+    const expiryTime = new Date(new Date().valueOf() + 60 * 60 * 1000 * 24 * 10); //remove 24*10 only for testing
 
     const permissions = new BlobSASPermissions();
     if (action == "write") {

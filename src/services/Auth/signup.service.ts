@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 import randomstring from "randomstring";
 import RedisOperation from "@src/@types/redis.operation";
 
-const checkEmailNotExist = async (email: string): Promise<void> => {
+const checkEmailNotExistDB = async (email: string): Promise<void> => {
     const foundUser: User | null = await db.user.findUnique({
         where: { email },
     });
@@ -54,13 +54,12 @@ const upsertUser = async (data: Record<string, any>): Promise<User> => {
     // create in case user does not exist and logs in
     const user: User = await db.user.upsert({
         where: { email: userData.email },
-        update: { loggedInDevices: { increment: 1 } },
+        update: {},
         create: {
             ...userData,
-            loggedInDevices: 1,
         },
     });
     return user;
 };
 
-export { checkEmailNotExist, verifyRobotToken, saveUserData, upsertUser };
+export { checkEmailNotExistDB, verifyRobotToken, saveUserData, upsertUser };
