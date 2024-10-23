@@ -25,48 +25,56 @@ export const initWebSocketServer = (server: HTTPServer) => {
                 }
             },
             credentials: true,
-            methods: ["GET", "POST"], 
+            methods: ["GET", "POST"],
         },
     });
 
     io.on("connection", (socket: Socket) => {
         socket.data.userId = validateCookie(socket);
         const userId = socket.data.userId;
-    
+
         connectionHandler.startConnection(userId, clients, socket);
-    
-        const handleAndBroadcast = async (event: string, handler: Function, message: any) => {
-            const result = await handler(message);
-            if (result) {
-                messageHandler.broadCast(message.chatId, clients, event, result);
+
+        socket.on("send", async (message: types.OmitSender<types.SaveableMessage>) => {
+            const savedMessage = await sendController.handleSend({
+                ...message,
+                senderId: userId,
+            });
+            if (savedMessage) {
+                messageHandler.broadCast(message.chatId, clients, "receive", savedMessage);
             }
-        };
-    
-        const eventHandlers: Record<string, Function> = {
-            "send": async (message: types.OmitSender<types.SaveableMessage>) => {
-                await handleAndBroadcast("receive", sendController.handleSend, { ...message, senderId: userId });
-            },
-            "edit": async (message: types.OmitSender<types.EditableMessage>) => {
-                await handleAndBroadcast("edit", editController.handleEditContent, { ...message, senderId: userId });
-            },
-            "pin": async (message: types.MessageReference) => {
-                await handleAndBroadcast("pin", editController.handlePinMessage, message);
-            },
-            "unpin": async (message: types.MessageReference) => {
-                await handleAndBroadcast("unpin", editController.handleUnpinMessage, message);
-            },
-            "delete": async (Ids: number[], chatId: number) => {
-                await deleteController.deleteMessagesForAllUsers(Ids, chatId);
-                messageHandler.broadCast(chatId, clients, "delete", Ids);
-            },
-            "close": () => {
-                connectionHandler.endConnection(userId, clients);
-            },
-        };
-    
-        Object.keys(eventHandlers).forEach(event => {
-            socket.on(event, (...args: any[]) => eventHandlers[event](...args));
+        });
+
+        socket.on("edit", async (message: types.OmitSender<types.EditableMessage>) => {
+            const editedMessage = await editController.handleEditContent({
+                ...message,
+                senderId: userId,
+            });
+            if (editedMessage) {
+                messageHandler.broadCast(message.chatId, clients, "edit", editedMessage);
+            }
+        });
+
+        socket.on("pin", async (message: types.MessageReference) => {
+            const pinnedMessage = await editController.handlePinMessage(message);
+            if (pinnedMessage) {
+                messageHandler.broadCast(message.chatId, clients, "pin", pinnedMessage);
+            }
+        });
+
+        socket.on("unpin", async (message: types.MessageReference) => {
+            const unpinnedMessage = await editController.handleUnpinMessage(message);
+            if (unpinnedMessage) {
+                messageHandler.broadCast(message.chatId, clients, "unpin", unpinnedMessage);
+            }
+        });
+
+        socket.on("delete", async (Ids: number[], chatId: number) => {
+            await deleteController.deleteMessagesForAllUsers(Ids, chatId);
+            messageHandler.broadCast(chatId, clients, "delete", Ids);
+        });
+        socket.on("close", () => {
+            connectionHandler.endConnection(userId, clients);
         });
     });
-    
 };
