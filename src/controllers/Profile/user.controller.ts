@@ -1,6 +1,6 @@
 import { User } from "@prisma/client";
 import { Request, Response } from "express";
-import * as userServices from "@services/Profile/user.service";
+import * as userServices from "@services/profile/user.service";
 import { validateEmail } from "@validators/confirm.reset";
 import { createCode, sendCode } from "@services/auth/confirmation.service";
 import { checkEmailNotExistDB } from "@services/auth/signup.service";

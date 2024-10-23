@@ -1,31 +1,14 @@
-// import { GenericContainer } from "testcontainers";
-// import { createClireent } from "redis";
 // import bcrypt from "bcrypt";
 // import { saveUserData } from "@services/auth/signup.service"; // Import the function to test
 // import RedisOperation from "@src/@types/redis.operation";
+// import dotenv from "dotenv";
+
+// dotenv.config({ path: "test.env" });
 
 // describe("saveUserData function", () => {
-//     let redisContainer: StartedTestContainer;
-//     let redisHost;
-//     let redisPort;
+//     beforeAll(async () => {});
 
-//     beforeAll(async () => {
-//         // Spin up the Redis container before tests
-//         redisContainer = await new GenericContainer("redis").start();
-//         redisHost = redisContainer.getHost();
-//         redisPort = redisContainer.getMappedPort(6379);
-
-//         // Re-initialize Redis client with the container's connection details
-//         await redis.connect({
-//             host: redisHost,
-//             port: redisPort,
-//         });
-//     });
-
-//     afterAll(async () => {
-//         // Stop the Redis container after all tests
-//         await redisContainer.stop();
-//     });
+//     afterAll(async () => {});
 
 //     it("should store user data in Redis with an expiration time", async () => {
 //         const email = "testuser@example.com";
@@ -38,7 +21,7 @@
 //         };
 
 //         // Call the saveUserData function
-//         await saveUserData(
+//         const storedData = await saveUserData(
 //             userData.name,
 //             userData.userName,
 //             userData.email,
@@ -47,7 +30,6 @@
 //         );
 
 //         // Verify that the data was stored in Redis
-//         const storedData = await redis.hgetall(`${RedisOperation.AddNewUser}:${email}`);
 
 //         expect(storedData.name).toEqual(userData.name);
 //         expect(storedData.userName).toEqual(userData.userName);

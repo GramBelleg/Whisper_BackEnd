@@ -17,7 +17,7 @@
  */
 
 import { Router, Request, Response } from "express";
-import * as userController from "@controllers/Profile/user.controller";
+import * as userController from "@controllers/profile/user.controller";
 import { logoutAll, logoutOne } from "@controllers/auth/logout.controller";
 const router: Router = Router();
 

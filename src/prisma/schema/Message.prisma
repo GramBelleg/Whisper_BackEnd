@@ -2,6 +2,8 @@ enum MessageType {
   TEXT
   DELETED
   STICKER
+  GIF
+  VIDEO
   VM
   AUDIO
   IMAGE
