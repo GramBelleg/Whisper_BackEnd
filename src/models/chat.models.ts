@@ -10,6 +10,7 @@ export type SaveableMessage = Pick<
     | "expiresAfter"
     | "type"
     | "parentMessageId"
+    | "media"
 >;
 
 export type OmitSender<T> = Omit<T, "senderId">;

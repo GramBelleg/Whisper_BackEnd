@@ -3,17 +3,19 @@ import redis from "@src/redis/redis.client";
 import Randomstring from "randomstring";
 import transporter from "@config/email.config";
 import RedisOperation from "@src/@types/redis.operation";
+import { User } from "@prisma/client";
 
 // Check if there is a data for this email (signup data) in redis for new account
-const checkEmailExist = async (email: string) => {
-    const foundUser = await redis.hgetall(`${RedisOperation.AddNewUser}:${email}`); // hGetAll -> hgetall in ioredis
+const checkEmailExistRedis = async (email: string) => {
+    const foundUser = await redis.hgetall(`${RedisOperation.AddNewUser}:${email}`);
     if (Object.keys(foundUser).length === 0) {
         throw new Error("Email is not found in redis");
     }
 };
 
 async function createCode(email: string, operation: RedisOperation) {
-    const code: string = Randomstring.generate(8);
+    const firstCode: string = Randomstring.generate(8);
+    const code = firstCode.replace(/[Il]/g, "s");
     const expireAt = new Date(Date.now() + 300000).toString(); // after 5 minutes
 
     await redis.hmset(`${operation}:${code}`, { email, expireAt });
@@ -44,7 +46,7 @@ const verifyCode = async (email: string, code: string, operation: RedisOperation
     }
 };
 
-const confirmAddUser = async (email: string) => {
+const addUser = async (email: string) => {
     const foundData = await redis.hgetall(`${RedisOperation.AddNewUser}:${email}`);
     if (Object.keys(foundData).length === 0) {
         throw new Error("User's data is not found in redis");
@@ -56,9 +58,10 @@ const confirmAddUser = async (email: string) => {
         phoneNumber: foundData.phoneNumber,
         password: foundData.password,
     };
-    await db.user.create({
+    const user: User = await db.user.create({
         data: { ...userData },
     });
+    return user;
 };
 
-export { checkEmailExist, createCode, sendCode, verifyCode, confirmAddUser };
+export { checkEmailExistRedis, createCode, sendCode, verifyCode, addUser };

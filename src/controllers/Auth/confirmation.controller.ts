@@ -1,25 +1,25 @@
 import { Request, Response } from "express";
 import { validateEmail, validateConfirmCode } from "@validators/confirm.reset";
+
+import RedisOperation from "src/@types/redis.operation";
+import { createTokenCookie, createAddToken } from "@services/auth/token.service";
+import { checkEmailNotExistDB } from "@services/auth/signup.service";
 import {
-    checkEmailExist,
-    verifyCode,
-    confirmAddUser,
+    addUser,
+    checkEmailExistRedis,
     createCode,
     sendCode,
+    verifyCode,
 } from "@services/auth/confirmation.service";
-import { checkEmailNotExist } from "@services/auth/signup.service";
-import RedisOperation from "@src/@types/redis.operation";
 
 const resendConfirmCode = async (req: Request, res: Response): Promise<void> => {
     try {
         const { email } = req.body as Record<string, string>;
         validateEmail(email);
 
-        //in DB
-        await checkEmailNotExist(email);
+        await checkEmailNotExistDB(email);
 
-        //in redis
-        await checkEmailExist(email);
+        await checkEmailExistRedis(email);
 
         const code = await createCode(email, RedisOperation.ConfirmEmail);
         const emailSubject = "Email confirmation";
@@ -43,15 +43,24 @@ const confirmEmail = async (req: Request, res: Response): Promise<void> => {
         const { email, code } = req.body as Record<string, string>;
         validateConfirmCode(email, code);
 
-        //in DB
-        await checkEmailNotExist(email);
+        await checkEmailNotExistDB(email);
 
         await verifyCode(email, code, RedisOperation.ConfirmEmail);
 
-        await confirmAddUser(email);
+        const user = await addUser(email);
+
+        const userToken: string = await createAddToken(user.id);
+        createTokenCookie(res, userToken);
 
         res.status(200).json({
             status: "success",
+            user: {
+                id: user.id,
+                name: user.name,
+                userName: user.userName,
+                email: user.email,
+            },
+            userToken,
         });
     } catch (e: any) {
         console.log(e.message);

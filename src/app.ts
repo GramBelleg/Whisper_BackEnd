@@ -8,9 +8,11 @@ import indexRouter from "@routes/index.routes";
 import swaggerSpec from "./swagger";
 import swaggerUi from "swagger-ui-express";
 import session from "express-session";
+import cron from "node-cron";
 import errorHandler from "@middlewares/error.handler";
 import { initWebSocketServer } from "@socket/web.socket";
 import { redisSubscribe } from "@src/redis/redis.sub.handlers";
+import { deleteExpiredTokens } from "@services/auth/token.service";
 
 dotenv.config();
 
@@ -21,12 +23,12 @@ app.use(
     cors({
         origin: function (origin, callback) {
             if (origin) {
-                callback(null, origin); 
+                callback(null, origin);
             } else {
-                callback(null, "*"); 
+                callback(null, "*");
             }
         },
-        credentials: true, 
+        credentials: true,
         optionsSuccessStatus: 200,
     })
 );
@@ -48,6 +50,8 @@ initWebSocketServer(server);
 redisSubscribe();
 
 app.use(errorHandler);
+
+cron.schedule("0 3 * * *", deleteExpiredTokens); // delete expired tokens every day at 3 AM
 
 server.listen(parseInt(process.env.PORT as string), () => {
     console.log(`Listening on port ${process.env.PORT}`);
