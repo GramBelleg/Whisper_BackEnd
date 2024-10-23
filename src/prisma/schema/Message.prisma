@@ -8,6 +8,7 @@ model Message {
   chatId          Int
   senderId        Int
   content         String
+  media           String?
   createdAt       DateTime        @default(now())
   forwarded       Boolean         @default(false)
   pinned          Boolean         @default(false)
