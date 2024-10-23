@@ -1,5 +1,7 @@
 enum MessageType {
   TEXT
+  DELETED
+  STICKER
   VM
   AUDIO
   IMAGE
