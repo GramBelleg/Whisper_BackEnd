@@ -17,7 +17,7 @@ async function createUsers(numUsers: number) {
                 name: faker.person.fullName(),
                 password: bcrypt.hashSync(passwords[i], 10),
                 bio: faker.lorem.sentence(),
-                phoneNumber: faker.phone.number({ style: "international" })
+                phoneNumber: faker.phone.number({ style: "international" }),
             },
         });
         users.push(user);
@@ -70,7 +70,23 @@ async function createChatMessages(chats: any[]) {
                 },
             });
 
-            //update each chat with the created message
+            // Loop over every participant except the sender
+            for (const participant of chat.participants) {
+                if (participant.id !== sender.id) {
+                    // Skip the sender
+                    await db.messageStatus.create({
+                        data: {
+                            messageId: message.id,
+                            userId: participant.id, // Add status for each other participant
+                            read: faker.date.recent(),
+                            delivered: faker.date.recent(),
+                            deleted: faker.datatype.boolean(),
+                        },
+                    });
+                }
+            }
+
+            // Update the chat with the created message
             await db.chat.update({
                 where: { id: chat.chat.id },
                 data: {

@@ -17,6 +17,7 @@ export const getChats = async (userId: number) => {
                             hasStory: true,
                         },
                     },
+                    isMuted: true,
                 },
             },
         },
@@ -34,6 +35,7 @@ export const getChats = async (userId: number) => {
             userName: otherUser?.userName,
             story: otherUser?.hasStory,
             profilePic: otherUser?.profilePic,
+            muted: otherUser?.profilePic,
         };
     });
 };

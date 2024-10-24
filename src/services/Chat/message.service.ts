@@ -24,8 +24,32 @@ export const getMessages = async (userId: number, chatId: number) => {
             message: { createdAt: "asc" },
         },
     });
-    return messages;
+
+    // Map the messages to flatten the structure
+    return messages.map((msg) => {
+        return {
+            id: msg.message.id,
+            chatId: msg.message.chatId,
+            senderId: msg.message.senderId,
+            content: msg.message.content,
+            createdAt: msg.message.createdAt,
+            forwarded: msg.message.forwarded,
+            pinned: msg.message.pinned,
+            selfDestruct: msg.message.selfDestruct,
+            expiresAfter: msg.message.expiresAfter,
+            type: msg.message.type,
+            parentMessageId: msg.message.parentMessageId,
+
+            profilePic: msg.message.sender.profilePic,
+            userName: msg.message.sender.userName,
+
+            read: msg.read,
+            delivered: msg.delivered,
+            deleted: msg.deleted,
+        };
+    });
 };
+
 export const saveMessage = async (message: SaveableMessage): Promise<Message> => {
     const savedMessage = await db.message.create({
         data: { ...message },
