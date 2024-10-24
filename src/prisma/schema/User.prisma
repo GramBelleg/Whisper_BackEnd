@@ -9,7 +9,7 @@ model User {
   lastSeen           DateTime             @default(now())
   bio                String?
   isOnline           Boolean?          
-  hasStory        Boolean?   
+  hasStory        Boolean?                @default(false)
   Messages           Message[]
   chatParticipant    ChatParticipant[]
   groupParticipant   GroupParticipant[]
