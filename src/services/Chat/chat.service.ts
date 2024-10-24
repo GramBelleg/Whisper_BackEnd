@@ -15,6 +15,7 @@ export const getChats = async (userId: number) => {
                             userName: true,
                             profilePic: true, // Get the other user's profilePic
                             hasStory: true,
+                            lastSeen: true,
                         },
                     },
                     isMuted: true,
@@ -35,6 +36,7 @@ export const getChats = async (userId: number) => {
             userName: otherUser?.userName,
             story: otherUser?.hasStory,
             profilePic: otherUser?.profilePic,
+            lastSeen: otherUser?.lastSeen,
             muted: otherUser?.profilePic,
         };
     });
