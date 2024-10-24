@@ -2,7 +2,7 @@
  * @swagger
  * paths:
  *  /api/chats:
- *   post:
+ *   get:
  *     summary: Get chats for a user
  *     operationId: getChats
  *     tags:
