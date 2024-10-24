@@ -31,6 +31,9 @@ export const getChats = async (userId: number) => {
         const otherUser = chat.participants[0]?.user; // Assuming only one other participant
         return {
             id: chat.id,
+            unreadMessageCount: chat.unreadMessageCount,
+            isArchived: chat.isArchived,
+            type: chat.type,
             lastMessage: chat.lastMessage,
             othersId: otherUser?.id,
             userName: otherUser?.userName,
