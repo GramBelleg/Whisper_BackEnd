@@ -11,6 +11,7 @@ const checkEmailExistRedis = async (email: string) => {
     if (Object.keys(foundUser).length === 0) {
         throw new Error("Email is not found in redis");
     }
+    return foundUser;
 };
 
 async function createCode(email: string, operation: RedisOperation) {
@@ -64,4 +65,9 @@ const addUser = async (email: string) => {
     return user;
 };
 
-export { checkEmailExistRedis, createCode, sendCode, verifyCode, addUser };
+const getTimeToLive = async (email: string) => {
+    const ttl = await redis.ttl(`${RedisOperation.AddNewUser}:${email}`);
+    return ttl;
+};
+
+export { checkEmailExistRedis, createCode, sendCode, verifyCode, addUser, getTimeToLive };

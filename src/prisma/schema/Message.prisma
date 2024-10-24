@@ -1,8 +1,14 @@
 enum MessageType {
   TEXT
-  MEDIA
+  DELETED
+  STICKER
+  GIF
+  VIDEO
+  VM
+  AUDIO
+  IMAGE
+  FILE
 }
-
 model Message {
   id              Int             @id @default(autoincrement())
   chatId          Int
