@@ -1,21 +1,3 @@
-/**
- * @swagger
- * paths:
- *  /:
- *   get:
- *    summary: Authenticate token cookie
- *    operationID: Authenticate Token
- *    security:
- *     - cookieAuth: []
- *    tags:
- *     - User
- *    responses:
- *      200:
- *        description: Declare that user is autheticated
- *
- *
- */
-
 import { Router, Request, Response } from "express";
 import * as userController from "@controllers/profile/user.controller";
 import { logoutAll, logoutOne } from "@controllers/auth/logout.controller";
