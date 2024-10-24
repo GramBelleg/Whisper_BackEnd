@@ -24,7 +24,7 @@ export const getMessages = async (userId: number, chatId: number) => {
             message: { createdAt: "asc" },
         },
     });
-
+    console.log(messages);
     // Map the messages to flatten the structure
     return messages.map((msg) => {
         return {

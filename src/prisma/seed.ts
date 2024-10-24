@@ -72,18 +72,16 @@ async function createChatMessages(chats: any[]) {
 
             // Loop over every participant except the sender
             for (const participant of chat.participants) {
-                if (participant.id !== sender.id) {
-                    // Skip the sender
-                    await db.messageStatus.create({
-                        data: {
-                            messageId: message.id,
-                            userId: participant.id, // Add status for each other participant
-                            read: faker.date.recent(),
-                            delivered: faker.date.recent(),
-                            deleted: faker.datatype.boolean(),
-                        },
-                    });
-                }
+                // Skip the sender
+                await db.messageStatus.create({
+                    data: {
+                        messageId: message.id,
+                        userId: participant.id, // Add status for each other participant
+                        read: faker.date.recent(),
+                        delivered: faker.date.recent(),
+                        deleted: faker.datatype.boolean(),
+                    },
+                });
             }
 
             // Update the chat with the created message
