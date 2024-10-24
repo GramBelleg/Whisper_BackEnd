@@ -6,11 +6,26 @@ export const getChats = async (userId: number): Promise<Chat[]> => {
         where: { participants: { some: { userId } } },
         include: {
             lastMessage: true,
+            participants: {
+                where: { userId: { not: userId } }, // Exclude the current user
+                select: {
+                    user: {
+                        select: {
+                            id: true,
+                            userName: true,
+                            profilePic: true, // Include other user info like profilePic if available
+                        },
+                    },
+                    isMuted: true,
+                    isContact: true,
+                },
+            },
         },
         orderBy: {
             lastMessage: { createdAt: "desc" },
         },
     });
+
     return chats;
 };
 

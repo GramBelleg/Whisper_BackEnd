@@ -39,7 +39,7 @@ model Channel {
 model ChatParticipant {
   id     Int  @id @default(autoincrement())
   isContact Boolean @default(false)
-  isMuted   Boolean 
+  isMuted   Boolean ?
   chatId Int
   userId Int
   chat   Chat @relation(fields: [chatId], references: [id])

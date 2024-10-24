@@ -2,14 +2,30 @@ import db from "@DB";
 import { Message } from "@prisma/client";
 import { SaveableMessage } from "@models/chat.models";
 
-export const getMessages = async (chatId: number): Promise<Message[]> => {
-    const messages = await db.message.findMany({
-        where: { chatId },
-        orderBy: { createdAt: "asc" },
+export const getMessages = async (userId: number, chatId: number) => {
+    const messages = await db.messageStatus.findMany({
+        where: {
+            userId,
+            message: {
+                chatId,
+            },
+            deleted: false,
+        },
+        include: {
+            message: {
+                include: {
+                    sender: {
+                        select: { id: true, profilePic: true, userName: true },
+                    },
+                },
+            },
+        },
+        orderBy: {
+            message: { createdAt: "asc" },
+        },
     });
     return messages;
 };
-
 export const saveMessage = async (message: SaveableMessage): Promise<Message> => {
     const savedMessage = await db.message.create({
         data: { ...message },

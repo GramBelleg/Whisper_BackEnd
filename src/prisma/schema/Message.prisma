@@ -1,6 +1,5 @@
 enum MessageType {
   TEXT
-  DELETED
   STICKER
   GIF
   VIDEO
