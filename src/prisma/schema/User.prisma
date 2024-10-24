@@ -8,7 +8,8 @@ model User {
   profilePic         String?
   lastSeen           DateTime             @default(now())
   bio                String?
-  isOnline           Boolean?             
+  isOnline           Boolean?          
+  hasStory        Boolean?   
   Messages           Message[]
   chatParticipant    ChatParticipant[]
   groupParticipant   GroupParticipant[]

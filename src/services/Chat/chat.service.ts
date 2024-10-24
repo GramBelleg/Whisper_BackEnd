@@ -1,7 +1,7 @@
 import db from "@DB";
 import { Chat } from "@prisma/client";
 
-export const getChats = async (userId: number): Promise<Chat[]> => {
+export const getChats = async (userId: number) => {
     const chats = await db.chat.findMany({
         where: { participants: { some: { userId } } },
         include: {
@@ -11,13 +11,12 @@ export const getChats = async (userId: number): Promise<Chat[]> => {
                 select: {
                     user: {
                         select: {
-                            id: true,
+                            id: true, // Get othersId (the ID of the other user)
                             userName: true,
-                            profilePic: true, // Include other user info like profilePic if available
+                            profilePic: true, // Get the other user's profilePic
+                            hasStory: true,
                         },
                     },
-                    isMuted: true,
-                    isContact: true,
                 },
             },
         },
@@ -26,7 +25,17 @@ export const getChats = async (userId: number): Promise<Chat[]> => {
         },
     });
 
-    return chats;
+    return chats.map((chat) => {
+        const otherUser = chat.participants[0]?.user; // Assuming only one other participant
+        return {
+            id: chat.id,
+            lastMessage: chat.lastMessage,
+            othersId: otherUser?.id,
+            userName: otherUser?.userName,
+            story: otherUser?.hasStory,
+            profilePic: otherUser?.profilePic,
+        };
+    });
 };
 
 export const getChatId = async (messageId: number): Promise<number | undefined> => {
