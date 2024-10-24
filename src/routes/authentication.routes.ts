@@ -5,8 +5,6 @@ import { resendConfirmCode, confirmEmail } from "@controllers/auth/confirmation.
 import googleAuth from "@controllers/auth/google.auth.controller";
 import { githubAuth } from "@controllers/auth/github.auth.controller";
 import { facebookAuth } from "@controllers/auth/facebook.auth.controller";
-import userAuth from "@middlewares/auth.middleware";
-import { logoutAll, logoutOne } from "@controllers/auth/logout.controller";
 import { resetPassword, sendResetCode } from "@controllers/auth/reset.password.controller";
 
 const router: Router = Router();
