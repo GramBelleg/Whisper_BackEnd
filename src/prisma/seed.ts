@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import db from "./PrismaClient";
 
 // Passwords of 5 users in order.
-const passwords: string[] = ["abcdefg", "1234567", "aaaabbb", "1111111", "2222222"];
+const passwords: string[] = ["abcdefgh", "12345678", "aaaabbbb", "1111111", "22222222"];
 
 // Utility function to create random users
 async function createUsers(numUsers: number) {
