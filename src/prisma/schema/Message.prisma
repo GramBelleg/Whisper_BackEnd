@@ -3,12 +3,14 @@ model Message {
   chatId           Int 
   senderId         Int 
   content          String
+  sentAt           DateTime          @default(now())
   createdAt        DateTime          @default(now())
   forwarded        Boolean           @default(false)
   pinned           Boolean           @default(false)
   selfDestruct     Boolean           @default(false)
   expiresAfter     Int?
   type             String
+  media            String[]
   parentMessageId  Int?              @unique
   lastMessageChat  UserChat[]        @relation("LastMessageInUserChat") 
   sender           User              @relation(fields: [senderId], references: [id])

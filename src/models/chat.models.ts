@@ -1,20 +1,35 @@
 import { Message } from "@prisma/client";
+import { ChatType } from "@prisma/client";
 
 export type ChatSummary = {
-    chatName: string;
+    user: any;
+    type: ChatType;
     lastMessage: any;
     unreadMessageCount: number;
 };
 
-export type SaveableMessage = Pick<
+export type ReceivedMessage = {
+    parentMessage: null | {
+        content: string;
+        media: string[];
+    };
+    messageStatus: {
+        read: Date | null;
+        delivered: Date | null;
+    };
+} & Message;
+
+export type SentMessage = Pick<
     Message,
     | "chatId"
     | "senderId"
     | "content"
+    | "media"
     | "forwarded"
     | "selfDestruct"
     | "expiresAfter"
     | "type"
+    | "sentAt"
     | "parentMessageId"
 >;
 

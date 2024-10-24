@@ -1,10 +1,30 @@
 import db from "@DB";
 import { Message } from "@prisma/client";
 import { getChatParticipantsIds } from "@services/chat/chat.service";
-import { SaveableMessage } from "@models/chat.models";
+import { SentMessage } from "@models/chat.models";
 
+
+export const getMessageStatus = async (messageId: number) => {
+    return await db.messageStatus.findMany({
+        where: { messageId },
+        select: {
+            read: true,
+            delivered: true,
+        },
+    });
+};
+
+export const getMessage = async (id: number) => {
+    return await db.message.findUnique({
+        where: { id },
+        select: {
+            content: true,
+            media: true,
+        },
+    });
+};
 export const getMessages = async (userId: number, chatId: number) => {
-    const messages = await db.messageStatus.findMany({
+    const result = await db.messageStatus.findMany({
         where: {
             userId,
             message: {
@@ -21,14 +41,21 @@ export const getMessages = async (userId: number, chatId: number) => {
             message: { createdAt: "asc" },
         },
     });
-    return messages.map((messageStatus) => ({
-        ...messageStatus.message,
-        read: messageStatus.read,
-        delivered: messageStatus.delivered
-    }));
+    const messages = await Promise.all(
+        result.map(async (messageStatus) => {
+            const parentMessageId = messageStatus.message.parentMessageId;
+            const parentMessage = parentMessageId ? await getMessage(parentMessageId) : null;
+            return {
+                ...messageStatus.message,
+                parentMessage,
+                messageStatus: { read: messageStatus.read, delivered: messageStatus.delivered },
+            };
+        })
+    );
+    return messages;
 };
 
-export const saveMessage = async (message: SaveableMessage): Promise<Message> => {
+export const saveMessage = async (message: SentMessage): Promise<Message> => {
     const savedMessage = await db.message.create({
         data: { ...message },
     });

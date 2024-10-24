@@ -35,11 +35,11 @@ export const initWebSocketServer = (server: HTTPServer) => {
 
         connectionHandler.startConnection(userId, clients, socket);
 
-        socket.on("send", async (message: types.OmitSender<types.SaveableMessage>) => {
+        socket.on("send", async (message: types.OmitSender<types.SentMessage>) => {
             const savedMessage = await sendController.handleSend({
                 ...message,
                 senderId: userId,
-            });
+            }) ;
             if (savedMessage) {
                 messageHandler.broadCast(message.chatId, clients, "receive", savedMessage);
             }

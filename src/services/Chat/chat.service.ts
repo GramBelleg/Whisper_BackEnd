@@ -8,10 +8,17 @@ const getUserChats = async (userId: number) => {
         select: {
             chatId: true,
             unreadMessageCount: true,
+            chat: {
+                select: {
+                    type: true,
+                },
+            },
             lastMessage: {
                 select: {
+                    id: true,
                     content: true,
                     createdAt: true,
+                    sentAt: true,
                     messageStatus: {
                         where: {
                             userId,
@@ -67,10 +74,14 @@ const getOtherChatParticipant = async (chatId: number, excludeUserId: number) =>
             },
         },
         select: {
+            muted: true,
             user: {
                 select: {
+                    id: true,
                     userName: true,
-                    name: true,
+                    profilePic: true,
+                    lastSeen: true,
+                    hasStory: true,
                 },
             },
         },
@@ -84,7 +95,8 @@ export const getChatSummary = async (
     const participant = await getOtherChatParticipant(userChat.chatId, userId);
     if (!participant) return null;
     const chatSummary = {
-        chatName: participant.user.name || participant.user.userName,
+        user: { ...participant.user, muted: participant.muted },
+        type: userChat.chat.type, 
         lastMessage: userChat.lastMessage,
         unreadMessageCount: userChat.unreadMessageCount,
     };

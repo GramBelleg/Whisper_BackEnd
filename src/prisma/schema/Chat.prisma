@@ -17,6 +17,7 @@ model Chat {
 model UserChat {
   chatId                Int
   userId                Int
+  isArchived            Boolean           @default(false)
   unreadMessageCount    Int               @default(0)
   lastMessageId         Int?             
   lastMessage           Message?          @relation("LastMessageInUserChat", fields: [lastMessageId], references: [id])
@@ -48,6 +49,7 @@ model ChatParticipant {
   id                    Int               @id @default(autoincrement())
   chatId                Int
   userId                Int
+  muted                 Boolean           @default(false)
   chat                  Chat              @relation(fields: [chatId], references: [id])
   user                  User              @relation(fields: [userId], references: [id])
 
