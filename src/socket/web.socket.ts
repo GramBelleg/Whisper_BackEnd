@@ -7,7 +7,7 @@ import * as editController from "@controllers/chat/edit.message";
 import * as deleteController from "@controllers/chat/delete.message";
 import * as messageHandler from "./handlers/message.handlers";
 import * as connectionHandler from "./handlers/connection.handlers";
-
+import { getMessage } from "@services/chat/message.service";
 const clients: Map<number, Socket> = new Map();
 
 export const notifyExpiry = (key: string) => {
@@ -42,7 +42,8 @@ export const initWebSocketServer = (server: HTTPServer) => {
                 senderId: userId,
             });
             if (savedMessage) {
-                messageHandler.broadCast(message.chatId, clients, "receive", savedMessage);
+                const temp = await getMessage(savedMessage.id);
+                messageHandler.broadCast(message.chatId, clients, "receive", temp);
             }
         });
 

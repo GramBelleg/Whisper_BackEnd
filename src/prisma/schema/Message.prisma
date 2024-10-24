@@ -19,8 +19,8 @@ model Message {
   pinned          Boolean         @default(false)
   selfDestruct    Boolean         @default(false)
   expiresAfter    Int?
-  type            MessageType
   parentMessageId Int?            @unique
+  type            MessageType
   sender          User            @relation(fields: [senderId], references: [id])
   chat            Chat            @relation(fields: [chatId], references: [id])
   lastMessageChat Chat?           @relation("LastMessageInChat")

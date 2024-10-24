@@ -20,6 +20,7 @@ model Chat {
 
 model Group {
   chatId  Int    @id
+  name    String
   maxSize Int
   privacy String
   chat    Chat   @relation(fields: [chatId], references: [id])

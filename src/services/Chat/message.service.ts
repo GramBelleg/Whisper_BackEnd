@@ -2,6 +2,35 @@ import db from "@DB";
 import { Message } from "@prisma/client";
 import { SaveableMessage } from "@models/chat.models";
 
+export const getMessage = async (messageId: number) => {
+    const msg = await db.message.findUnique({
+        where: {
+            id: messageId,
+        },
+        include: {
+            sender: {
+                select: { id: true, profilePic: true, userName: true },
+            },
+        },
+    });
+    if (msg)
+        return {
+            id: msg.id,
+            chatId: msg.chatId,
+            senderId: msg.senderId,
+            content: msg.content,
+            createdAt: msg.createdAt,
+            forwarded: msg.forwarded,
+            pinned: msg.pinned,
+            selfDestruct: msg.selfDestruct,
+            expiresAfter: msg.expiresAfter,
+            type: msg.type,
+            parentMessageId: msg.parentMessageId,
+            profilePic: msg.sender.profilePic,
+            userName: msg.sender.userName,
+        };
+};
+
 export const getMessages = async (userId: number, chatId: number) => {
     const messages = await db.messageStatus.findMany({
         where: {
@@ -39,10 +68,8 @@ export const getMessages = async (userId: number, chatId: number) => {
             expiresAfter: msg.message.expiresAfter,
             type: msg.message.type,
             parentMessageId: msg.message.parentMessageId,
-
             profilePic: msg.message.sender.profilePic,
             userName: msg.message.sender.userName,
-
             read: msg.read,
             delivered: msg.delivered,
             deleted: msg.deleted,
