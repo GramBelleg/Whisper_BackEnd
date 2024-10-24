@@ -1,48 +1,120 @@
 import db from "@DB";
-import { Chat } from "@prisma/client";
+import { ChatSummary } from "@models/chat.models";
+import { ChatType } from "@prisma/client";
 
-export const getChats = async (userId: number) => {
-    const chats = await db.chat.findMany({
-        where: { participants: { some: { userId } } },
-        include: {
-            lastMessage: true,
-            participants: {
-                where: { userId: { not: userId } }, // Exclude the current user
+const getUserChats = async (userId: number) => {
+    return await db.userChat.findMany({
+        where: { userId },
+        select: {
+            chatId: true,
+            unreadMessageCount: true,
+            chat: {
                 select: {
-                    user: {
+                    type: true,
+                },
+            },
+            lastMessage: {
+                select: {
+                    id: true,
+                    content: true,
+                    createdAt: true,
+                    sentAt: true,
+                    messageStatus: {
+                        where: {
+                            userId,
+                        },
                         select: {
-                            id: true, // Get othersId (the ID of the other user)
-                            userName: true,
-                            profilePic: true, // Get the other user's profilePic
-                            hasStory: true,
-                            lastSeen: true,
+                            read: true,
+                            delivered: true,
                         },
                     },
-                    isMuted: true,
                 },
             },
         },
         orderBy: {
-            lastMessage: { createdAt: "desc" },
+            lastMessage: {
+                createdAt: "desc",
+            },
         },
     });
+};
 
-    return chats.map((chat) => {
-        const otherUser = chat.participants[0]?.user; // Assuming only one other participant
-        return {
-            id: chat.id,
-            unreadMessageCount: chat.unreadMessageCount,
-            isArchived: chat.isArchived,
-            type: chat.type,
-            lastMessage: chat.lastMessage,
-            othersId: otherUser?.id,
-            userName: otherUser?.userName,
-            story: otherUser?.hasStory,
-            profilePic: otherUser?.profilePic,
-            lastSeen: otherUser?.lastSeen,
-            muted: otherUser?.profilePic,
-        };
+const createChatParticipants = async (users: number[], chatId: number) => {
+    const participantsData = users.map((userId) => ({
+        userId,
+        chatId,
+    }));
+    await db.chatParticipant.createMany({
+        data: participantsData,
     });
+    await db.userChat.createMany({
+        data: participantsData,
+    });
+};
+
+export const createChat = async (users: number[], type: ChatType) => {
+    const chat = await db.chat.create({
+        data: {
+            type,
+        },
+        select: {
+            id: true,
+        },
+    });
+    await createChatParticipants(users, chat.id);
+    return chat;
+};
+
+const getOtherChatParticipant = async (chatId: number, excludeUserId: number) => {
+    return await db.chatParticipant.findFirst({
+        where: {
+            chatId,
+            userId: {
+                not: excludeUserId,
+            },
+        },
+        select: {
+            isMuted: true,
+            user: {
+                select: {
+                    id: true,
+                    userName: true,
+                    profilePic: true,
+                    lastSeen: true,
+                    hasStory: true,
+                },
+            },
+        },
+    });
+};
+
+export const getChatSummary = async (
+    userChat: any,
+    userId: number
+): Promise<ChatSummary | null> => {
+    const participant = await getOtherChatParticipant(userChat.chatId, userId);
+    if (!participant) return null;
+    const chatSummary = {
+        user: { ...participant.user, isMuted: participant.isMuted },
+        type: userChat.chat.type, 
+        lastMessage: userChat.lastMessage,
+        unreadMessageCount: userChat.unreadMessageCount,
+    };
+    return chatSummary;
+};
+
+export const getChatsSummaries = async (userId: number): Promise<ChatSummary[]> => {
+    const userChats = await getUserChats(userId);
+    const chatSummaries: ChatSummary[] = [];
+
+    for (const userChat of userChats) {
+        const chatSummary = await getChatSummary(userChat, userId);
+        if (chatSummary) {
+            chatSummaries.push(chatSummary);
+        }
+    }
+
+    return chatSummaries;
 };
 
 export const getChatId = async (messageId: number): Promise<number | undefined> => {
@@ -64,8 +136,8 @@ export const getChatParticipantsIds = async (chatId: number): Promise<number[]> 
 };
 
 export const setLastMessage = async (chatId: number, messageId: number | null): Promise<void> => {
-    await db.chat.update({
-        where: { id: chatId },
+    await db.userChat.updateMany({
+        where: { chatId },
         data: { lastMessageId: messageId },
     });
 };

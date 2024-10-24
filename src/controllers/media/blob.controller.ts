@@ -8,7 +8,7 @@ const writeBlob = async (req: Request, res: Response) => {
         const blobName = `${userId}${Date.now()}.${fileExtension}`;
         const presignedUrl = await getPresignedUrl(blobName, "write");
 
-        //save blobName in the content of the message on the frontend
+        //save blobName in the media of the message on the frontend
         res.json({ presignedUrl, blobName });
     } catch (error) {
         console.error("Error generating presigned URL:", error);
@@ -17,7 +17,7 @@ const writeBlob = async (req: Request, res: Response) => {
 };
 
 const readBlob = async (req: Request, res: Response) => {
-    //blobName represents the content of the message for the frontend
+    //blobName represents the media of the message for the frontend
     const blobName = req.body.blobName;
     try {
         const presignedUrl = await getPresignedUrl(blobName, "read");

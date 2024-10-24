@@ -84,13 +84,6 @@ async function createChatMessages(chats: any[]) {
                 });
             }
 
-            // Update the chat with the created message
-            await db.chat.update({
-                where: { id: chat.chat.id },
-                data: {
-                    lastMessageId: message.id,
-                },
-            });
         }
     }
 }
