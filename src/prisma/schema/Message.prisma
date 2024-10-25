@@ -9,6 +9,7 @@ enum MessageType {
   FILE
 }
 
+
 model Message {
   id               Int               @id @default(autoincrement())
   chatId           Int 
@@ -18,6 +19,7 @@ model Message {
   delivered        Boolean           @default(false)
   forwarded        Boolean           @default(false)
   pinned           Boolean           @default(false)
+  edited           Boolean           @default(false)
   selfDestruct     Boolean           @default(false)
   expiresAfter     Int?
   type             String
@@ -29,7 +31,7 @@ model Message {
   voiceMessage     VoiceMessage?
   parentMessage    Message?          @relation("ReplyToMessage", fields: [parentMessageId], references: [id])
   reply            Message?          @relation("ReplyToMessage") 
-  messageStatus    MessageStatus[] 
+  messageStatus    MessageStatus[]   
 }
 
 model MessageStatus {
@@ -41,7 +43,7 @@ model MessageStatus {
   time            DateTime            @default(now())  
   deleted         Boolean             @default(false)
   lastMessageChat  ChatParticipant[]  @relation("LastMessageForChatParticipant") 
-  message         Message             @relation(fields: [messageId], references: [id])
+  message         Message             @relation(fields: [messageId], references: [id], onDelete: Cascade)
   user            User                @relation(fields: [userId], references: [id])
   @@unique([messageId,userId])
 }
