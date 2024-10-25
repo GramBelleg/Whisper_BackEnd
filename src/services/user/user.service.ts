@@ -2,6 +2,9 @@ import db from "src/prisma/PrismaClient";
 import { verifyCode } from "@services/auth/confirmation.service";
 import { validatePhone } from "@validators/user";
 import RedisOperation from "@src/@types/redis.operation";
+import { saveStory } from "@services/redis/story.service";
+import { Story } from "@prisma/client";
+import { SaveableStory } from "@models/story.models";
 
 //TODO: const updateUserName
 
@@ -68,36 +71,24 @@ const updatePhone = async (id: number, phoneNumber: string) => {
     }
 };
 
-const setStory = async (id: number, content: string, media: string) => {
-    if (!id) {
-        throw new Error("User id is required");
-    }
-
-    if (content || media) {
+const setStory = async (story: SaveableStory) => {
+    try {
         const createdStory = await db.story.create({
-            data: {
-                userId: id, // Associate the story with the user's ID
-                content: content, // Assuming 'story' contains a 'content' field
-                media: media, // Assuming 'story' contains a 'media' field
-            },
+            data: {...story},
         });
+        await saveStory(createdStory);
         return createdStory;
-    } else {
-        throw new Error("Story data is required");
+    } catch (error) {
+        throw new Error("Unable to set story");
     }
 };
 
+//TODO: fix delete story
 const deleteStory = async (userId: number, storyId: number) => {
     if (!userId || !storyId) {
         throw new Error("User ID and Story ID are required");
     }
-
-    const deletedStory = await db.story.delete({
-        where: {
-            id: storyId,
-            userId: userId,
-        },
-    });
+    
     return deletedStory;
 };
 

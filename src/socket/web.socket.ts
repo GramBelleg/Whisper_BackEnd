@@ -2,16 +2,24 @@ import { Server as IOServer, Socket } from "socket.io";
 import { Server as HTTPServer } from "http";
 import { validateCookie } from "@validators/socket";
 import * as types from "@models/chat.models";
+import * as storyTypes from "@models/story.models";
 import * as sendController from "@controllers/chat/send.message";
 import * as editController from "@controllers/chat/edit.message";
 import * as deleteController from "@controllers/chat/delete.message";
 import * as messageHandler from "./handlers/message.handlers";
 import * as connectionHandler from "./handlers/connection.handlers";
+import * as storyController from "@controllers/user/story.controller";
+import { Story } from "@prisma/client";
+import * as storyHandler from "./handlers/story.handlers";
 
 const clients: Map<number, Socket> = new Map();
 
 export const notifyExpiry = (key: string) => {
-    messageHandler.notifyExpiry(key, clients);
+    const keyParts = key.split(":")[0];
+    if(keyParts === "messageId")    
+        messageHandler.notifyExpiry(key, clients);
+    if(keyParts === "storyExpired")    
+        storyHandler.notifyExpiry(key, clients);
 };
 
 export const initWebSocketServer = (server: HTTPServer) => {
@@ -54,6 +62,21 @@ export const initWebSocketServer = (server: HTTPServer) => {
             if (editedMessage) {
                 messageHandler.broadCast(message.chatId, clients, "edit", editedMessage);
             }
+        });
+
+        socket.on("uploadStory", async (story: storyTypes.OmitSender<storyTypes.SaveableStory>) => {
+            const createdStory = await storyController.setStory({
+                ...story,
+                userId,
+            });
+            if (createdStory) {
+                storyHandler.broadCast(userId, clients, "recieveStory", createdStory);
+            }
+        });
+
+        socket.on("deleteStory", async (storyId: number) => {
+            const deletedStoryId = await storyController.deleteStory(storyId);
+            storyHandler.broadCast(userId, clients, "deleteStory", storyId);
         });
 
         socket.on("pin", async (message: types.MessageReference) => {

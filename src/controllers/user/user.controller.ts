@@ -1,6 +1,6 @@
 import { User } from "@prisma/client";
 import { Request, Response } from "express";
-import * as userServices from "@services/Profile/user.service";
+import * as userServices from "@services/user/user.service";
 import { validateEmail } from "@validators/confirm.reset";
 import { createCode, sendCode } from "@services/auth/confirmation.service";
 import { checkEmailNotExistDB } from "@services/auth/signup.service";
@@ -120,37 +120,6 @@ const changePic = async (req: Request, res: Response) => {
     }
 };
 
-const setStory = async (req: Request, res: Response) => {
-    try {
-        let { content = "", media = "" }: { content: string; media: string } = req.body;
-        let id: number = req.userId;
-        await userServices.setStory(id, content, media);
-        res.status(200).json({
-            status: "success",
-        });
-    } catch (e: any) {
-        res.status(400).json({
-            status: "failed",
-            message: e.message,
-        });
-    }
-};
-
-const deleteStory = async (req: Request, res: Response) => {
-    try {
-        let id: number = req.userId;
-        let storyId: number = req.body.storyId;
-        await userServices.deleteStory(id, storyId);
-        res.status(200).json({
-            status: "success",
-        });
-    } catch (e: any) {
-        res.status(400).json({
-            status: "failed",
-            message: e.message,
-        });
-    }
-};
 
 const UserInfo = async (req: Request, res: Response) => {
     try {
@@ -185,8 +154,6 @@ const changeUserName = async (req: Request, res: Response) => {
 };
 
 export {
-    setStory,
-    deleteStory,
     UserInfo,
     updateBio,
     updateName,

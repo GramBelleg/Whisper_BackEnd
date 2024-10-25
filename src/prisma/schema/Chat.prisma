@@ -12,9 +12,8 @@ model Chat {
   lastMessage        Message?          @relation("LastMessageInChat", fields: [lastMessageId], references: [id])
   messages           Message[]
   participants       ChatParticipant[]
-
-  group   Group?
-  channel Channel?
+  group              Group?
+  channel            Channel?
 }
 
 model Group {
@@ -36,11 +35,12 @@ model Channel {
 }
 
 model ChatParticipant {
-  id     Int  @id @default(autoincrement())
-  chatId Int
-  userId Int
-  chat   Chat @relation(fields: [chatId], references: [id])
-  user   User @relation(fields: [userId], references: [id])
+  id        Int      @id @default(autoincrement())
+  isContact Boolean? @default(false)
+  chatId    Int
+  userId    Int
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([chatId, userId])
 }

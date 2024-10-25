@@ -27,9 +27,10 @@ model UserToken {
 }
 
 model Story {
-  id      Int    @id @default(autoincrement())
+  id      Int      @id @default(autoincrement())
   userId  Int
-  user    User   @relation(fields: [userId], references: [id])
+  user    User     @relation(fields: [userId], references: [id])
+  date    DateTime @default(now())
   content String
   media   String
 }
