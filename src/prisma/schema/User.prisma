@@ -1,17 +1,17 @@
 model User {
   id                 Int                  @id @default(autoincrement())
   email              String               @unique
-  userName           String //*CHANGE THIS* it has to be unique but fix with oAuth
+  userName           String               //*CHANGE THIS* it has to be unique but fix with oAuth
   name               String?
   password           String               @db.VarChar(256)
   phoneNumber        String?              @unique
+  loggedInDevices    Int                  @default(0)
   profilePic         String?
   lastSeen           DateTime             @default(now())
+  hasStory           Boolean              @default(false)
   bio                String?
-  isOnline           Boolean?          
-  hasStory           Boolean?                @default(false)
-  Messages           Message[]
-  chatParticipant    ChatParticipant[]
+  Messages           Message[] 
+  chatParticipant    ChatParticipant[] 
   groupParticipant   GroupParticipant[]
   channelParticipant ChannelParticipant[]
   tokens             UserToken[]

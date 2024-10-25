@@ -5,17 +5,12 @@ enum ChatType {
 }
 
 model Chat {
-  id                 Int               @id @default(autoincrement())
-  type               ChatType          
-  unreadMessageCount Int               @default(0)
-  lastMessageId      Int?              @unique
-  isArchived         Boolean?
-  lastMessage        Message?          @relation("LastMessageInChat", fields: [lastMessageId], references: [id])
-  messages           Message[]
-  participants       ChatParticipant[]
-
-  group   Group?
-  channel Channel?
+  id                    Int               @id @default(autoincrement())
+  type                  ChatType           
+  messages              Message[]
+  participants          ChatParticipant[]
+  group                 Group?  
+  channel               Channel?           
 }
 
 model Group {
@@ -38,13 +33,16 @@ model Channel {
 }
 
 model ChatParticipant {
-  id     Int  @id @default(autoincrement())
-  isContact Boolean @default(false)
-  isMuted   Boolean  @default(false)
-  chatId Int
-  userId Int
-  chat   Chat @relation(fields: [chatId], references: [id])
-  user   User @relation(fields: [userId], references: [id])
+  userId                Int
+  chatId                Int
+  isArchived            Boolean           @default(false)
+  unreadMessageCount    Int               @default(0)
+  lastMessageId         Int?             
+  isContact             Boolean           @default(false)
+  isMuted               Boolean           @default(false)
+  lastMessage           Message?          @relation("LastMessageForChatParticipant", fields: [lastMessageId], references: [id])
+  chat                  Chat              @relation(fields: [chatId], references: [id])
+  user                  User              @relation(fields: [userId], references: [id])
 
   @@unique([chatId, userId])
 }

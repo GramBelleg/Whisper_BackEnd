@@ -7,7 +7,7 @@ import * as editController from "@controllers/chat/edit.message";
 import * as deleteController from "@controllers/chat/delete.message";
 import * as messageHandler from "./handlers/message.handlers";
 import * as connectionHandler from "./handlers/connection.handlers";
-import { getMessage } from "@services/chat/message.service";
+
 const clients: Map<number, Socket> = new Map();
 
 export const notifyExpiry = (key: string) => {
@@ -31,19 +31,17 @@ export const initWebSocketServer = (server: HTTPServer) => {
 
     io.on("connection", (socket: Socket) => {
         socket.data.userId = validateCookie(socket);
-
         const userId = socket.data.userId;
 
         connectionHandler.startConnection(userId, clients, socket);
 
-        socket.on("send", async (message: types.OmitSender<types.SaveableMessage>) => {
+        socket.on("send", async (message: types.OmitSender<types.SentMessage>) => {
             const savedMessage = await sendController.handleSend({
                 ...message,
                 senderId: userId,
-            });
+            }) ;
             if (savedMessage) {
-                const temp = await getMessage(savedMessage.id);
-                messageHandler.broadCast(message.chatId, clients, "receive", temp);
+                messageHandler.broadCast(message.chatId, clients, "receive", savedMessage);
             }
         });
 
@@ -71,11 +69,10 @@ export const initWebSocketServer = (server: HTTPServer) => {
             }
         });
 
-        socket.on("delete", async (id: number, chatId: number) => {
-            await deleteController.handleDeleteMessage(id, chatId);
-            messageHandler.broadCast(chatId, clients, "delete", id);
+        socket.on("delete", async (Ids: number[], chatId: number) => {
+            await deleteController.deleteMessagesForAllUsers(Ids, chatId);
+            messageHandler.broadCast(chatId, clients, "delete", Ids);
         });
-
         socket.on("close", () => {
             connectionHandler.endConnection(userId, clients);
         });

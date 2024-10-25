@@ -1,6 +1,6 @@
 import { Socket } from "socket.io";
 import { getChatId } from "@services/chat/chat.service";
-import { handleDeleteMessage } from "@controllers/chat/delete.message";
+import { deleteMessagesForAllUsers } from "@controllers/chat/delete.message";
 import { getChatParticipantsIds } from "@services/chat/chat.service";
 
 export const broadCast = async (
@@ -33,7 +33,7 @@ export const notifyExpiry = async (key: string, clients: Map<number, Socket>): P
     const id: number = Number(match[0]);
     const chatId = await getChatId(id);
     if (!chatId) return;
-    await handleDeleteMessage(id, chatId);
+    await deleteMessagesForAllUsers([id], chatId);
 
     broadCast(chatId, clients, "expire", id);
 };
