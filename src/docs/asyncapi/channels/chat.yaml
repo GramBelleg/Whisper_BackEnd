@@ -24,9 +24,7 @@ chat:
             description: Identifier of the message
           content:
             type: string
-            description: content of the message
-
-
+            description: new content of the message
 
   # Channel for receiving pinned chat messages
   subscribe:
@@ -35,8 +33,15 @@ chat:
     pin:
       contentType: application/json
       payload:
-        $ref: '../payloads/chat/pinned.message.yaml'  # Reference to the pinned message payload
-
+        type: object
+        properties:
+          messageId:
+            type: integer
+            description: Identifier of the message
+          duration:
+            type: integer
+            description: duration of the pin
+          
   # Channel for sending new messages
   publish:
     summary: Send a new message
@@ -53,7 +58,14 @@ chat:
     edit:
       contentType: application/json
       payload:
-        $ref: '../payloads/chat/edited.message.yaml'  # Reference to the edited message payload
+        type: object
+        properties:
+          messageId:
+            type: integer
+            description: Identifier of the message
+          content:
+            type: string
+            description: new content of the message
 
   # Channel for sending pinned messages
   publish:
@@ -62,4 +74,6 @@ chat:
     pin:
       contentType: application/json
       payload:
-        $ref: '../payloads/chat/pinned.message.yaml'  # Reference to the pinned message payload
+        messageId:
+          type: integer
+          description: Identifier of the message
