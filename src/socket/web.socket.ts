@@ -15,8 +15,10 @@ const clients: Map<number, Socket> = new Map();
 
 export const notifyExpiry = (key: string) => {
     const keyParts = key.split(":")[0];
-    if (keyParts === "messageId") messageHandler.notifyExpiry(key, clients);
-    if (keyParts === "storyExpired") storyHandler.notifyExpiry(key, clients);
+    if(keyParts === "messageId")    
+        messageHandler.notifyExpiry(key, clients);
+    if(keyParts === "storyExpired")    
+        storyHandler.notifyExpiry(key, clients);
 };
 
 export const initWebSocketServer = (server: HTTPServer) => {
@@ -41,28 +43,18 @@ export const initWebSocketServer = (server: HTTPServer) => {
 
         connectionHandler.startConnection(userId, clients, socket);
 
-        socket.on(
-            "send",
-            async (
-                message: types.OmitSentAt<types.OmitSender<types.SentMessage>>,
-                sentAt: string
-            ) => {
-                const savedMessage = await sendController.handleSend(userId, {
-                    ...message,
-                    senderId: userId,
-                    sentAt: new Date(sentAt),
-                });
-                if (savedMessage) {
-                    messageHandler.broadCast(message.chatId, clients, "receive", savedMessage);
-                }
+        socket.on("send", async (message: types.OmitSender<types.SentMessage>) => {
+            const savedMessage = await sendController.handleSend(userId, {
+                ...message,
+                senderId: userId,
+            });
+            if (savedMessage) {
+                messageHandler.broadCast(message.chatId, clients, "receive", savedMessage);
             }
-        );
+        });
 
         socket.on("edit", async (message: types.OmitSender<types.EditableMessage>) => {
-            const editedMessage = await editController.handleEditContent(
-                message.id,
-                message.content
-            );
+            const editedMessage = await editController.handleEditContent(message.id, message.content);
             if (editedMessage) {
                 messageHandler.broadCast(message.chatId, clients, "edit", editedMessage);
             }
