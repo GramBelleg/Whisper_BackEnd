@@ -2,15 +2,17 @@ chat:
   description: Channel for handling chat messages.
 
   # Channel for receiving chat messages
-  subscribe:
-  - summary: Receive chat messages
+  subscribeMessage:
+    summary: Receive chat messages
     operationId: receiveMessage
     message:
       contentType: application/json
       payload:
         $ref: '../payloads/chat/received.message.yaml'  # Reference to the received message payload
 
-  - summary: Receive edited chat messages
+  # Channel for receiving edited chat messages
+  subscribeEdit:
+    summary: Receive edited chat messages
     operationId: receiveEditedMessage
     edit:
       contentType: application/json
@@ -24,7 +26,9 @@ chat:
             type: string
             description: new content of the message
 
-  - summary: Receive pinned chat messages
+  # Channel for receiving pinned chat messages
+  subscribePin:
+    summary: Receive pinned chat messages
     operationId: receivePinnedMessage
     pin:
       contentType: application/json
@@ -39,15 +43,17 @@ chat:
             description: duration of the pin
           
   # Channel for sending new messages
-  publish:
-  - summary: Send a new message
+  publishMessage:
+    summary: Send a new message
     operationId: sendMessage
     message:
       contentType: application/json
       payload:
         $ref: '../payloads/chat/sent.message.yaml'  # Reference to the sent message payload
 
-  - summary: Send an edited message
+  # Channel for sending edited messages
+  publishEdit:
+    summary: Send an edited message
     operationId: sendEditedMessage
     edit:
       contentType: application/json
@@ -61,7 +67,9 @@ chat:
             type: string
             description: new content of the message
 
-  - summary: Send a pinned message
+  # Channel for sending pinned messages
+  publishPin:
+    summary: Send a pinned message
     operationId: sendPinnedMessage
     pin:
       contentType: application/json
