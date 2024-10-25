@@ -1,98 +1,72 @@
-type: object
-properties:
-  parentMessage:
-    type: object
-    properties:
-      content:
-        type: string
-      media:
-        type: array
-        items:
-          type: string
-  id:
-    type: integer
-  chatId:
-    type: integer
-  senderId:
-    type: integer
-  content:
-    type: string
-  read:
-    type: boolean
-  delivered:
-    type: boolean
-  forwarded:
-    type: boolean
-  pinned:
-    type: boolean
-  edited:
-    type: boolean
-  selfDestruct:
-    type: boolean
-  expiresAfter:
-    type: integer
-    nullable: true
-  type:
-    type: string
-  sentAt:
-    type: string
-    format: date-time
-  media:
-    type: array
-    items:
-      type: string
-  parentMessageId:
-    type: integer
-    nullable: true
-  time:
-    type: string
-    format: date-time
-type: object
-properties:
-  parentMessage:
-    type: object
-    properties:
-      content:
-        type: string
-      media:
-        type: array
-        items:
-          type: string
-  id:
-    type: integer
-  chatId:
-    type: integer
-  senderId:
-    type: integer
-  content:
-    type: string
-  read:
-    type: boolean
-  delivered:
-    type: boolean
-  forwarded:
-    type: boolean
-  pinned:
-    type: boolean
-  edited:
-    type: boolean
-  selfDestruct:
-    type: boolean
-  expiresAfter:
-    type: integer
-    nullable: true
-  type:
-    type: string
-  sentAt:
-    type: string
-    format: date-time
-  media:
-    type: array
-    items:
-      type: string
-  parentMessageId:
-    type: integer
-    nullable: true
-  time:
-    type: string
-    format: date-time
+components:
+  schemas:
+    ReceivedMessagePayload:          
+          type: object
+          properties:
+            chatId:
+              type: integer
+              description: Identifier of the chat room
+            id:
+              type: integer
+              description: Unique identifier for the message
+            senderId:
+              type: integer
+              description: The ID of the user who sent the message
+            content:
+              type: string
+              description: The content of the message
+            read:
+              type: boolean
+              description: Indicates if the message has been read
+            delivered:
+              type: boolean
+              description: Indicates if the message has been delivered
+            forwarded:
+              type: boolean
+              description: Indicates if the message has been forwarded
+            pinned:
+              type: boolean
+              description: Indicates if the message has been pinned
+            edited:
+              type: boolean
+              description: Indicates if the message has been edited
+            selfDestruct:
+              type: boolean
+              description: Indicates if the message is set to self-destruct
+            expiresAfter:
+              type: integer
+              nullable: true
+              description: Time in seconds until the message expires
+            type:
+              type: string
+              description: Type of the message (e.g., text, image)
+            sentAt:
+              type: string
+              format: date-time
+              description: Timestamp when the message was sent
+            media:
+              type: array
+              items:
+                type: string
+              description: Array of media URLs associated with the message
+            parentMessage:
+              type: object
+              nullable: true
+              description: Parent message data if this message is a reply
+              properties:
+                content:
+                  type: string
+                  description: The content of the parent message
+                media:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of media URLs in the parent message
+            parentMessageId:
+              type: integer
+              nullable: true
+              description: ID of the parent message if this message is a reply
+            time:
+              type: string
+              format: date-time
+              description: Timestamp of the message event (if different from sentAt)
