@@ -9,7 +9,7 @@ export const validateCookie = async (socket: Socket): Promise<number | undefined
     if (cookie) {
         return await cookieParse(cookie, socket) as number;
     } else if (token) {
-        return await verifyUserToken((token as string).split("=")[1]);
+        return await verifyUserToken((token as string ).replace("Bearer", "").trim());
     } else {
         throw new Error("Authentication Error: No cookie found");
     }
