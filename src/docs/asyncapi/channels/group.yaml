@@ -1,0 +1,33 @@
+group:
+    description: Channel for managing group events.
+
+    # Channel for adding a group
+    publish:
+        summary: Add a new group
+        operationId: addGroup
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    groupId:
+                        type: integer
+                        description: Unique identifier for the group
+                    members:
+                        type: array
+                        items:
+                            type: integer
+                        description: List of user IDs in the group
+
+    # Channel for joining a group
+    publish:
+        summary: Join a group
+        operationId: joinGroup
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    groupId:
+                        type: integer
+                        description: Identifier of the group to join
