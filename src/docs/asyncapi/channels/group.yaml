@@ -1,7 +1,7 @@
 group:
   description: Channel for managing group events.
 
-  publish:
+  publishAdd:
     summary: Add a new group
     operationId: addGroup
     message:
@@ -18,7 +18,7 @@ group:
               type: integer
             description: List of user IDs in the group
 
-  publish:
+  publishJoin:
     summary: Join a group
     operationId: joinGroup
     message:

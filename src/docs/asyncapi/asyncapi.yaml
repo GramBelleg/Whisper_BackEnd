@@ -1,29 +1,30 @@
-asyncapi: "3.0.0" # Update to the latest version
+asyncapi: '3.0.0'
 info:
-    title: Chat WebSocket API
-    version: "1.0.0"
-    description: WebSocket API for real-time chat features, including sending, editing, pinning, unpinning, and deleting messages.
-    contact:
-        name: Support Team
-        email: support@example.com
-    license:
-        name: MIT
-        url: https://opensource.org/licenses/MIT
-id: http://example.com/asyncapi/chat-websocket-api # Unique identifier for your document
-defaultContentType: application/json # Specify the default content type
+  title: Chat WebSocket API
+  version: '1.0.0'
+  description: WebSocket API for real-time chat features, including sending, editing, pinning, unpinning, and deleting messages.
+  contact:
+    name: Support Team
+    email: support@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+id: http://example.com/asyncapi/chat-websocket-api
+defaultContentType: application/json
 tags:
-    - name: chat
-      description: Operations related to chat messages.
-    - name: group
-      description: Operations related to groups.
+  - name: chat
+    description: Operations related to chat messages.
+  - name: group
+    description: Operations related to groups.
 
 servers:
-    chat-server:
-        url: http://localhost:5000
-        protocol: wss
+  chat-server:
+    host: localhost
+    port: 5000
+    protocol: wss
 
 channels:
-    chat:
-        $ref: "./channels/chat.yaml" # Reference to chat events
-    group:
-        $ref: "./channels/group.yaml" # Reference to group events
+  chat:
+    $ref: './channels/chat.yaml'
+  group:
+    $ref: './channels/group.yaml'
