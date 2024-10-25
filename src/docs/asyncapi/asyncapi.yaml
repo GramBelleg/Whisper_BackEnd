@@ -1,13 +1,24 @@
-asyncapi: "3.0.0"
+asyncapi: '3.0.0'
 info:
-    title: Chat WebSocket API
-    version: "1.0.0"
-    description: WebSocket API for real-time chat features, including sending, editing, pinning, unpinning, and deleting messages.
+  title: Chat WebSocket API
+  version: '1.0.0'
+  description: WebSocket API for real-time chat features, including sending, editing, pinning, unpinning, and deleting messages.
+  contact:
+    name: Your Name
+    email: your.email@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+tags:
+  - name: Chat
+    description: Operations related to chat messages.
+
+defaultContentType: application/json
 
 servers:
-    chat-server:
-        url: http://localhost:5000
-        protocol: wss
+  chat-server:
+    url: http://localhost:5000
+    protocol: wss
 channels:
     $ref: './channels/chat.yaml'
     # $ref: './channels/message.yaml'

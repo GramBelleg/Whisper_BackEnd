@@ -1,4 +1,3 @@
-channels:
   chat:
     description: Channel for handling chat messages.
     

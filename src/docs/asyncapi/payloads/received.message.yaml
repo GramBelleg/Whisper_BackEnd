@@ -1,6 +1,4 @@
-components:
-  schemas:
-    ReceivedMessagePayload:          
+     
           type: object
           properties:
             chatId:
