@@ -48,3 +48,50 @@ chat:
                     senderId:
                         type: integer
                         description: The ID of the user sending the message
+ # Channel for editing messages
+    publish:
+        summary: Edit a message
+        operationId: editMessage
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    messageId:
+                        type: integer
+                        description: Unique identifier for the message to be edited
+                    content:
+                        type: string
+                        description: New content of the message
+
+    # Channel for pinning messages
+    publish:
+        summary: Pin a message
+        operationId: pinMessage
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    messageId:
+                        type: integer
+                        description: Unique identifier for the message to be pinned
+                    chatId:
+                        type: integer
+                        description: Identifier of the chat room
+
+    # Channel for unpinning messages
+    publish:
+        summary: Unpin a message
+        operationId: unpinMessage
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    messageId:
+                        type: integer
+                        description: Unique identifier for the message to be unpinned
+                    chatId:
+                        type: integer
+                        description: Identifier of the chat room
