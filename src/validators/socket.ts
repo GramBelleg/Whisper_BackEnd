@@ -1,6 +1,5 @@
 import { Socket } from "socket.io";
 import { cookieParse, verifyToken } from "@middlewares/socket.middleware";
-import { verify } from "crypto";
 
 export const validateCookie = (socket: Socket): number | undefined => {
     const cookie = socket.handshake.headers.cookie;

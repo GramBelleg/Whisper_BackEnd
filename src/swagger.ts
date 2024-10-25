@@ -17,7 +17,7 @@ import swaggerJsDoc from "swagger-jsdoc";
  *      message:
  *       type: string
  *       description: message described the reason of the error
- *   responses:   
+ *   responses:
  *    requestError:
  *       content:
  *        application/json:
@@ -32,20 +32,20 @@ import swaggerJsDoc from "swagger-jsdoc";
  */
 
 const swaggerSpec = swaggerJsDoc({
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "Chat App API",
-      version: "1.0.0",
-      description: "Documentation for our chat app API",
+    definition: {
+        openapi: "3.0.0",
+        info: {
+            title: "Chat App API",
+            version: "1.0.0",
+            description: "Documentation for our chat app API",
+        },
     },
-  },
-  apis: [
-    `${__dirname}/routes/*.js`,
-    `${__dirname}/routes/*.ts`,
-    `${__dirname}/swagger.js`,
-    `${__dirname}/swagger.ts`,
-  ],
+    apis: [
+        `${__dirname}/docs/*/*.js`,
+        `${__dirname}/docs/*/*.ts`,
+        `${__dirname}/swagger.js`,
+        `${__dirname}/swagger.ts`,
+    ],
 });
 
 export default swaggerSpec;

@@ -39,16 +39,15 @@ export const initWebSocketServer = (server: HTTPServer) => {
 
     io.on("connection", (socket: Socket) => {
         socket.data.userId = validateCookie(socket);
-
         const userId = socket.data.userId;
 
         connectionHandler.startConnection(userId, clients, socket);
 
-        socket.on("send", async (message: types.OmitSender<types.SaveableMessage>) => {
+        socket.on("send", async (message: types.OmitSender<types.SentMessage>) => {
             const savedMessage = await sendController.handleSend({
                 ...message,
                 senderId: userId,
-            });
+            }) ;
             if (savedMessage) {
                 messageHandler.broadCast(message.chatId, clients, "receive", savedMessage);
             }
@@ -93,11 +92,10 @@ export const initWebSocketServer = (server: HTTPServer) => {
             }
         });
 
-        socket.on("delete", async (id: number, chatId: number) => {
-            await deleteController.handleDeleteMessage(id, chatId);
-            messageHandler.broadCast(chatId, clients, "delete", id);
+        socket.on("delete", async (Ids: number[], chatId: number) => {
+            await deleteController.deleteMessagesForAllUsers(Ids, chatId);
+            messageHandler.broadCast(chatId, clients, "delete", Ids);
         });
-
         socket.on("close", () => {
             connectionHandler.endConnection(userId, clients);
         });

@@ -9,7 +9,6 @@ export const verifyToken = (token: string): number => {
     return id;
 };
 export const cookieParse = (cookie: string, socket: Socket): number | undefined => {
-    // Extract token from cookie
     try {
         const token: string | undefined = cookie
             .split(";")

@@ -13,5 +13,6 @@ module.exports = {
         "^@config/(.*)$": "<rootDir>/src/config/$1",
         "^@validators/(.*)$": "<rootDir>/src/validators/$1",
         "^@routes/(.*)$": "<rootDir>/src/routes/$1",
+        "^@src/(.*)$": "<rootDir>/src/$1",
     },
 };

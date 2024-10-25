@@ -1,18 +1,70 @@
 import db from "@DB";
 import { Message } from "@prisma/client";
-import { SaveableMessage } from "@models/chat.models";
+import { getChatParticipantsIds } from "@services/chat/chat.service";
+import { SentMessage } from "@models/chat.models";
 
-export const getMessages = async (chatId: number): Promise<Message[]> => {
-    const messages = await db.message.findMany({
-        where: { chatId },
-        orderBy: { createdAt: "asc" },
+//will be used with a web socket on(read) or on(delivered) for the status info view of the message
+export const getMessageStatus = async (messageId: number) => {
+    return await db.messageStatus.findMany({
+        where: { messageId },
+        select: {
+            userId: true,
+            read: true,
+            delivered: true,
+        },
     });
+};
+
+export const getMessage = async (id: number) => {
+    return await db.message.findUnique({
+        where: { id },
+        select: {
+            content: true,
+            media: true,
+        },
+    });
+};
+
+export const getMessages = async (userId: number, chatId: number) => {
+    const result = await db.messageStatus.findMany({
+        where: {
+            userId,
+            message: {
+                chatId,
+            },
+            deleted: false,
+        },
+        select: {
+            message: true,
+            deleted: true,
+        },
+        orderBy: {
+            message: { createdAt: "asc" },
+        },
+    });
+    const messages = await Promise.all(
+        result.map(async (messageStatus) => {
+            const parentMessageId = messageStatus.message.parentMessageId;
+            const parentMessage = parentMessageId ? await getMessage(parentMessageId) : null;
+            return {
+                ...messageStatus.message,
+                parentMessage,
+            };
+        })
+    );
     return messages;
 };
 
-export const saveMessage = async (message: SaveableMessage): Promise<Message> => {
+export const saveMessage = async (message: SentMessage): Promise<Message> => {
     const savedMessage = await db.message.create({
         data: { ...message },
+    });
+    const participantIds = await getChatParticipantsIds(message.chatId);
+    await db.messageStatus.createMany({
+        data: participantIds.map((userId) => ({
+            userId,
+            messageId: savedMessage.id,
+        })),
     });
     return savedMessage;
 };
@@ -41,14 +93,39 @@ export const unpinMessage = async (id: number): Promise<Message> => {
     return unpinnedMessage;
 };
 
-export const deleteMessage = async (id: number): Promise<void> => {
-    const message = await db.message.findUnique({
-        where: { id },
+export const deleteMessagesForUser = async (userId: number, Ids: number[]): Promise<void> => {
+    const existingMessages = await db.message.findMany({
+        where: {
+            id: { in: Ids },
+        },
+        select: { id: true },
     });
 
-    if (message) {
-        await db.message.delete({
-            where: { id },
+    const existingIds = existingMessages.map((message) => message.id);
+    if (existingIds.length > 0) {
+        await db.messageStatus.updateMany({
+            where: {
+                messageId: { in: existingIds },
+                userId: userId,
+            },
+            data: { deleted: true },
+        });
+    }
+};
+
+export const deleteMessagesForAll = async (Ids: number[]): Promise<void> => {
+    const existingMessages = await db.message.findMany({
+        where: {
+            id: { in: Ids },
+        },
+        select: { id: true },
+    });
+
+    const existingIds = existingMessages.map((message) => message.id);
+
+    if (existingIds.length > 0) {
+        await db.message.deleteMany({
+            where: { id: { in: existingIds } },
         });
     }
 };

@@ -3,9 +3,12 @@ import { getPresignedUrl } from "@services/media/blob.service";
 
 const writeBlob = async (req: Request, res: Response) => {
     try {
-        // Generate a presigned URL for uploading
-        const blobName = `${Date.now()}.webm`;
+        const fileExtension = req.body.fileExtension;
+        const userId = req.userId;
+        const blobName = `${userId}${Date.now()}.${fileExtension}`;
         const presignedUrl = await getPresignedUrl(blobName, "write");
+
+        //save blobName in the media of the message on the frontend
         res.json({ presignedUrl, blobName });
     } catch (error) {
         console.error("Error generating presigned URL:", error);
@@ -14,9 +17,9 @@ const writeBlob = async (req: Request, res: Response) => {
 };
 
 const readBlob = async (req: Request, res: Response) => {
+    //blobName represents the media of the message for the frontend
     const blobName = req.body.blobName;
     try {
-        // Generate a presigned URL for streaming
         const presignedUrl = await getPresignedUrl(blobName, "read");
         res.json({ presignedUrl });
     } catch (error) {

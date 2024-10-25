@@ -1,43 +1,51 @@
 enum MessageType {
   TEXT
-  MEDIA
+  STICKER
+  GIF
+  VIDEO
+  VM
+  AUDIO
+  IMAGE
+  FILE
 }
-
 model Message {
-  id              Int             @id @default(autoincrement())
-  chatId          Int
-  senderId        Int
-  content         String
-  createdAt       DateTime        @default(now())
-  forwarded       Boolean         @default(false)
-  pinned          Boolean         @default(false)
-  selfDestruct    Boolean         @default(false)
-  expiresAfter    Int?
-  type            MessageType
-  parentMessageId Int?            @unique
-  sender          User            @relation(fields: [senderId], references: [id])
-  chat            Chat            @relation(fields: [chatId], references: [id])
-  lastMessageChat Chat?           @relation("LastMessageInChat")
-  voiceMessage    VoiceMessage?
-  parentMessage   Message?        @relation("ReplyToMessage", fields: [parentMessageId], references: [id])
-  reply           Message?        @relation("ReplyToMessage")
-  messageStatus   MessageStatus[]
+  id               Int               @id @default(autoincrement())
+  chatId           Int 
+  senderId         Int 
+  content          String
+  sentAt           DateTime          @default(now())        //order my messages based on this
+  createdAt        DateTime          @default(now())       //order every one else's based on this
+  read             Boolean           @default(false)
+  delivered        Boolean           @default(false)
+  forwarded        Boolean           @default(false)
+  pinned           Boolean           @default(false)
+  selfDestruct     Boolean           @default(false)
+  expiresAfter     Int?
+  type             String
+  media            String[]
+  parentMessageId  Int?              @unique
+
+  lastMessageChat  ChatParticipant[]        @relation("LastMessageForChatParticipant") 
+  sender           User              @relation(fields: [senderId], references: [id])
+  chat             Chat              @relation(fields: [chatId], references: [id]) 
+  voiceMessage     VoiceMessage?
+  parentMessage    Message?          @relation("ReplyToMessage", fields: [parentMessageId], references: [id])
+  reply            Message?          @relation("ReplyToMessage") 
+  messageStatus    MessageStatus[] 
 }
 
 model MessageStatus {
-  messageId Int
-  userId    Int
-  read      DateTime?
-  delivered DateTime?
-  deleted   Boolean
-  message   Message   @relation(fields: [messageId], references: [id])
-  user      User      @relation(fields: [userId], references: [id])
-
-  @@unique([messageId, userId])
+  messageId       Int    
+  userId          Int
+  read            DateTime?       
+  delivered       DateTime?        
+  deleted         Boolean @default(false)
+  message         Message @relation(fields: [messageId], references: [id])
+  user            User    @relation(fields: [userId], references: [id])
+  @@unique([messageId,userId])
 }
 
 model VoiceMessage {
-  id        Int     @id @default(autoincrement())
-  MessageId Int     @unique
+  MessageId Int             @id
   Message   Message @relation(fields: [MessageId], references: [id])
 }
