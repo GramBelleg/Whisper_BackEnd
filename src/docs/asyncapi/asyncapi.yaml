@@ -1,0 +1,16 @@
+asyncapi: "2.0.0"
+info:
+    title: Chat WebSocket API
+    version: "1.0.0"
+    description: WebSocket API for real-time chat features, including sending, editing, pinning, unpinning, and deleting messages.
+
+servers:
+    chat-server:
+        url: http://localhost:5000
+        protocol: ws
+
+channels:
+    $ref: "./channels/chat.yaml"
+    # $ref: './channels/message.yaml'
+    # $ref: './channels/deleteMessages.yaml'
+    # $ref: './channels/group.yaml'

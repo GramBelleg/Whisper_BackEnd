@@ -43,7 +43,8 @@ app.use(
         saveUninitialized: true,
     })
 );
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/openapi-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/asyncapi-docs", express.static("./src/docs/asyncapi/output"));
 app.use("/api", asyncHandler(indexRouter));
 
 initWebSocketServer(server);
