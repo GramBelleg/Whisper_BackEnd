@@ -13,8 +13,8 @@ model Message {
   chatId           Int 
   senderId         Int 
   content          String
-  sentAt           DateTime          @default(now())
-  createdAt        DateTime          @default(now())
+  sentAt           DateTime          @default(now())        //order my messages based on this
+  createdAt        DateTime          @default(now())       //order every one else's based on this
   read             Boolean           @default(false)
   delivered        Boolean           @default(false)
   forwarded        Boolean           @default(false)

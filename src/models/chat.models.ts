@@ -2,7 +2,7 @@ import { Message } from "@prisma/client";
 import { ChatType } from "@prisma/client";
 
 export type ChatSummary = {
-    user: any;
+    other: any;
     type: ChatType;
     lastMessage: any;
     unreadMessageCount: number;

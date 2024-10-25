@@ -23,39 +23,44 @@
  *                 properties:
  *                   id:
  *                     type: integer
+ *                   other:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       userName:
+ *                         type: string
+ *                       profilePic:
+ *                         type: string
+ *                       lastSeen:
+ *                         type: string
+ *                         format: date-time
+ *                       hasStory:
+ *                         type: boolean
+ *                       isMuted:
+ *                         type: boolean
  *                   type:
  *                     type: string
  *                   unreadMessageCount:
  *                     type: integer
  *                     nullable: true
- *                   lastMessageId:
- *                     type: integer
  *                   lastMessage:
  *                     type: object
  *                     properties:
  *                       id:
  *                         type: integer
- *                       chatId:
- *                         type: integer
- *                       senderId:
- *                         type: integer
  *                       content:
+ *                         type: string
+ *                       type:
  *                         type: string
  *                       createdAt:
  *                         type: string
  *                         format: date-time
- *                       forwarded:
- *                         type: boolean
- *                       pinned:
- *                         type: boolean
- *                       selfDestruct:
- *                         type: boolean
- *                       expiresAfter:
- *                         type: integer
- *                         nullable: true
- *                       type:
+ *                       sentAt:
  *                         type: string
- *                       parentMessageId:
- *                         type: integer
- *                         nullable: true
+ *                         format: date-time
+ *                       read:
+ *                         type: boolean
+ *                       delivered:
+ *                         type: boolean
  */

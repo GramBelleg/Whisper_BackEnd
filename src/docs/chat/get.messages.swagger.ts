@@ -41,6 +41,13 @@
  *                   createdAt:
  *                     type: string
  *                     format: date-time
+ *                   sentAt:
+ *                     type: string
+ *                     format: date-time
+ *                   read:
+ *                     type: boolean
+ *                   delivered:
+ *                     type: boolean
  *                   forwarded:
  *                     type: boolean
  *                   pinned:
@@ -55,4 +62,11 @@
  *                   parentMessageId:
  *                     type: integer
  *                     nullable: true
+ *                   parentMessage:
+ *                     type: object
+ *                     properties:
+ *                       content:
+ *                         type: string
+ *                       media:
+ *                         type: string
  */

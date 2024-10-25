@@ -2,7 +2,7 @@ import db from "@DB";
 import { ChatSummary } from "@models/chat.models";
 import { ChatType } from "@prisma/client";
 
-const getChatParticipants = async (userId: number) => {
+const getUserChats = async (userId: number) => {
     return await db.chatParticipant.findMany({
         where: { userId },
         select: {
@@ -17,6 +17,7 @@ const getChatParticipants = async (userId: number) => {
                 select: {
                     id: true,
                     content: true,
+                    type: true,
                     createdAt: true,
                     sentAt: true,
                     read: true,
@@ -26,7 +27,7 @@ const getChatParticipants = async (userId: number) => {
         },
         orderBy: {
             lastMessage: {
-                sentAt: "desc",
+                createdAt: "desc",
             },
         },
     });
@@ -79,26 +80,27 @@ const getOtherChatParticipant = async (chatId: number, excludeUserId: number) =>
 };
 
 export const getChatSummary = async (
-    chatParticipant: any,
+    userChat: any,
     userId: number
 ): Promise<ChatSummary | null> => {
-    const participant = await getOtherChatParticipant(chatParticipant.chatId, userId);
+    const participant = await getOtherChatParticipant(userChat.chatId, userId);
     if (!participant) return null;
     const chatSummary = {
-        user: { ...participant.user, isMuted: participant.isMuted },
-        type: chatParticipant.chat.type,
-        lastMessage: chatParticipant.lastMessage,
-        unreadMessageCount: chatParticipant.unreadMessageCount,
+        id: userChat.chatId,
+        other: { ...participant.user, isMuted: participant.isMuted },
+        type: userChat.chat.type,
+        lastMessage: userChat.lastMessage,
+        unreadMessageCount: userChat.unreadMessageCount,
     };
     return chatSummary;
 };
 
 export const getChatsSummaries = async (userId: number): Promise<ChatSummary[]> => {
-    const chatParticipants = await getChatParticipants(userId);
+    const userChats = await getUserChats(userId);
     const chatSummaries: ChatSummary[] = [];
 
-    for (const chatParticipant of chatParticipants) {
-        const chatSummary = await getChatSummary(chatParticipant, userId);
+    for (const userChat of userChats) {
+        const chatSummary = await getChatSummary(userChat, userId);
         if (chatSummary) {
             chatSummaries.push(chatSummary);
         }

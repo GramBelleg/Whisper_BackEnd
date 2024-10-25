@@ -39,7 +39,7 @@ export const getMessages = async (userId: number, chatId: number) => {
             deleted: true,
         },
         orderBy: {
-            message: { sentAt: "asc" },
+            message: { createdAt: "asc" },
         },
     });
     const messages = await Promise.all(
