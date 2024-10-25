@@ -8,7 +8,34 @@ chat:
     message:
       contentType: application/json
       payload:
-        $ref: '../payloads/received.message.yaml'  # Reference to the received message payload
+        $ref: '../payloads/chat/received.message.yaml'  # Reference to the received message payload
+
+  # Channel for receiving edited chat messages
+  subscribe:
+    summary: Receive edited chat messages
+    operationId: receiveEditedMessage
+    edit:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          messageId:
+            type: integer
+            description: Identifier of the message
+          content:
+            type: string
+            description: content of the message
+
+
+
+  # Channel for receiving pinned chat messages
+  subscribe:
+    summary: Receive pinned chat messages
+    operationId: receivePinnedMessage
+    pin:
+      contentType: application/json
+      payload:
+        $ref: '../payloads/chat/pinned.message.yaml'  # Reference to the pinned message payload
 
   # Channel for sending new messages
   publish:
@@ -17,4 +44,22 @@ chat:
     message:
       contentType: application/json
       payload:
-        $ref: '../payloads/sent.message.yaml'  # Reference to the sent message payload
+        $ref: '../payloads/chat/sent.message.yaml'  # Reference to the sent message payload
+
+  # Channel for sending edited messages
+  publish:
+    summary: Send an edited message
+    operationId: sendEditedMessage
+    edit:
+      contentType: application/json
+      payload:
+        $ref: '../payloads/chat/edited.message.yaml'  # Reference to the edited message payload
+
+  # Channel for sending pinned messages
+  publish:
+    summary: Send a pinned message
+    operationId: sendPinnedMessage
+    pin:
+      contentType: application/json
+      payload:
+        $ref: '../payloads/chat/pinned.message.yaml'  # Reference to the pinned message payload
