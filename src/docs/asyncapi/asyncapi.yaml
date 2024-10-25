@@ -9,18 +9,15 @@ info:
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
-id: http://example.com/asyncapi/chat-websocket-api
-defaultContentType: application/json
-tags:
-  - name: chat
-    description: Operations related to chat messages.
-  - name: group
-    description: Operations related to groups.
+  tags:
+    - name: chat
+      description: Operations related to chat messages.
+    - name: group
+      description: Operations related to groups.
 
 servers:
   chat-server:
-    host: localhost
-    port: 5000
+    url: localhost:5000
     protocol: wss
 
 channels:
