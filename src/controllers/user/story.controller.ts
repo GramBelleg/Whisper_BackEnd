@@ -2,13 +2,13 @@ import { Request, Response } from "express";
 import * as userServices from "@services/user/user.service";
 import * as storyService from "@services/redis/story.service";
 import { Story } from "@prisma/client";
-import { SaveableStory } from "@models/story.models";
+import * as storyTypes from "@models/story.models";
 
-const setStory = async (story: SaveableStory) => {
+const setStory = async (story: storyTypes.omitId): Promise <storyTypes.omitId> => {
         //await userServices.setStory(id, content, media);
         try {
             // const createdStory = await userServices.setStory(story);
-            const createdStory: Story = await storyService.saveStory(story); //redis
+            const createdStory: storyTypes.omitId = await storyService.saveStory(story); //redis
             return createdStory;
         }
         catch (e: any) {

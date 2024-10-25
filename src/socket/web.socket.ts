@@ -64,7 +64,7 @@ export const initWebSocketServer = (server: HTTPServer) => {
             }
         });
 
-        socket.on("uploadStory", async (story: storyTypes.OmitSender<storyTypes.SaveableStory>) => {
+        socket.on("uploadStory", async (story: storyTypes.omitId) => {
             const createdStory = await storyController.setStory({
                 ...story,
                 userId,

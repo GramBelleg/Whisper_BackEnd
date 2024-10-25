@@ -1,8 +1,8 @@
 import redisClient from "@src/redis/redis.client";
-import { SaveableStory } from "@models/story.models";
+import * as storyTypes from "@models/story.models";
 import { Story } from "@prisma/client";
 
-const saveStory = async (story: SaveableStory): Promise<Story> => {
+const saveStory = async (story: storyTypes.omitId): Promise<storyTypes.SaveableStory> => {
     const id = await redisClient.incr("storyCount");
     await redisClient.setex(`storyExpired:${id}`, 86400, "");  // 86400 seconds = 24 hours
     await redisClient.set(`storyId:${id}`, JSON.stringify(story));

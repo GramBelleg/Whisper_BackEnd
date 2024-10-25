@@ -5,22 +5,24 @@ import RedisOperation from "@src/@types/redis.operation";
 import { saveStory } from "@services/redis/story.service";
 import { Story } from "@prisma/client";
 import { SaveableStory } from "@models/story.models";
+import { tr } from "@faker-js/faker/.";
 
 //TODO: const updateUserName
 
-const updateBio = async (id: number, bio: string) => {
+const updateBio = async (id: number, bio: string): Promise<string> => {
     try {
         await db.user.update({
             where: { id },
             data: { bio },
         });
+        return bio;
     } catch (error) {
         console.error("Error updating bio:", error);
         throw new Error("Unable to update bio");
     }
 };
 
-const updateName = async (id: number, name: string) => {
+const updateName = async (id: number, name: string): Promise<string> => {
     if (!name) {
         throw new Error("Name is required");
     }
@@ -37,7 +39,7 @@ const updateName = async (id: number, name: string) => {
     }
 };
 
-const updateEmail = async (id: number, email: string, code: string) => {
+const updateEmail = async (id: number, email: string, code: string): Promise<string> => {
     if (!email) {
         throw new Error("Email is required");
     }
@@ -54,7 +56,7 @@ const updateEmail = async (id: number, email: string, code: string) => {
     }
 };
 
-const updatePhone = async (id: number, phoneNumber: string) => {
+const updatePhone = async (id: number, phoneNumber: string): Promise<string> => {
     if (!phoneNumber) {
         throw new Error("Phone is required");
     }
@@ -71,7 +73,7 @@ const updatePhone = async (id: number, phoneNumber: string) => {
     }
 };
 
-const setStory = async (story: SaveableStory) => {
+const setStory = async (story: SaveableStory): Promise<Story> => {
     try {
         const createdStory = await db.story.create({
             data: {...story},
@@ -84,15 +86,10 @@ const setStory = async (story: SaveableStory) => {
 };
 
 //TODO: fix delete story
-const deleteStory = async (userId: number, storyId: number) => {
-    if (!userId || !storyId) {
-        throw new Error("User ID and Story ID are required");
-    }
-    
-    return deletedStory;
-};
 
-const userInfo = async (email: string) => {
+
+//TODO: check the type of the return value
+const userInfo = async (email: string): Promise<any> => {
     const User = await db.user.findUnique({
         where: { email },
         select: {
@@ -111,7 +108,7 @@ const userInfo = async (email: string) => {
     return User;
 };
 
-const changePic = async (id: number, name: string) => {
+const changePic = async (id: number, name: string): Promise<string> => {
     try {
         await db.user.update({
             where: { id },
@@ -124,7 +121,7 @@ const changePic = async (id: number, name: string) => {
     }
 }
 
-const changeUserName = async (id: number, userName: string) => {
+const changeUserName = async (id: number, userName: string): Promise<string> => {
     try {
         if(!id || !userName) {
             throw new Error("User ID and username are required");
@@ -139,4 +136,4 @@ const changeUserName = async (id: number, userName: string) => {
     }
 };
 
-export {setStory, deleteStory, userInfo, updateBio, updateName, updateEmail, updatePhone, changePic, changeUserName};
+export {setStory, userInfo, updateBio, updateName, updateEmail, updatePhone, changePic, changeUserName};
