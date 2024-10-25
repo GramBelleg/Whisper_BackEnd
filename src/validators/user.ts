@@ -2,16 +2,16 @@ import Joi, { ObjectSchema } from "joi";
 import { ValidationError } from "joi";
 import { phone } from "phone";
 
-// TODO: uncomment robotToken when integration
 
 const validateSingUp = (requestBody: Record<string, string>) => {
     const schema: ObjectSchema = Joi.object({
         name: Joi.string()
-            .regex(/^[a-zA-Z\s]+$/) // allow only english characters and white spaces
             .min(6)
-            .max(30)
+            .max(50)
             .required(),
-        userName: Joi.string().alphanum().min(6).max(30).required(),
+        userName: Joi.string()
+            .min(6)
+            .max(50).required(),
         email: Joi.string().email().required(),
         phoneNumber: Joi.string()
             .pattern(/^\+[0-9\-\s]+$/) // start with + and allow only numbers and - and white spaces
@@ -21,7 +21,7 @@ const validateSingUp = (requestBody: Record<string, string>) => {
             .valid(Joi.ref("password"))
             .required()
             .messages({ "any.only": "Passwords don't match" }),
-        //robotToken: Joi.string().required(),
+        robotToken: Joi.string().required(),
     });
     const error: ValidationError | undefined = schema.validate(requestBody, {
         abortEarly: false,
@@ -44,7 +44,7 @@ const validateSingUp = (requestBody: Record<string, string>) => {
 const validatePhone = (requestBody: Record<string, string>) => {
     const schema: ObjectSchema = Joi.object({
         phoneNumber: Joi.string()
-            .pattern(/^\+[0-9\-\s]+$/) // start with + and allow only numbers and - and white spaces
+            .pattern(/^\+[0-9\-\s]+$/)
             .required(),
     });
     const error: ValidationError | undefined = schema.validate(requestBody, {

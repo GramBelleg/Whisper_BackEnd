@@ -5,12 +5,12 @@ enum ChatType {
 }
 
 model Chat {
-  id                    Int               @id @default(autoincrement())
-  type                  ChatType           
-  messages              Message[]
-  participants          ChatParticipant[]
-  group                 Group?  
-  channel               Channel?           
+  id           Int               @id @default(autoincrement())
+  type         ChatType
+  messages     Message[]
+  participants ChatParticipant[]
+  group        Group?
+  channel      Channel?
 }
 
 model Group {

@@ -1,12 +1,12 @@
 import { User } from "@prisma/client";
 import { Request, Response } from "express";
-import * as userServices from "@services/profile/user.service";
+import * as userServices from "@services/user/user.service";
 import { validateEmail } from "@validators/confirm.reset";
 import { createCode, sendCode } from "@services/auth/confirmation.service";
 import { checkEmailNotExistDB } from "@services/auth/signup.service";
 import RedisOperation from "@src/@types/redis.operation";
+import { getPresignedUrl } from "@services/media/blob.service";
 
-//TODO: const updateUserName
 
 const updateBio = async (req: Request, res: Response) => {
     try {
@@ -99,15 +99,19 @@ const updatePhone = async (req: Request, res: Response) => {
     }
 };
 
-const setStory = async (req: Request, res: Response) => {
+const changePic = async (req: Request, res: Response) => {
+    //to delete profilePic blobName = "profilePic.jpg"
+    const id: number = req.userId;
+    const blob = req.body.blobName;
     try {
-        let { content = "", media = "" }: { content: string; media: string } = req.body;
-        let id: number = req.userId;
-        await userServices.setStory(id, content, media);
-        res.status(200).json({
+        await getPresignedUrl(blob, "read");
+        await userServices.changePic(id, blob);
+        return res.status(200).json({
             status: "success",
+            name: blob
         });
-    } catch (e: any) {
+    }
+    catch (e: any) {
         res.status(400).json({
             status: "failed",
             message: e.message,
@@ -115,21 +119,6 @@ const setStory = async (req: Request, res: Response) => {
     }
 };
 
-const deleteStory = async (req: Request, res: Response) => {
-    try {
-        let id: number = req.userId;
-        let storyId: number = req.body.storyId;
-        await userServices.deleteStory(id, storyId);
-        res.status(200).json({
-            status: "success",
-        });
-    } catch (e: any) {
-        res.status(400).json({
-            status: "failed",
-            message: e.message,
-        });
-    }
-};
 
 const UserInfo = async (req: Request, res: Response) => {
     try {
@@ -146,13 +135,30 @@ const UserInfo = async (req: Request, res: Response) => {
     }
 };
 
+const changeUserName = async (req: Request, res: Response) => {
+    try {
+        let { userName = "" }: { userName: string } = req.body;
+        let id: number = req.userId;
+        await userServices.changeUserName(id, userName);
+        res.status(200).json({
+            status: "success",
+            data: userName,
+        });
+    } catch (e: any) {
+        res.status(400).json({
+            status: "failed",
+            message: e.message,
+        });
+    }
+};
+
 export {
-    setStory,
-    deleteStory,
     UserInfo,
     updateBio,
     updateName,
     updateEmail,
     emailCode,
     updatePhone,
+    changePic,
+    changeUserName,
 };
