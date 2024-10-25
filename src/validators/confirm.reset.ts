@@ -1,4 +1,4 @@
-import Joi, { ObjectSchema, string } from "joi";
+import Joi, { ObjectSchema } from "joi";
 import { ValidationError } from "joi";
 
 const validateEmail = (email: string) => {

@@ -29,8 +29,9 @@ export const initWebSocketServer = (server: HTTPServer) => {
         },
     });
 
-    io.on("connection", (socket: Socket) => {
-        socket.data.userId = validateCookie(socket);
+    io.on("connection", async (socket: Socket) => {
+        socket.data.userId = await validateCookie(socket);
+
         const userId = socket.data.userId;
 
         connectionHandler.startConnection(userId, clients, socket);

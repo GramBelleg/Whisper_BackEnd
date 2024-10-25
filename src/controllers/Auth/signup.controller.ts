@@ -10,13 +10,15 @@ import RedisOperation from "@src/@types/redis.operation";
 
 const signup = async (req: Request, res: Response): Promise<void> => {
     try {
+        req.body.email = req.body.email?.trim().toLowerCase();
+        req.body.name = req.body.name?.trim().toLowerCase();
+        req.body.userName = req.body.userName?.trim().toLowerCase();
         const { name, userName, email, password }: Record<string, string> = req.body;
         const phoneNumber = validateSingUp(req.body);
 
         await checkEmailNotExistDB(email);
 
-        // TODO: uncomment this calling function when integration
-        //await verifyRobotToken(req.body.robotToken);
+        await verifyRobotToken(req.body.robotToken);
 
         const code = await createCode(email, RedisOperation.ConfirmEmail);
         const emailSubject = "Email confirmation";

@@ -6,6 +6,7 @@ import { validateLogIn } from "@validators/user";
 
 const login = async (req: Request, res: Response) => {
     try {
+        req.body.email = req.body.email?.trim().toLowerCase();
         const { email, password }: Record<string, string> = req.body;
         validateLogIn(req.body);
 

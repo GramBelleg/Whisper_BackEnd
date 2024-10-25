@@ -14,6 +14,7 @@ import {
 
 const resendConfirmCode = async (req: Request, res: Response): Promise<void> => {
     try {
+        req.body.email = req.body.email?.trim().toLowerCase();
         const { email } = req.body as Record<string, string>;
         validateEmail(email);
 
@@ -40,6 +41,8 @@ const resendConfirmCode = async (req: Request, res: Response): Promise<void> => 
 
 const confirmEmail = async (req: Request, res: Response): Promise<void> => {
     try {
+        req.body.email = req.body.email?.trim().toLowerCase();
+        req.body.code = req.body.code?.trim();
         const { email, code } = req.body as Record<string, string>;
         validateConfirmCode(email, code);
 
