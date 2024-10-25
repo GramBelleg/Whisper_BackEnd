@@ -7,7 +7,6 @@ import { Story } from "@prisma/client";
 import { SaveableStory } from "@models/story.models";
 import { tr } from "@faker-js/faker/.";
 
-//TODO: const updateUserName
 
 const updateBio = async (id: number, bio: string): Promise<string> => {
     try {
@@ -56,6 +55,7 @@ const updateEmail = async (id: number, email: string, code: string): Promise<str
     }
 };
 
+//TODO: check the structure of the phone number
 const updatePhone = async (id: number, phoneNumber: string): Promise<string> => {
     if (!phoneNumber) {
         throw new Error("Phone is required");
@@ -94,7 +94,7 @@ const userInfo = async (email: string): Promise<any> => {
         where: { email },
         select: {
             name: true,
-            /*TODO: userName: true,*/
+            userName: true,
             email: true,
             bio: true,
             profilePic: true,
@@ -126,10 +126,11 @@ const changeUserName = async (id: number, userName: string): Promise<string> => 
         if(!id || !userName) {
             throw new Error("User ID and username are required");
         }
-        await db.user.update({
+        const createdUser =await db.user.update({
             where: { id },
             data: { userName },
         });
+        //TODO: check if the userName is the same as the previous one 
         return userName; 
     } catch (error) {
         throw new Error("Username is already taken");

@@ -7,7 +7,6 @@ import { checkEmailNotExistDB } from "@services/auth/signup.service";
 import RedisOperation from "@src/@types/redis.operation";
 import { getPresignedUrl } from "@services/media/blob.service";
 
-//TODO: const updateUserName
 
 const updateBio = async (req: Request, res: Response) => {
     try {
