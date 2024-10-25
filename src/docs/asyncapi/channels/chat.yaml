@@ -1,6 +1,7 @@
 chat:
   description: Channel for handling chat messages.
 
+  # Channel for receiving chat messages
   subscribe:
     summary: Receive chat messages
     operationId: receiveChatMessage
@@ -29,6 +30,7 @@ chat:
                 format: date-time
                 description: Time when the message was sent
 
+  # Channel for sending new messages
   publish:
     summary: Send a new message
     operationId: sendMessage
@@ -47,7 +49,8 @@ chat:
             type: integer
             description: The ID of the user sending the message
 
-  publishEdit:
+  # Channel for editing messages
+  publish:
     summary: Edit a message
     operationId: editMessage
     message:
@@ -62,7 +65,8 @@ chat:
             type: string
             description: New content of the message
 
-  publishPin:
+  # Channel for pinning messages
+  publish:
     summary: Pin a message
     operationId: pinMessage
     message:
@@ -77,7 +81,8 @@ chat:
             type: integer
             description: Identifier of the chat room
 
-  publishUnpin:
+  # Channel for unpinning messages
+  publish:
     summary: Unpin a message
     operationId: unpinMessage
     message:
@@ -92,7 +97,8 @@ chat:
             type: integer
             description: Identifier of the chat room
 
-  publishDelete:
+  # Channel for deleting messages
+  publish:
     summary: Delete messages
     operationId: deleteMessages
     message:
@@ -100,7 +106,7 @@ chat:
       payload:
         type: object
         properties:
-          Ids:
+          ids:
             type: array
             items:
               type: integer
