@@ -11,7 +11,7 @@ router.get("/", (req, res) => {
 //router.put("/user", userController.updateUser);
 router.put("/name", userController.updateName);
 router.put("/bio", userController.updateBio);
-router.get("", userController.UserInfo);
+router.get("/info", userController.UserInfo);
 router.put("/email", userController.updateEmail);
 router.post("/emailcode", userController.emailCode);
 router.put("/phone", userController.updatePhone);

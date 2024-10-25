@@ -1,6 +1,6 @@
 /**
  * @swagger
- * api/user:
+ * api/user/info:
  *   get:
  *     summary: Retrieve user information
  *     description: Retrieves detailed information about a user based on their email.
