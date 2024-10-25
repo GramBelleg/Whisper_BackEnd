@@ -17,7 +17,6 @@ export const handleSend = async (
 ): Promise<ReceivedMessage | null> => {
     try {
         const savedMessage: Message | null = await handleSaveMessage(userId, message);
-
         if (message.selfDestruct) {
             await saveExpiringMessage(savedMessage);
         }

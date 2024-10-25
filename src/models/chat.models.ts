@@ -37,6 +37,7 @@ export type SentMessage = Pick<
     | "parentMessageId"
 >;
 
+export type OmitSentAt<T> = Omit<T, "sentAt">;
 export type OmitSender<T> = Omit<T, "senderId">;
 
 export type MessageReference = Pick<Message, "id" | "senderId" | "chatId">;
