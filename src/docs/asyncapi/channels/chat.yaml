@@ -1,21 +1,20 @@
-  chat:
-    description: Channel for handling chat messages.
-    
-    # Channel for receiving chat messages
-    subscribe:
-      summary: Receive chat messages
-      operationId: receiveMessage
-      message:
-        contentType: application/json
-        payload:
-          $ref: '../payloads/received.message.yaml'
+chat:
+  description: Channel for handling chat messages.
 
-    # Channel for sending new messages
-    publish:
-      summary: Send a new message
-      operationId: sendMessage
-      message:
-        contentType: application/json
-        payload:
-          $ref: '../payloads/sent.message.yaml'
-          
+  # Channel for receiving chat messages
+  subscribe:
+    summary: Receive chat messages
+    operationId: receiveMessage
+    message:
+      contentType: application/json
+      payload:
+        $ref: '../payloads/received.message.yaml'  # Reference to the received message payload
+
+  # Channel for sending new messages
+  publish:
+    summary: Send a new message
+    operationId: sendMessage
+    message:
+      contentType: application/json
+      payload:
+        $ref: '../payloads/sent.message.yaml'  # Reference to the sent message payload
