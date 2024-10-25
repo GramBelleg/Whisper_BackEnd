@@ -1,17 +1,27 @@
-chat:
-  description: Channel for handling chat messages.
+message:
+  description: Channel for sending chat messages.
 
   # Channel for receiving chat messages
-  subscribeMessage:
+  subscribe:
     summary: Receive chat messages
     operationId: receiveMessage
     message:
       contentType: application/json
       payload:
         $ref: '../payloads/chat/received.message.yaml'  # Reference to the received message payload
+    # Channel for sending new messages
+  publish:
+    summary: Send a new message
+    operationId: sendMessage
+    message:
+      contentType: application/json
+      payload:
+        $ref: '../payloads/chat/sent.message.yaml'  # Reference to the sent message payload
 
-  # Channel for receiving edited chat messages
-  subscribeEdit:
+edit:
+  description: Channel for editing messages.
+
+  subscribe:
     summary: Receive edited chat messages
     operationId: receiveEditedMessage
     edit:
@@ -26,33 +36,7 @@ chat:
             type: string
             description: new content of the message
 
-  # Channel for receiving pinned chat messages
-  subscribePin:
-    summary: Receive pinned chat messages
-    operationId: receivePinnedMessage
-    pin:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          messageId:
-            type: integer
-            description: Identifier of the message
-          duration:
-            type: integer
-            description: duration of the pin
-          
-  # Channel for sending new messages
-  publishMessage:
-    summary: Send a new message
-    operationId: sendMessage
-    message:
-      contentType: application/json
-      payload:
-        $ref: '../payloads/chat/sent.message.yaml'  # Reference to the sent message payload
-
-  # Channel for sending edited messages
-  publishEdit:
+  publish:
     summary: Send an edited message
     operationId: sendEditedMessage
     edit:
@@ -66,9 +50,26 @@ chat:
           content:
             type: string
             description: new content of the message
+pin:
+  description: Channel for editing messages.
 
-  # Channel for sending pinned messages
-  publishPin:
+  # Channel for pinning messages
+  subscribe:
+    summary: Receive pinned chat messages
+    operationId: receivePinnedMessage
+    pin:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          messageId:
+            type: integer
+            description: Identifier of the message
+          duration:
+            type: integer
+            description: duration of the pin
+       
+  publish:
     summary: Send a pinned message
     operationId: sendPinnedMessage
     pin:
