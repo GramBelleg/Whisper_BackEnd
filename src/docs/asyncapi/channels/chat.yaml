@@ -1,116 +1,50 @@
 chat:
-  description: Channel for handling chat messages.
+    description: Channel for handling chat messages.
+    
+    # Channel for receiving chat messages
+    subscribe:
+        summary: Receive chat messages
+        operationId: receiveChatMessage
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    chatId:
+                        type: integer
+                        description: Identifier of the chat room
+                    message:
+                        type: object
+                        properties:
+                            messageId:
+                                type: integer
+                                description: Unique identifier for the message
+                            content:
+                                type: string
+                                description: The content of the message
+                            senderId:
+                                type: integer
+                                description: The ID of the user who sent the message
+                            timestamp:
+                                type: string
+                                format: date-time
+                                description: Time when the message was sent
 
-  # Channel for receiving chat messages
-  subscribe:
-    summary: Receive chat messages
-    operationId: receiveChatMessage
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          chatId:
-            type: integer
-            description: Identifier of the chat room
-          message:
-            type: object
-            properties:
-              messageId:
-                type: integer
-                description: Unique identifier for the message
-              content:
-                type: string
-                description: The content of the message
-              senderId:
-                type: integer
-                description: The ID of the user who sent the message
-              timestamp:
-                type: string
-                format: date-time
-                description: Time when the message was sent
-
-  # Channel for sending new messages
-  publish:
-    summary: Send a new message
-    operationId: sendMessage
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          chatId:
-            type: integer
-            description: Identifier of the chat room
-          content:
-            type: string
-            description: The content of the message
-          senderId:
-            type: integer
-            description: The ID of the user sending the message
-
-  # Channel for editing messages
-  publish:
-    summary: Edit a message
-    operationId: editMessage
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          messageId:
-            type: integer
-            description: Unique identifier for the message to be edited
-          content:
-            type: string
-            description: New content of the message
-
-  # Channel for pinning messages
-  publish:
-    summary: Pin a message
-    operationId: pinMessage
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          messageId:
-            type: integer
-            description: Unique identifier for the message to be pinned
-          chatId:
-            type: integer
-            description: Identifier of the chat room
-
-  # Channel for unpinning messages
-  publish:
-    summary: Unpin a message
-    operationId: unpinMessage
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          messageId:
-            type: integer
-            description: Unique identifier for the message to be unpinned
-          chatId:
-            type: integer
-            description: Identifier of the chat room
-
-  # Channel for deleting messages
-  publish:
-    summary: Delete messages
-    operationId: deleteMessages
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          ids:
-            type: array
-            items:
-              type: integer
-            description: Array of message IDs to delete
-          chatId:
-            type: integer
-            description: ID of the chat room where the messages are being deleted
+    # Channel for sending new messages
+    publish:
+        summary: Send a new message
+        operationId: sendMessage
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    chatId:
+                        type: integer
+                        description: Identifier of the chat room
+                    content:
+                        type: string
+                        description: The content of the message
+                    senderId:
+                        type: integer
+                        description: The ID of the user sending the message
