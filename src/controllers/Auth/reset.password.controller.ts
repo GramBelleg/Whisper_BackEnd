@@ -3,13 +3,13 @@ import { Request, Response } from "express";
 import { updatePassword } from "@services/auth/reset.password.service";
 import RedisOperation from "@src/@types/redis.operation";
 import { User } from "@prisma/client";
-import jwt from "jsonwebtoken";
 import { checkEmailExistDB } from "@services/auth/login.service";
 import { createCode, sendCode, verifyCode } from "@services/auth/confirmation.service";
 import { createAddToken, createTokenCookie } from "@services/auth/token.service";
 
 async function sendResetCode(req: Request, res: Response) {
     try {
+        req.body.email = req.body.email?.trim().toLowerCase();
         const { email } = req.body as Record<string, string>;
         validateEmail(email);
 
@@ -34,7 +34,9 @@ async function sendResetCode(req: Request, res: Response) {
 
 async function resetPassword(req: Request, res: Response) {
     try {
-        const { email, password, code } = req.body as Record<string, string>;
+        req.body.email = req.body.email?.trim().toLowerCase();
+        req.body.code = req.body.code?.trim();
+        const { email, password, code } = req.body as Record<string, any>;
         validateResetCode(req.body);
 
         await checkEmailExistDB(email);
@@ -42,12 +44,10 @@ async function resetPassword(req: Request, res: Response) {
         await verifyCode(email, code, RedisOperation.ResetPassword);
 
         const user: User = await updatePassword(email, password);
-        const userToken: string = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, {
-            expiresIn: process.env.JWT_EXPIRE,
-        });
 
-        await createAddToken(user.id);
+        const userToken = await createAddToken(user.id);
         createTokenCookie(res, userToken);
+
         res.status(200).json({
             status: "success",
             user: {
