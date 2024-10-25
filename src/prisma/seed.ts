@@ -64,7 +64,7 @@ async function createChatMessages(chats: Array<{ chat: Chat; participants: User[
                 data: {
                     content: faker.lorem.sentence(),
                     senderId: sender.id,
-                    createdAt: faker.date.recent(),
+                    sentAt: faker.date.recent(),
                     chatId: chat.chat.id,
                     type: "TEXT",
                 },
