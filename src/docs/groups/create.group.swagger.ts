@@ -3,10 +3,12 @@
  * paths:
  *  /api/groups/create:
  *   post:
- *     summary: create a group
- *     operationID: creatGroup
+ *     summary: Create a group
+ *     operationId: createGroup
  *     tags:
  *      - Groups
+ *     security:
+ *      - bearerAuth: []
  *     requestBody:
  *      required: true
  *      content:
@@ -18,36 +20,29 @@
  *         properties:
  *          name:
  *           type: string
- *           format: name
- *          name:
+ *           description: The name of the group
+ *          participants:
+ *           type: array
+ *           items:
+ *            type: integer
+ *           description: An array of participant IDs
+ *          privacy:
  *           type: string
- *           format: name
- *          name:
- *           type: string
- *           format: name
+ *           description: The privacy level of the group (e.g., public, private)
+ *          maxSize:
+ *           type: integer
+ *           description: The maximum number of participants allowed in the group
  *     responses:
  *       400:
  *        $ref: "#/components/responses/requestError"
  *       200:
- *         description: data of successful response
+ *         description: Data of successful response
  *         content:
  *           application/json:
  *             schema:
+ *               type: object
  *               properties:
- *                status:
- *                 type: string
- *                userToken:
- *                 type: string
- *                user:
- *                 type: object
- *                 properties:
- *                  id:
- *                   type: integer
- *                  name:
- *                   type: string
- *                  userName:
- *                   type: string
- *                  email:
- *                   type: string
- *                   format: email
+ *                groupId:
+ *                 type: integer
+ *                 description: The ID of the created group
  */
