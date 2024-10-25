@@ -1,8 +1,5 @@
 import { Socket } from "socket.io";
-import { getChatId } from "@services/chat/chat.service";
-import { handleDeleteMessage } from "@controllers/chat/delete.message";
 import { getStoryParticipant } from "@services/chat/chat.service";
-import { th } from "@faker-js/faker/.";
 import redisClient from "@src/redis/redis.client";
 import { SaveableStory } from "@models/story.models";
 import * as userServices from "@services/user/user.service";

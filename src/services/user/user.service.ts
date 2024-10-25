@@ -5,7 +5,6 @@ import RedisOperation from "@src/@types/redis.operation";
 import { saveStory } from "@services/redis/story.service";
 import { Story } from "@prisma/client";
 import { SaveableStory } from "@models/story.models";
-import { tr } from "@faker-js/faker/.";
 
 
 const updateBio = async (id: number, bio: string): Promise<string> => {
@@ -137,4 +136,14 @@ const changeUserName = async (id: number, userName: string): Promise<string> => 
     }
 };
 
-export {setStory, userInfo, updateBio, updateName, updateEmail, updatePhone, changePic, changeUserName};
+const getUserId = async(userName: string): Promise<number | null> => {
+    const result = await db.user.findFirst({
+        where: { userName },
+        select: { id: true },
+    });
+    if(!result)
+        return null;
+    return result.id;
+};
+
+export {setStory, userInfo, updateBio, updateName, updateEmail, updatePhone, changePic, changeUserName, getUserId};
