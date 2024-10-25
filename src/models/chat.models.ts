@@ -1,6 +1,14 @@
 import { Message } from "@prisma/client";
 import { ChatType } from "@prisma/client";
 
+export type LastMessage = {
+    id: number;
+    content: string;
+    type: string;
+    sentAt: Date;
+    time: Date;
+};
+
 export type ChatSummary = {
     other: any;
     type: ChatType;
@@ -13,7 +21,7 @@ export type ReceivedMessage = {
         content: string;
         media: string[];
     };
-} & Message;
+} & Message & { time: Date };
 
 export type SentMessage = Pick<
     Message,
@@ -21,13 +29,12 @@ export type SentMessage = Pick<
     | "senderId"
     | "content"
     | "media"
+    | "sentAt"
     | "forwarded"
     | "selfDestruct"
     | "expiresAfter"
     | "type"
-    | "sentAt"
     | "parentMessageId"
-    | "media"
 >;
 
 export type OmitSender<T> = Omit<T, "senderId">;

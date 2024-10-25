@@ -36,34 +36,31 @@ export const initWebSocketServer = (server: HTTPServer) => {
         connectionHandler.startConnection(userId, clients, socket);
 
         socket.on("send", async (message: types.OmitSender<types.SentMessage>) => {
-            const savedMessage = await sendController.handleSend({
+            const savedMessage = await sendController.handleSend(userId, {
                 ...message,
                 senderId: userId,
-            }) ;
+            });
             if (savedMessage) {
                 messageHandler.broadCast(message.chatId, clients, "receive", savedMessage);
             }
         });
 
         socket.on("edit", async (message: types.OmitSender<types.EditableMessage>) => {
-            const editedMessage = await editController.handleEditContent({
-                ...message,
-                senderId: userId,
-            });
+            const editedMessage = await editController.handleEditContent(message.id, message.content);
             if (editedMessage) {
                 messageHandler.broadCast(message.chatId, clients, "edit", editedMessage);
             }
         });
 
         socket.on("pin", async (message: types.MessageReference) => {
-            const pinnedMessage = await editController.handlePinMessage(message);
+            const pinnedMessage = await editController.handlePinMessage(message.id);
             if (pinnedMessage) {
                 messageHandler.broadCast(message.chatId, clients, "pin", pinnedMessage);
             }
         });
 
         socket.on("unpin", async (message: types.MessageReference) => {
-            const unpinnedMessage = await editController.handleUnpinMessage(message);
+            const unpinnedMessage = await editController.handleUnpinMessage(message.id);
             if (unpinnedMessage) {
                 messageHandler.broadCast(message.chatId, clients, "unpin", unpinnedMessage);
             }

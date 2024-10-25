@@ -1,28 +1,29 @@
+import { Message } from "@prisma/client";
 import { saveMessage } from "@services/chat/message.service";
 import { setLastMessage } from "@services/chat/chat.service";
-import { Message } from "@prisma/client";
-import { getMessage } from "@services/chat/message.service";
 import { saveExpiringMessage } from "@services/redis/chat.service";
 import { ReceivedMessage, SentMessage } from "@models/chat.models";
+import { buildReceivedMessage } from "./format.message";
 
-const handleSaveMessage = async (message: SentMessage): Promise<Message> => {
-    const savedMessage: Message = await saveMessage(message);
+const handleSaveMessage = async (userId: number, message: SentMessage): Promise<Message> => {
+    const savedMessage: Message = await saveMessage(userId, message);
     await setLastMessage(message.chatId, savedMessage.id);
     return savedMessage;
 };
 
-export const handleSend = async (message: SentMessage): Promise<ReceivedMessage | null> => {
+export const handleSend = async (
+    userId: number,
+    message: SentMessage
+): Promise<ReceivedMessage | null> => {
     try {
-        const savedMessage: Message | null = await handleSaveMessage(message);
+        const savedMessage: Message | null = await handleSaveMessage(userId, message);
 
         if (message.selfDestruct) {
             await saveExpiringMessage(savedMessage);
         }
-        const parentMessage = message.parentMessageId
-            ? await getMessage(message.parentMessageId)
-            : null;
+        const result = await buildReceivedMessage(userId, savedMessage);
 
-        return { parentMessage: parentMessage, ...savedMessage };
+        return result;
     } catch (error) {
         console.error(error);
         return null;

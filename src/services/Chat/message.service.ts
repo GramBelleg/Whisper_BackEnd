@@ -4,18 +4,16 @@ import { getChatParticipantsIds } from "@services/chat/chat.service";
 import { SentMessage } from "@models/chat.models";
 
 //will be used with a web socket on(read) or on(delivered) for the status info view of the message
-export const getMessageStatus = async (messageId: number) => {
-    return await db.messageStatus.findMany({
-        where: { messageId },
+export const getMessageStatus = async (excludeUserId: number, messageId: number) => {
+    return await db.messageStatus.findFirst({
+        where: { NOT: { userId: excludeUserId }, messageId },
         select: {
-            userId: true,
-            read: true,
-            delivered: true,
+            time: true,
         },
     });
 };
 
-export const getMessage = async (id: number) => {
+export const getMessageSummary = async (id: number) => {
     return await db.message.findUnique({
         where: { id },
         select: {
@@ -25,8 +23,25 @@ export const getMessage = async (id: number) => {
     });
 };
 
+export const getMessage = async (id: number) => {
+    return await db.messageStatus.findUnique({
+        where: { id },
+        select: {
+            message: {
+                select: {
+                    id: true,
+                    content: true,
+                    type: true,
+                    sentAt: true,
+                }
+            },
+            time: true,
+        }
+    });
+}
+
 export const getMessages = async (userId: number, chatId: number) => {
-    const result = await db.messageStatus.findMany({
+    const messages = await db.messageStatus.findMany({
         where: {
             userId,
             message: {
@@ -36,36 +51,36 @@ export const getMessages = async (userId: number, chatId: number) => {
         },
         select: {
             message: true,
-            deleted: true,
         },
         orderBy: {
-            message: { createdAt: "asc" },
+            time: "asc",
         },
     });
-    const messages = await Promise.all(
-        result.map(async (messageStatus) => {
-            const parentMessageId = messageStatus.message.parentMessageId;
-            const parentMessage = parentMessageId ? await getMessage(parentMessageId) : null;
-            return {
-                ...messageStatus.message,
-                parentMessage,
-            };
-        })
-    );
+
     return messages;
 };
 
-export const saveMessage = async (message: SentMessage): Promise<Message> => {
+const saveMessageStatuses = async (
+    userId: number,
+    message: Message,
+    participantIds: number[]
+) => {
+    await db.messageStatus.createMany({
+        data: participantIds.map((participantId) => ({
+            userId: participantId,
+            messageId: message.id,
+            ...(participantId === userId && { time: message.sentAt }),
+        })),
+    });
+};
+
+export const saveMessage = async (userId: number, message: SentMessage): Promise<Message> => {
     const savedMessage = await db.message.create({
         data: { ...message },
     });
     const participantIds = await getChatParticipantsIds(message.chatId);
-    await db.messageStatus.createMany({
-        data: participantIds.map((userId) => ({
-            userId,
-            messageId: savedMessage.id,
-        })),
-    });
+    await saveMessageStatuses(userId, savedMessage, participantIds);
+
     return savedMessage;
 };
 
