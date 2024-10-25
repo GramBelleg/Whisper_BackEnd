@@ -33,12 +33,12 @@ export const getMessage = async (id: number) => {
                     content: true,
                     type: true,
                     sentAt: true,
-                }
+                },
             },
             time: true,
-        }
+        },
     });
-}
+};
 
 export const getMessages = async (userId: number, chatId: number) => {
     const messages = await db.messageStatus.findMany({
@@ -60,11 +60,7 @@ export const getMessages = async (userId: number, chatId: number) => {
     return messages;
 };
 
-const saveMessageStatuses = async (
-    userId: number,
-    message: Message,
-    participantIds: number[]
-) => {
+const saveMessageStatuses = async (userId: number, message: Message, participantIds: number[]) => {
     await db.messageStatus.createMany({
         data: participantIds.map((participantId) => ({
             userId: participantId,
@@ -87,7 +83,7 @@ export const saveMessage = async (userId: number, message: SentMessage): Promise
 export const editMessage = async (id: number, content: string): Promise<Message> => {
     const editedMessage: Message = await db.message.update({
         where: { id },
-        data: { content },
+        data: { content, edited: true },
     });
     return editedMessage;
 };
