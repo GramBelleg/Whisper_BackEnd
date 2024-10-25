@@ -2,8 +2,8 @@ import db from "@DB";
 import { ChatSummary } from "@models/chat.models";
 import { ChatType } from "@prisma/client";
 
-const getUserChats = async (userId: number) => {
-    return await db.userChat.findMany({
+const getChatParticipants = async (userId: number) => {
+    return await db.chatParticipant.findMany({
         where: { userId },
         select: {
             chatId: true,
@@ -47,9 +47,6 @@ const createChatParticipants = async (users: number[], chatId: number) => {
     await db.chatParticipant.createMany({
         data: participantsData,
     });
-    await db.userChat.createMany({
-        data: participantsData,
-    });
 };
 
 export const createChat = async (users: number[], type: ChatType) => {
@@ -89,26 +86,26 @@ const getOtherChatParticipant = async (chatId: number, excludeUserId: number) =>
 };
 
 export const getChatSummary = async (
-    userChat: any,
+    chatParticipant: any,
     userId: number
 ): Promise<ChatSummary | null> => {
-    const participant = await getOtherChatParticipant(userChat.chatId, userId);
+    const participant = await getOtherChatParticipant(chatParticipant.chatId, userId);
     if (!participant) return null;
     const chatSummary = {
         user: { ...participant.user, isMuted: participant.isMuted },
-        type: userChat.chat.type, 
-        lastMessage: userChat.lastMessage,
-        unreadMessageCount: userChat.unreadMessageCount,
+        type: chatParticipant.chat.type,
+        lastMessage: chatParticipant.lastMessage,
+        unreadMessageCount: chatParticipant.unreadMessageCount,
     };
     return chatSummary;
 };
 
 export const getChatsSummaries = async (userId: number): Promise<ChatSummary[]> => {
-    const userChats = await getUserChats(userId);
+    const chatParticipants = await getChatParticipants(userId);
     const chatSummaries: ChatSummary[] = [];
 
-    for (const userChat of userChats) {
-        const chatSummary = await getChatSummary(userChat, userId);
+    for (const chatParticipant of chatParticipants) {
+        const chatSummary = await getChatSummary(chatParticipant, userId);
         if (chatSummary) {
             chatSummaries.push(chatSummary);
         }
@@ -136,7 +133,7 @@ export const getChatParticipantsIds = async (chatId: number): Promise<number[]> 
 };
 
 export const setLastMessage = async (chatId: number, messageId: number | null): Promise<void> => {
-    await db.userChat.updateMany({
+    await db.chatParticipant.updateMany({
         where: { chatId },
         data: { lastMessageId: messageId },
     });

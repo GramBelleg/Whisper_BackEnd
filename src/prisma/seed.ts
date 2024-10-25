@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { User } from "@prisma/client";
+import { Chat, ChatType, User } from "@prisma/client";
 import bcrypt from "bcrypt";
 import db from "./PrismaClient";
 
@@ -10,7 +10,7 @@ const passwords: string[] = ["abcdefgh", "12345678", "aaaabbbb", "1111111", "222
 async function createUsers(numUsers: number) {
     const users: User[] = [];
     for (let i = 0; i < numUsers; i++) {
-        const user = await db.user.create({
+        const user: User = await db.user.create({
             data: {
                 email: faker.internet.email(),
                 userName: faker.internet.userName(),
@@ -27,16 +27,16 @@ async function createUsers(numUsers: number) {
 
 // Utility function to create random chats
 async function createChats(numChats: number, users: any[]) {
-    const chats = [];
+    const chats: Array<{ chat: Chat; participants: User[] }> = [];
     for (let i = 0; i < numChats; i++) {
-        const chat = await db.chat.create({
+        const chat: Chat = await db.chat.create({
             data: {
-                type: "DM",
+                type: ChatType.DM,
             },
         });
 
         // Randomly select participants for this chat
-        const participants = faker.helpers.arrayElements(users, 2); // Pick 2 random users
+        const participants: User[] = faker.helpers.arrayElements(users, 2); // Pick 2 random users
 
         // Add participants to chat
         for (const user of participants) {
@@ -54,7 +54,7 @@ async function createChats(numChats: number, users: any[]) {
 }
 
 // Utility function to create messages for chats
-async function createChatMessages(chats: any[]) {
+async function createChatMessages(chats: Array<{ chat: Chat; participants: User[] }>) {
     for (const chat of chats) {
         const numMessages = faker.number.int({ min: 1, max: 10 }); // Random number of messages per chat
 
@@ -73,17 +73,25 @@ async function createChatMessages(chats: any[]) {
             // Loop over every participant except the sender
             for (const participant of chat.participants) {
                 // Skip the sender
+
                 await db.messageStatus.create({
                     data: {
-                        messageId: message.id,
-                        userId: participant.id, // Add status for each other participant
+                        messageId: message.id, // Use the message ID
+                        userId: participant.id, // Ensure the participant's userId is used
                         read: faker.date.recent(),
                         delivered: faker.date.recent(),
                         deleted: faker.datatype.boolean(),
                     },
                 });
-            }
 
+                // Update the chat with the created message
+                await db.chatParticipant.update({
+                    where: { chatId_userId: { chatId: chat.chat.id, userId: participant.id } },
+                    data: {
+                        lastMessageId: message.id,
+                    },
+                });
+            }
         }
     }
 }

@@ -3,11 +3,11 @@ import { Message } from "@prisma/client";
 import { getChatParticipantsIds } from "@services/chat/chat.service";
 import { SentMessage } from "@models/chat.models";
 
-
 export const getMessageStatus = async (messageId: number) => {
     return await db.messageStatus.findMany({
         where: { messageId },
         select: {
+            userId: true,
             read: true,
             delivered: true,
         },
@@ -24,26 +24,18 @@ export const getMessage = async (id: number) => {
     });
 };
 export const getMessages = async (userId: number, chatId: number) => {
-    const result = await db.messageStatus.findMany({
+    const result = await db.message.findMany({
         where: {
-            userId,
-            message: {
-                chatId,
-            },
-            deleted: false,
-        },
-        select: {
-            message: true,
-            read: true,
-            delivered: true,
+            chatId,
+            senderId: userId,
         },
         orderBy: {
-            message: { createdAt: "asc" },
+            createdAt: "asc",
         },
     });
     const messages = await Promise.all(
-        result.map(async (messageStatus) => {
-            const parentMessageId = messageStatus.message.parentMessageId;
+        result.map(async (message) => {
+            const parentMessageId = message.parentMessageId;
             const parentMessage = parentMessageId ? await getMessage(parentMessageId) : null;
             return {
                 ...messageStatus.message,

@@ -9,22 +9,8 @@ model Chat {
   type                  ChatType           
   messages              Message[]
   participants          ChatParticipant[]
-  userChats             UserChat[]
   group                 Group?  
   channel               Channel?           
-}
-
-model UserChat {
-  chatId                Int
-  userId                Int
-  isArchived            Boolean           @default(false)
-  unreadMessageCount    Int               @default(0)
-  lastMessageId         Int?             
-  lastMessage           Message?          @relation("LastMessageInUserChat", fields: [lastMessageId], references: [id])
-  chat                  Chat              @relation(fields: [chatId], references: [id], onDelete: Cascade)
-  user                  User              @relation(fields: [userId], references: [id])
-  
-  @@unique([chatId, userId])
 }
 
 model Group {
@@ -47,13 +33,16 @@ model Channel {
 }
 
 model ChatParticipant {
-  id     Int  @id @default(autoincrement())
-  isContact Boolean @default(false)
-  isMuted   Boolean  @default(false)
-  chatId Int
-  userId Int
-  chat   Chat @relation(fields: [chatId], references: [id])
-  user   User @relation(fields: [userId], references: [id])
+  userId                Int
+  chatId                Int
+  isArchived            Boolean           @default(false)
+  unreadMessageCount    Int               @default(0)
+  lastMessageId         Int?             
+  isContact             Boolean           @default(false)
+  isMuted               Boolean           @default(false)
+  lastMessage           Message?          @relation("LastMessageForChatParticipant", fields: [lastMessageId], references: [id])
+  chat                  Chat              @relation(fields: [chatId], references: [id])
+  user                  User              @relation(fields: [userId], references: [id])
 
   @@unique([chatId, userId])
 }

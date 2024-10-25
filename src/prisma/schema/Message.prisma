@@ -22,7 +22,7 @@ model Message {
   type             String
   media            String[]
   parentMessageId  Int?              @unique
-  lastMessageChat  UserChat[]        @relation("LastMessageInUserChat") 
+  lastMessageChat  ChatParticipant[]        @relation("LastMessageForChatParticipant") 
   sender           User              @relation(fields: [senderId], references: [id])
   chat             Chat              @relation(fields: [chatId], references: [id]) 
   voiceMessage     VoiceMessage?
@@ -43,7 +43,6 @@ model MessageStatus {
 }
 
 model VoiceMessage {
-  id            Int         @id @default(autoincrement())
-  MessageId Int             @unique
+  MessageId Int             @id
   Message   Message @relation(fields: [MessageId], references: [id])
 }

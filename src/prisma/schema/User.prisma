@@ -17,7 +17,6 @@ model User {
   tokens             UserToken[]
   messageStatus      MessageStatus[]
   story              Story[]
-  userChat           UserChat[]
 }
 
 model UserToken {
