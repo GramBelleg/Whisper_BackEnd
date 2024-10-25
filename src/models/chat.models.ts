@@ -13,10 +13,6 @@ export type ReceivedMessage = {
         content: string;
         media: string[];
     };
-    messageStatus: {
-        read: Date | null;
-        delivered: Date | null;
-    };
 } & Message;
 
 export type SentMessage = Pick<

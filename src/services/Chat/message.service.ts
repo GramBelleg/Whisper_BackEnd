@@ -3,6 +3,7 @@ import { Message } from "@prisma/client";
 import { getChatParticipantsIds } from "@services/chat/chat.service";
 import { SentMessage } from "@models/chat.models";
 
+//will be used with a web socket on(read) or on(delivered) for the status info view of the message
 export const getMessageStatus = async (messageId: number) => {
     return await db.messageStatus.findMany({
         where: { messageId },
@@ -23,24 +24,31 @@ export const getMessage = async (id: number) => {
         },
     });
 };
+
 export const getMessages = async (userId: number, chatId: number) => {
-    const result = await db.message.findMany({
+    const result = await db.messageStatus.findMany({
         where: {
-            chatId,
-            senderId: userId,
+            userId,
+            message: {
+                chatId,
+            },
+            deleted: false,
+        },
+        select: {
+            message: true,
+            deleted: true,
         },
         orderBy: {
-            createdAt: "asc",
+            message: { sentAt: "asc" },
         },
     });
     const messages = await Promise.all(
-        result.map(async (message) => {
-            const parentMessageId = message.parentMessageId;
+        result.map(async (messageStatus) => {
+            const parentMessageId = messageStatus.message.parentMessageId;
             const parentMessage = parentMessageId ? await getMessage(parentMessageId) : null;
             return {
                 ...messageStatus.message,
                 parentMessage,
-                messageStatus: { read: messageStatus.read, delivered: messageStatus.delivered },
             };
         })
     );

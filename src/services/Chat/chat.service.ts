@@ -19,21 +19,14 @@ const getChatParticipants = async (userId: number) => {
                     content: true,
                     createdAt: true,
                     sentAt: true,
-                    messageStatus: {
-                        where: {
-                            userId,
-                        },
-                        select: {
-                            read: true,
-                            delivered: true,
-                        },
-                    },
+                    read: true,
+                    delivered: true,
                 },
             },
         },
         orderBy: {
             lastMessage: {
-                createdAt: "desc",
+                sentAt: "desc",
             },
         },
     });

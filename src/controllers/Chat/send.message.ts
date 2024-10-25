@@ -22,8 +22,7 @@ export const handleSend = async (message: SentMessage): Promise<ReceivedMessage 
             ? await getMessage(message.parentMessageId)
             : null;
 
-        const messageStatus = { read: null, delivered: null };
-        return { parentMessage: parentMessage, messageStatus, ...savedMessage };
+        return { parentMessage: parentMessage, ...savedMessage };
     } catch (error) {
         console.error(error);
         return null;
