@@ -24,7 +24,7 @@ edit:
   subscribe:
     summary: Receive edited chat messages
     operationId: receiveEditedMessage
-    edit:
+    message:
       contentType: application/json
       payload:
         type: object
@@ -39,7 +39,7 @@ edit:
   publish:
     summary: Send an edited message
     operationId: sendEditedMessage
-    edit:
+    message:
       contentType: application/json
       payload:
         type: object
@@ -57,7 +57,7 @@ pin:
   subscribe:
     summary: Receive pinned chat messages
     operationId: receivePinnedMessage
-    pin:
+    message:
       contentType: application/json
       payload:
         type: object
@@ -72,7 +72,7 @@ pin:
   publish:
     summary: Send a pinned message
     operationId: sendPinnedMessage
-    pin:
+    message:
       contentType: application/json
       payload:
         messageId:
