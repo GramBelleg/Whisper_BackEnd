@@ -1,0 +1,49 @@
+create:
+  description: Channel for creating group.
+
+  # Channel for sending new messages
+  publish:
+    summary: Create a Group
+    operationId: createGroup
+    message:
+      contentType: application/json
+      payload:
+        $ref: '../../payloads/group/create.group.yaml'  # Reference to the sent message payload
+
+  # Channel for receiving chat messages
+  subscribe:
+    summary: Join Group
+    operationId: joinGroup
+    message:
+      contentType: application/json
+      payload:
+        $ref: '../../payloads/group/join.group.yaml'  # Reference to the received message payload
+
+leave:
+  description: Channel for leaving Group.
+
+  publish:
+    summary: leave Group
+    operationId: leaveGroup
+    message:
+      contentType: application/json
+      payload:
+        groupId:
+          type: integer
+          description: identifier for group
+
+  subscribe:
+    summary: Get notified that someone left the group
+    operationId: notifiedLeaveGroup
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          userName:
+            type: integer
+            description: name of the user who left
+          groupId:
+            type: string
+            description: new content of the message
+

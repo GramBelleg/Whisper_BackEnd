@@ -8,7 +8,7 @@ message:
     message:
       contentType: application/json
       payload:
-        $ref: '../payloads/chat/sent.message.yaml'  # Reference to the sent message payload
+        $ref: '../../payloads/chat/sent.message.yaml'  # Reference to the sent message payload
 
   # Channel for receiving chat messages
   subscribe:
@@ -17,7 +17,7 @@ message:
     message:
       contentType: application/json
       payload:
-        $ref: '../payloads/chat/received.message.yaml'  # Reference to the received message payload
+        $ref: '../../payloads/chat/received.message.yaml'  # Reference to the received message payload
 
 edit:
   description: Channel for editing messages.

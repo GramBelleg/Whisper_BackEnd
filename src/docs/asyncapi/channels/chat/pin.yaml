@@ -1,0 +1,26 @@
+  description: Channel for editing messages.
+
+  publish:
+    summary: Send a pinned message
+    operationId: sendPinnedMessage
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          messageId:
+            type: integer
+            description: Identifier of the message
+          duration:
+            type: integer
+            description: duration of the pin
+
+  subscribe:
+    summary: Receive pinned chat messages
+    operationId: receivePinnedMessage
+    message:
+      contentType: application/json
+      payload:
+        messageId:
+          type: integer
+          description: Identifier of the message

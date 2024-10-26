@@ -1,0 +1,31 @@
+  description: Channel for editing messages.
+
+  publish:
+    summary: Send an edited message
+    operationId: sendEditedMessage
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          messageId:
+            type: integer
+            description: Identifier of the message
+          content:
+            type: string
+            description: new content of the message
+
+  subscribe:
+    summary: Receive edited chat messages
+    operationId: receiveEditedMessage
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          messageId:
+            type: integer
+            description: Identifier of the message
+          content:
+            type: string
+            description: new content of the message

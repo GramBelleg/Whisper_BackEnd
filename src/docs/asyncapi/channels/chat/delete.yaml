@@ -1,0 +1,25 @@
+  description: Channel for delete messages.
+
+  publish:
+    summary: delete messages
+    operationId: deletedMessage
+    message:
+      contentType: application/json
+      payload:
+        type: array
+        items:
+          messageId:
+            type: integer
+            description: Identifier of the message
+
+  subscribe:
+    summary: Receive deleted messages
+    operationId: receiveDeletedMessage
+    message:
+      contentType: application/json
+      payload:
+        type: array
+        items:
+          messageId:
+            type: integer
+            description: Identifier of the message
