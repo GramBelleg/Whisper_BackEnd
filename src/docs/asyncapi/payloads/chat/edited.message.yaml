@@ -1,9 +1,0 @@
-type: object
-properties:
-  messageId:
-    type: integer
-    description: Identifier of the message
-  content:
-    type: string
-    description: content of the message
-

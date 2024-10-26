@@ -7,7 +7,7 @@ info:
 servers:
   chat-server:
     url: http://localhost:5000
-    protocol: wss
+    protocol: ws
 channels:
     $ref: './channels/chat.yaml'
     # $ref: './channels/message.yaml'

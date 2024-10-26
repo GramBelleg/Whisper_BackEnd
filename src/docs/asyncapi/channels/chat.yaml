@@ -11,7 +11,7 @@ message:
         $ref: '../payloads/chat/received.message.yaml'  # Reference to the received message payload
     # Channel for sending new messages
   publish:
-    summary: Send a new message
+    summary: Send chat messages
     operationId: sendMessage
     message:
       contentType: application/json
@@ -60,6 +60,16 @@ pin:
     message:
       contentType: application/json
       payload:
+        messageId:
+          type: integer
+          description: Identifier of the 
+          
+  publish:
+    summary: Send a pinned message
+    operationId: sendPinnedMessage
+    message:
+      contentType: application/json
+      payload:
         type: object
         properties:
           messageId:
@@ -68,13 +78,54 @@ pin:
           duration:
             type: integer
             description: duration of the pin
-       
+
+unpin:
+  description: Channel for unpinning messages.
+
+  # Channel for pinning messages
+  subscribe:
+    summary: Receive unpinned messages
+    operationId: receiveUnPinnedMessage
+    message:
+      contentType: application/json
+      payload:
+        type: integer
+        description: Identifier of the message
+
   publish:
-    summary: Send a pinned message
-    operationId: sendPinnedMessage
+    summary: Send unpinned message
+    operationId: sendUnPinnedMessage
     message:
       contentType: application/json
       payload:
         messageId:
           type: integer
           description: Identifier of the message
+
+delete:
+  description: Channel for delete messages.
+
+  # Channel for pinning messages
+  subscribe:
+    summary: Receive deleted messages
+    operationId: receiveDeletedMessage
+    message:
+      contentType: application/json
+      payload:
+        type: array
+        items:
+          messageId:
+            type: integer
+            description: Identifier of the message
+
+  publish:
+    summary: delete messages
+    operationId: deletedMessage
+    message:
+      contentType: application/json
+      payload:
+        type: array
+        items:
+          messageId:
+            type: integer
+            description: Identifier of the message
