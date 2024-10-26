@@ -8,7 +8,7 @@ create:
     message:
       contentType: application/json
       payload:
-        $ref: '../../payloads/group/create.group.yaml'  # Reference to the sent message payload
+        $ref: '../payloads/group/create.group.yaml'  # Reference to the sent message payload
 
   # Channel for receiving chat messages
   subscribe:
@@ -17,7 +17,7 @@ create:
     message:
       contentType: application/json
       payload:
-        $ref: '../../payloads/group/join.group.yaml'  # Reference to the received message payload
+        $ref: '../payloads/group/join.group.yaml'  # Reference to the received message payload
 
 leave:
   description: Channel for leaving Group.
