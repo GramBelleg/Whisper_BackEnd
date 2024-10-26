@@ -2,8 +2,8 @@ leaveGroup:
   description: Channel for leaving Group/Channel.
 
   publish:
-    summary: leave chat
-    operationId: leaveChat
+    summary: leave Group/Channel
+    operationId: leaveGroup
     message:
       contentType: application/json
       payload:
@@ -45,7 +45,7 @@ deleteGroup:
 
   subscribe:
     summary: Get notified that group got deleted
-    operationId: notifiedLeaveGroup
+    operationId: notifiedDeleteGroup
     message:
       contentType: application/json
       payload:
@@ -107,7 +107,7 @@ addUser:
 
   subscribe:
     summary: Join Chat
-    operationId: joinChat
+    operationId: notifiedUserAdded
     message:
       contentType: application/json
       payload:
@@ -133,7 +133,7 @@ kickUser:
             
   subscribe:
     summary: Get notified that someone left the group
-    operationId: notifiedLeaveGroup
+    operationId: notifiedLeftGroup
     message:
       contentType: application/json
       payload:
