@@ -9,7 +9,7 @@ servers:
     url: http://localhost:5000
     protocol: ws
 channels:
-  chat:
+  message:
     $ref: './channels/chat/chat.yaml'  # Reference to the chat channel file which contains multiple channels
-  group:
+  create:
     $ref: './channels/group/group.yaml'  # Reference to the group channel file, which also contains multiple channels
