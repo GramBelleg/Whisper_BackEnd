@@ -1,0 +1,51 @@
+type: object
+properties:
+  id:
+    type: integer
+    description: Group identifier
+  name:
+    type: string
+    description: The name of the group
+  picture:
+    type: string
+    description: URL of the group picture
+  participants:
+    type: array
+    items:
+      type: integer
+    description: An array of participant IDs
+  privacy:
+    type: string
+    description: The privacy level of the group (e.g., public, private)
+  maxSize:
+    type: integer
+    description: The maximum number of participants allowed in the group
+  isMuted:
+    type: boolean
+    description: Is the group muted
+  unreadMessageCount:
+    type: integer
+    nullable: true
+    description: The count of unread messages in the group
+  lastMessage:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: Identifier of the last message
+      content:
+        type: string
+        description: Content of the last message
+      type:
+        type: string
+        description: Type of the last message (e.g., text, image)
+      sentAt:
+        type: string
+        format: date-time
+        description: Timestamp when the last message was sent
+      read:
+        type: boolean
+        description: Indicates if the last message has been read
+      delivered:
+        type: boolean
+        description: Indicates if the last message has been delivered

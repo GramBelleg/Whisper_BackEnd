@@ -21,6 +21,9 @@
  *          name:
  *           type: string
  *           description: The name of the group
+ *          picture:
+ *           type: string
+ *           description: url for group picture
  *          participants:
  *           type: array
  *           items:

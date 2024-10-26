@@ -10,6 +10,4 @@ servers:
     protocol: ws
 channels:
     $ref: './channels/chat.yaml'
-    # $ref: './channels/message.yaml'
-    # $ref: './channels/deleteMessages.yaml'
-    # $ref: './channels/group.yaml'
+    $ref: './channels/group.yaml'

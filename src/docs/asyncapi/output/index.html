@@ -144,6 +144,77 @@
   "channels": {
     "message": {
       "description": "Channel for sending chat messages.",
+      "publish": {
+        "summary": "Send chat messages",
+        "operationId": "sendMessage",
+        "message": {
+          "contentType": "application/json",
+          "payload": {
+            "type": "object",
+            "properties": {
+              "chatId": {
+                "type": "integer",
+                "description": "Identifier of the chat room",
+                "x-parser-schema-id": "<anonymous-schema-2>"
+              },
+              "senderId": {
+                "type": "integer",
+                "description": "The ID of the user sending the message",
+                "x-parser-schema-id": "<anonymous-schema-3>"
+              },
+              "content": {
+                "type": "string",
+                "description": "The content of the message",
+                "x-parser-schema-id": "<anonymous-schema-4>"
+              },
+              "forwarded": {
+                "type": "boolean",
+                "description": "Indicates if the message is forwarded",
+                "x-parser-schema-id": "<anonymous-schema-5>"
+              },
+              "selfDestruct": {
+                "type": "boolean",
+                "description": "Indicates if the message is set to self-destruct",
+                "x-parser-schema-id": "<anonymous-schema-6>"
+              },
+              "expiresAfter": {
+                "type": "integer",
+                "nullable": true,
+                "description": "Time in seconds until the message expires",
+                "x-parser-schema-id": "<anonymous-schema-7>"
+              },
+              "type": {
+                "type": "string",
+                "description": "Type of the message (e.g., text, image)",
+                "x-parser-schema-id": "<anonymous-schema-8>"
+              },
+              "sentAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Timestamp when the message was sent",
+                "x-parser-schema-id": "<anonymous-schema-9>"
+              },
+              "media": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "x-parser-schema-id": "<anonymous-schema-11>"
+                },
+                "description": "Array of media URLs associated with the message",
+                "x-parser-schema-id": "<anonymous-schema-10>"
+              },
+              "parentMessageId": {
+                "type": "integer",
+                "nullable": true,
+                "description": "ID of the parent message if this message is a reply",
+                "x-parser-schema-id": "<anonymous-schema-12>"
+              }
+            },
+            "x-parser-schema-id": "<anonymous-schema-1>"
+          },
+          "x-parser-message-name": "<anonymous-message-1>"
+        }
+      },
       "subscribe": {
         "summary": "Receive chat messages",
         "operationId": "receiveMessage",
@@ -267,105 +338,10 @@
           },
           "x-parser-message-name": "<anonymous-message-2>"
         }
-      },
-      "publish": {
-        "summary": "Send chat messages",
-        "operationId": "sendMessage",
-        "message": {
-          "contentType": "application/json",
-          "payload": {
-            "type": "object",
-            "properties": {
-              "chatId": {
-                "type": "integer",
-                "description": "Identifier of the chat room",
-                "x-parser-schema-id": "<anonymous-schema-2>"
-              },
-              "senderId": {
-                "type": "integer",
-                "description": "The ID of the user sending the message",
-                "x-parser-schema-id": "<anonymous-schema-3>"
-              },
-              "content": {
-                "type": "string",
-                "description": "The content of the message",
-                "x-parser-schema-id": "<anonymous-schema-4>"
-              },
-              "forwarded": {
-                "type": "boolean",
-                "description": "Indicates if the message is forwarded",
-                "x-parser-schema-id": "<anonymous-schema-5>"
-              },
-              "selfDestruct": {
-                "type": "boolean",
-                "description": "Indicates if the message is set to self-destruct",
-                "x-parser-schema-id": "<anonymous-schema-6>"
-              },
-              "expiresAfter": {
-                "type": "integer",
-                "nullable": true,
-                "description": "Time in seconds until the message expires",
-                "x-parser-schema-id": "<anonymous-schema-7>"
-              },
-              "type": {
-                "type": "string",
-                "description": "Type of the message (e.g., text, image)",
-                "x-parser-schema-id": "<anonymous-schema-8>"
-              },
-              "sentAt": {
-                "type": "string",
-                "format": "date-time",
-                "description": "Timestamp when the message was sent",
-                "x-parser-schema-id": "<anonymous-schema-9>"
-              },
-              "media": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "x-parser-schema-id": "<anonymous-schema-11>"
-                },
-                "description": "Array of media URLs associated with the message",
-                "x-parser-schema-id": "<anonymous-schema-10>"
-              },
-              "parentMessageId": {
-                "type": "integer",
-                "nullable": true,
-                "description": "ID of the parent message if this message is a reply",
-                "x-parser-schema-id": "<anonymous-schema-12>"
-              }
-            },
-            "x-parser-schema-id": "<anonymous-schema-1>"
-          },
-          "x-parser-message-name": "<anonymous-message-1>"
-        }
       }
     },
     "edit": {
       "description": "Channel for editing messages.",
-      "subscribe": {
-        "summary": "Receive edited chat messages",
-        "operationId": "receiveEditedMessage",
-        "message": {
-          "contentType": "application/json",
-          "payload": {
-            "type": "object",
-            "properties": {
-              "messageId": {
-                "type": "integer",
-                "description": "Identifier of the message",
-                "x-parser-schema-id": "<anonymous-schema-39>"
-              },
-              "content": {
-                "type": "string",
-                "description": "new content of the message",
-                "x-parser-schema-id": "<anonymous-schema-40>"
-              }
-            },
-            "x-parser-schema-id": "<anonymous-schema-38>"
-          },
-          "x-parser-message-name": "<anonymous-message-4>"
-        }
-      },
       "publish": {
         "summary": "Send an edited message",
         "operationId": "sendEditedMessage",
@@ -389,25 +365,34 @@
           },
           "x-parser-message-name": "<anonymous-message-3>"
         }
+      },
+      "subscribe": {
+        "summary": "Receive edited chat messages",
+        "operationId": "receiveEditedMessage",
+        "message": {
+          "contentType": "application/json",
+          "payload": {
+            "type": "object",
+            "properties": {
+              "messageId": {
+                "type": "integer",
+                "description": "Identifier of the message",
+                "x-parser-schema-id": "<anonymous-schema-39>"
+              },
+              "content": {
+                "type": "string",
+                "description": "new content of the message",
+                "x-parser-schema-id": "<anonymous-schema-40>"
+              }
+            },
+            "x-parser-schema-id": "<anonymous-schema-38>"
+          },
+          "x-parser-message-name": "<anonymous-message-4>"
+        }
       }
     },
     "pin": {
       "description": "Channel for editing messages.",
-      "subscribe": {
-        "summary": "Receive pinned chat messages",
-        "operationId": "receivePinnedMessage",
-        "message": {
-          "contentType": "application/json",
-          "payload": {
-            "messageId": {
-              "type": "integer",
-              "description": "Identifier of the"
-            },
-            "x-parser-schema-id": "<anonymous-schema-44>"
-          },
-          "x-parser-message-name": "<anonymous-message-6>"
-        }
-      },
       "publish": {
         "summary": "Send a pinned message",
         "operationId": "sendPinnedMessage",
@@ -431,23 +416,25 @@
           },
           "x-parser-message-name": "<anonymous-message-5>"
         }
+      },
+      "subscribe": {
+        "summary": "Receive pinned chat messages",
+        "operationId": "receivePinnedMessage",
+        "message": {
+          "contentType": "application/json",
+          "payload": {
+            "messageId": {
+              "type": "integer",
+              "description": "Identifier of the message"
+            },
+            "x-parser-schema-id": "<anonymous-schema-44>"
+          },
+          "x-parser-message-name": "<anonymous-message-6>"
+        }
       }
     },
     "unpin": {
       "description": "Channel for unpinning messages.",
-      "subscribe": {
-        "summary": "Receive unpinned messages",
-        "operationId": "receiveUnPinnedMessage",
-        "message": {
-          "contentType": "application/json",
-          "payload": {
-            "type": "integer",
-            "description": "Identifier of the message",
-            "x-parser-schema-id": "<anonymous-schema-46>"
-          },
-          "x-parser-message-name": "<anonymous-message-8>"
-        }
-      },
       "publish": {
         "summary": "Send unpinned message",
         "operationId": "sendUnPinnedMessage",
@@ -462,29 +449,23 @@
           },
           "x-parser-message-name": "<anonymous-message-7>"
         }
+      },
+      "subscribe": {
+        "summary": "Receive unpinned messages",
+        "operationId": "receiveUnPinnedMessage",
+        "message": {
+          "contentType": "application/json",
+          "payload": {
+            "type": "integer",
+            "description": "Identifier of the message",
+            "x-parser-schema-id": "<anonymous-schema-46>"
+          },
+          "x-parser-message-name": "<anonymous-message-8>"
+        }
       }
     },
     "delete": {
       "description": "Channel for delete messages.",
-      "subscribe": {
-        "summary": "Receive deleted messages",
-        "operationId": "receiveDeletedMessage",
-        "message": {
-          "contentType": "application/json",
-          "payload": {
-            "type": "array",
-            "items": {
-              "messageId": {
-                "type": "integer",
-                "description": "Identifier of the message"
-              },
-              "x-parser-schema-id": "<anonymous-schema-50>"
-            },
-            "x-parser-schema-id": "<anonymous-schema-49>"
-          },
-          "x-parser-message-name": "<anonymous-message-10>"
-        }
-      },
       "publish": {
         "summary": "delete messages",
         "operationId": "deletedMessage",
@@ -502,6 +483,25 @@
             "x-parser-schema-id": "<anonymous-schema-47>"
           },
           "x-parser-message-name": "<anonymous-message-9>"
+        }
+      },
+      "subscribe": {
+        "summary": "Receive deleted messages",
+        "operationId": "receiveDeletedMessage",
+        "message": {
+          "contentType": "application/json",
+          "payload": {
+            "type": "array",
+            "items": {
+              "messageId": {
+                "type": "integer",
+                "description": "Identifier of the message"
+              },
+              "x-parser-schema-id": "<anonymous-schema-50>"
+            },
+            "x-parser-schema-id": "<anonymous-schema-49>"
+          },
+          "x-parser-message-name": "<anonymous-message-10>"
         }
       }
     }

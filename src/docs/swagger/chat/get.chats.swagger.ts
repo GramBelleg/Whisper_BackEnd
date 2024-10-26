@@ -53,9 +53,6 @@
  *                         type: string
  *                       type:
  *                         type: string
- *                       createdAt:
- *                         type: string
- *                         format: date-time
  *                       sentAt:
  *                         type: string
  *                         format: date-time
