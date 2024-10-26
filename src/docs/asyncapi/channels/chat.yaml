@@ -1,15 +1,7 @@
 message:
   description: Channel for sending chat messages.
 
-  # Channel for receiving chat messages
-  subscribe:
-    summary: Receive chat messages
-    operationId: receiveMessage
-    message:
-      contentType: application/json
-      payload:
-        $ref: '../payloads/chat/received.message.yaml'  # Reference to the received message payload
-    # Channel for sending new messages
+  # Channel for sending new messages
   publish:
     summary: Send chat messages
     operationId: sendMessage
@@ -18,8 +10,32 @@ message:
       payload:
         $ref: '../payloads/chat/sent.message.yaml'  # Reference to the sent message payload
 
+  # Channel for receiving chat messages
+  subscribe:
+    summary: Receive chat messages
+    operationId: receiveMessage
+    message:
+      contentType: application/json
+      payload:
+        $ref: '../payloads/chat/received.message.yaml'  # Reference to the received message payload
+
 edit:
   description: Channel for editing messages.
+
+  publish:
+    summary: Send an edited message
+    operationId: sendEditedMessage
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          messageId:
+            type: integer
+            description: Identifier of the message
+          content:
+            type: string
+            description: new content of the message
 
   subscribe:
     summary: Receive edited chat messages
@@ -36,34 +52,9 @@ edit:
             type: string
             description: new content of the message
 
-  publish:
-    summary: Send an edited message
-    operationId: sendEditedMessage
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          messageId:
-            type: integer
-            description: Identifier of the message
-          content:
-            type: string
-            description: new content of the message
 pin:
   description: Channel for editing messages.
 
-  # Channel for pinning messages
-  subscribe:
-    summary: Receive pinned chat messages
-    operationId: receivePinnedMessage
-    message:
-      contentType: application/json
-      payload:
-        messageId:
-          type: integer
-          description: Identifier of the 
-          
   publish:
     summary: Send a pinned message
     operationId: sendPinnedMessage
@@ -79,18 +70,18 @@ pin:
             type: integer
             description: duration of the pin
 
-unpin:
-  description: Channel for unpinning messages.
-
-  # Channel for pinning messages
   subscribe:
-    summary: Receive unpinned messages
-    operationId: receiveUnPinnedMessage
+    summary: Receive pinned chat messages
+    operationId: receivePinnedMessage
     message:
       contentType: application/json
       payload:
-        type: integer
-        description: Identifier of the message
+        messageId:
+          type: integer
+          description: Identifier of the message
+
+unpin:
+  description: Channel for unpinning messages.
 
   publish:
     summary: Send unpinned message
@@ -102,13 +93,21 @@ unpin:
           type: integer
           description: Identifier of the message
 
+  subscribe:
+    summary: Receive unpinned messages
+    operationId: receiveUnPinnedMessage
+    message:
+      contentType: application/json
+      payload:
+        type: integer
+        description: Identifier of the message
+
 delete:
   description: Channel for delete messages.
 
-  # Channel for pinning messages
-  subscribe:
-    summary: Receive deleted messages
-    operationId: receiveDeletedMessage
+  publish:
+    summary: delete messages
+    operationId: deletedMessage
     message:
       contentType: application/json
       payload:
@@ -118,9 +117,9 @@ delete:
             type: integer
             description: Identifier of the message
 
-  publish:
-    summary: delete messages
-    operationId: deletedMessage
+  subscribe:
+    summary: Receive deleted messages
+    operationId: receiveDeletedMessage
     message:
       contentType: application/json
       payload:
