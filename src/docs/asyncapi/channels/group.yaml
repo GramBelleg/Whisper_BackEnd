@@ -1,4 +1,4 @@
-leave:
+leave group:
   description: Channel for leaving Group/Channel.
 
   publish:
@@ -28,7 +28,7 @@ leave:
             type: string
             description: identifier of the group/channel
 
-delete:
+delete group:
   description: Channel for deleting Group/Channel.
 
   publish:
@@ -55,7 +55,7 @@ delete:
             type: string
             description: identifier of the group/channel
 
-admin:
+add admin:
   description: Channel for adding Admins to Group/Channel.
 
   publish:
@@ -87,7 +87,7 @@ admin:
           chatId:
             type: string
             description: identifier for group/channel
-Add User:
+add user:
   description: Channel for adding Users to Group/Channel.
 
   publish:
@@ -113,7 +113,7 @@ Add User:
       payload:
         $ref: '../payloads/chat/join.chat.yaml'
 
-Kick User:
+kick user:
   description: Channel for Kicking Users from Group/Channel.
 
   publish:

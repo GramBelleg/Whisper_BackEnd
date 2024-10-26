@@ -1,4 +1,4 @@
-create:
+create chat:
   description: Channel for creating chat.
 
   # Channel for sending new messages
