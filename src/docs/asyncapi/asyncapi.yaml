@@ -11,23 +11,23 @@ servers:
 channels:
   message:
     $ref: './channels/chat.yaml#/message'  # Reference to the chat channel file which contains multiple channels
-  edit:
-    $ref: './channels/chat.yaml#/edit'  # Reference to the chat channel file which contains multiple channels
-  pin:
-    $ref: './channels/chat.yaml#/pin'  # Reference to the chat channel file which contains multiple channels
-  unpin:
-    $ref: './channels/chat.yaml#/unpin'  # Reference to the chat channel file which contains multiple channels
-  delete:
-    $ref: './channels/chat.yaml#/delete'  # Reference to the chat channel file which contains multiple channels
-  create chat:
-    $ref: './channels/chat.yaml#/create chat'  # Reference to the group channel file, which also contains multiple channels
-  leave group:
-    $ref: './channels/group.yaml#/leave group'  # Reference to the group channel file, which also contains multiple channels
-  deleted group:
-    $ref: './channels/group.yaml#/deleted group'  # Reference to the group channel file, which also contains multiple channels
-  add admin:
-    $ref: './channels/group.yaml#/add admin'  # Reference to the group channel file, which also contains multiple channels
-  add user:
-    $ref: './channels/group.yaml#/add user'  # Reference to the group channel file, which also contains multiple channels
-  kick user:
-    $ref: './channels/group.yaml#/kick user'  # Reference to the group channel file, which also contains multiple channels
+  editMessage:
+    $ref: './channels/chat.yaml#/editMessage'  # Reference to the chat channel file which contains multiple channels
+  pinMessage:
+    $ref: './channels/chat.yaml#/pinMessage'  # Reference to the chat channel file which contains multiple channels
+  unpinMessage:
+    $ref: './channels/chat.yaml#/unpinMessage'  # Reference to the chat channel file which contains multiple channels
+  deleteMessage:
+    $ref: './channels/chat.yaml#/deleteMessage'  # Reference to the chat channel file which contains multiple channels
+  createChat:
+    $ref: './channels/chat.yaml#/createChat'  # Reference to the group channel file, which also contains multiple channels
+  leaveGroup:
+    $ref: './channels/group.yaml#/leaveGroup'  # Reference to the group channel file, which also contains multiple channels
+  deleteGroup:
+    $ref: './channels/group.yaml#/deleteGroup'  # Reference to the group channel file, which also contains multiple channels
+  addAdmin:
+    $ref: './channels/group.yaml#/addAdmin'  # Reference to the group channel file, which also contains multiple channels
+  addUser:
+    $ref: './channels/group.yaml#/addUser'  # Reference to the group channel file, which also contains multiple channels
+  kickUser:
+    $ref: './channels/group.yaml#/kickUser'  # Reference to the group channel file, which also contains multiple channels

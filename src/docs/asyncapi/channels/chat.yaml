@@ -1,4 +1,4 @@
-create chat:
+createChat:
   description: Channel for creating chat.
 
   # Channel for sending new messages
@@ -40,7 +40,7 @@ message:
       payload:
         $ref: '../payloads/chat/received.message.yaml'  # Reference to the received message payload
 
-edit:
+editMessage:
   description: Channel for editing messages.
 
   publish:
@@ -73,7 +73,7 @@ edit:
             type: string
             description: new content of the message
 
-pin:
+pinMessage:
   description: Channel for editing messages.
 
   publish:
@@ -103,7 +103,7 @@ pin:
           type: integer
           description: Identifier of the message
 
-unpin:
+unpinMessage:
   description: Channel for unpinning messages.
 
   publish:
@@ -130,7 +130,7 @@ unpin:
           type: integer
           description: Identifier of the message
 
-delete:
+deleteMessage:
   description: Channel for delete messages.
 
   publish:
