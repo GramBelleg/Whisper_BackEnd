@@ -16,7 +16,7 @@ const signup = async (req: Request, res: Response): Promise<void> => {
         await checkEmailNotExistDB(email);
 
         // TODO: uncomment this calling function when integration
-        //await verifyRobotToken(req.body.robotToken);
+        // await verifyRobotToken(req.body.robotToken);
 
         const code = await createCode(email, RedisOperation.ConfirmEmail);
         const emailSubject = "Email confirmation";

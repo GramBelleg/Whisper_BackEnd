@@ -1,38 +1,17 @@
-create:
-  description: Channel for creating group.
-
-  # Channel for sending new messages
-  publish:
-    summary: Create a Group
-    operationId: createGroup
-    message:
-      contentType: application/json
-      payload:
-        $ref: '../payloads/group/create.group.yaml'  # Reference to the sent message payload
-
-  # Channel for receiving chat messages
-  subscribe:
-    summary: Join Group
-    operationId: joinGroup
-    message:
-      contentType: application/json
-      payload:
-        $ref: '../payloads/group/join.group.yaml'  # Reference to the received message payload
-
 leave:
-  description: Channel for leaving Group.
+  description: Channel for leaving Group/Channel.
 
   publish:
-    summary: leave Group
-    operationId: leaveGroup
+    summary: leave chat
+    operationId: leaveChat
     message:
       contentType: application/json
       payload:
         type: object
         properties:
-          groupId:
+          id:
             type: integer
-            description: identifier for group
+            description: identifier for group/channel
 
   subscribe:
     summary: Get notified that someone left the group
@@ -45,7 +24,129 @@ leave:
           userName:
             type: integer
             description: name of the user who left
-          groupId:
+          chatId:
             type: string
-            description: new content of the message
+            description: identifier of the group/channel
+
+delete:
+  description: Channel for deleting Group/Channel.
+
+  publish:
+    summary: delete Group
+    operationId: deleteGroup
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: identifier for group/channel
+
+  subscribe:
+    summary: Get notified that group got deleted
+    operationId: notifiedLeaveGroup
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          id:
+            type: string
+            description: identifier of the group/channel
+
+admin:
+  description: Channel for adding Admins to Group/Channel.
+
+  publish:
+    summary: Add admin
+    operationId: addAdmin
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          userId:
+            type: integer
+            description: identifier for user
+          chatId:
+            type: integer
+            description: identifier for group/channel
+
+  subscribe:
+    summary: Get notified that someone became admin
+    operationId: notifiedAdmin
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          userName:
+            type: integer
+            description: name of the user who became admin
+          chatId:
+            type: string
+            description: identifier for group/channel
+Add User:
+  description: Channel for adding Users to Group/Channel.
+
+  publish:
+    summary: Add User to group/channel
+    operationId: addUser
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          userId:
+            type: integer
+            description: identifier for user
+          chatId:
+            type: integer
+            description: identifier for group/channel
+
+  subscribe:
+    summary: Join Chat
+    operationId: joinChat
+    message:
+      contentType: application/json
+      payload:
+        $ref: '../payloads/chat/join.chat.yaml'
+
+Kick User:
+  description: Channel for Kicking Users from Group/Channel.
+
+  publish:
+    summary: Kick User from group/channel
+    operationId: kickUser
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          userId:
+            type: integer
+            description: identifier for user
+          chatId:
+            type: integer
+            description: identifier for group/channel
+            
+  subscribe:
+    summary: Get notified that someone left the group
+    operationId: notifiedLeaveGroup
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          userId:
+            type: integer
+            description: identifier of the user who left
+          userName:
+            type: integer
+            description: name of the user who left
+          chatId:
+            type: string
+            description: identifier of the group/channel
+        
 

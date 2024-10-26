@@ -2,13 +2,17 @@ type: object
 properties:
   id:
     type: integer
-    description: Group identifier
+    description: Chat identifier
   name:
     type: string
-    description: The name of the group
+    description: The name of the chat
+  type:
+    type: string
+    enum: [DM, GROUP, CHANNEL]
+    description: The type of entity being created (e.g., chat, group, channel).
   picture:
     type: string
-    description: URL of the group picture
+    description: URL of the chat picture
   participants:
     type: array
     items:
@@ -16,17 +20,17 @@ properties:
     description: An array of participant IDs
   privacy:
     type: string
-    description: The privacy level of the group (e.g., public, private)
+    description: The privacy level of the group/channel (e.g., public, private)
   maxSize:
     type: integer
     description: The maximum number of participants allowed in the group
   isMuted:
     type: boolean
-    description: Is the group muted
+    description: Is the chat muted
   unreadMessageCount:
     type: integer
     nullable: true
-    description: The count of unread messages in the group
+    description: The count of unread messages in the chat
   lastMessage:
     type: object
     properties:

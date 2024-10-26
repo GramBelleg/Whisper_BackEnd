@@ -1,0 +1,26 @@
+type: object
+properties:
+  type:
+    type: string
+    enum: [chat, group, channel]
+    description: The type of entity being created (e.g., chat, group, channel).
+  name:
+    type: string
+    description: The name of the chat, group, or channel.
+  participants:
+    type: array
+    items:
+      type: integer
+    description: Array of participant IDs (required for chat and group creation).
+  privacy:
+    type: string
+    description: Privacy level of the group (e.g., public, private) (only for groups).
+  maxSize:
+    type: integer
+    description: Maximum number of participants allowed in the group (only for groups).
+  topic:
+    type: string
+    description: The topic of the channel (only for channel creation).
+  description:
+    type: string
+    description: Description of the channel (only for channel creation).
