@@ -1,31 +1,29 @@
 import { editMessage, pinMessage, unpinMessage } from "@services/chat/message.service";
-import { Message } from "@prisma/client";
-import { EditableMessage, MessageReference } from "@models/chat.models";
 
-export const handleEditContent = async (message: EditableMessage): Promise<Message | null> => {
+export const handleEditContent = async (messageId: number, content: string) => {
     try {
-        const editedMessage = await editMessage(message.id, message.content);
-        return editedMessage;
+        const editedMessage = await editMessage(messageId, content);
+        return { id: editedMessage.id, content: editedMessage.content };
     } catch (error) {
         console.error(error);
         return null;
     }
 };
 
-export const handlePinMessage = async (message: MessageReference): Promise<Message | null> => {
+export const handlePinMessage = async (messageId: number): Promise<number | null> => {
     try {
-        const pinnedMessage = await pinMessage(message.id);
-        return pinnedMessage;
+        const pinnedMessage = await pinMessage(messageId);
+        return pinnedMessage.id;
     } catch (error) {
         console.error(error);
         return null;
     }
 };
 
-export const handleUnpinMessage = async (message: MessageReference): Promise<Message | null> => {
+export const handleUnpinMessage = async (messageId: number): Promise<number | null> => {
     try {
-        const unpinnedMessage = await unpinMessage(message.id);
-        return unpinnedMessage;
+        const unpinnedMessage = await unpinMessage(messageId);
+        return unpinnedMessage.id;
     } catch (error) {
         console.error(error);
         return null;
