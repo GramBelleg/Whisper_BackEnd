@@ -28,9 +28,11 @@ leave:
     message:
       contentType: application/json
       payload:
-        groupId:
-          type: integer
-          description: identifier for group
+        type: object
+        properties:
+          groupId:
+            type: integer
+            description: identifier for group
 
   subscribe:
     summary: Get notified that someone left the group

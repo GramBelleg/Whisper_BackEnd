@@ -76,6 +76,8 @@ pin:
     message:
       contentType: application/json
       payload:
+       type: object
+       properties:
         messageId:
           type: integer
           description: Identifier of the message
@@ -89,6 +91,8 @@ unpin:
     message:
       contentType: application/json
       payload:
+       type: object
+       properties:
         messageId:
           type: integer
           description: Identifier of the message
@@ -99,8 +103,11 @@ unpin:
     message:
       contentType: application/json
       payload:
-        type: integer
-        description: Identifier of the message
+       type: object
+       properties:
+        messageId:
+          type: integer
+          description: Identifier of the message
 
 delete:
   description: Channel for delete messages.
@@ -113,9 +120,12 @@ delete:
       payload:
         type: array
         items:
-          messageId:
-            type: integer
-            description: Identifier of the message
+          type: object
+          properties:
+            messageId:
+              type: integer
+              description: Identifier of the message
+
 
   subscribe:
     summary: Receive deleted messages
@@ -125,6 +135,8 @@ delete:
       payload:
         type: array
         items:
-          messageId:
-            type: integer
-            description: Identifier of the message
+          type: object
+          properties:
+            messageId:
+              type: integer
+              description: Identifier of the message
