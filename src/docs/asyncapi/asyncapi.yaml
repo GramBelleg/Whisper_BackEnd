@@ -9,5 +9,6 @@ servers:
     url: http://localhost:5000
     protocol: ws
 channels:
-    $ref: './channels/chat.yaml'
-    $ref: './channels/group.yaml'
+  $ref: 
+    - './channels/chat.yaml'
+    - './channels/group.yaml'
