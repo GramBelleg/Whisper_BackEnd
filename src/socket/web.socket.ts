@@ -1,15 +1,11 @@
 import { Server as IOServer, Socket } from "socket.io";
 import { Server as HTTPServer } from "http";
 import { validateCookie } from "@validators/socket";
-import * as types from "@models/chat.models";
-import * as storyTypes from "@models/story.models";
-import * as sendController from "@controllers/chat/send.message";
-import * as editController from "@controllers/chat/edit.message";
-import * as deleteController from "@controllers/chat/delete.message";
 import * as messageHandler from "./handlers/message.handlers";
 import * as connectionHandler from "./handlers/connection.handlers";
-import * as storyController from "@controllers/user/story.controller";
 import * as storyHandler from "./handlers/story.handlers";
+import { setupMessageEvents } from "./events/message.events";
+import { setupStoryEvents } from "./events/story.events";
 
 const clients: Map<number, Socket> = new Map();
 
@@ -43,56 +39,10 @@ export const initWebSocketServer = (server: HTTPServer) => {
 
         connectionHandler.startConnection(userId, clients, socket);
 
-        socket.on("send", async (message: types.OmitSender<types.SentMessage>) => {
-            const savedMessage = await sendController.handleSend(userId, {
-                ...message,
-                senderId: userId,
-            });
-            if (savedMessage) {
-                messageHandler.broadCast(message.chatId, clients, "receive", savedMessage);
-            }
-        });
+        setupMessageEvents(socket, userId, clients);
+        
+        setupStoryEvents(socket, userId, clients);
 
-        socket.on("edit", async (message: types.OmitSender<types.EditableMessage>) => {
-            const editedMessage = await editController.handleEditContent(message.id, message.content);
-            if (editedMessage) {
-                messageHandler.broadCast(message.chatId, clients, "edit", editedMessage);
-            }
-        });
-
-        socket.on("uploadStory", async (story: storyTypes.omitId) => {
-            const createdStory = await storyController.setStory({
-                ...story,
-                userId,
-            });
-            if (createdStory) {
-                storyHandler.broadCast(userId, clients, "recieveStory", createdStory);
-            }
-        });
-
-        socket.on("deleteStory", async (storyId: number) => {
-            const deletedStoryId = await storyController.deleteStory(storyId);
-            storyHandler.broadCast(userId, clients, "deleteStory", storyId);
-        });
-
-        socket.on("pin", async (message: types.MessageReference) => {
-            const pinnedMessage = await editController.handlePinMessage(message.id);
-            if (pinnedMessage) {
-                messageHandler.broadCast(message.chatId, clients, "pin", pinnedMessage);
-            }
-        });
-
-        socket.on("unpin", async (message: types.MessageReference) => {
-            const unpinnedMessage = await editController.handleUnpinMessage(message.id);
-            if (unpinnedMessage) {
-                messageHandler.broadCast(message.chatId, clients, "unpin", unpinnedMessage);
-            }
-        });
-
-        socket.on("delete", async (Ids: number[], chatId: number) => {
-            await deleteController.deleteMessagesForAllUsers(Ids, chatId);
-            messageHandler.broadCast(chatId, clients, "delete", Ids);
-        });
         socket.on("close", () => {
             connectionHandler.endConnection(userId, clients);
         });
