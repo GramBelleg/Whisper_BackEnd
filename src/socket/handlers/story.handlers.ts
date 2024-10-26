@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { getStoryParticipant } from "@services/chat/chat.service";
+import { getStoryParticipant } from "@services/story.service";
 import redisClient from "@src/redis/redis.client";
 import { SaveableStory } from "@models/story.models";
 import * as userServices from "@services/user/user.service";

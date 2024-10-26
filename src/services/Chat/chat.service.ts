@@ -129,25 +129,6 @@ export const getChatParticipantsIds = async (chatId: number): Promise<number[]> 
     return chatParticipants.map((participant) => participant.userId);
 };
 
-export const getStoryParticipant = async (userId: number, except: Array<number> = []): Promise<number[]> => {
-    const contacts = await db.chat.findMany({
-        where: {
-            participants: {
-                some: {
-                    userId,
-                    isContact: true,
-                    NOT: { userId: { in: [...except, userId] } }
-                }
-            },
-            type: "DM"
-        },
-        select: { participants: { select: { userId: true } } },
-    });
-    const results = contacts.flatMap((contact) => contact.participants.map((participant) => participant.userId));
-    return results;
-};
-
-
 export const getLastMessage = async (
     userId: number,
     chatId: number
@@ -165,6 +146,7 @@ export const getLastMessage = async (
     }
     return null;
 };
+
 
 export const setLastMessage = async (chatId: number, messageId: number): Promise<void> => {
     const messageStatus = await db.messageStatus.findFirst({
