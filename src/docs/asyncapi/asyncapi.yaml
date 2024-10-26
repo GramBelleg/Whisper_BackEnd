@@ -10,6 +10,6 @@ servers:
     protocol: ws
 channels:
   message:
-    $ref: './channels/chat/chat.yaml'  # Reference to the chat channel file which contains multiple channels
+    $ref: './channels/chat/chat.yaml#/message'  # Reference to the chat channel file which contains multiple channels
   create:
-    $ref: './channels/group/group.yaml'  # Reference to the group channel file, which also contains multiple channels
+    $ref: './channels/group/group.yaml#/create'  # Reference to the group channel file, which also contains multiple channels
