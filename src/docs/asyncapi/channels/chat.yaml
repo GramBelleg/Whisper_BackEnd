@@ -20,7 +20,7 @@ createChat:
         $ref: '../payloads/chat/join.chat.yaml'  # Reference to the received message payload
 
 message:
-  description: Channel for sending chat messages.
+  description: Channel for messaging.
 
   # Channel for sending new messages
   publish:
