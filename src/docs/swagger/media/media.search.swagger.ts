@@ -1,11 +1,11 @@
 /**
  * @swagger
- * /chat/search:
+ * /chat/media:
  *   post:
- *     summary: Search for public groups or channels by name
- *     description: Retrieve a list of public groups or channels that match the given name.
+ *     summary: Retrieve specific media type messages from a chat
+ *     description: Get messages of a specific media type (image, video, or link) from personal, group, or channel chats.
  *     tags:
- *       - Chat
+ *       - Media
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -15,15 +15,23 @@
  *           schema:
  *             type: object
  *             required:
- *               - name
+ *               - chatId
+ *               - type
  *             properties:
- *               name:
+ *               chatId:
+ *                 type: integer
+ *                 example: 12345
+ *                 description: The identifier of the chat from which to retrieve media messages.
+ *               type:
  *                 type: string
- *                 example: "Gaming"
- *                 description: The name of the group or channel to search for.
+ *                 enum:
+ *                   - image
+ *                   - video
+ *                   - link
+ *                 description: The type of media to filter messages by.
  *     responses:
  *       200:
- *         description: Groups or channels retrieved successfully
+ *         description: Media messages retrieved successfully
  *         content:
  *           application/json:
  *             schema:
@@ -31,15 +39,16 @@
  *               items:
  *                 type: object
  *                 properties:
- *                   chatId:
+ *                   messageId:
  *                     type: integer
- *                     description: The identifier of the group or channel.
- *                   name:
+ *                     description: The identifier of the message containing the media.
+ *                   media:
  *                     type: string
- *                     description: The name of the group or channel.
- *                   picture:
+ *                     description: The URL or path of the media file.
+ *                   date:
  *                     type: string
- *                     description: The URL of the group's or channel's picture or logo.
+ *                     format: date-time
+ *                     description: The timestamp when the media message was sent.
  *       400:
  *         description: Bad request, invalid input
  *         content:
@@ -52,9 +61,9 @@
  *                   example: failed
  *                 message:
  *                   type: string
- *                   example: "Invalid search criteria."
+ *                   example: "Invalid chatId or media type."
  *       404:
- *         description: No groups or channels found matching the search criteria
+ *         description: No media messages found for the given type
  *         content:
  *           application/json:
  *             schema:
@@ -65,7 +74,7 @@
  *                   example: failed
  *                 message:
  *                   type: string
- *                   example: "No public groups or channels found with the specified name."
+ *                   example: "No media messages found for the specified type."
  *       500:
  *         description: Internal server error
  *         content:
@@ -78,5 +87,5 @@
  *                   example: failed
  *                 message:
  *                   type: string
- *                   example: "An error occurred while searching for groups or channels."
+ *                   example: "An error occurred while retrieving media messages."
  */

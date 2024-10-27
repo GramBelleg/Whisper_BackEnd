@@ -1,12 +1,12 @@
 /**
  * @swagger
  * paths:
- *  /api/channels/privacy:
+ *  /api/chats/privacy:
  *   post:
  *     summary: Set user Permissions
  *     operationId: setPermissions
  *     tags:
- *      - Channel
+ *      - Chat
  *     security:
  *      - bearerAuth: []
  *     requestBody:
@@ -24,5 +24,5 @@
  *       400:
  *         $ref: "#/components/responses/requestError"
  *       200:
- *         description: Muted Channel
+ *         description: Muted Group
  */
