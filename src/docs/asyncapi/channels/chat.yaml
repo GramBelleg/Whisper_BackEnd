@@ -2,7 +2,7 @@ message:
   description: Channel for messaging.
 
   # Channel for sending new messages
-  publish:
+  subscribe:
     summary: Send chat messages
     operationId: sendMessage
     message:
@@ -11,7 +11,7 @@ message:
         $ref: '../payloads/chat/sent.message.yaml'  # Reference to the sent message payload
 
   # Channel for receiving chat messages
-  subscribe:
+  publish:
     summary: Receive chat messages
     operationId: receiveMessage
     message:
@@ -22,7 +22,7 @@ message:
 editMessage:
   description: Channel for editing messages.
 
-  publish:
+  subscribe:
     summary: Send an edited message
     operationId: sendEditedMessage
     message:
@@ -37,7 +37,7 @@ editMessage:
             type: string
             description: new content of the message
 
-  subscribe:
+  publish:
     summary: Receive edited chat messages
     operationId: receiveEditedMessage
     message:
@@ -55,7 +55,7 @@ editMessage:
 pinMessage:
   description: Channel for editing messages.
 
-  publish:
+  subscribe:
     summary: Send a pinned message
     operationId: sendPinnedMessage
     message:
@@ -70,7 +70,7 @@ pinMessage:
             type: integer
             description: duration of the pin
 
-  subscribe:
+  publish:
     summary: Receive pinned chat messages
     operationId: receivePinnedMessage
     message:
@@ -85,7 +85,7 @@ pinMessage:
 unpinMessage:
   description: Channel for unpinning messages.
 
-  publish:
+  subscribe:
     summary: Send unpinned message
     operationId: sendUnPinnedMessage
     message:
@@ -97,7 +97,7 @@ unpinMessage:
           type: integer
           description: Identifier of the message
 
-  subscribe:
+  publish:
     summary: Receive unpinned messages
     operationId: receiveUnPinnedMessage
     message:
@@ -112,7 +112,7 @@ unpinMessage:
 deleteMessage:
   description: Channel for delete messages.
 
-  publish:
+  subscribe:
     summary: delete messages
     operationId: deletedMessage
     message:
@@ -127,7 +127,7 @@ deleteMessage:
               description: Identifier of the message
 
 
-  subscribe:
+  publish:
     summary: Receive deleted messages
     operationId: receiveDeletedMessage
     message:
@@ -144,7 +144,7 @@ createChat:
   description: Channel for creating chat.
 
   # Channel for sending new messages
-  publish:
+  subscribe:
     summary: Create a chat
     operationId: createChat
     message:
@@ -153,7 +153,7 @@ createChat:
         $ref: '../payloads/chat/create.chat.yaml'  # Reference to the sent message payload
 
   # Channel for receiving chat messages
-  subscribe:
+  publish:
     summary: Join Chat
     operationId: joinChat
     message:

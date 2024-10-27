@@ -1,7 +1,7 @@
 leaveGroup:
   description: Channel for leaving Group/Channel.
 
-  publish:
+  subscribe:
     summary: leave Group/Channel
     operationId: leaveGroup
     message:
@@ -13,7 +13,7 @@ leaveGroup:
             type: integer
             description: identifier for group/channel
 
-  subscribe:
+  publish:
     summary: Get notified that someone left the group
     operationId: notifiedLeaveGroup
     message:
@@ -31,7 +31,7 @@ leaveGroup:
 deleteGroup:
   description: Channel for deleting Group/Channel.
 
-  publish:
+  subscribe:
     summary: delete Group
     operationId: deleteGroup
     message:
@@ -43,7 +43,7 @@ deleteGroup:
             type: integer
             description: identifier for group/channel
 
-  subscribe:
+  publish:
     summary: Get notified that group got deleted
     operationId: notifiedDeleteGroup
     message:
@@ -58,7 +58,7 @@ deleteGroup:
 addAdmin:
   description: Channel for adding Admins to Group/Channel.
 
-  publish:
+  subscribe:
     summary: Add admin
     operationId: addAdmin
     message:
@@ -73,7 +73,7 @@ addAdmin:
             type: integer
             description: identifier for group/channel
 
-  subscribe:
+  publish:
     summary: Get notified that someone became admin
     operationId: notifieyAddAdmin
     message:
@@ -90,7 +90,7 @@ addAdmin:
 addUser:
   description: Channel for adding Users to Group/Channel.
 
-  publish:
+  subscribe:
     summary: Add User to group/channel
     operationId: addUser
     message:
@@ -105,7 +105,7 @@ addUser:
             type: integer
             description: identifier for group/channel
 
-  subscribe:
+  publish:
     summary: Join Chat
     operationId: notifiyUserAdded
     message:
@@ -116,7 +116,7 @@ addUser:
 kickUser:
   description: Channel for Kicking Users from Group/Channel.
 
-  publish:
+  subscribe:
     summary: Kick User from group/channel
     operationId: kickUser
     message:
@@ -131,7 +131,7 @@ kickUser:
             type: integer
             description: identifier for group/channel
             
-  subscribe:
+  publish:
     summary: Get notified that someone left the group
     operationId: notifyKickedUser
     message:
