@@ -1,11 +1,11 @@
 type: object
 properties:
-  chatId:
-    type: integer
-    description: Identifier of the chat room
   id:
     type: integer
     description: Unique identifier for the message
+  chatId:
+    type: integer
+    description: Identifier of the chat room
   senderId:
     type: integer
     description: The ID of the user who sent the message
