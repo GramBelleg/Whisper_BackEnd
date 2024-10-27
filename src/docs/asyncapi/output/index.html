@@ -11,10 +11,10 @@
     </head>
   
     <body>
-      <div id="root"><section class="aui-root"><div class="container:xl relative md:flex bg-white leading-normal" id=""><div class="burger-menu rounded-full h-16 w-16 bg-white fixed bottom-16 right-8 flex items-center justify-center z-30 cursor-pointer shadow-md bg-teal-500" data-lol="false"><svg viewBox="0 0 100 70" width="40" height="30" class="fill-current text-gray-200"><rect width="100" height="10"></rect><rect y="30" width="100" height="10"></rect><rect y="60" width="100" height="10"></rect></svg></div><div class="hidden sidebar relative w-64 max-h-screen h-full bg-gray-200 shadow z-20"><div class=" block fixed max-h-screen h-full font-sans px-4 pt-8 pb-16 overflow-y-auto bg-gray-200"><div class="sidebar--content"><div><h1 class="text-2xl font-light">Chat WebSocket API<!-- --> <!-- -->1.0.0</h1></div><ul class="text-sm mt-10 relative"><li class="mb-3"><a class="text-gray-700 no-underline hover:text-gray-900" href="#introduction">Introduction</a></li><li class="mb-3 mt-9"><a class="text-xs uppercase text-gray-700 mt-10 mb-4 font-thin hover:text-gray-900" href="#servers">Servers</a><ul class="text-sm mt-2"><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#server-chat-server"><span class="break-all inline-block">chat-server</span></a></li></ul></li><li class="mb-3 mt-9"><a class="text-xs uppercase text-gray-700 mt-10 mb-4 font-thin hover:text-gray-900" href="#operations">Operations</a><ul class="text-sm mt-2"><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-receiveMessage"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">receiveMessage</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-sendMessage"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">sendMessage</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-receiveEditedMessage"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">receiveEditedMessage</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-sendEditedMessage"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">sendEditedMessage</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-receivePinnedMessage"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">receivePinnedMessage</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-sendPinnedMessage"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">sendPinnedMessage</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-receiveUnPinnedMessage"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">receiveUnPinnedMessage</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-sendUnPinnedMessage"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">sendUnPinnedMessage</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-receiveDeletedMessage"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">receiveDeletedMessage</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-deletedMessage"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">deletedMessage</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-joinChat"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">joinChat</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-createChat"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">createChat</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-notifiedLeaveGroup"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">notifiedLeaveGroup</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-leaveGroup"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">leaveGroup</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-notifiedDeleteGroup"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">notifiedDeleteGroup</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-deleteGroup"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">deleteGroup</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-notifieyAddAdmin"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">notifieyAddAdmin</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-addAdmin"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">addAdmin</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-notifiyUserAdded"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">notifiyUserAdded</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-addUser"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">addUser</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-notifyKickedUser"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">notifyKickedUser</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-kickUser"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">kickUser</span></a></li></ul></li></ul></div></div></div><div class="panel--center relative py-8 flex-1"><div class="relative z-10"><div class="panel-item"><div class="panel-item--center px-8 text-left" id="introduction"><div class="text-4xl">Chat WebSocket API<!-- --> <!-- -->1.0.0</div><div class="mt-4"><div class="prose max-w-none text-sm"><p>WebSocket API for real-time chat features, including sending, editing, pinning, unpinning, and deleting messages.</p>
+      <div id="root"><section class="aui-root"><div class="container:xl relative md:flex bg-white leading-normal" id=""><div class="burger-menu rounded-full h-16 w-16 bg-white fixed bottom-16 right-8 flex items-center justify-center z-30 cursor-pointer shadow-md bg-teal-500" data-lol="false"><svg viewBox="0 0 100 70" width="40" height="30" class="fill-current text-gray-200"><rect width="100" height="10"></rect><rect y="30" width="100" height="10"></rect><rect y="60" width="100" height="10"></rect></svg></div><div class="hidden sidebar relative w-64 max-h-screen h-full bg-gray-200 shadow z-20"><div class=" block fixed max-h-screen h-full font-sans px-4 pt-8 pb-16 overflow-y-auto bg-gray-200"><div class="sidebar--content"><div><h1 class="text-2xl font-light">Chat WebSocket API<!-- --> <!-- -->1.0.0</h1></div><ul class="text-sm mt-10 relative"><li class="mb-3"><a class="text-gray-700 no-underline hover:text-gray-900" href="#introduction">Introduction</a></li><li class="mb-3 mt-9"><a class="text-xs uppercase text-gray-700 mt-10 mb-4 font-thin hover:text-gray-900" href="#servers">Servers</a><ul class="text-sm mt-2"><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#server-chat-server"><span class="break-all inline-block">chat-server</span></a></li></ul></li><li class="mb-3 mt-9"><a class="text-xs uppercase text-gray-700 mt-10 mb-4 font-thin hover:text-gray-900" href="#operations">Operations</a><ul class="text-sm mt-2"><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-receiveMessage"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">receiveMessage</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-sendMessage"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">sendMessage</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-receiveEditedMessage"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">receiveEditedMessage</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-sendEditedMessage"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">sendEditedMessage</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-receivePinnedMessage"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">receivePinnedMessage</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-sendPinnedMessage"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">sendPinnedMessage</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-receiveUnPinnedMessage"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">receiveUnPinnedMessage</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-sendUnPinnedMessage"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">sendUnPinnedMessage</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-receiveDeletedMessage"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">receiveDeletedMessage</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-deletedMessage"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">deletedMessage</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-joinChat"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">joinChat</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-createChat"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">createChat</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-notifiedLeaveGroup"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">notifiedLeaveGroup</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-leaveGroup"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">leaveGroup</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-notifiedDeleteGroup"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">notifiedDeleteGroup</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-deleteGroup"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">deleteGroup</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-notifieyAddAdmin"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">notifieyAddAdmin</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-addAdmin"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">addAdmin</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-notifiyUserAdded"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">notifiyUserAdded</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-addUser"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">addUser</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-notifyKickedUser"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">notifyKickedUser</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-kickUser"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">kickUser</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-receive-joinChannel"><span class="bg-green-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="RECEIVE">RECEIVE</span><span class="break-all inline-block">joinChannel</span></a></li><li><a class="flex no-underline text-gray-700 mb-2 hover:text-gray-900" href="#operation-send-subscribe"><span class="bg-blue-600 font-bold h-6 no-underline text-white uppercase p-1 mr-2 rounded text-xs" title="SEND">SEND</span><span class="break-all inline-block">subscribe</span></a></li></ul></li></ul></div></div></div><div class="panel--center relative py-8 flex-1"><div class="relative z-10"><div class="panel-item"><div class="panel-item--center px-8 text-left" id="introduction"><div class="text-4xl">Chat WebSocket API<!-- --> <!-- -->1.0.0</div><div class="mt-4"><div class="prose max-w-none text-sm"><p>WebSocket API for real-time chat features, including sending, editing, pinning, unpinning, and deleting messages.</p>
 </div></div></div><div class="panel-item--right"></div></div><section id="servers" class="mt-16"><h2 class="2xl:w-7/12 text-3xl font-light mb-4 px-8">Servers</h2><ul><li class="mb-4" id="server-chat-server"><div class="panel-item"><div class="panel-item--center px-8"><div class="shadow rounded bg-gray-200 p-4 border bg-gray-100"><div><span class="font-mono text-base">http://localhost:5000</span><span class="bg-teal-500 font-bold no-underline text-white uppercase rounded mx-2 px-2 py-1 text-sm">ws</span><span class="bg-blue-500 font-bold no-underline text-white uppercase rounded px-2 py-1 text-sm">chat-server</span></div><div id="server-chat-server-security"></div><div class="mt-2"></div></div></div><div class="panel-item--right"></div></div></li></ul></section><section id="operations" class="mt-16"><h2 class="2xl:w-7/12 text-3xl font-light mb-4 px-8">Operations</h2><ul><li class="mb-12" id="operation-receive-receiveMessage"><div><div class="panel-item--center px-8"><div class="mb-4"><h3><span class="font-mono border uppercase p-1 rounded mr-2 border-green-600 text-green-600" title="receive">RECEIVE</span> <span class="font-mono text-base">message</span></h3></div><div class="mt-2"><div class="prose max-w-none text-sm"><p>Channel for messaging.</p>
-</div></div><p class="text-gray-600 text-sm mt-2">Receive chat messages</p><div class="border bg-gray-100 rounded px-4 py-2 mt-2"><div class="text-sm text-gray-700">Operation ID<span class="border text-orange-600 rounded text-xs ml-2 py-0 px-2">receiveMessage</span></div></div><div class="mt-2 text-sm"><p>Available only on servers:</p><ul class="flex flex-wrap leading-normal"><li class="inline-block mt-2 mr-2"><a href="#server-chat-server" class="border border-solid border-blue-300 hover:bg-blue-300 hover:text-blue-600 text-blue-500 font-bold no-underline text-xs rounded px-3 py-1 cursor-pointer"><span class="underline">chat-server</span></a></li></ul></div><div class="mt-2" id="operation-receive-message-security"></div><div class="mt-2"></div><div class="mt-2"></div><div class="mt-2"></div></div><div class="w-full mt-4" id="operation-receive-message-message"><div class="mt-2"><p class="px-8">Accepts the following message:</p><div class="mt-2"><div class="panel-item"><div class="panel-item--center px-8"><div class="shadow rounded bg-gray-200 p-4 border"><div><span class="border text-orange-600 rounded text-xs py-0 px-2">&lt;anonymous-message-1&gt;</span></div><ul class="leading-normal mt-2 mb-4 space-x-2 space-y-2"><li class="inline-block"><a href="https://www.iana.org/assignments/media-types/application/json" class="border border-solid border-orange-300 hover:bg-orange-300 hover:text-orange-600 text-orange-500 font-bold no-underline text-xs uppercase rounded px-3 py-1" target="_blank" rel="nofollow noopener noreferrer"><span>application/json</span></a></li></ul><div class="border bg-gray-100 rounded px-4 py-2 mt-2"><div class="text-sm text-gray-700">Message ID<span class="border text-orange-600 rounded text-xs ml-2 py-0 px-2">&lt;anonymous-message-1&gt;</span></div></div><div class="mt-2"><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><button class="focus:outline-none undefined" type="button"><div class="inline-block"><span class="break-anywhere text-sm ">Payload</span></div><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" class="inline-block align-baseline cursor-pointer ml-0.5 -mb-1 w-5 h-5 transform transition-transform duration-150 ease-linear  "><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg></button><button type="button" class="ml-1 text-sm text-gray-500">Expand all</button></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">object</div><div class="inline-block"></div></div></div></div><div class="rounded p-4 py-2 border bg-gray-100  hidden"><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><span class="break-anywhere text-sm italic">chatId</span></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">integer</div><div class="inline-block"></div><div><div class="prose max-w-none text-sm"><p>Identifier of the chat room</p>
-</div></div></div></div></div></div><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><span class="break-anywhere text-sm italic">id</span></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">integer</div><div class="inline-block"></div><div><div class="prose max-w-none text-sm"><p>Unique identifier for the message</p>
+</div></div><p class="text-gray-600 text-sm mt-2">Receive chat messages</p><div class="border bg-gray-100 rounded px-4 py-2 mt-2"><div class="text-sm text-gray-700">Operation ID<span class="border text-orange-600 rounded text-xs ml-2 py-0 px-2">receiveMessage</span></div></div><div class="mt-2 text-sm"><p>Available only on servers:</p><ul class="flex flex-wrap leading-normal"><li class="inline-block mt-2 mr-2"><a href="#server-chat-server" class="border border-solid border-blue-300 hover:bg-blue-300 hover:text-blue-600 text-blue-500 font-bold no-underline text-xs rounded px-3 py-1 cursor-pointer"><span class="underline">chat-server</span></a></li></ul></div><div class="mt-2" id="operation-receive-message-security"></div><div class="mt-2"></div><div class="mt-2"></div><div class="mt-2"></div></div><div class="w-full mt-4" id="operation-receive-message-message"><div class="mt-2"><p class="px-8">Accepts the following message:</p><div class="mt-2"><div class="panel-item"><div class="panel-item--center px-8"><div class="shadow rounded bg-gray-200 p-4 border"><div><span class="border text-orange-600 rounded text-xs py-0 px-2">&lt;anonymous-message-1&gt;</span></div><ul class="leading-normal mt-2 mb-4 space-x-2 space-y-2"><li class="inline-block"><a href="https://www.iana.org/assignments/media-types/application/json" class="border border-solid border-orange-300 hover:bg-orange-300 hover:text-orange-600 text-orange-500 font-bold no-underline text-xs uppercase rounded px-3 py-1" target="_blank" rel="nofollow noopener noreferrer"><span>application/json</span></a></li></ul><div class="border bg-gray-100 rounded px-4 py-2 mt-2"><div class="text-sm text-gray-700">Message ID<span class="border text-orange-600 rounded text-xs ml-2 py-0 px-2">&lt;anonymous-message-1&gt;</span></div></div><div class="mt-2"><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><button class="focus:outline-none undefined" type="button"><div class="inline-block"><span class="break-anywhere text-sm ">Payload</span></div><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" class="inline-block align-baseline cursor-pointer ml-0.5 -mb-1 w-5 h-5 transform transition-transform duration-150 ease-linear  "><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg></button><button type="button" class="ml-1 text-sm text-gray-500">Expand all</button></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">object</div><div class="inline-block"></div></div></div></div><div class="rounded p-4 py-2 border bg-gray-100  hidden"><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><span class="break-anywhere text-sm italic">id</span></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">integer</div><div class="inline-block"></div><div><div class="prose max-w-none text-sm"><p>Unique identifier for the message</p>
+</div></div></div></div></div></div><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><span class="break-anywhere text-sm italic">chatId</span></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">integer</div><div class="inline-block"></div><div><div class="prose max-w-none text-sm"><p>Identifier of the chat room</p>
 </div></div></div></div></div></div><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><span class="break-anywhere text-sm italic">senderId</span></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">integer</div><div class="inline-block"></div><div><div class="prose max-w-none text-sm"><p>The ID of the user who sent the message</p>
 </div></div></div></div></div></div><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><span class="break-anywhere text-sm italic">content</span></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">string</div><div class="inline-block"></div><div><div class="prose max-w-none text-sm"><p>The content of the message</p>
 </div></div></div></div></div></div><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><span class="break-anywhere text-sm italic">read</span></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">boolean</div><div class="inline-block"></div><div><div class="prose max-w-none text-sm"><p>Indicates if the message has been read</p>
@@ -33,8 +33,8 @@
 </div></div></div></div></div><div class="rounded p-4 py-2 border bg-gray-100  hidden"><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><span class="break-anywhere text-sm ">Items:</span></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">string</div><div class="inline-block"></div></div></div></div></div></div></div><p class="mt-2 text-xs text-gray-700">Additional properties are allowed.</p></div></div><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><span class="break-anywhere text-sm italic">parentMessageId</span></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">integer</div><div class="inline-block"></div><div><div class="prose max-w-none text-sm"><p>ID of the parent message if this message is a reply</p>
 </div></div></div></div></div></div><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><span class="break-anywhere text-sm italic">time</span></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">string</div><div class="inline-block"><span class="bg-yellow-600 font-bold no-underline text-white rounded lowercase mr-2 p-1 text-xs">format: <!-- -->date-time</span></div><div><div class="prose max-w-none text-sm"><p>Timestamp of the message event (if different from sentAt)</p>
 </div></div></div></div></div></div><p class="mt-2 text-xs text-gray-700">Additional properties are allowed.</p></div></div></div></div></div><div class="panel-item--right px-8"><div class="bg-gray-800 px-8 py-4 mt-4 -mx-8 2xl:mx-0 2xl:px-4 2xl:rounded examples"><h4 class="text-white text-lg">Examples</h4><div class="mt-4"><div><button class="focus:outline-none undefined" type="button"><div class="inline-block"><span class="inline-block w-20 py-0.5 mr-1 text-gray-200 text-sm border text-center rounded focus:outline-none">Payload</span></div><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" class="inline-block align-baseline cursor-pointer ml-0.5 -mb-1 w-5 h-5 transform transition-transform duration-150 ease-linear  fill-current text-gray-200"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg></button></div><div class="hidden"><div class="mt-4"><div class="prose max-w-none text-sm"><pre><code class="hljs language-json">{
-  <span class="hljs-attr">"chatId"</span>: <span class="hljs-number">0</span>,
   <span class="hljs-attr">"id"</span>: <span class="hljs-number">0</span>,
+  <span class="hljs-attr">"chatId"</span>: <span class="hljs-number">0</span>,
   <span class="hljs-attr">"senderId"</span>: <span class="hljs-number">0</span>,
   <span class="hljs-attr">"content"</span>: <span class="hljs-string">"string"</span>,
   <span class="hljs-attr">"read"</span>: <span class="hljs-literal">true</span>,
@@ -70,6 +70,7 @@
 </div></div></div></div></div></div><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><span class="break-anywhere text-sm italic">sentAt</span></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">string</div><div class="inline-block"><span class="bg-yellow-600 font-bold no-underline text-white rounded lowercase mr-2 p-1 text-xs">format: <!-- -->date-time</span></div><div><div class="prose max-w-none text-sm"><p>Timestamp when the message was sent</p>
 </div></div></div></div></div></div><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><button class="focus:outline-none undefined" type="button"><div class="inline-block"><span class="break-anywhere text-sm italic">media</span></div><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" class="inline-block align-baseline cursor-pointer ml-0.5 -mb-1 w-5 h-5 transform transition-transform duration-150 ease-linear  "><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg></button><button type="button" class="ml-1 text-sm text-gray-500">Expand all</button></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">array&lt;string&gt;</div><div class="inline-block"></div><div><div class="prose max-w-none text-sm"><p>Array of media URLs associated with the message</p>
 </div></div></div></div></div><div class="rounded p-4 py-2 border bg-gray-100 bg-gray-200 hidden"><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><span class="break-anywhere text-sm ">Items:</span></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">string</div><div class="inline-block"></div></div></div></div></div></div></div><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><span class="break-anywhere text-sm italic">parentMessageId</span></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">integer</div><div class="inline-block"></div><div><div class="prose max-w-none text-sm"><p>ID of the parent message if this message is a reply</p>
+</div></div></div></div></div></div><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><span class="break-anywhere text-sm italic">secret</span></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">boolean</div><div class="inline-block"></div><div><div class="prose max-w-none text-sm"><p>Is message in secret chat</p>
 </div></div></div></div></div></div><p class="mt-2 text-xs text-gray-700">Additional properties are allowed.</p></div></div></div></div></div><div class="panel-item--right px-8"><div class="bg-gray-800 px-8 py-4 mt-4 -mx-8 2xl:mx-0 2xl:px-4 2xl:rounded examples"><h4 class="text-white text-lg">Examples</h4><div class="mt-4"><div><button class="focus:outline-none undefined" type="button"><div class="inline-block"><span class="inline-block w-20 py-0.5 mr-1 text-gray-200 text-sm border text-center rounded focus:outline-none">Payload</span></div><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" class="inline-block align-baseline cursor-pointer ml-0.5 -mb-1 w-5 h-5 transform transition-transform duration-150 ease-linear  fill-current text-gray-200"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg></button></div><div class="hidden"><div class="mt-4"><div class="prose max-w-none text-sm"><pre><code class="hljs language-json">{
   <span class="hljs-attr">"chatId"</span>: <span class="hljs-number">0</span>,
   <span class="hljs-attr">"senderId"</span>: <span class="hljs-number">0</span>,
@@ -82,7 +83,8 @@
   <span class="hljs-attr">"media"</span>: [
     <span class="hljs-string">"string"</span>
   ],
-  <span class="hljs-attr">"parentMessageId"</span>: <span class="hljs-number">0</span>
+  <span class="hljs-attr">"parentMessageId"</span>: <span class="hljs-number">0</span>,
+  <span class="hljs-attr">"secret"</span>: <span class="hljs-literal">true</span>
 }
 </code></pre>
 </div><h6 class="text-xs font-bold text-gray-600 italic mt-2">This example has been generated automatically.</h6></div></div></div></div></div></div></div></div></div></div></li><li class="mb-12" id="operation-receive-receiveEditedMessage"><div><div class="panel-item--center px-8"><div class="mb-4"><h3><span class="font-mono border uppercase p-1 rounded mr-2 border-green-600 text-green-600" title="receive">RECEIVE</span> <span class="font-mono text-base">editMessage</span></h3></div><div class="mt-2"><div class="prose max-w-none text-sm"><p>Channel for editing messages.</p>
@@ -307,6 +309,24 @@
   <span class="hljs-attr">"chatId"</span>: <span class="hljs-number">0</span>
 }
 </code></pre>
+</div><h6 class="text-xs font-bold text-gray-600 italic mt-2">This example has been generated automatically.</h6></div></div></div></div></div></div></div></div></div></div></li><li class="mb-12" id="operation-receive-joinChannel"><div><div class="panel-item--center px-8"><div class="mb-4"><h3><span class="font-mono border uppercase p-1 rounded mr-2 border-green-600 text-green-600" title="receive">RECEIVE</span> <span class="font-mono text-base">subscribe</span></h3></div><div class="mt-2"><div class="prose max-w-none text-sm"><p>Channel for subscribing to channel.</p>
+</div></div><p class="text-gray-600 text-sm mt-2">user subscribed to channel</p><div class="border bg-gray-100 rounded px-4 py-2 mt-2"><div class="text-sm text-gray-700">Operation ID<span class="border text-orange-600 rounded text-xs ml-2 py-0 px-2">joinChannel</span></div></div><div class="mt-2 text-sm"><p>Available only on servers:</p><ul class="flex flex-wrap leading-normal"><li class="inline-block mt-2 mr-2"><a href="#server-chat-server" class="border border-solid border-blue-300 hover:bg-blue-300 hover:text-blue-600 text-blue-500 font-bold no-underline text-xs rounded px-3 py-1 cursor-pointer"><span class="underline">chat-server</span></a></li></ul></div><div class="mt-2" id="operation-receive-subscribe-security"></div><div class="mt-2"></div><div class="mt-2"></div><div class="mt-2"></div></div><div class="w-full mt-4" id="operation-receive-subscribe-message"><div class="mt-2"><p class="px-8">Accepts the following message:</p><div class="mt-2"><div class="panel-item"><div class="panel-item--center px-8"><div class="shadow rounded bg-gray-200 p-4 border"><div><span class="border text-orange-600 rounded text-xs py-0 px-2">&lt;anonymous-message-23&gt;</span></div><ul class="leading-normal mt-2 mb-4 space-x-2 space-y-2"><li class="inline-block"><a href="https://www.iana.org/assignments/media-types/application/json" class="border border-solid border-orange-300 hover:bg-orange-300 hover:text-orange-600 text-orange-500 font-bold no-underline text-xs uppercase rounded px-3 py-1" target="_blank" rel="nofollow noopener noreferrer"><span>application/json</span></a></li></ul><div class="border bg-gray-100 rounded px-4 py-2 mt-2"><div class="text-sm text-gray-700">Message ID<span class="border text-orange-600 rounded text-xs ml-2 py-0 px-2">&lt;anonymous-message-23&gt;</span></div></div><div class="mt-2"><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><button class="focus:outline-none undefined" type="button"><div class="inline-block"><span class="break-anywhere text-sm ">Payload</span></div><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" class="inline-block align-baseline cursor-pointer ml-0.5 -mb-1 w-5 h-5 transform transition-transform duration-150 ease-linear  "><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg></button><button type="button" class="ml-1 text-sm text-gray-500">Expand all</button></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">object</div><div class="inline-block"></div></div></div></div><div class="rounded p-4 py-2 border bg-gray-100  hidden"><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><span class="break-anywhere text-sm italic">chatId</span></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">integer</div><div class="inline-block"></div><div><div class="prose max-w-none text-sm"><p>Identifier of the chat room</p>
+</div></div></div></div></div></div><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><span class="break-anywhere text-sm italic">userId</span></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">integer</div><div class="inline-block"></div><div><div class="prose max-w-none text-sm"><p>Identifier of the user</p>
+</div></div></div></div></div></div><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><span class="break-anywhere text-sm italic">userName</span></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">string</div><div class="inline-block"></div><div><div class="prose max-w-none text-sm"><p>Name of the user</p>
+</div></div></div></div></div></div><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><span class="break-anywhere text-sm italic">profilePic</span></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">string</div><div class="inline-block"></div><div><div class="prose max-w-none text-sm"><p>Profile picture of the user</p>
+</div></div></div></div></div></div><p class="mt-2 text-xs text-gray-700">Additional properties are allowed.</p></div></div></div></div></div><div class="panel-item--right px-8"><div class="bg-gray-800 px-8 py-4 mt-4 -mx-8 2xl:mx-0 2xl:px-4 2xl:rounded examples"><h4 class="text-white text-lg">Examples</h4><div class="mt-4"><div><button class="focus:outline-none undefined" type="button"><div class="inline-block"><span class="inline-block w-20 py-0.5 mr-1 text-gray-200 text-sm border text-center rounded focus:outline-none">Payload</span></div><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" class="inline-block align-baseline cursor-pointer ml-0.5 -mb-1 w-5 h-5 transform transition-transform duration-150 ease-linear  fill-current text-gray-200"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg></button></div><div class="hidden"><div class="mt-4"><div class="prose max-w-none text-sm"><pre><code class="hljs language-json">{
+  <span class="hljs-attr">"chatId"</span>: <span class="hljs-number">0</span>,
+  <span class="hljs-attr">"userId"</span>: <span class="hljs-number">0</span>,
+  <span class="hljs-attr">"userName"</span>: <span class="hljs-string">"string"</span>,
+  <span class="hljs-attr">"profilePic"</span>: <span class="hljs-string">"string"</span>
+}
+</code></pre>
+</div><h6 class="text-xs font-bold text-gray-600 italic mt-2">This example has been generated automatically.</h6></div></div></div></div></div></div></div></div></div></div></li><li class="mb-12" id="operation-send-subscribe"><div><div class="panel-item--center px-8"><div class="mb-4"><h3><span class="font-mono border uppercase p-1 rounded mr-2 border-blue-600 text-blue-500" title="send">SEND</span> <span class="font-mono text-base">subscribe</span></h3></div><div class="mt-2"><div class="prose max-w-none text-sm"><p>Channel for subscribing to channel.</p>
+</div></div><p class="text-gray-600 text-sm mt-2">subscribe to channel</p><div class="border bg-gray-100 rounded px-4 py-2 mt-2"><div class="text-sm text-gray-700">Operation ID<span class="border text-orange-600 rounded text-xs ml-2 py-0 px-2">subscribe</span></div></div><div class="mt-2 text-sm"><p>Available only on servers:</p><ul class="flex flex-wrap leading-normal"><li class="inline-block mt-2 mr-2"><a href="#server-chat-server" class="border border-solid border-blue-300 hover:bg-blue-300 hover:text-blue-600 text-blue-500 font-bold no-underline text-xs rounded px-3 py-1 cursor-pointer"><span class="underline">chat-server</span></a></li></ul></div><div class="mt-2" id="operation-send-subscribe-security"></div><div class="mt-2"></div><div class="mt-2"></div><div class="mt-2"></div></div><div class="w-full mt-4" id="operation-send-subscribe-message"><div class="mt-2"><p class="px-8">Accepts the following message:</p><div class="mt-2"><div class="panel-item"><div class="panel-item--center px-8"><div class="shadow rounded bg-gray-200 p-4 border"><div><span class="border text-orange-600 rounded text-xs py-0 px-2">&lt;anonymous-message-24&gt;</span></div><ul class="leading-normal mt-2 mb-4 space-x-2 space-y-2"><li class="inline-block"><a href="https://www.iana.org/assignments/media-types/application/json" class="border border-solid border-orange-300 hover:bg-orange-300 hover:text-orange-600 text-orange-500 font-bold no-underline text-xs uppercase rounded px-3 py-1" target="_blank" rel="nofollow noopener noreferrer"><span>application/json</span></a></li></ul><div class="border bg-gray-100 rounded px-4 py-2 mt-2"><div class="text-sm text-gray-700">Message ID<span class="border text-orange-600 rounded text-xs ml-2 py-0 px-2">&lt;anonymous-message-24&gt;</span></div></div><div class="mt-2"><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><button class="focus:outline-none undefined" type="button"><div class="inline-block"><span class="break-anywhere text-sm ">Payload</span></div><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" class="inline-block align-baseline cursor-pointer ml-0.5 -mb-1 w-5 h-5 transform transition-transform duration-150 ease-linear  "><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg></button><button type="button" class="ml-1 text-sm text-gray-500">Expand all</button></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">object</div><div class="inline-block"></div></div></div></div><div class="rounded p-4 py-2 border bg-gray-100  hidden"><div><div class="flex py-2"><div class="min-w-1/4 mr-2"><span class="break-anywhere text-sm italic">chatId</span></div><div><div><div class="capitalize text-sm text-teal-500 font-bold inline-block mr-2">integer</div><div class="inline-block"></div><div><div class="prose max-w-none text-sm"><p>Identifier of the chat room</p>
+</div></div></div></div></div></div><p class="mt-2 text-xs text-gray-700">Additional properties are allowed.</p></div></div></div></div></div><div class="panel-item--right px-8"><div class="bg-gray-800 px-8 py-4 mt-4 -mx-8 2xl:mx-0 2xl:px-4 2xl:rounded examples"><h4 class="text-white text-lg">Examples</h4><div class="mt-4"><div><button class="focus:outline-none undefined" type="button"><div class="inline-block"><span class="inline-block w-20 py-0.5 mr-1 text-gray-200 text-sm border text-center rounded focus:outline-none">Payload</span></div><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" class="inline-block align-baseline cursor-pointer ml-0.5 -mb-1 w-5 h-5 transform transition-transform duration-150 ease-linear  fill-current text-gray-200"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg></button></div><div class="hidden"><div class="mt-4"><div class="prose max-w-none text-sm"><pre><code class="hljs language-json">{
+  <span class="hljs-attr">"chatId"</span>: <span class="hljs-number">0</span>
+}
+</code></pre>
 </div><h6 class="text-xs font-bold text-gray-600 italic mt-2">This example has been generated automatically.</h6></div></div></div></div></div></div></div></div></div></div></li></ul></section></div><div class="panel--right absolute top-0 right-0 h-full bg-gray-800"></div></div></div></section></div>
   
       <script src="js/asyncapi-ui.min.js" type="application/javascript"></script>
@@ -392,6 +412,11 @@
                 "nullable": true,
                 "description": "ID of the parent message if this message is a reply",
                 "x-parser-schema-id": "<anonymous-schema-34>"
+              },
+              "secret": {
+                "type": "boolean",
+                "description": "Is message in secret chat",
+                "x-parser-schema-id": "<anonymous-schema-35>"
               }
             },
             "x-parser-schema-id": "<anonymous-schema-23>"
@@ -407,14 +432,14 @@
           "payload": {
             "type": "object",
             "properties": {
-              "chatId": {
-                "type": "integer",
-                "description": "Identifier of the chat room",
-                "x-parser-schema-id": "<anonymous-schema-2>"
-              },
               "id": {
                 "type": "integer",
                 "description": "Unique identifier for the message",
+                "x-parser-schema-id": "<anonymous-schema-2>"
+              },
+              "chatId": {
+                "type": "integer",
+                "description": "Identifier of the chat room",
                 "x-parser-schema-id": "<anonymous-schema-3>"
               },
               "senderId": {
@@ -537,15 +562,15 @@
               "messageId": {
                 "type": "integer",
                 "description": "Identifier of the message",
-                "x-parser-schema-id": "<anonymous-schema-39>"
+                "x-parser-schema-id": "<anonymous-schema-40>"
               },
               "content": {
                 "type": "string",
                 "description": "new content of the message",
-                "x-parser-schema-id": "<anonymous-schema-40>"
+                "x-parser-schema-id": "<anonymous-schema-41>"
               }
             },
-            "x-parser-schema-id": "<anonymous-schema-38>"
+            "x-parser-schema-id": "<anonymous-schema-39>"
           },
           "x-parser-message-name": "<anonymous-message-4>"
         }
@@ -561,15 +586,15 @@
               "messageId": {
                 "type": "integer",
                 "description": "Identifier of the message",
-                "x-parser-schema-id": "<anonymous-schema-36>"
+                "x-parser-schema-id": "<anonymous-schema-37>"
               },
               "content": {
                 "type": "string",
                 "description": "new content of the message",
-                "x-parser-schema-id": "<anonymous-schema-37>"
+                "x-parser-schema-id": "<anonymous-schema-38>"
               }
             },
-            "x-parser-schema-id": "<anonymous-schema-35>"
+            "x-parser-schema-id": "<anonymous-schema-36>"
           },
           "x-parser-message-name": "<anonymous-message-3>"
         }
@@ -588,15 +613,15 @@
               "messageId": {
                 "type": "integer",
                 "description": "Identifier of the message",
-                "x-parser-schema-id": "<anonymous-schema-44>"
+                "x-parser-schema-id": "<anonymous-schema-45>"
               },
               "duration": {
                 "type": "integer",
                 "description": "duration of the pin",
-                "x-parser-schema-id": "<anonymous-schema-45>"
+                "x-parser-schema-id": "<anonymous-schema-46>"
               }
             },
-            "x-parser-schema-id": "<anonymous-schema-43>"
+            "x-parser-schema-id": "<anonymous-schema-44>"
           },
           "x-parser-message-name": "<anonymous-message-6>"
         }
@@ -612,10 +637,10 @@
               "messageId": {
                 "type": "integer",
                 "description": "Identifier of the message",
-                "x-parser-schema-id": "<anonymous-schema-42>"
+                "x-parser-schema-id": "<anonymous-schema-43>"
               }
             },
-            "x-parser-schema-id": "<anonymous-schema-41>"
+            "x-parser-schema-id": "<anonymous-schema-42>"
           },
           "x-parser-message-name": "<anonymous-message-5>"
         }
@@ -634,10 +659,10 @@
               "messageId": {
                 "type": "integer",
                 "description": "Identifier of the message",
-                "x-parser-schema-id": "<anonymous-schema-49>"
+                "x-parser-schema-id": "<anonymous-schema-50>"
               }
             },
-            "x-parser-schema-id": "<anonymous-schema-48>"
+            "x-parser-schema-id": "<anonymous-schema-49>"
           },
           "x-parser-message-name": "<anonymous-message-8>"
         }
@@ -653,10 +678,10 @@
               "messageId": {
                 "type": "integer",
                 "description": "Identifier of the message",
-                "x-parser-schema-id": "<anonymous-schema-47>"
+                "x-parser-schema-id": "<anonymous-schema-48>"
               }
             },
-            "x-parser-schema-id": "<anonymous-schema-46>"
+            "x-parser-schema-id": "<anonymous-schema-47>"
           },
           "x-parser-message-name": "<anonymous-message-7>"
         }
@@ -677,12 +702,12 @@
                 "messageId": {
                   "type": "integer",
                   "description": "Identifier of the message",
-                  "x-parser-schema-id": "<anonymous-schema-55>"
+                  "x-parser-schema-id": "<anonymous-schema-56>"
                 }
               },
-              "x-parser-schema-id": "<anonymous-schema-54>"
+              "x-parser-schema-id": "<anonymous-schema-55>"
             },
-            "x-parser-schema-id": "<anonymous-schema-53>"
+            "x-parser-schema-id": "<anonymous-schema-54>"
           },
           "x-parser-message-name": "<anonymous-message-10>"
         }
@@ -700,12 +725,12 @@
                 "messageId": {
                   "type": "integer",
                   "description": "Identifier of the message",
-                  "x-parser-schema-id": "<anonymous-schema-52>"
+                  "x-parser-schema-id": "<anonymous-schema-53>"
                 }
               },
-              "x-parser-schema-id": "<anonymous-schema-51>"
+              "x-parser-schema-id": "<anonymous-schema-52>"
             },
-            "x-parser-schema-id": "<anonymous-schema-50>"
+            "x-parser-schema-id": "<anonymous-schema-51>"
           },
           "x-parser-message-name": "<anonymous-message-9>"
         }
@@ -729,44 +754,44 @@
                   "channel"
                 ],
                 "description": "The type of entity being created (e.g., chat, group, channel).",
-                "x-parser-schema-id": "<anonymous-schema-75>"
+                "x-parser-schema-id": "<anonymous-schema-76>"
               },
               "name": {
                 "type": "string",
                 "description": "The name of the chat, group, or channel.",
-                "x-parser-schema-id": "<anonymous-schema-76>"
+                "x-parser-schema-id": "<anonymous-schema-77>"
               },
               "participants": {
                 "type": "array",
                 "items": {
                   "type": "integer",
-                  "x-parser-schema-id": "<anonymous-schema-78>"
+                  "x-parser-schema-id": "<anonymous-schema-79>"
                 },
                 "description": "Array of participant IDs (required for chat and group creation).",
-                "x-parser-schema-id": "<anonymous-schema-77>"
+                "x-parser-schema-id": "<anonymous-schema-78>"
               },
               "privacy": {
                 "type": "string",
                 "description": "Privacy level of the group (e.g., public, private) (only for groups).",
-                "x-parser-schema-id": "<anonymous-schema-79>"
+                "x-parser-schema-id": "<anonymous-schema-80>"
               },
               "maxSize": {
                 "type": "integer",
                 "description": "Maximum number of participants allowed in the group (only for groups).",
-                "x-parser-schema-id": "<anonymous-schema-80>"
+                "x-parser-schema-id": "<anonymous-schema-81>"
               },
               "topic": {
                 "type": "string",
                 "description": "The topic of the channel (only for channel creation).",
-                "x-parser-schema-id": "<anonymous-schema-81>"
+                "x-parser-schema-id": "<anonymous-schema-82>"
               },
               "description": {
                 "type": "string",
                 "description": "Description of the channel (only for channel creation).",
-                "x-parser-schema-id": "<anonymous-schema-82>"
+                "x-parser-schema-id": "<anonymous-schema-83>"
               }
             },
-            "x-parser-schema-id": "<anonymous-schema-74>"
+            "x-parser-schema-id": "<anonymous-schema-75>"
           },
           "x-parser-message-name": "<anonymous-message-12>"
         }
@@ -782,12 +807,12 @@
               "id": {
                 "type": "integer",
                 "description": "Chat identifier",
-                "x-parser-schema-id": "<anonymous-schema-57>"
+                "x-parser-schema-id": "<anonymous-schema-58>"
               },
               "name": {
                 "type": "string",
                 "description": "The name of the chat",
-                "x-parser-schema-id": "<anonymous-schema-58>"
+                "x-parser-schema-id": "<anonymous-schema-59>"
               },
               "type": {
                 "type": "string",
@@ -797,42 +822,42 @@
                   "CHANNEL"
                 ],
                 "description": "The type of entity being created (e.g., chat, group, channel).",
-                "x-parser-schema-id": "<anonymous-schema-59>"
+                "x-parser-schema-id": "<anonymous-schema-60>"
               },
               "picture": {
                 "type": "string",
                 "description": "URL of the chat picture",
-                "x-parser-schema-id": "<anonymous-schema-60>"
+                "x-parser-schema-id": "<anonymous-schema-61>"
               },
               "participants": {
                 "type": "array",
                 "items": {
                   "type": "integer",
-                  "x-parser-schema-id": "<anonymous-schema-62>"
+                  "x-parser-schema-id": "<anonymous-schema-63>"
                 },
                 "description": "An array of participant IDs",
-                "x-parser-schema-id": "<anonymous-schema-61>"
+                "x-parser-schema-id": "<anonymous-schema-62>"
               },
               "privacy": {
                 "type": "string",
                 "description": "The privacy level of the group/channel (e.g., public, private)",
-                "x-parser-schema-id": "<anonymous-schema-63>"
+                "x-parser-schema-id": "<anonymous-schema-64>"
               },
               "maxSize": {
                 "type": "integer",
                 "description": "The maximum number of participants allowed in the group",
-                "x-parser-schema-id": "<anonymous-schema-64>"
+                "x-parser-schema-id": "<anonymous-schema-65>"
               },
               "isMuted": {
                 "type": "boolean",
                 "description": "Is the chat muted",
-                "x-parser-schema-id": "<anonymous-schema-65>"
+                "x-parser-schema-id": "<anonymous-schema-66>"
               },
               "unreadMessageCount": {
                 "type": "integer",
                 "nullable": true,
                 "description": "The count of unread messages in the chat",
-                "x-parser-schema-id": "<anonymous-schema-66>"
+                "x-parser-schema-id": "<anonymous-schema-67>"
               },
               "lastMessage": {
                 "type": "object",
@@ -840,39 +865,39 @@
                   "id": {
                     "type": "integer",
                     "description": "Identifier of the last message",
-                    "x-parser-schema-id": "<anonymous-schema-68>"
+                    "x-parser-schema-id": "<anonymous-schema-69>"
                   },
                   "content": {
                     "type": "string",
                     "description": "Content of the last message",
-                    "x-parser-schema-id": "<anonymous-schema-69>"
+                    "x-parser-schema-id": "<anonymous-schema-70>"
                   },
                   "type": {
                     "type": "string",
                     "description": "Type of the last message (e.g., text, image)",
-                    "x-parser-schema-id": "<anonymous-schema-70>"
+                    "x-parser-schema-id": "<anonymous-schema-71>"
                   },
                   "sentAt": {
                     "type": "string",
                     "format": "date-time",
                     "description": "Timestamp when the last message was sent",
-                    "x-parser-schema-id": "<anonymous-schema-71>"
+                    "x-parser-schema-id": "<anonymous-schema-72>"
                   },
                   "read": {
                     "type": "boolean",
                     "description": "Indicates if the last message has been read",
-                    "x-parser-schema-id": "<anonymous-schema-72>"
+                    "x-parser-schema-id": "<anonymous-schema-73>"
                   },
                   "delivered": {
                     "type": "boolean",
                     "description": "Indicates if the last message has been delivered",
-                    "x-parser-schema-id": "<anonymous-schema-73>"
+                    "x-parser-schema-id": "<anonymous-schema-74>"
                   }
                 },
-                "x-parser-schema-id": "<anonymous-schema-67>"
+                "x-parser-schema-id": "<anonymous-schema-68>"
               }
             },
-            "x-parser-schema-id": "<anonymous-schema-56>"
+            "x-parser-schema-id": "<anonymous-schema-57>"
           },
           "x-parser-message-name": "<anonymous-message-11>"
         }
@@ -891,10 +916,10 @@
               "id": {
                 "type": "integer",
                 "description": "identifier for group/channel",
-                "x-parser-schema-id": "<anonymous-schema-87>"
+                "x-parser-schema-id": "<anonymous-schema-88>"
               }
             },
-            "x-parser-schema-id": "<anonymous-schema-86>"
+            "x-parser-schema-id": "<anonymous-schema-87>"
           },
           "x-parser-message-name": "<anonymous-message-14>"
         }
@@ -910,15 +935,15 @@
               "userName": {
                 "type": "integer",
                 "description": "name of the user who left",
-                "x-parser-schema-id": "<anonymous-schema-84>"
+                "x-parser-schema-id": "<anonymous-schema-85>"
               },
               "chatId": {
                 "type": "string",
                 "description": "identifier of the group/channel",
-                "x-parser-schema-id": "<anonymous-schema-85>"
+                "x-parser-schema-id": "<anonymous-schema-86>"
               }
             },
-            "x-parser-schema-id": "<anonymous-schema-83>"
+            "x-parser-schema-id": "<anonymous-schema-84>"
           },
           "x-parser-message-name": "<anonymous-message-13>"
         }
@@ -937,10 +962,10 @@
               "id": {
                 "type": "integer",
                 "description": "identifier for group/channel",
-                "x-parser-schema-id": "<anonymous-schema-91>"
+                "x-parser-schema-id": "<anonymous-schema-92>"
               }
             },
-            "x-parser-schema-id": "<anonymous-schema-90>"
+            "x-parser-schema-id": "<anonymous-schema-91>"
           },
           "x-parser-message-name": "<anonymous-message-16>"
         }
@@ -956,10 +981,10 @@
               "id": {
                 "type": "string",
                 "description": "identifier of the group/channel",
-                "x-parser-schema-id": "<anonymous-schema-89>"
+                "x-parser-schema-id": "<anonymous-schema-90>"
               }
             },
-            "x-parser-schema-id": "<anonymous-schema-88>"
+            "x-parser-schema-id": "<anonymous-schema-89>"
           },
           "x-parser-message-name": "<anonymous-message-15>"
         }
@@ -978,15 +1003,15 @@
               "userId": {
                 "type": "integer",
                 "description": "identifier for user",
-                "x-parser-schema-id": "<anonymous-schema-96>"
+                "x-parser-schema-id": "<anonymous-schema-97>"
               },
               "chatId": {
                 "type": "integer",
                 "description": "identifier for group/channel",
-                "x-parser-schema-id": "<anonymous-schema-97>"
+                "x-parser-schema-id": "<anonymous-schema-98>"
               }
             },
-            "x-parser-schema-id": "<anonymous-schema-95>"
+            "x-parser-schema-id": "<anonymous-schema-96>"
           },
           "x-parser-message-name": "<anonymous-message-18>"
         }
@@ -1002,15 +1027,15 @@
               "userName": {
                 "type": "integer",
                 "description": "name of the user who became admin",
-                "x-parser-schema-id": "<anonymous-schema-93>"
+                "x-parser-schema-id": "<anonymous-schema-94>"
               },
               "chatId": {
                 "type": "string",
                 "description": "identifier for group/channel",
-                "x-parser-schema-id": "<anonymous-schema-94>"
+                "x-parser-schema-id": "<anonymous-schema-95>"
               }
             },
-            "x-parser-schema-id": "<anonymous-schema-92>"
+            "x-parser-schema-id": "<anonymous-schema-93>"
           },
           "x-parser-message-name": "<anonymous-message-17>"
         }
@@ -1029,15 +1054,15 @@
               "userId": {
                 "type": "integer",
                 "description": "identifier for user",
-                "x-parser-schema-id": "<anonymous-schema-99>"
+                "x-parser-schema-id": "<anonymous-schema-100>"
               },
               "chatId": {
                 "type": "integer",
                 "description": "identifier for group/channel",
-                "x-parser-schema-id": "<anonymous-schema-100>"
+                "x-parser-schema-id": "<anonymous-schema-101>"
               }
             },
-            "x-parser-schema-id": "<anonymous-schema-98>"
+            "x-parser-schema-id": "<anonymous-schema-99>"
           },
           "x-parser-message-name": "<anonymous-message-20>"
         }
@@ -1065,15 +1090,15 @@
               "userId": {
                 "type": "integer",
                 "description": "identifier for user",
-                "x-parser-schema-id": "<anonymous-schema-106>"
+                "x-parser-schema-id": "<anonymous-schema-107>"
               },
               "chatId": {
                 "type": "integer",
                 "description": "identifier for group/channel",
-                "x-parser-schema-id": "<anonymous-schema-107>"
+                "x-parser-schema-id": "<anonymous-schema-108>"
               }
             },
-            "x-parser-schema-id": "<anonymous-schema-105>"
+            "x-parser-schema-id": "<anonymous-schema-106>"
           },
           "x-parser-message-name": "<anonymous-message-22>"
         }
@@ -1089,22 +1114,78 @@
               "userId": {
                 "type": "integer",
                 "description": "identifier of the user who left",
-                "x-parser-schema-id": "<anonymous-schema-102>"
+                "x-parser-schema-id": "<anonymous-schema-103>"
               },
               "userName": {
                 "type": "integer",
                 "description": "name of the user who left",
-                "x-parser-schema-id": "<anonymous-schema-103>"
+                "x-parser-schema-id": "<anonymous-schema-104>"
               },
               "chatId": {
                 "type": "string",
                 "description": "identifier of the group/channel",
-                "x-parser-schema-id": "<anonymous-schema-104>"
+                "x-parser-schema-id": "<anonymous-schema-105>"
               }
             },
-            "x-parser-schema-id": "<anonymous-schema-101>"
+            "x-parser-schema-id": "<anonymous-schema-102>"
           },
           "x-parser-message-name": "<anonymous-message-21>"
+        }
+      }
+    },
+    "subscribe": {
+      "description": "Channel for subscribing to channel.",
+      "subscribe": {
+        "summary": "subscribe to channel",
+        "operationId": "subscribe",
+        "message": {
+          "contentType": "application/json",
+          "payload": {
+            "type": "object",
+            "properties": {
+              "chatId": {
+                "type": "integer",
+                "description": "Identifier of the chat room",
+                "x-parser-schema-id": "<anonymous-schema-115>"
+              }
+            },
+            "x-parser-schema-id": "<anonymous-schema-114>"
+          },
+          "x-parser-message-name": "<anonymous-message-24>"
+        }
+      },
+      "publish": {
+        "summary": "user subscribed to channel",
+        "operationId": "joinChannel",
+        "message": {
+          "contentType": "application/json",
+          "payload": {
+            "type": "object",
+            "properties": {
+              "chatId": {
+                "type": "integer",
+                "description": "Identifier of the chat room",
+                "x-parser-schema-id": "<anonymous-schema-110>"
+              },
+              "userId": {
+                "type": "integer",
+                "description": "Identifier of the user",
+                "x-parser-schema-id": "<anonymous-schema-111>"
+              },
+              "userName": {
+                "type": "string",
+                "description": "Name of the user",
+                "x-parser-schema-id": "<anonymous-schema-112>"
+              },
+              "profilePic": {
+                "type": "string",
+                "description": "Profile picture of the user",
+                "x-parser-schema-id": "<anonymous-schema-113>"
+              }
+            },
+            "x-parser-schema-id": "<anonymous-schema-109>"
+          },
+          "x-parser-message-name": "<anonymous-message-23>"
         }
       }
     }

@@ -67,3 +67,6 @@ properties:
     type: string
     format: date-time
     description: Timestamp of the message event (if different from sentAt)
+  isAnnouncement:
+    type: boolean
+    description: Is message an announcement

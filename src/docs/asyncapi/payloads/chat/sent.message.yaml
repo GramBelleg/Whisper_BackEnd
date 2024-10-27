@@ -35,6 +35,9 @@ properties:
     type: integer
     nullable: true
     description: ID of the parent message if this message is a reply
-  secret:
+  isSecret:
     type: boolean
     description: Is message in secret chat
+  isAnnouncement:
+    type: boolean
+    description: Is message an announcement
