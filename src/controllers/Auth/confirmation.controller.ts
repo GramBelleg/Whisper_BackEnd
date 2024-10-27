@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { validateEmail, validateConfirmCode } from "@validators/confirm.reset";
 
-import RedisOperation from "src/@types/redis.operation";
+import RedisOperation from "@src/@types/redis.operation";
 import { createTokenCookie, createAddToken } from "@services/auth/token.service";
 import { checkEmailNotExistDB } from "@services/auth/signup.service";
 import {

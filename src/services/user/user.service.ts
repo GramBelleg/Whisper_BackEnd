@@ -1,11 +1,10 @@
-import db from "src/prisma/PrismaClient";
+import db from "@src/prisma/PrismaClient";
 import { verifyCode } from "@services/auth/confirmation.service";
 import { validatePhone } from "@validators/user";
 import RedisOperation from "@src/@types/redis.operation";
 import { saveStory } from "@services/redis/story.service";
 import { Story } from "@prisma/client";
 import { SaveableStory } from "@models/story.models";
-
 
 const updateBio = async (id: number, bio: string): Promise<string> => {
     try {
@@ -75,7 +74,7 @@ const updatePhone = async (id: number, phoneNumber: string): Promise<string> => 
 const setStory = async (story: SaveableStory): Promise<Story> => {
     try {
         const createdStory = await db.story.create({
-            data: {...story},
+            data: { ...story },
         });
         await saveStory(createdStory);
         return createdStory;
@@ -85,7 +84,6 @@ const setStory = async (story: SaveableStory): Promise<Story> => {
 };
 
 //TODO: fix delete story
-
 
 //TODO: check the type of the return value
 const userInfo = async (email: string): Promise<any> => {
@@ -113,37 +111,46 @@ const changePic = async (id: number, name: string): Promise<string> => {
             where: { id },
             data: { profilePic: name },
         });
-        return name; 
+        return name;
     } catch (error) {
         console.error("Error updating profile picture:", error);
         throw new Error("Unable to update profile picture");
     }
-}
+};
 
 const changeUserName = async (id: number, userName: string): Promise<string> => {
     try {
-        if(!id || !userName) {
+        if (!id || !userName) {
             throw new Error("User ID and username are required");
         }
-        const createdUser =await db.user.update({
+        const createdUser = await db.user.update({
             where: { id },
             data: { userName },
         });
-        //TODO: check if the userName is the same as the previous one 
-        return userName; 
+        //TODO: check if the userName is the same as the previous one
+        return userName;
     } catch (error) {
         throw new Error("Username is already taken");
     }
 };
 
-const getUserId = async(userName: string): Promise<number | null> => {
+const getUserId = async (userName: string): Promise<number | null> => {
     const result = await db.user.findFirst({
         where: { userName },
         select: { id: true },
     });
-    if(!result)
-        return null;
+    if (!result) return null;
     return result.id;
 };
 
-export {setStory, userInfo, updateBio, updateName, updateEmail, updatePhone, changePic, changeUserName, getUserId};
+export {
+    setStory,
+    userInfo,
+    updateBio,
+    updateName,
+    updateEmail,
+    updatePhone,
+    changePic,
+    changeUserName,
+    getUserId,
+};
