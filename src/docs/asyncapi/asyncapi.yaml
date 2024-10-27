@@ -31,3 +31,5 @@ channels:
     $ref: './channels/group.yaml#/addUser'  # Reference to the group channel file, which also contains multiple channels
   kickUser:
     $ref: './channels/group.yaml#/kickUser'  # Reference to the group channel file, which also contains multiple channels
+  subscribe:
+    $ref: './channels/channel.yaml#/subscribe'  # Reference to the group channel file, which also contains multiple channels
