@@ -1,24 +1,3 @@
-createChat:
-  description: Channel for creating chat.
-
-  # Channel for sending new messages
-  publish:
-    summary: Create a chat
-    operationId: createChat
-    message:
-      contentType: application/json
-      payload:
-        $ref: '../payloads/chat/create.chat.yaml'  # Reference to the sent message payload
-
-  # Channel for receiving chat messages
-  subscribe:
-    summary: Join Chat
-    operationId: joinChat
-    message:
-      contentType: application/json
-      payload:
-        $ref: '../payloads/chat/join.chat.yaml'  # Reference to the received message payload
-
 message:
   description: Channel for messaging.
 
@@ -161,3 +140,23 @@ deleteMessage:
             messageId:
               type: integer
               description: Identifier of the message
+createChat:
+  description: Channel for creating chat.
+
+  # Channel for sending new messages
+  publish:
+    summary: Create a chat
+    operationId: createChat
+    message:
+      contentType: application/json
+      payload:
+        $ref: '../payloads/chat/create.chat.yaml'  # Reference to the sent message payload
+
+  # Channel for receiving chat messages
+  subscribe:
+    summary: Join Chat
+    operationId: joinChat
+    message:
+      contentType: application/json
+      payload:
+        $ref: '../payloads/chat/join.chat.yaml'  # Reference to the received message payload
