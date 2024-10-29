@@ -18,8 +18,10 @@ const resendConfirmCode = async (req: Request, res: Response): Promise<void> => 
         const { email } = req.body as Record<string, string>;
         validateEmail(email);
 
-        await checkEmailNotExistDB(email);
-
+        const user: User | null = await findUserByEmail(email);
+        if (user) {
+            throw new Error("Email is already found in DB");
+        }
         await checkEmailExistRedis(email);
 
         const code = await createCode(email, RedisOperation.ConfirmEmail);

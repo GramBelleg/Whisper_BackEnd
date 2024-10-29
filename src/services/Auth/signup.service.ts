@@ -6,13 +6,11 @@ import bcrypt from "bcrypt";
 import randomstring from "randomstring";
 import RedisOperation from "@src/@types/redis.operation";
 
-const checkEmailNotExistDB = async (email: string): Promise<void> => {
-    const foundUser: User | null = await db.user.findUnique({
+const findUserByEmail = async (email: string): Promise<User | null> => {
+    const user: User | null = await db.user.findUnique({
         where: { email },
     });
-    if (foundUser) {
-        throw new Error("Email is already found in DB");
-    }
+    return user;
 };
 
 async function verifyRobotToken(robotToken: string) {
@@ -62,4 +60,4 @@ const upsertUser = async (data: Record<string, any>): Promise<User> => {
     return user;
 };
 
-export { checkEmailNotExistDB, verifyRobotToken, saveUserData, upsertUser };
+export { findUserByEmail, verifyRobotToken, saveUserData, upsertUser };
