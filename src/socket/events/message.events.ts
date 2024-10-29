@@ -12,7 +12,7 @@ export const setupMessageEvents = (socket: Socket, userId: number, clients: Map<
             senderId: userId,
         });
         if (savedMessage) {
-            messageHandler.broadCast(message.chatId, clients, "receiveMessage", savedMessage);
+            messageHandler.userBroadCast(userId, message.chatId, clients, "receiveMessage", savedMessage);
         }
     });
 
