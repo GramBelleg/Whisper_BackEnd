@@ -11,4 +11,5 @@ router.route("/").get(asyncHandler(handleGetAllChats)).post(asyncHandler(handleC
 router.route("/:chatId").get(asyncHandler(handleGetAllMessages));
 router.route("/:chatId/deleteForMe").delete(asyncHandler(deleteMessagesForCurrentUser));
 
+
 export default router;
