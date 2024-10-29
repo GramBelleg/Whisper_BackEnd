@@ -23,7 +23,7 @@ model Message {
   selfDestruct     Boolean           @default(false)
   expiresAfter     Int?
   type             String
-  sentAt           DateTime          @default(now())
+  sentAt           DateTime         
   media            String[]
   parentMessageId  Int?              @unique
   sender           User              @relation(fields: [senderId], references: [id])
@@ -40,7 +40,7 @@ model MessageStatus {
   userId          Int
   read            DateTime?       
   delivered       DateTime?      
-  time            DateTime            @default(now())  
+  time            DateTime            
   deleted         Boolean             @default(false)
   lastMessageChat  ChatParticipant[]  @relation("LastMessageForChatParticipant") 
   message         Message             @relation(fields: [messageId], references: [id], onDelete: Cascade)

@@ -79,6 +79,7 @@ async function createChatMessages(chats: Array<{ chat: Chat; participants: User[
                         messageId: message.id, // Use the message ID
                         userId: participant.id, // Ensure the participant's userId is used
                         read: faker.date.recent(),
+                        time: faker.date.recent(),
                         delivered: faker.date.recent(),
                         deleted: faker.datatype.boolean(),
                     },

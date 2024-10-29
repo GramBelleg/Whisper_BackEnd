@@ -65,7 +65,7 @@ const saveMessageStatuses = async (userId: number, message: Message, participant
         data: participantIds.map((participantId) => ({
             userId: participantId,
             messageId: message.id,
-            ...(participantId === userId && { time: message.sentAt }),
+            time: (participantId === userId ? message.sentAt : Date.now().toString()),
         })),
     });
 };
