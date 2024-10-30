@@ -14,8 +14,8 @@ import DuplicateUserError from "@src/errors/DuplicateUserError";
 const isUniqueUser = async (email: string, userName: string, phoneNumber: string) => {
     const duplicate: DuplicateUserInfo = {};
     if (await findEmail(email)) duplicate.email = "Email already exists ";
-    if (await findUserName(email)) duplicate.userName = "Username already exists";
-    if (await findPhoneNumber(email)) duplicate.phoneNumber = "Phone number already exists";
+    if (await findUserName(userName)) duplicate.userName = "Username already exists";
+    if (await findPhoneNumber(phoneNumber)) duplicate.phoneNumber = "Phone number already exists";
 
     throw new DuplicateUserError("User already exists", 409, duplicate);
 };
