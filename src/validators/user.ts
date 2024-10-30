@@ -16,7 +16,7 @@ const validateSingUp = (user: Record<string, string>) => {
             .valid(Joi.ref("password"))
             .required()
             .messages({ "any.only": "Passwords don't match" }),
-        // robotToken: Joi.string().required(),
+        robotToken: Joi.string().required(),
     });
     const error: ValidationError | undefined = schema.validate(user, {
         abortEarly: false,

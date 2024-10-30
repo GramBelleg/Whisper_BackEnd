@@ -29,7 +29,7 @@ const signup = async (req: Request, res: Response): Promise<void> => {
 
     await isUniqueUser(user.email, user.userName, user.phoneNumber);
 
-    // await verifyRobotToken(req.body.robotToken);
+    await verifyRobotToken(req.body.robotToken);
 
     const code = await createCode(user, RedisOperation.ConfirmEmail);
     const emailSubject = "Email confirmation";
