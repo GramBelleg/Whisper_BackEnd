@@ -5,25 +5,32 @@ import transporter from "@config/email.config";
 import RedisOperation from "@src/@types/redis.operation";
 import { User } from "@prisma/client";
 import HttpError from "@src/errors/HttpError";
+import { UserInfo } from "@models/user.models";
 
-// Check if there is a data for this email (signup data) in redis for new account
-const getCachedUser = async (email: string) => {
-    const foundUser = await redis.hgetall(`${RedisOperation.AddNewUser}:${email}`);
-    if (Object.keys(foundUser).length === 0) {
-        throw new HttpError("Invalid Code", 410);
-    }
-    return foundUser;
+const setExpiration = async (operation: RedisOperation, key: string) => {
+    await redis.expire(`${operation}:${key}`, 600); // expire in 10 minutes
+};
+const cacheData = async (operation: RedisOperation, key: string, data: any) => {
+    await redis.hmset(`${operation}:${key}`, data);
+};
+const getExpiration = async (operation: RedisOperation, key: string) => {
+    const ttl = await redis.ttl(`${operation}:${key}`);
+    return ttl;
+};
+const getCachedData = async (operation: RedisOperation, key: string) => {
+    const data = await redis.hgetall(`${operation}:${key}`);
+    return data;
 };
 
-async function createCode(email: string, operation: RedisOperation) {
+const createCode = async (user: UserInfo, operation: RedisOperation) => {
     const firstCode: string = Randomstring.generate(8);
     const code = firstCode.replace(/[Il]/g, "s");
     const expireAt = new Date(Date.now() + 300000).toString(); // after 5 minutes
 
-    await redis.hmset(`${operation}:${code}`, { email, expireAt });
-    await redis.expire(`${operation}:${code}`, 600); // expire in 10 minutes
+    await cacheData(operation, code, { ...user, expireAt });
+    await setExpiration(operation, code);
     return code;
-}
+};
 
 async function sendCode(email: string, emailSubject: string, emailBody: string) {
     const info = await transporter.sendMail({
@@ -38,34 +45,31 @@ async function sendCode(email: string, emailSubject: string, emailBody: string) 
 }
 
 const verifyCode = async (email: string, code: string, operation: RedisOperation) => {
-    // check if the code exists and is related to this email and not expired
-    const foundEmail = await redis.hgetall(`${operation}:${code}`);
-    if (Object.keys(foundEmail).length === 0 || foundEmail.email !== email) {
+    const userExpiration = await getCachedData(operation, code);
+    if (Object.keys(userExpiration).length === 0 || userExpiration.email !== email) {
         throw new Error("Invalid code");
     }
-    if (new Date() > new Date(foundEmail.expireAt)) {
+    if (new Date() > new Date(userExpiration.expireAt)) {
         throw new Error("Expired code");
     }
+    const { expireAt, ...user } = userExpiration;
+    return user as UserInfo;
 };
 
-const addUser = async (email: string) => {
-    const foundUser = await getCachedUser(email);
-    const userData = {
-        name: foundUser.name,
-        userName: foundUser.userName,
-        email: foundUser.email,
-        phoneNumber: foundUser.phoneNumber,
-        password: foundUser.password,
-    };
+const addUser = async (cachedUser: UserInfo) => {
     const user: User = await db.user.create({
-        data: { ...userData },
+        data: { ...cachedUser },
     });
     return user;
 };
 
-const getTimeToLive = async (email: string) => {
-    const ttl = await redis.ttl(`${RedisOperation.AddNewUser}:${email}`);
-    return ttl;
+export {
+    createCode,
+    sendCode,
+    verifyCode,
+    addUser,
+    cacheData,
+    setExpiration,
+    getCachedData,
+    getExpiration,
 };
-
-export { getCachedUser, createCode, sendCode, verifyCode, addUser, getTimeToLive };

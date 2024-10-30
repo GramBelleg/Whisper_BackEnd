@@ -1,5 +1,4 @@
 import express, { Express } from "express";
-import asyncHandler from "express-async-handler";
 import dotenv from "dotenv";
 import http from "http";
 import cors from "cors";
@@ -14,8 +13,7 @@ import { initWebSocketServer } from "@socket/web.socket";
 import { redisSubscribe } from "@src/redis/redis.sub.handlers";
 import { deleteExpiredTokens } from "@services/auth/token.service";
 
-dotenv.config();
-
+dotenv.config({ path: `../.env.${process.env.NODE_ENV}` });
 const app: Express = express();
 const server = http.createServer(app);
 

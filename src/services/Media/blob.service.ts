@@ -5,16 +5,11 @@ import {
     StorageSharedKeyCredential,
 } from "@azure/storage-blob";
 import { Readable } from "stream";
-import dotenv from "dotenv";
-
-// // Load environment variables from .env file
-dotenv.config();
 
 const BLOB_URL = process.env.BLOB_URL;
 const CONTAINER_NAME = process.env.CONTAINER_NAME;
 const ACCOUNT_NAME = process.env.ACCOUNT_NAME;
 const ACCOUNT_KEY = process.env.ACCOUNT_KEY;
-
 if (!BLOB_URL) {
     throw new Error("Azure Storage connection string is missing.");
 }

@@ -3,28 +3,18 @@ import { validateEmail, validateConfirmCode } from "@validators/confirm.reset";
 
 import RedisOperation from "@src/@types/redis.operation";
 import { createTokenCookie, createAddToken } from "@services/auth/token.service";
-import { isUniqueUser } from "@services/auth/signup.service";
-import {
-    addUser,
-    createCode,
-    getCachedUser,
-    sendCode,
-    verifyCode,
-} from "@services/auth/confirmation.service";
-import phone from "phone";
+import { addUser, createCode, sendCode, verifyCode } from "@services/auth/confirmation.service";
+import { UserInfo } from "@models/user.models";
 
 const resendConfirmCode = async (req: Request, res: Response): Promise<void> => {
-    let { email } = req.body as Record<string, string>;
-    email = email?.trim().toLowerCase();
-    validateEmail(email);
+    const user = req.body;
+    user.email = user.email?.trim().toLowerCase();
+    validateEmail(user.email);
 
-    const cachedUser = await getCachedUser(email);
-    await isUniqueUser(email, cachedUser.userName, cachedUser.phoneNumber);
-
-    const code = await createCode(email, RedisOperation.ConfirmEmail);
+    const code = await createCode(user, RedisOperation.ConfirmEmail);
     const emailSubject = "Email confirmation";
     const emailBody = `<h3>Hello, </h3> <p>Thanks for joining our family. Use this code: <b>${code}</b> for verifing your email</p>`;
-    await sendCode(email, emailSubject, emailBody);
+    await sendCode(user.email, emailSubject, emailBody);
 
     res.status(200).json({
         status: "success",
@@ -38,12 +28,9 @@ const confirmEmail = async (req: Request, res: Response): Promise<void> => {
 
     validateConfirmCode(email, code);
 
-    const cachedUser = await getCachedUser(email);
-    await isUniqueUser(email, cachedUser.userName, cachedUser.phoneNumber);
+    const cachedUser: UserInfo = await verifyCode(email, code, RedisOperation.ConfirmEmail);
 
-    await verifyCode(email, code, RedisOperation.ConfirmEmail);
-
-    const user = await addUser(email);
+    const user = await addUser(cachedUser);
 
     const userToken: string = await createAddToken(user.id);
     createTokenCookie(res, userToken);

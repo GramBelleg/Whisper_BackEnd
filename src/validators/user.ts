@@ -3,7 +3,7 @@ import Joi, { ObjectSchema } from "joi";
 import { ValidationError } from "joi";
 import { phone } from "phone";
 
-const validateSingUp = (requestBody: Record<string, string>) => {
+const validateSingUp = (user: Record<string, string>) => {
     const schema: ObjectSchema = Joi.object({
         name: Joi.string().min(6).max(50).required(),
         userName: Joi.string().min(6).max(50).required(),
@@ -18,22 +18,21 @@ const validateSingUp = (requestBody: Record<string, string>) => {
             .messages({ "any.only": "Passwords don't match" }),
         // robotToken: Joi.string().required(),
     });
-    const error: ValidationError | undefined = schema.validate(requestBody, {
+    const error: ValidationError | undefined = schema.validate(user, {
         abortEarly: false,
     }).error;
     if (error) {
         throw new HttpError(error.details[0].message, 422);
     }
     // get country of phoneNumber and check structure and format of phoneNumber
-    const { countryIso3 } = phone(requestBody.phoneNumber);
+    const { countryIso3 } = phone(user.phoneNumber);
     if (!countryIso3) {
         throw new HttpError("Phone number structure is not valid", 422);
     }
-    const phoneValidate = phone(requestBody.phoneNumber, { country: countryIso3 });
+    const phoneValidate = phone(user.phoneNumber, { country: countryIso3 });
     if (!phoneValidate.isValid) {
         throw new HttpError("Phone number structure is not valid", 422);
     }
-    return phoneValidate.phoneNumber;
 };
 
 const validatePhone = (requestBody: Record<string, string>) => {

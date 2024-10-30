@@ -5,6 +5,7 @@ import RedisOperation from "@src/@types/redis.operation";
 import { saveStory } from "@services/redis/story.service";
 import { Story } from "@prisma/client";
 import { SaveableStory } from "@models/story.models";
+import redis from "@src/redis/redis.client";
 
 const updateBio = async (id: number, bio: string): Promise<string> => {
     try {
@@ -143,6 +144,15 @@ const getUserId = async (userName: string): Promise<number | null> => {
     return result.id;
 };
 
+const createCode = async (email: string, operation: RedisOperation) => {
+    const firstCode: string = Randomstring.generate(8);
+    const code = firstCode.replace(/[Il]/g, "s");
+    const expireAt = new Date(Date.now() + 300000).toString(); // after 5 minutes
+
+    await redis.hmset(`${operation}:${code}`, { email, expireAt });
+    await redis.expire(`${operation}:${code}`, 600); // expire in 10 minutes
+    return code;
+};
 export {
     setStory,
     userInfo,
@@ -153,4 +163,5 @@ export {
     changePic,
     changeUserName,
     getUserId,
+    createCode,
 };
