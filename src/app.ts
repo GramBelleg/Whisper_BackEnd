@@ -13,7 +13,8 @@ import { initWebSocketServer } from "@socket/web.socket";
 import { redisSubscribe } from "@src/redis/redis.sub.handlers";
 import { deleteExpiredTokens } from "@services/auth/token.service";
 
-dotenv.config({ path: `../.env.${process.env.NODE_ENV}` });
+dotenv.config();
+
 const app: Express = express();
 const server = http.createServer(app);
 

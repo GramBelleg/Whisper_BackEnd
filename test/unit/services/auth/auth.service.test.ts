@@ -1,12 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { cacheData, getCachedData } from "@services/auth/confirmation.service";
-import redis from "@src/redis/redis.client"; // Import the redis client
+import redis from "@src/redis/redis.client";
 import RedisOperation from "@src/@types/redis.operation";
-import dotenv from "dotenv";
-
-dotenv.config({
-    path: `../../../../.env.${process.env.NODE_ENV}`,
-});
 
 describe("cacheData and getCachedData functions", () => {
     afterAll(async () => {
