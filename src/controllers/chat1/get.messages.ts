@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { getMessages } from "@services/chat/message.service";
+import { getMessages } from "@services/chat1/message.service";
 import { buildReceivedMessage } from "./format.message";
-import { getLastMessage } from "@services/chat/chat.service";
+import { getLastMessage } from "@services/chat1/chat.service";
 
 export const handleGetAllMessages = async (req: Request, res: Response) => {
     const userId = req.userId;
@@ -22,4 +22,4 @@ export const handleGetLastMessage = async (req: Request, res: Response) => {
     const chatId = parseInt(req.params.chatId, 10);
     const lastMessage = await getLastMessage(userId, chatId);
     res.status(200).json(lastMessage);
-}
+};

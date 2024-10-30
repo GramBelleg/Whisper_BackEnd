@@ -1,6 +1,6 @@
 import { Socket } from "socket.io";
 import * as storyTypes from "@models/story.models";
-import * as storyController from "@controllers/user/story.controller";
+import * as storyController from "@controllers/user1/story.controller";
 import * as storyHandler from "@socket/handlers/story.handlers";
 
 export const setupStoryEvents = (socket: Socket, userId: number, clients: Map<number, Socket>) => {

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { getAccessToken, getUserData } from "@services/auth/facebook.auth.service"; // You'll need to create this service
-import { upsertUser } from "@services/auth/signup.service";
-import { createTokenCookie, createAddToken } from "@services/auth/token.service";
+import { getAccessToken, getUserData } from "@services/auth1/facebook.auth.service"; // You'll need to create this service
+import { upsertUser } from "@services/auth1/signup.service";
+import { createTokenCookie, createAddToken } from "@services/auth1/token.service";
 import { User } from "@prisma/client";
 
 async function facebookAuth(req: Request, res: Response): Promise<void> {

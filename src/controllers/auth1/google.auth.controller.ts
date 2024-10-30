@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { getAccessToken, getUserData } from "@services/auth/google.auth.service";
-import { upsertUser } from "@services/auth/signup.service";
-import { createTokenCookie, createAddToken } from "@services/auth/token.service";
+import { getAccessToken, getUserData } from "@services/auth1/google.auth.service";
+import { upsertUser } from "@services/auth1/signup.service";
+import { createTokenCookie, createAddToken } from "@services/auth1/token.service";
 import { User } from "@prisma/client";
 
 async function googleAuth(req: Request, res: Response): Promise<void> {

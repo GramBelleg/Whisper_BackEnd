@@ -1,9 +1,9 @@
 import { Router } from "express";
 import asyncHandler from "express-async-handler";
-import { handleGetAllChats } from "@controllers/chat/get.chats";
-import { handleCreateChat } from "@controllers/chat/create.chat";
-import { deleteMessagesForCurrentUser } from "@controllers/chat/delete.message";
-import { handleGetAllMessages, handleGetLastMessage } from "@controllers/chat/get.messages";
+import { handleGetAllChats } from "@controllers/chat1/get.chats";
+import { handleCreateChat } from "@controllers/chat1/create.chat";
+import { deleteMessagesForCurrentUser } from "@controllers/chat1/delete.message";
+import { handleGetAllMessages, handleGetLastMessage } from "@controllers/chat1/get.messages";
 
 const router: Router = Router();
 

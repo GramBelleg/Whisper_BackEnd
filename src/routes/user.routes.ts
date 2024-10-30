@@ -1,11 +1,10 @@
 import { Router, Request, Response } from "express";
-import * as userController from "@controllers/user/user.controller";
-import { logoutAll, logoutOne } from "@controllers/auth/logout.controller";
+import * as userController from "@controllers/user1/user.controller";
+import { logoutAll, logoutOne } from "@controllers/auth1/logout.controller";
 const router: Router = Router();
 
-
 router.get("/", (req, res) => {
-    res.status(200).json({ status: 'success' });
+    res.status(200).json({ status: "success" });
 });
 
 //router.put("/user", userController.updateUser);

@@ -1,6 +1,6 @@
 import { Request } from "express";
 import jwt, { TokenExpiredError } from "jsonwebtoken";
-import { checkUserTokenExist, deleteUserToken } from "./auth/token.service";
+import { checkUserTokenExist, deleteUserToken } from "./auth1/token.service";
 
 function getToken(req: Request) {
     let token: string;

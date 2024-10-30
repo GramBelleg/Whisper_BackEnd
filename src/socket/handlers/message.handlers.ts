@@ -1,7 +1,7 @@
 import { Socket } from "socket.io";
-import { getChatId } from "@services/chat/chat.service";
-import { deleteMessagesForAllUsers } from "@controllers/chat/delete.message";
-import { getChatParticipantsIds } from "@services/chat/chat.service";
+import { getChatId } from "@services/chat1/chat.service";
+import { deleteMessagesForAllUsers } from "@controllers/chat1/delete.message";
+import { getChatParticipantsIds } from "@services/chat1/chat.service";
 
 export const broadCast = async (
     chatId: number,
