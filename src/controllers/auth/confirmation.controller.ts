@@ -2,15 +2,15 @@ import { Request, Response } from "express";
 import { validateEmail, validateConfirmCode } from "@validators/confirm.reset";
 
 import RedisOperation from "@src/@types/redis.operation";
-import { createTokenCookie, createAddToken } from "@services/auth1/token.service";
-import { checkEmailNotExistDB } from "@services/auth1/signup.service";
+import { createTokenCookie, createAddToken } from "@services/auth/token.service";
+import { checkEmailNotExistDB } from "@services/auth/signup.service";
 import {
     addUser,
     checkEmailExistRedis,
     createCode,
     sendCode,
     verifyCode,
-} from "@services/auth1/confirmation.service";
+} from "@services/auth/confirmation.service";
 
 const resendConfirmCode = async (req: Request, res: Response): Promise<void> => {
     try {

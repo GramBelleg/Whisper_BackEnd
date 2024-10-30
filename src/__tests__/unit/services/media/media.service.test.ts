@@ -1,5 +1,5 @@
 // src/__tests__/unit/services/media.service.test.ts
-import { uploadBlob, deleteBlob, retrieveBlob } from "@services/media1/blob.service";
+import { uploadBlob, deleteBlob, retrieveBlob } from "@services/media/blob.service";
 import { Readable } from "stream";
 import dotenv from "dotenv";
 

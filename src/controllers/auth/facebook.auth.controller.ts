@@ -1,23 +1,24 @@
 import { Request, Response } from "express";
-import { getAccessToken, getUserData } from "@services/auth1/github.auth.service";
-import { upsertUser } from "@services/auth1/signup.service";
-import { createTokenCookie, createAddToken } from "@services/auth1/token.service";
+import { getAccessToken, getUserData } from "@services/auth/facebook.auth.service"; // You'll need to create this service
+import { upsertUser } from "@services/auth/signup.service";
+import { createTokenCookie, createAddToken } from "@services/auth/token.service";
 import { User } from "@prisma/client";
 
-async function githubAuth(req: Request, res: Response): Promise<void> {
+async function facebookAuth(req: Request, res: Response): Promise<void> {
     try {
-        const authCode: string = req.body.code;
-        if (!authCode) {
-            throw new Error("There is no Authorization Code");
+        const { code } = req.body;
+
+        if (!code) {
+            throw new Error("Authorization code is missing");
         }
 
-        const accessToken = await getAccessToken(authCode);
+        const accessToken = await getAccessToken(code);
 
         const userData: Record<string, any> | undefined = await getUserData(accessToken);
         if (!userData) {
-            throw new Error("No User Data retrieved");
+            throw new Error("Invalid Access Token");
         }
-
+        console.log(userData);
         const user: User = await upsertUser(userData);
 
         const userToken = await createAddToken(user.id);
@@ -34,7 +35,7 @@ async function githubAuth(req: Request, res: Response): Promise<void> {
             userToken,
         });
     } catch (err: any) {
-        console.log(err.message);
+        console.log(err);
         res.status(400).json({
             status: "failed",
             message: err.message,
@@ -42,4 +43,4 @@ async function githubAuth(req: Request, res: Response): Promise<void> {
     }
 }
 
-export { githubAuth };
+export { facebookAuth };

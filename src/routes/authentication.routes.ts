@@ -1,11 +1,11 @@
 import { Router } from "express";
-import login from "@controllers/auth1/login.controller";
-import signup from "@controllers/auth1/signup.controller";
-import { resendConfirmCode, confirmEmail } from "@controllers/auth1/confirmation.controller";
-import googleAuth from "@controllers/auth1/google.auth.controller";
-import { githubAuth } from "@controllers/auth1/github.auth.controller";
-import { facebookAuth } from "@controllers/auth1/facebook.auth.controller";
-import { resetPassword, sendResetCode } from "@controllers/auth1/reset.password.controller";
+import login from "@controllers/auth/login.controller";
+import signup from "@controllers/auth/signup.controller";
+import { resendConfirmCode, confirmEmail } from "@controllers/auth/confirmation.controller";
+import googleAuth from "@controllers/auth/google.auth.controller";
+import { githubAuth } from "@controllers/auth/github.auth.controller";
+import { facebookAuth } from "@controllers/auth/facebook.auth.controller";
+import { resetPassword, sendResetCode } from "@controllers/auth/reset.password.controller";
 
 const router: Router = Router();
 

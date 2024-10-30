@@ -1,4 +1,4 @@
-import { editMessage, pinMessage, unpinMessage } from "@services/chat1/message.service";
+import { editMessage, pinMessage, unpinMessage } from "@services/chat/message.service";
 
 export const handleEditContent = async (messageId: number, content: string) => {
     try {

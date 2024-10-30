@@ -1,8 +1,8 @@
 import { Socket } from "socket.io";
 import * as types from "@models/chat.models";
-import * as sendController from "@controllers/chat1/send.message";
-import * as editController from "@controllers/chat1/edit.message";
-import * as deleteController from "@controllers/chat1/delete.message";
+import * as sendController from "@controllers/chat/send.message";
+import * as editController from "@controllers/chat/edit.message";
+import * as deleteController from "@controllers/chat/delete.message";
 import * as messageHandler from "@socket/handlers/message.handlers";
 
 export const setupMessageEvents = (

@@ -1,6 +1,6 @@
 import { Message } from "@prisma/client";
 import { ReceivedMessage } from "@models/chat.models";
-import { getMessageStatus, getMessageSummary } from "@services/chat1/message.service";
+import { getMessageStatus, getMessageSummary } from "@services/chat/message.service";
 
 export const buildReceivedMessage = async (
     userId: number,

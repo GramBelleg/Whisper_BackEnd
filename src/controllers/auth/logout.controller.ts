@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { clearTokenCookie } from "@services/auth1/token.service";
-import { deleteUserToken, deleteAllUserTokens } from "@services/auth1/token.service";
+import { clearTokenCookie } from "@services/auth/token.service";
+import { deleteUserToken, deleteAllUserTokens } from "@services/auth/token.service";
 import { getToken } from "@services/auth.service";
 
 async function logoutOne(req: Request, res: Response): Promise<void> {

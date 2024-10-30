@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
-import { saveUserData } from "@services/auth1/signup.service"; // Import the function to test
-import { checkEmailExistRedis, getTimeToLive } from "@services/auth1/confirmation.service";
+import { saveUserData } from "@services/auth/signup.service"; // Import the function to test
+import { checkEmailExistRedis, getTimeToLive } from "@services/auth/confirmation.service";
 import dotenv from "dotenv";
 import redis from "@src/redis/redis.client"; // Import the redis client
 

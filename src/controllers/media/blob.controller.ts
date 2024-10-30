@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getPresignedUrl } from "@services/media1/blob.service";
+import { getPresignedUrl } from "@services/media/blob.service";
 
 const writeBlob = async (req: Request, res: Response) => {
     try {

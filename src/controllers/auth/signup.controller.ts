@@ -4,8 +4,8 @@ import {
     checkEmailNotExistDB,
     saveUserData,
     verifyRobotToken,
-} from "@services/auth1/signup.service";
-import { createCode, sendCode } from "@services/auth1/confirmation.service";
+} from "@services/auth/signup.service";
+import { createCode, sendCode } from "@services/auth/confirmation.service";
 import RedisOperation from "@src/@types/redis.operation";
 
 const signup = async (req: Request, res: Response): Promise<void> => {

@@ -2,7 +2,7 @@ import { Socket } from "socket.io";
 import { getStoryParticipant } from "@services/story.service";
 import redisClient from "@src/redis/redis.client";
 import { SaveableStory } from "@models/story.models";
-import * as userServices from "@services/user1/user.service";
+import * as userServices from "@services/user/user.service";
 
 export const broadCast = async (
     userId: number,

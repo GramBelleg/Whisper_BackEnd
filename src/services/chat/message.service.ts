@@ -1,6 +1,6 @@
 import db from "@DB";
 import { Message } from "@prisma/client";
-import { getChatParticipantsIds } from "@services/chat1/chat.service";
+import { getChatParticipantsIds } from "@services/chat/chat.service";
 import { SentMessage } from "@models/chat.models";
 
 //will be used with a web socket on(read) or on(delivered) for the status info view of the message

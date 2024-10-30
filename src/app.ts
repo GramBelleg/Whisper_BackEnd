@@ -12,7 +12,7 @@ import cron from "node-cron";
 import errorHandler from "@middlewares/error.handler";
 import { initWebSocketServer } from "@socket/web.socket";
 import { redisSubscribe } from "@src/redis/redis.sub.handlers";
-import { deleteExpiredTokens } from "@services/auth1/token.service";
+import { deleteExpiredTokens } from "@services/auth/token.service";
 
 dotenv.config();
 

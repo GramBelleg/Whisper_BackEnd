@@ -1,11 +1,11 @@
 import { User } from "@prisma/client";
 import { Request, Response } from "express";
-import * as userServices from "@services/user1/user.service";
+import * as userServices from "@services/user/user.service";
 import { validateEmail } from "@validators/confirm.reset";
-import { createCode, sendCode } from "@services/auth1/confirmation.service";
-import { checkEmailNotExistDB } from "@services/auth1/signup.service";
+import { createCode, sendCode } from "@services/auth/confirmation.service";
+import { checkEmailNotExistDB } from "@services/auth/signup.service";
 import RedisOperation from "@src/@types/redis.operation";
-import { getPresignedUrl } from "@services/media1/blob.service";
+import { getPresignedUrl } from "@services/media/blob.service";
 
 const updateBio = async (req: Request, res: Response) => {
     try {
