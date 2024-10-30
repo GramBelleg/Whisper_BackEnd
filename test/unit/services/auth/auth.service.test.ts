@@ -3,11 +3,11 @@ import { cacheData, getCachedData } from "@services/auth/confirmation.service";
 import redis from "@src/redis/redis.client"; // Import the redis client
 import RedisOperation from "@src/@types/redis.operation";
 import dotenv from "dotenv";
+
 dotenv.config({
     path: `../../../../.env.${process.env.NODE_ENV}`,
 });
-console.log(process.env.REDIS_HOST);
-console.log(process.env.REDIS_PORT);
+
 describe("cacheData and getCachedData functions", () => {
     afterAll(async () => {
         await redis.quit();
