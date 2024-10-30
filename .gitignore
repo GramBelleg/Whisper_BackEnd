@@ -6,3 +6,4 @@ frontend/
 Dockerfile
 .dockerignore
 docker-compose.yml
+migrations

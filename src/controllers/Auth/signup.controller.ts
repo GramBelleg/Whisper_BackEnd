@@ -1,46 +1,35 @@
 import { Request, Response } from "express";
 import { validateSingUp } from "@validators/user";
-import {
-    checkEmailNotExistDB,
-    saveUserData,
-    verifyRobotToken,
-} from "@services/auth/signup.service";
+import { isUniqueUser, cacheUser, verifyRobotToken } from "@services/auth/signup.service";
 import { createCode, sendCode } from "@services/auth/confirmation.service";
 import RedisOperation from "@src/@types/redis.operation";
 
 const signup = async (req: Request, res: Response): Promise<void> => {
-    try {
-        req.body.email = req.body.email?.trim().toLowerCase();
-        req.body.name = req.body.name?.trim().toLowerCase();
-        req.body.userName = req.body.userName?.trim().toLowerCase();
-        const { name, userName, email, password }: Record<string, string> = req.body;
-        const phoneNumber = validateSingUp(req.body);
+    let { name, userName, email, password }: Record<string, string> = req.body;
+    email = email?.trim().toLowerCase();
+    userName = userName?.trim().toLowerCase();
 
-        await checkEmailNotExistDB(email);
+    const phoneNumber = validateSingUp(req.body);
 
-        await verifyRobotToken(req.body.robotToken);
+    //first need to check that user isn't in redis either
+    await isUniqueUser(email, userName, phoneNumber);
 
-        const code = await createCode(email, RedisOperation.ConfirmEmail);
-        const emailSubject = "Email confirmation";
-        const emailBody = `<h3>Hello, </h3> <p>Thanks for joining our family. Use this code: <b>${code}</b> for verifing your email</p>`;
-        await sendCode(email, emailSubject, emailBody);
+    // await verifyRobotToken(req.body.robotToken);
 
-        await saveUserData(name, userName, email, phoneNumber, password);
+    const code = await createCode(email, RedisOperation.ConfirmEmail);
+    const emailSubject = "Email confirmation";
+    const emailBody = `<h3>Hello, </h3> <p>Thanks for joining our family. Use this code: <b>${code}</b> for verifing your email</p>`;
+    await sendCode(email, emailSubject, emailBody);
 
-        res.status(200).json({
-            status: "success",
-            userData: {
-                name,
-                email,
-            },
-        });
-    } catch (e: any) {
-        console.log(e.message);
-        res.status(400).json({
-            status: "failed",
-            message: e.message,
-        });
-    }
+    await cacheUser(name, userName, email, phoneNumber, password);
+
+    res.status(200).json({
+        status: "success",
+        userData: {
+            name,
+            email,
+        },
+    });
 };
 
 export default signup;

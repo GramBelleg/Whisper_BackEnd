@@ -5,12 +5,26 @@ import redis from "@src/redis/redis.client";
 import bcrypt from "bcrypt";
 import randomstring from "randomstring";
 import RedisOperation from "@src/@types/redis.operation";
+import HttpError from "@src/errors/HttpError";
+import DuplicateUserError from "@src/errors/DuplicateUserError";
+import { UserInfo } from "@models/user.models";
 
-const findUserByEmail = async (email: string): Promise<User | null> => {
-    const user: User | null = await db.user.findUnique({
-        where: { email },
+const isUniqueUser = async (email: string, userName: string, phoneNumber: string) => {
+    const existingUser = await db.user.findFirst({
+        where: {
+            OR: [{ email }, { userName }, { phoneNumber }],
+        },
     });
-    return user;
+
+    if (existingUser) {
+        const duplicate: UserInfo = {};
+        if (existingUser.email === email) duplicate.email = "Email already exists ";
+        if (existingUser.userName === userName) duplicate.userName = "Username already exists";
+        if (existingUser.phoneNumber === phoneNumber)
+            duplicate.phoneNumber = "Phone number already exists";
+
+        throw new DuplicateUserError("User already exists", 409, duplicate);
+    }
 };
 
 async function verifyRobotToken(robotToken: string) {
@@ -21,7 +35,7 @@ async function verifyRobotToken(robotToken: string) {
     }
 }
 
-const saveUserData = async (
+const cacheUser = async (
     name: string,
     userName: string,
     email: string,
@@ -60,4 +74,4 @@ const upsertUser = async (data: Record<string, any>): Promise<User> => {
     return user;
 };
 
-export { findUserByEmail, verifyRobotToken, saveUserData, upsertUser };
+export { isUniqueUser, verifyRobotToken, cacheUser, upsertUser };

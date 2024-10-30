@@ -2,8 +2,8 @@ import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import * as userServices from "@services/user/user.service";
 import { validateEmail } from "@validators/confirm.reset";
-import { createCode, sendCode } from "@services/auth/confirmation.service";
-import { checkEmailNotExistDB } from "@services/auth/signup.service";
+import { createCode, getCachedUser, sendCode } from "@services/auth/confirmation.service";
+import { isUniqueUser } from "@services/auth/signup.service";
 import RedisOperation from "@src/@types/redis.operation";
 import { getPresignedUrl } from "@services/media/blob.service";
 
@@ -58,12 +58,15 @@ const updateEmail = async (req: Request, res: Response) => {
     }
 };
 const emailCode = async (req: Request, res: Response): Promise<void> => {
+    //What's the purpose of this?
     try {
         const { email } = req.body as Record<string, string>;
         validateEmail(email);
 
         //in DB
-        await checkEmailNotExistDB(email);
+        const cachedUser = await getCachedUser(email);
+        await isUniqueUser(email, cachedUser.userName, cachedUser.phoneNumber);
+
         const code = await createCode(email, RedisOperation.ConfirmEmail);
         const emailBody = `<h3>Hello, </h3> <p>Thanks for joining our family. Use this code: <b>${code}</b> for verifing your email</p>`;
         await sendCode(email, "confirmation code", emailBody);

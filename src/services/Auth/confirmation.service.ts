@@ -4,12 +4,13 @@ import Randomstring from "randomstring";
 import transporter from "@config/email.config";
 import RedisOperation from "@src/@types/redis.operation";
 import { User } from "@prisma/client";
+import HttpError from "@src/errors/HttpError";
 
 // Check if there is a data for this email (signup data) in redis for new account
-const checkEmailExistRedis = async (email: string) => {
+const getCachedUser = async (email: string) => {
     const foundUser = await redis.hgetall(`${RedisOperation.AddNewUser}:${email}`);
     if (Object.keys(foundUser).length === 0) {
-        throw new Error("Email is not found in redis");
+        throw new HttpError("Invalid Code", 410);
     }
     return foundUser;
 };
@@ -32,7 +33,7 @@ async function sendCode(email: string, emailSubject: string, emailBody: string) 
         html: emailBody,
     });
     if (!info) {
-        throw new Error("Error in sending email");
+        throw new HttpError("Failed to send code to email");
     }
 }
 
@@ -48,16 +49,13 @@ const verifyCode = async (email: string, code: string, operation: RedisOperation
 };
 
 const addUser = async (email: string) => {
-    const foundData = await redis.hgetall(`${RedisOperation.AddNewUser}:${email}`);
-    if (Object.keys(foundData).length === 0) {
-        throw new Error("User's data is not found in redis");
-    }
+    const foundUser = await getCachedUser(email);
     const userData = {
-        name: foundData.name,
-        userName: foundData.userName,
-        email: foundData.email,
-        phoneNumber: foundData.phoneNumber,
-        password: foundData.password,
+        name: foundUser.name,
+        userName: foundUser.userName,
+        email: foundUser.email,
+        phoneNumber: foundUser.phoneNumber,
+        password: foundUser.password,
     };
     const user: User = await db.user.create({
         data: { ...userData },
@@ -70,4 +68,4 @@ const getTimeToLive = async (email: string) => {
     return ttl;
 };
 
-export { checkEmailExistRedis, createCode, sendCode, verifyCode, addUser, getTimeToLive };
+export { getCachedUser, createCode, sendCode, verifyCode, addUser, getTimeToLive };
