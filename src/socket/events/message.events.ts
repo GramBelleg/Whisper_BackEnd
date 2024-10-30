@@ -5,7 +5,11 @@ import * as editController from "@controllers/chat/edit.message";
 import * as deleteController from "@controllers/chat/delete.message";
 import * as messageHandler from "@socket/handlers/message.handlers";
 
-export const setupMessageEvents = (socket: Socket, userId: number, clients: Map<number, Socket>) => {
+export const setupMessageEvents = (
+    socket: Socket,
+    userId: number,
+    clients: Map<number, Socket>
+) => {
     socket.on("sendMessage", async (message: types.OmitSender<types.SentMessage>) => {
         const savedMessage = await sendController.handleSend(userId, {
             ...message,

@@ -22,4 +22,4 @@ export const handleGetLastMessage = async (req: Request, res: Response) => {
     const chatId = parseInt(req.params.chatId, 10);
     const lastMessage = await getLastMessage(userId, chatId);
     res.status(200).json(lastMessage);
-}
+};
