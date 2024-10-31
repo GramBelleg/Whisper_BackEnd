@@ -32,7 +32,7 @@ services:
         image: certbot/certbot:latest
         command: certonly --webroot --webroot-path=/usr/share/nginx/html/letsencrypt --email grambell.whisper@gmail.com --agree-tos --no-eff-email -d whisperApis.mywire.org
         volumes:
-            - './certbot/conf:/etc/nginx/ssl'
+            - './certbot/conf:/etc/letsencrypt'
             - './certbot/data:/usr/share/nginx/html/letsencrypt'
 
     redis:
