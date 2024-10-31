@@ -1,4 +1,5 @@
 import { Socket } from "socket.io";
+import { socketWrapper } from "@socket/handlers/error.handler";
 import * as types from "@models/chat.models";
 import * as sendController from "@controllers/chat/send.message";
 import * as editController from "@controllers/chat/edit.message";
@@ -10,39 +11,63 @@ export const setupMessageEvents = (
     userId: number,
     clients: Map<number, Socket>
 ) => {
-    socket.on("sendMessage", async (message: types.OmitSender<types.SentMessage>) => {
-        const savedMessage = await sendController.handleSend(userId, {
-            ...message,
-            senderId: userId,
-        });
-        if (savedMessage) {
-            messageHandler.userBroadCast(userId, message.chatId, clients, "receiveMessage", savedMessage);
-        }
-    });
+    socket.on(
+        "sendMessage",
+        socketWrapper(async (message: types.OmitSender<types.SentMessage>) => {
+            const savedMessage = await sendController.handleSend(userId, {
+                ...message,
+                senderId: userId,
+            });
+            if (savedMessage) {
+                await messageHandler.userBroadCast(
+                    userId,
+                    message.chatId,
+                    clients,
+                    "receiveMessage",
+                    savedMessage
+                );
+            }
+        })
+    );
 
-    socket.on("editMessage", async (message: types.OmitSender<types.EditableMessage>) => {
-        const editedMessage = await editController.handleEditContent(message.id, message.content);
-        if (editedMessage) {
-            messageHandler.broadCast(message.chatId, clients, "editMessage", editedMessage);
-        }
-    });
+    socket.on(
+        "editMessage",
+        socketWrapper(async (message: types.OmitSender<types.EditableMessage>) => {
+            const editedMessage = await editController.handleEditContent(
+                message.id,
+                message.content
+            );
+            if (editedMessage) {
+                await messageHandler.broadCast(message.chatId, clients, "editMessage", editedMessage);
+            }
+        })
+    );
 
-    socket.on("pinMessage", async (message: types.MessageReference) => {
-        const pinnedMessage = await editController.handlePinMessage(message.id);
-        if (pinnedMessage) {
-            messageHandler.broadCast(message.chatId, clients, "pinMessage", pinnedMessage);
-        }
-    });
+    socket.on(
+        "pinMessage",
+        socketWrapper(async (message: types.MessageReference) => {
+            const pinnedMessage = await editController.handlePinMessage(message.id);
+            if (pinnedMessage) {
+                await messageHandler.broadCast(message.chatId, clients, "pinMessage", pinnedMessage);
+            }
+        })
+    );
 
-    socket.on("unpinMessage", async (message: types.MessageReference) => {
-        const unpinnedMessage = await editController.handleUnpinMessage(message.id);
-        if (unpinnedMessage) {
-            messageHandler.broadCast(message.chatId, clients, "unpinMessage", unpinnedMessage);
-        }
-    });
+    socket.on(
+        "unpinMessage",
+        socketWrapper(async (message: types.MessageReference) => {
+            const unpinnedMessage = await editController.handleUnpinMessage(message.id);
+            if (unpinnedMessage) {
+                await messageHandler.broadCast(message.chatId, clients, "unpinMessage", unpinnedMessage);
+            }
+        })
+    );
 
-    socket.on("deleteMessage", async (Ids: number[], chatId: number) => {
-        await deleteController.deleteMessagesForAllUsers(Ids, chatId);
-        messageHandler.broadCast(chatId, clients, "deleteMessage", Ids);
-    });
+    socket.on(
+        "deleteMessage",
+        socketWrapper(async (Ids: number[], chatId: number) => {
+            await deleteController.deleteMessagesForAllUsers(Ids, chatId);
+            await messageHandler.broadCast(chatId, clients, "deleteMessage", Ids);
+        })
+    );
 };
