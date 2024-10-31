@@ -44,7 +44,7 @@ app.use(
     })
 );
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use("/api", asyncHandler(indexRouter));
+app.use("/api", indexRouter);
 
 initWebSocketServer(server);
 redisSubscribe();
