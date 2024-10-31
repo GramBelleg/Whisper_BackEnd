@@ -2,6 +2,7 @@ version: "3.7"
 services:
     backend:
         container_name: whisperBackend
+        image: grambell003/whisperbackend:v1
         build: .
         ports:
             - "5000:5000"
@@ -21,8 +22,18 @@ services:
             - backend
         volumes:
             - './nginx/default.conf:/etc/nginx/conf.d/default.conf'
+            - './certbot/conf:/etc/nginx/ssl'
+            - './certbot/data:/usr/share/nginx/html/letsencrypt'
+            - './dhparam:/etc/nginx/dhparam'
         networks:
             - whisperNet
+
+    certbot:
+        image: certbot/certbot:latest
+        command: certonly --webroot --webroot-path=/usr/share/nginx/html/letsencrypt --email grambell.whisper@gmail.com --agree-tos --no-eff-email -d whisperApis.mywire.org
+        volumes:
+            - './certbot/conf:/etc/nginx/ssl'
+            - './certbot/data:/usr/share/nginx/html/letsencrypt'
 
     redis:
         image: "redis:alpine"
