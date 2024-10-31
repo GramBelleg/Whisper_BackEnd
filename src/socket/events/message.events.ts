@@ -16,7 +16,7 @@ export const setupMessageEvents = (
             senderId: userId,
         });
         if (savedMessage) {
-            messageHandler.broadCast(message.chatId, clients, "receiveMessage", savedMessage);
+            messageHandler.userBroadCast(userId, message.chatId, clients, "receiveMessage", savedMessage);
         }
     });
 

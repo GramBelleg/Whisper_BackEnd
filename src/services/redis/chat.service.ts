@@ -1,6 +1,5 @@
 import redisClient from "@src/redis/redis.client";
 import { Message } from "@prisma/client";
-import {Story} from "@prisma/client";
 
 export const saveExpiringMessage = async (message: Message): Promise<void> => {
     if (!message.expiresAfter) {

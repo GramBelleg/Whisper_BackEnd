@@ -10,7 +10,8 @@ export const handleGetAllMessages = async (req: Request, res: Response) => {
 
     const messages = await Promise.all(
         result.map(async (message) => {
-            return await buildReceivedMessage(userId, message.message);
+            const senderIdx = userId === message.message.senderId ? 0 : 1;
+            return (await buildReceivedMessage(userId, message.message))[senderIdx];
         })
     );
 

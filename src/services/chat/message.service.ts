@@ -4,9 +4,18 @@ import { getChatParticipantsIds } from "@services/chat/chat.service";
 import { SentMessage } from "@models/chat.models";
 
 //will be used with a web socket on(read) or on(delivered) for the status info view of the message
-export const getMessageStatus = async (excludeUserId: number, messageId: number) => {
+export const getOtherMessageStatus = async (excludeUserId: number, messageId: number) => {
     return await db.messageStatus.findFirst({
         where: { NOT: { userId: excludeUserId }, messageId },
+        select: {
+            time: true,
+        },
+    });
+};
+
+export const getUserMessageStatus = async (userId: number, messageId: number) => {
+    return await db.messageStatus.findFirst({
+        where: { userId, messageId },
         select: {
             time: true,
         },
@@ -65,7 +74,7 @@ const saveMessageStatuses = async (userId: number, message: Message, participant
         data: participantIds.map((participantId) => ({
             userId: participantId,
             messageId: message.id,
-            ...(participantId === userId && { time: message.sentAt }),
+            time: (participantId == userId ? message.sentAt : new Date().toISOString()),
         })),
     });
 };
