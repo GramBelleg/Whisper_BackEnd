@@ -13,7 +13,7 @@ async function createUsers(numUsers: number) {
         const user: User = await db.user.create({
             data: {
                 email: faker.internet.email().toLowerCase(),
-                userName: faker.internet.userName().toLowerCase(),
+                userName: faker.internet.username().toLowerCase(),
                 name: faker.person.fullName().toLowerCase(),
                 password: bcrypt.hashSync(passwords[i], 10),
                 bio: faker.lorem.sentence(),

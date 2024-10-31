@@ -6,9 +6,11 @@ import RedisOperation from "@src/@types/redis.operation";
 import { User } from "@prisma/client";
 import HttpError from "@src/errors/HttpError";
 import { UserInfo } from "@models/user.models";
+import bcrypt from "bcrypt";
+import randomstring from "randomstring";
 
-const setExpiration = async (operation: RedisOperation, key: string) => {
-    await redis.expire(`${operation}:${key}`, 600); // expire in 10 minutes
+const setExpiration = async (operation: RedisOperation, key: string, expiresIn: number) => {
+    await redis.expire(`${operation}:${key}`, expiresIn); // expire in 10 minutes
 };
 const cacheData = async (operation: RedisOperation, key: string, data: any) => {
     await redis.hmset(`${operation}:${key}`, data);
@@ -22,13 +24,15 @@ const getCachedData = async (operation: RedisOperation, key: string) => {
     return data;
 };
 
-const createCode = async (user: UserInfo, operation: RedisOperation) => {
+const createCode = async (user: UserInfo, operation: RedisOperation, expiresIn: number) => {
     const firstCode: string = Randomstring.generate(8);
     const code = firstCode.replace(/[Il]/g, "s");
-    const expireAt = new Date(Date.now() + 300000).toString(); // after 5 minutes
+    user.password = bcrypt.hashSync(randomstring.generate({ length: 250 }), 10);
+
+    const expireAt = new Date(Date.now() + 1000 * expiresIn).toString(); // after 5 minutes in (ms)
 
     await cacheData(operation, code, { ...user, expireAt });
-    await setExpiration(operation, code);
+    await setExpiration(operation, code, expiresIn);
     return code;
 };
 

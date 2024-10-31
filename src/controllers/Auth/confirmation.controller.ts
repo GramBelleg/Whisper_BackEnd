@@ -11,7 +11,9 @@ const resendConfirmCode = async (req: Request, res: Response): Promise<void> => 
     user.email = user.email?.trim().toLowerCase();
     validateEmail(user.email);
 
-    const code = await createCode(user, RedisOperation.ConfirmEmail);
+    const expiresIn = parseInt(process.env.EXPIRES_IN as string);
+    const code = await createCode(user, RedisOperation.ConfirmEmail, expiresIn);
+
     const emailSubject = "Email confirmation";
     const emailBody = `<h3>Hello, </h3> <p>Thanks for joining our family. Use this code: <b>${code}</b> for verifing your email</p>`;
     await sendCode(user.email, emailSubject, emailBody);
