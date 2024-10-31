@@ -7,7 +7,6 @@ import { checkEmailNotExistDB } from "@services/auth/signup.service";
 import RedisOperation from "@src/@types/redis.operation";
 import { getPresignedUrl } from "@services/media/blob.service";
 
-
 const updateBio = async (req: Request, res: Response) => {
     try {
         let { bio = "" }: { bio: string } = req.body;
@@ -108,17 +107,15 @@ const changePic = async (req: Request, res: Response) => {
         await userServices.changePic(id, blob);
         return res.status(200).json({
             status: "success",
-            name: blob
+            name: blob,
         });
-    }
-    catch (e: any) {
+    } catch (e: any) {
         res.status(400).json({
             status: "failed",
             message: e.message,
         });
     }
 };
-
 
 const UserInfo = async (req: Request, res: Response) => {
     try {

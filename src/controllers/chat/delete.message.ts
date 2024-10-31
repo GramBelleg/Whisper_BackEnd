@@ -9,7 +9,7 @@ export const deleteMessagesForCurrentUser = async (req: Request, res: Response) 
     await deleteMessagesForUser(userId, Ids);
     await setNewLastMessage(chatId);
     res.status(200).json({ message: "Messages deleted" });
-}
+};
 
 export const deleteMessagesForAllUsers = async (Ids: number[], chatId: number) => {
     try {
