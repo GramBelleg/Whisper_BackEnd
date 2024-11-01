@@ -12,7 +12,7 @@ router.get("/", (req, res) => {
 // Wrapping each controller function in asyncHandler
 router.put("/name", asyncHandler(userController.updateName));
 router.put("/bio", asyncHandler(userController.updateBio));
-router.get("/info", asyncHandler(userController.UserInfo));
+router.get("/info", asyncHandler(userController.userInfo));
 router.put("/email", asyncHandler(userController.updateEmail));
 router.post("/emailcode", asyncHandler(userController.emailCode));
 router.put("/phone", asyncHandler(userController.updatePhone));

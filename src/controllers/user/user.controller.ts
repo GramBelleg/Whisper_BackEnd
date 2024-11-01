@@ -108,7 +108,7 @@ const changePic = async (req: Request, res: Response) => {
     }
 };
 
-const UserInfo = async (req: Request, res: Response) => {
+const userInfo = async (req: Request, res: Response) => {
     try {
         let user = await userServices.userInfo(req.body.email);
         res.status(200).json({
