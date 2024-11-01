@@ -6,9 +6,15 @@ properties:
   chatId:
     type: integer
     description: Identifier of the chat room
-  senderId:
-    type: integer
-    description: The ID of the user who sent the message
+  sender:
+    type: object
+    properties:
+      id:
+        type: integer 
+      userName:
+        type: string 
+      profilePic:
+        type: string 
   content:
     type: string
     description: The content of the message
@@ -37,36 +43,36 @@ properties:
   type:
     type: string
     description: Type of the message (e.g., text, image)
-  sentAt:
+  time:
     type: string
     format: date-time
     description: Timestamp when the message was sent
-  media:
+  mentions:
     type: array
     items:
-      type: string
-    description: Array of media URLs associated with the message
+      userId:
+        type: integer
+  media:
+    type: string
   parentMessage:
     type: object
     nullable: true
     description: Parent message data if this message is a reply
     properties:
+      id:
+        type: integer
       content:
         type: string
         description: The content of the parent message
+      senderName:
+        type: string
       media:
-        type: array
-        items:
-          type: string
-        description: Array of media URLs in the parent message
-  parentMessageId:
-    type: integer
-    nullable: true
-    description: ID of the parent message if this message is a reply
-  time:
-    type: string
-    format: date-time
-    description: Timestamp of the message event (if different from sentAt)
+        type: string
+      type:
+        type: string
   isAnnouncement:
     type: boolean
     description: Is message an announcement
+  isSecret:
+    type: boolean
+    description: Is message in secret chat

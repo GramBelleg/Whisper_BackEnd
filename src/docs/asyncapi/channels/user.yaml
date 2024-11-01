@@ -44,7 +44,7 @@ story:
       payload:
         type: object
         properties:
-          storyId:
+          Id:
             type: integer
           userId:
             type: integer
@@ -52,7 +52,7 @@ story:
             type: string
           media:
             type: string
-          time:
+          date:
             type: string
             format: date-time
 likeStory:

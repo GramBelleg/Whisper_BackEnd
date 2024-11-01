@@ -10,26 +10,13 @@ servers:
     protocol: ws
 channels:
   message:
-    $ref: './channels/chat.yaml#/message'  # Reference to the chat channel file which contains multiple channels
+    $ref: './channels/messaging.yaml#/message'  
   editMessage:
-    $ref: './channels/chat.yaml#/editMessage'  # Reference to the chat channel file which contains multiple channels
+    $ref: './channels/messaging.yaml#/editMessage'  
   pinMessage:
-    $ref: './channels/chat.yaml#/pinMessage'  # Reference to the chat channel file which contains multiple channels
+    $ref: './channels/messaging.yaml#/pinMessage'  
   unpinMessage:
-    $ref: './channels/chat.yaml#/unpinMessage'  # Reference to the chat channel file which contains multiple channels
+    $ref: './channels/messaging.yaml#/unpinMessage'  
   deleteMessage:
-    $ref: './channels/chat.yaml#/deleteMessage'  # Reference to the chat channel file which contains multiple channels
-  createChat:
-    $ref: './channels/chat.yaml#/createChat'  # Reference to the group channel file, which also contains multiple channels
-  leaveGroup:
-    $ref: './channels/group.yaml#/leaveGroup'  # Reference to the group channel file, which also contains multiple channels
-  deleteGroup:
-    $ref: './channels/group.yaml#/deleteGroup'  # Reference to the group channel file, which also contains multiple channels
-  addAdmin:
-    $ref: './channels/group.yaml#/addAdmin'  # Reference to the group channel file, which also contains multiple channels
-  addUser:
-    $ref: './channels/group.yaml#/addUser'  # Reference to the group channel file, which also contains multiple channels
-  kickUser:
-    $ref: './channels/group.yaml#/kickUser'  # Reference to the group channel file, which also contains multiple channels
-  subscribe:
-    $ref: './channels/channel.yaml#/subscribe'  # Reference to the group channel file, which also contains multiple channels
+    $ref: './channels/messaging.yaml#/deleteMessage'  
+

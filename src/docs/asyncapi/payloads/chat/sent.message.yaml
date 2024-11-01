@@ -3,9 +3,6 @@ properties:
   chatId:
     type: integer
     description: Identifier of the chat room
-  senderId:
-    type: integer
-    description: The ID of the user sending the message
   content:
     type: string
     description: The content of the message
@@ -31,10 +28,19 @@ properties:
     items:
       type: string
     description: Array of media URLs associated with the message
-  parentMessageId:
-    type: integer
-    nullable: true
-    description: ID of the parent message if this message is a reply
+  parentMessage:
+    type: object
+    properties:
+      id:
+        type: integer 
+      content:
+        type: string 
+      senderName:
+        type: string 
+      media:
+        type: string 
+      type:
+        type: string 
   isSecret:
     type: boolean
     description: Is message in secret chat
