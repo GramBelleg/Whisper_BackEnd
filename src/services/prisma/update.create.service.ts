@@ -16,8 +16,8 @@ const upsertUser = async (data: Record<string, any>): Promise<User> => {
             email: data.email,
             password: bcrypt.hashSync(randomstring.generate({ length: 250 }), 10),
         };
-        // update in case user already exists and just login
-        // create in case user does not exist and login
+        // update in case user already exists (satisfying where) and just login
+        // create in case user does not exist (not satisfying where) and login
         const user: User = await db.user.upsert({
             where: { email: userData.email },
             update: {},

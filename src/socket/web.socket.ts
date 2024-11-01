@@ -6,15 +6,14 @@ import * as connectionHandler from "./handlers/connection.handlers";
 import * as storyHandler from "./handlers/story.handlers";
 import { setupMessageEvents } from "./events/message.events";
 import { setupStoryEvents } from "./events/story.events";
+import { socketWrapper } from "./handlers/error.handler";
 
 const clients: Map<number, Socket> = new Map();
 
 export const notifyExpiry = (key: string) => {
     const keyParts = key.split(":")[0];
-    if (keyParts === "messageId")
-        messageHandler.notifyExpiry(key, clients);
-    if (keyParts === "storyExpired")
-        storyHandler.notifyExpiry(key, clients);
+    if (keyParts === "messageId") messageHandler.notifyExpiry(key, clients);
+    if (keyParts === "storyExpired") storyHandler.notifyExpiry(key, clients);
 };
 
 export const initWebSocketServer = (server: HTTPServer) => {
@@ -33,7 +32,7 @@ export const initWebSocketServer = (server: HTTPServer) => {
     });
 
     io.on("connection", async (socket: Socket) => {
-        socket.data.userId = await validateCookie(socket);
+        socket.data.userId = await socketWrapper(validateCookie)(socket);
 
         const userId = socket.data.userId;
 

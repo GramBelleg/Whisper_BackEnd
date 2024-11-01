@@ -12,8 +12,8 @@ async function deleteUserToken(userId: number, userToken: string) {
                 },
             },
         });
-    } catch (err) {
-        throw new Error("Error in deleting token");
+    } catch (err: any) {
+        throw new Error("Error in deleting token as user id or token is wrong");
     }
 }
 
@@ -27,8 +27,8 @@ async function deleteAllUserTokens(userId: number) {
                 },
             },
         });
-    } catch (err) {
-        throw new Error("Error in deleting all tokens of user");
+    } catch (err: any) {
+        throw new Error("Error in deleting all tokens of user as user id is wrong");
     }
 }
 

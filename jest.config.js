@@ -14,5 +14,6 @@ module.exports = {
         "^@validators/(.*)$": "<rootDir>/src/validators/$1",
         "^@routes/(.*)$": "<rootDir>/src/routes/$1",
         "^@src/(.*)$": "<rootDir>/src/$1",
+        "^@socket/(.*)$": "<rootDir>/src/socket/$1",
     },
 };

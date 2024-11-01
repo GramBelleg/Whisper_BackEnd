@@ -1,6 +1,5 @@
 import { Response } from "express";
 import jwt from "jsonwebtoken";
-import db from "@DB";
 import { createUserToken } from "@services/prisma/create.service";
 import { findUserByUserToken } from "@services/prisma/find.service";
 
@@ -33,7 +32,7 @@ async function createAddToken(userId: number) {
         await createUserToken(userToken, expireAt, userId);
         return userToken;
     } catch (err: any) {
-        throw err;
+        throw new Error("User token creation failed");
     }
 }
 
@@ -41,7 +40,7 @@ async function createAddToken(userId: number) {
 async function checkUserTokenExist(userId: number, userToken: string) {
     const user = await findUserByUserToken(userId, userToken);
     if (!user) {
-        throw new Error();
+        throw new Error("User token not found");
     }
 }
 

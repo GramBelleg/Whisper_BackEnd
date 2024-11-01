@@ -7,3 +7,4 @@ Dockerfile
 .dockerignore
 docker-compose.yml
 migrations
+package-lock.json

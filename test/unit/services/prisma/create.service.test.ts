@@ -15,7 +15,7 @@ describe("test create user token prisma query", () => {
     // });
     it("should create user token successfully", async () => {
         const newUser = await createRandomUser();
-        await createUserToken("token", new Date(), newUser.id);
+        await createUserToken("tokenA", new Date(), newUser.id);
         const foundUser = await db.user.findUnique({
             where: {
                 id: newUser.id,
@@ -24,13 +24,13 @@ describe("test create user token prisma query", () => {
                 tokens: true,
             },
         });
-        expect(foundUser?.tokens[0].token).toEqual("token");
+        expect(foundUser?.tokens[0].token).toEqual("tokenA");
     });
-    it("should create user token unsuccessful", async () => {
+    it("should creation user token be unsuccessful as there is Unique constraint", async () => {
         const newUser = await createRandomUser();
-        await createUserToken("token", new Date(), newUser.id);
+        await createUserToken("tokenB", new Date(), newUser.id);
         try {
-            await createUserToken("token", new Date(), newUser.id);
+            await createUserToken("tokenB", new Date(), newUser.id);
         } catch (err: any) {
             expect(err.message).toEqual("Error in creating user token");
         }

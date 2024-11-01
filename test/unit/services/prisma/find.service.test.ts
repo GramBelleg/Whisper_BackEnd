@@ -1,7 +1,6 @@
-import { findEmail, findPhoneNumber, findUserName, findUserByUserToken } from "@src/services/prisma/find.service";
-import { createRandomUser } from "@src/services/prisma/create.service";
+import { findUserByEmail, findUserByPhoneNumber, findUserByUserName, findUserByUserToken } from "@src/services/prisma/find.service";
+import { createRandomUser, createUserToken } from "@src/services/prisma/create.service";
 import { User } from "@prisma/client";
-import db from "@src/prisma/PrismaClient";
 
 // afterEach(async () => {
 //     await db.user.deleteMany({});
@@ -18,13 +17,13 @@ describe("test find email prisma query", () => {
     // });
     it("should find user using his email and be existed", async () => {
         const newUser: User = await createRandomUser();
-        const foundEmail = await findEmail(newUser.email);
-        expect(foundEmail).toEqual(newUser.email);
+        const foundUser = await findUserByEmail(newUser.email);
+        expect(foundUser?.email).toEqual(newUser.email);
     });
     it("should find user using his email but not be existed", async () => {
         const newUser: User = await createRandomUser();
-        const foundEmail = await findEmail('a' + newUser.email);
-        expect(foundEmail).toEqual(null);
+        const foundUser = await findUserByEmail('a' + newUser.email);
+        expect(foundUser).toEqual(null);
     });
 });
 
@@ -34,13 +33,13 @@ describe("test find user name prisma query", () => {
     // });
     it("should find user using his user name and be existed", async () => {
         const newUser: User = await createRandomUser();
-        const foundUserName = await findUserName(newUser.userName);
-        expect(foundUserName).toEqual(newUser.userName);
+        const foundUser = await findUserByUserName(newUser.userName);
+        expect(foundUser).toEqual(newUser.userName);
     });
     it("should find user using his user name but not be existed", async () => {
         const newUser: User = await createRandomUser();
-        const foundUserName = await findUserName('a' + newUser.userName);
-        expect(foundUserName).toEqual(null);
+        const foundUser = await findUserByUserName('a' + newUser.userName);
+        expect(foundUser).toEqual(null);
     });
 });
 
@@ -50,13 +49,13 @@ describe("test find phone number prisma query", () => {
     // });
     it("should find user using his phone number and be existed", async () => {
         const newUser: User = await createRandomUser();
-        const foundPhoneNumber = await findPhoneNumber(newUser.phoneNumber as string);
-        expect(foundPhoneNumber).toEqual(newUser.phoneNumber);
+        const foundUser = await findUserByPhoneNumber(newUser.phoneNumber as string);
+        expect(foundUser).toEqual(newUser.phoneNumber);
     });
     it("should find user using his phone number but not be existed", async () => {
         const newUser: User = await createRandomUser();
-        const foundPhoneNumber = await findPhoneNumber(newUser.phoneNumber as string + '5');
-        expect(foundPhoneNumber).toEqual(null);
+        const foundUser = await findUserByPhoneNumber(newUser.phoneNumber as string + '5');
+        expect(foundUser).toEqual(null);
     });
 });
 
@@ -64,14 +63,16 @@ describe("test find user by user token prisma query", () => {
     // afterEach(async () => {
     //     await db.user.deleteMany({});
     // });
-    it("should find user using his phone number and be existed", async () => {
+    it("should find user using the token and be existed", async () => {
         const newUser: User = await createRandomUser();
-        const foundPhoneNumber = await findPhoneNumber(newUser.phoneNumber as string);
-        expect(foundPhoneNumber).toEqual(newUser.phoneNumber);
+        await createUserToken("tokenC", new Date(), newUser.id);
+        const foundUser = await findUserByUserToken(newUser.id, "tokenC");
+        expect(foundUser?.id).toEqual(newUser.id);
+        expect(foundUser?.email).toEqual(newUser.email);
     });
-    it("should find user using his phone number but not be existed", async () => {
+    it("should find user using the token but not be existed", async () => {
         const newUser: User = await createRandomUser();
-        const foundPhoneNumber = await findPhoneNumber(newUser.phoneNumber as string + '5');
-        expect(foundPhoneNumber).toEqual(null);
+        const foundUser = await findUserByUserToken(newUser.id, "tokenD");
+        expect(foundUser).toEqual(null);
     });
 });

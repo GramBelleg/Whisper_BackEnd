@@ -1,16 +1,15 @@
 import db from "@DB";
 
 
-const findEmail = async (email: string): Promise<string | null> => {
+const findUserByEmail = async (email: string) => {
     const user = await db.user.findUnique({
         where: { email },
-        select: { email: true },
+        select: { id: true, email: true, name: true, userName: true, password: true },
     });
-    return user ? user.email : null;
+    return user;
 };
 
-
-const findUserName = async (userName: string): Promise<string | null> => {
+const findUserByUserName = async (userName: string): Promise<string | null> => {
     const user = await db.user.findUnique({
         where: { userName },
         select: { userName: true },
@@ -18,7 +17,7 @@ const findUserName = async (userName: string): Promise<string | null> => {
     return user ? user.userName : null;
 };
 
-const findPhoneNumber = async (phoneNumber: string): Promise<string | null> => {
+const findUserByPhoneNumber = async (phoneNumber: string): Promise<string | null> => {
     const user = await db.user.findUnique({
         where: { phoneNumber },
         select: { phoneNumber: true },
@@ -36,8 +35,9 @@ const findUserByUserToken = async (userId: number, userToken: string) => {
                 },
             },
         },
+        select: { id: true, email: true, name: true, userName: true },
     });
     return user;
 }
 
-export { findEmail, findPhoneNumber, findUserName, findUserByUserToken };
+export { findUserByEmail, findUserByPhoneNumber, findUserByUserName, findUserByUserToken };

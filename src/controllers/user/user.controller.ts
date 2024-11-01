@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import * as userServices from "@services/user/user.service";
 import { validateEmail } from "@validators/confirm.reset";
 import { sendCode } from "@services/auth/confirmation.service";
-import { findEmail } from "@services/prisma/find.service";
+import { findUserByEmail } from "@services/prisma/find.service";
+import { createCode } from "@services/auth/confirmation.service";
 import RedisOperation from "@src/@types/redis.operation";
 import HttpError from "@src/errors/HttpError";
 
@@ -60,10 +61,13 @@ const emailCode = async (req: Request, res: Response): Promise<void> => {
     const { email } = req.body as Record<string, string>;
     validateEmail(email);
 
-    const foundEmail = await findEmail(email);
+    const foundEmail = await findUserByEmail(email);
     if (foundEmail) throw new HttpError("Email already exists", 409);
 
-    const code = await userServices.createCode(email, RedisOperation.ConfirmEmail);
+
+    const codeExpiry = parseInt(process.env.CODE_EXPIRES_IN as string);
+    const code = await createCode(email, RedisOperation.ConfirmEmail, codeExpiry);
+
     const emailBody = `<h3>Hello, </h3> <p>Thanks for joining our family. Use this code: <b>${code}</b> for verifing your email</p>`;
     await sendCode(email, "confirmation code", emailBody);
 
@@ -108,7 +112,7 @@ const changePic = async (req: Request, res: Response) => {
     }
 };
 
-const UserInfo = async (req: Request, res: Response) => {
+const userInfo = async (req: Request, res: Response) => {
     try {
         let user = await userServices.userInfo(req.body.email);
         res.status(200).json({
@@ -141,7 +145,7 @@ const changeUserName = async (req: Request, res: Response) => {
 };
 
 export {
-    UserInfo,
+    userInfo,
     updateBio,
     updateName,
     updateEmail,

@@ -1,15 +1,15 @@
-import { findEmail, findPhoneNumber, findUserName } from "@src/services/prisma/find.service";
+import { findUserByEmail, findUserByPhoneNumber, findUserByUserName } from "@src/services/prisma/find.service";
 import { verifyRobotToken, isUniqueUser } from '@src/services/auth/signup.service';
 import { fetchRobotTokenData } from '@src/services/auth/fetch.apis.service';
 
 // Cast automatically all functions in `fetch.apis.service` as Jest mocks in this test file only
 jest.mock("@src/services/auth/fetch.apis.service");
 
-// Cast `findEmail`, `findPhoneNumber`, and `findUserName` as Jest mocks in this test file only
+// Cast `findUserByEmail`, `findUserByPhoneNumber`, and `findUserByUserName` as Jest mocks in this test file only
 jest.mock("@src/services/prisma/find.service", () => ({
-    findEmail: jest.fn(),
-    findPhoneNumber: jest.fn(),
-    findUserName: jest.fn(),
+    findUserByEmail: jest.fn(),
+    findUserByPhoneNumber: jest.fn(),
+    findUserByUserName: jest.fn(),
 }));
 
 afterAll(() => {
@@ -54,16 +54,16 @@ describe("test isUniqueUser function", () => {
         jest.clearAllMocks();
     });
     it("should be unique user", async () => {
-        (findEmail as jest.Mock).mockResolvedValue(null);
-        (findPhoneNumber as jest.Mock).mockResolvedValue(null);
-        (findUserName as jest.Mock).mockResolvedValue(null);
+        (findUserByEmail as jest.Mock).mockResolvedValue(null);
+        (findUserByPhoneNumber as jest.Mock).mockResolvedValue(null);
+        (findUserByUserName as jest.Mock).mockResolvedValue(null);
         const uniqueUser = await isUniqueUser("email", "userName", "phoneNumber");
         expect(uniqueUser).toBeUndefined();
     });
     it("should email be duplicated", async () => {
-        (findEmail as jest.Mock).mockResolvedValue("email");
-        (findPhoneNumber as jest.Mock).mockResolvedValue(null);
-        (findUserName as jest.Mock).mockResolvedValue(null);
+        (findUserByEmail as jest.Mock).mockResolvedValue("email");
+        (findUserByPhoneNumber as jest.Mock).mockResolvedValue(null);
+        (findUserByUserName as jest.Mock).mockResolvedValue(null);
         try {
             await isUniqueUser("email", "userName", "phoneNumber");
         } catch (err: any) {
@@ -73,9 +73,9 @@ describe("test isUniqueUser function", () => {
         }
     });
     it("should phone number be duplicated", async () => {
-        (findEmail as jest.Mock).mockResolvedValue(null);
-        (findPhoneNumber as jest.Mock).mockResolvedValue("phoneNumber");
-        (findUserName as jest.Mock).mockResolvedValue(null);
+        (findUserByEmail as jest.Mock).mockResolvedValue(null);
+        (findUserByPhoneNumber as jest.Mock).mockResolvedValue("phoneNumber");
+        (findUserByUserName as jest.Mock).mockResolvedValue(null);
         try {
             await isUniqueUser("email", "userName", "phoneNumber");
         } catch (err: any) {
@@ -85,9 +85,9 @@ describe("test isUniqueUser function", () => {
         }
     });
     it("should user name be duplicated", async () => {
-        (findEmail as jest.Mock).mockResolvedValue(null);
-        (findPhoneNumber as jest.Mock).mockResolvedValue(null);
-        (findUserName as jest.Mock).mockResolvedValue("userName");
+        (findUserByEmail as jest.Mock).mockResolvedValue(null);
+        (findUserByPhoneNumber as jest.Mock).mockResolvedValue(null);
+        (findUserByUserName as jest.Mock).mockResolvedValue("userName");
         try {
             await isUniqueUser("email", "userName", "phoneNumber");
         } catch (err: any) {
