@@ -3,75 +3,61 @@ import { validateEmail, validateConfirmCode } from "@validators/confirm.reset";
 
 import RedisOperation from "@src/@types/redis.operation";
 import { createTokenCookie, createAddToken } from "@services/auth/token.service";
-import { checkEmailNotExistDB } from "@services/auth/signup.service";
 import {
     addUser,
-    checkEmailExistRedis,
     createCode,
+    getCachedData,
     sendCode,
     verifyCode,
 } from "@services/auth/confirmation.service";
+import { UserInfo } from "@models/user.models";
+import HttpError from "@src/errors/HttpError";
 
 const resendConfirmCode = async (req: Request, res: Response): Promise<void> => {
-    try {
-        req.body.email = req.body.email?.trim().toLowerCase();
-        const { email } = req.body as Record<string, string>;
-        validateEmail(email);
+    let email = req.body;
+    email = email?.trim().toLowerCase();
+    validateEmail(email);
 
-        await checkEmailNotExistDB(email);
+    const expiresIn = parseInt(process.env.EXPIRES_IN as string);
+    const code = await createCode(email, RedisOperation.ConfirmEmail, expiresIn);
 
-        await checkEmailExistRedis(email);
+    const emailSubject = "Email confirmation";
+    const emailBody = `<h3>Hello, </h3> <p>Thanks for joining our family. Use this code: <b>${code}</b> for verifing your email</p>`;
+    await sendCode(email, emailSubject, emailBody);
 
-        const code = await createCode(email, RedisOperation.ConfirmEmail);
-        const emailSubject = "Email confirmation";
-        const emailBody = `<h3>Hello, </h3> <p>Thanks for joining our family. Use this code: <b>${code}</b> for verifing your email</p>`;
-        await sendCode(email, emailSubject, emailBody);
-
-        res.status(200).json({
-            status: "success",
-        });
-    } catch (e: any) {
-        console.log(e.message);
-        res.status(400).json({
-            status: "failed",
-            message: e.message,
-        });
-    }
+    res.status(200).json({
+        status: "success",
+    });
 };
 
 const confirmEmail = async (req: Request, res: Response): Promise<void> => {
-    try {
-        req.body.email = req.body.email?.trim().toLowerCase();
-        req.body.code = req.body.code?.trim();
-        const { email, code } = req.body as Record<string, string>;
-        validateConfirmCode(email, code);
+    let { email, code } = req.body as Record<string, string>;
+    email = email?.trim().toLowerCase();
+    code = code?.trim();
 
-        await checkEmailNotExistDB(email);
+    validateConfirmCode(email, code);
 
-        await verifyCode(email, code, RedisOperation.ConfirmEmail);
+    await verifyCode(email, code, RedisOperation.ConfirmEmail);
 
-        const user = await addUser(email);
+    const foundUser = (await getCachedData(RedisOperation.AddNewUser, email)) as UserInfo;
+    if (Object.keys(foundUser).length === 0)
+        throw new HttpError("Email verification took too long, Please Sign up again");
 
-        const userToken: string = await createAddToken(user.id);
-        createTokenCookie(res, userToken);
+    const user = await addUser(foundUser);
 
-        res.status(200).json({
-            status: "success",
-            user: {
-                id: user.id,
-                name: user.name,
-                userName: user.userName,
-                email: user.email,
-            },
-            userToken,
-        });
-    } catch (e: any) {
-        console.log(e.message);
-        res.status(400).json({
-            status: "failed",
-            message: e.message,
-        });
-    }
+    const userToken: string = await createAddToken(user.id);
+    createTokenCookie(res, userToken);
+
+    res.status(200).json({
+        status: "success",
+        user: {
+            id: user.id,
+            name: user.name,
+            userName: user.userName,
+            email: user.email,
+        },
+        userToken,
+    });
 };
 
 export { resendConfirmCode, confirmEmail };
