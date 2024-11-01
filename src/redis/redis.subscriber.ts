@@ -2,7 +2,7 @@ import Redis from "ioredis";
 
 const redisSubscriber = new Redis({
     host: process.env.REDIS_HOST,
-    port: 6379,
+    port: process.env.REDIS_PORT as unknown as number,
 });
 
 redisSubscriber.on("connect", () => {

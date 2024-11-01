@@ -12,9 +12,9 @@ async function createUsers(numUsers: number) {
     for (let i = 0; i < numUsers; i++) {
         const user: User = await db.user.create({
             data: {
-                email: faker.internet.email(),
-                userName: faker.internet.userName(),
-                name: faker.person.fullName(),
+                email: faker.internet.email().toLowerCase(),
+                userName: faker.internet.username().toLowerCase(),
+                name: faker.person.fullName().toLowerCase(),
                 password: bcrypt.hashSync(passwords[i], 10),
                 bio: faker.lorem.sentence(),
                 phoneNumber: faker.phone.number({ style: "international" }),
@@ -64,7 +64,7 @@ async function createChatMessages(chats: Array<{ chat: Chat; participants: User[
                 data: {
                     content: faker.lorem.sentence(),
                     senderId: sender.id,
-                    createdAt: faker.date.recent(),
+                    sentAt: faker.date.recent(),
                     chatId: chat.chat.id,
                     type: "TEXT",
                 },
@@ -79,6 +79,7 @@ async function createChatMessages(chats: Array<{ chat: Chat; participants: User[
                         messageId: message.id, // Use the message ID
                         userId: participant.id, // Ensure the participant's userId is used
                         read: faker.date.recent(),
+                        time: faker.date.recent(),
                         delivered: faker.date.recent(),
                         deleted: faker.datatype.boolean(),
                     },

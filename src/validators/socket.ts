@@ -1,13 +1,15 @@
 import { Socket } from "socket.io";
-import { cookieParse, verifyToken } from "@middlewares/socket.middleware";
+import { socketWrapper } from "@socket/handlers/error.handler";
+import { cookieParse } from "@middlewares/socket.middleware";
+import { verifyUserToken } from "@services/auth.service";
 
-export const validateCookie = (socket: Socket): number | undefined => {
+export const validateCookie = async (socket: Socket): Promise<number | undefined> => {
     const cookie = socket.handshake.headers.cookie;
     const token = socket.handshake.query.token;
     if (cookie) {
-        return cookieParse(cookie, socket) as number;
+        return (await cookieParse(cookie, socket)) as number;
     } else if (token) {
-        return verifyToken(token as string);
+        return await verifyUserToken((token as string).replace("Bearer", "").trim());
     } else {
         throw new Error("Authentication Error: No cookie found");
     }

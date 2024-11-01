@@ -7,9 +7,9 @@ import mediaRouter from "@routes/media.routes";
 const router: Router = Router();
 
 router.use("/auth", authenticationRouter);
-router.use("/media", mediaRouter);
 router.use(userAuth);
 router.use("/user", userRouter);
+router.use("/media", mediaRouter);
 router.use("/chats", chatsRouter);
 
 export default router;

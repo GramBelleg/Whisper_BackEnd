@@ -1,5 +1,4 @@
 import express, { Express } from "express";
-import asyncHandler from "express-async-handler";
 import dotenv from "dotenv";
 import http from "http";
 import cors from "cors";

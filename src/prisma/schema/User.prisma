@@ -1,7 +1,7 @@
 model User {
   id                 Int                  @id @default(autoincrement())
   email              String               @unique
-  userName           String               //*CHANGE THIS* it has to be unique but fix with oAuth
+  userName           String               @unique //*CHANGE THIS* it has to be unique but fix with oAuth
   name               String?
   password           String               @db.VarChar(256)
   phoneNumber        String?              @unique
@@ -10,8 +10,8 @@ model User {
   lastSeen           DateTime             @default(now())
   hasStory           Boolean              @default(false)
   bio                String?
-  Messages           Message[] 
-  chatParticipant    ChatParticipant[] 
+  Messages           Message[]
+  chatParticipant    ChatParticipant[]
   groupParticipant   GroupParticipant[]
   channelParticipant ChannelParticipant[]
   tokens             UserToken[]
@@ -29,9 +29,10 @@ model UserToken {
 }
 
 model Story {
-  id      Int    @id @default(autoincrement())
+  id      Int      @id @default(autoincrement())
   userId  Int
-  user    User   @relation(fields: [userId], references: [id])
+  user    User     @relation(fields: [userId], references: [id])
+  date    DateTime @default(now())
   content String
   media   String
 }
