@@ -37,7 +37,7 @@ const signup = async (req: Request, res: Response): Promise<void> => {
 
     await isUniqueUser(user.email, user.userName, user.phoneNumber);
 
-    await verifyRobotToken(req.body.robotToken);
+    await verifyRobotToken(user.robotToken);
 
     const codeExpiry = parseInt(process.env.CODE_EXPIRES_IN as string);
     const code = await createCode(user.email, RedisOperation.ConfirmEmail, codeExpiry);
