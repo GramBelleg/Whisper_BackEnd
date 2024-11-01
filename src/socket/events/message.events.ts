@@ -2,8 +2,8 @@ import { Socket } from "socket.io";
 import { socketWrapper } from "@socket/handlers/error.handler";
 import * as types from "@models/chat.models";
 import * as sendController from "@controllers/chat/send.message";
-import * as editController from "@controllers/chat/edit.message";
-import * as deleteController from "@controllers/chat/delete.message";
+import * as editController from "@controllers/messages/edit.message";
+import * as deleteController from "@controllers/messages/delete.message";
 import * as messageHandler from "@socket/handlers/message.handlers";
 
 export const setupMessageEvents = (
@@ -38,7 +38,12 @@ export const setupMessageEvents = (
                 message.content
             );
             if (editedMessage) {
-                await messageHandler.broadCast(message.chatId, clients, "editMessage", editedMessage);
+                await messageHandler.broadCast(
+                    message.chatId,
+                    clients,
+                    "editMessage",
+                    editedMessage
+                );
             }
         })
     );
@@ -48,7 +53,12 @@ export const setupMessageEvents = (
         socketWrapper(async (message: types.MessageReference) => {
             const pinnedMessage = await editController.handlePinMessage(message.id);
             if (pinnedMessage) {
-                await messageHandler.broadCast(message.chatId, clients, "pinMessage", pinnedMessage);
+                await messageHandler.broadCast(
+                    message.chatId,
+                    clients,
+                    "pinMessage",
+                    pinnedMessage
+                );
             }
         })
     );
@@ -58,7 +68,12 @@ export const setupMessageEvents = (
         socketWrapper(async (message: types.MessageReference) => {
             const unpinnedMessage = await editController.handleUnpinMessage(message.id);
             if (unpinnedMessage) {
-                await messageHandler.broadCast(message.chatId, clients, "unpinMessage", unpinnedMessage);
+                await messageHandler.broadCast(
+                    message.chatId,
+                    clients,
+                    "unpinMessage",
+                    unpinnedMessage
+                );
             }
         })
     );

@@ -5,7 +5,7 @@ import { getLastMessage } from "@services/chat/chat.service";
 
 export const handleGetAllMessages = async (req: Request, res: Response) => {
     const userId = req.userId;
-    const chatId = parseInt(req.params.chatId, 10);
+    const chatId = Number(req.params.chatId);
     const result = await getMessages(userId, chatId);
 
     const messages = await Promise.all(
