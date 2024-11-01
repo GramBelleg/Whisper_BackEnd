@@ -57,27 +57,6 @@ describe("setExpiration and getExpiration functions", () => {
     });
 });
 
-describe("setExpiration and getExpiration functions", () => {
-    it("should set expriration time", async () => {
-        const userInfo = {
-            name: "Test User",
-            userName: "testuser",
-            email: "testuser@example.com",
-            phoneNumber: "1234567890",
-            password: "testpassword",
-        };
-        const key = randomstring.generate({ length: 10 });
-        await cacheData(RedisOperation.ConfirmEmail, key, userInfo);
-
-        const expiresIn = 60 * 10; //seconds
-        await setExpiration(RedisOperation.ConfirmEmail, key, expiresIn);
-
-        const timeToLive = await getExpiration(RedisOperation.ConfirmEmail, key);
-
-        expect(timeToLive).toBeLessThanOrEqual(expiresIn);
-        expect(timeToLive).toBeGreaterThan(expiresIn - 10); //assuming it wont take longer than 10 seconds to get here
-    });
-});
 
 // describe("createCode function", () => {
 //     it("should create and cache the verification code with the user's data", async () => {

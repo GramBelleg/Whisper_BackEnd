@@ -11,9 +11,9 @@ const clients: Map<number, Socket> = new Map();
 
 export const notifyExpiry = (key: string) => {
     const keyParts = key.split(":")[0];
-    if(keyParts === "messageId")    
+    if (keyParts === "messageId")
         messageHandler.notifyExpiry(key, clients);
-    if(keyParts === "storyExpired")    
+    if (keyParts === "storyExpired")
         storyHandler.notifyExpiry(key, clients);
 };
 
@@ -40,7 +40,7 @@ export const initWebSocketServer = (server: HTTPServer) => {
         connectionHandler.startConnection(userId, clients, socket);
 
         setupMessageEvents(socket, userId, clients);
-        
+
         setupStoryEvents(socket, userId, clients);
 
         socket.on("close", () => {
