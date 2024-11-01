@@ -24,14 +24,11 @@ const getCachedData = async (operation: RedisOperation, key: string) => {
     return data;
 };
 
-const createCode = async (user: UserInfo, operation: RedisOperation, expiresIn: number) => {
+const createCode = async (email: string, operation: RedisOperation, expiresIn: number) => {
     const firstCode: string = Randomstring.generate(8);
     const code = firstCode.replace(/[Il]/g, "s");
-    user.password = bcrypt.hashSync(randomstring.generate({ length: 250 }), 10);
 
-    const expireAt = new Date(Date.now() + 1000 * expiresIn).toString(); // after 5 minutes in (ms)
-
-    await cacheData(operation, code, { ...user, expireAt });
+    await cacheData(operation, code, { email });
     await setExpiration(operation, code, expiresIn);
     return code;
 };
@@ -49,15 +46,10 @@ async function sendCode(email: string, emailSubject: string, emailBody: string) 
 }
 
 const verifyCode = async (email: string, code: string, operation: RedisOperation) => {
-    const userExpiration = await getCachedData(operation, code);
-    if (Object.keys(userExpiration).length === 0 || userExpiration.email !== email) {
+    const foundEmail = await redis.hgetall(`${operation}:${code}`);
+    if (Object.keys(foundEmail).length === 0 || foundEmail.email !== email) {
         throw new Error("Invalid code");
     }
-    if (new Date() > new Date(userExpiration.expireAt)) {
-        throw new Error("Expired code");
-    }
-    const { expireAt, ...user } = userExpiration;
-    return user as UserInfo;
 };
 
 const addUser = async (cachedUser: UserInfo) => {

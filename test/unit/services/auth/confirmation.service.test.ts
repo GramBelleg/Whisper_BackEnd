@@ -57,37 +57,41 @@ describe("setExpiration and getExpiration functions", () => {
     });
 });
 
-describe("setExpiration and getExpiration functions", () => {
-    it("should set expriration time", async () => {
-        const userInfo = {
-            name: "Test User",
-            userName: "testuser",
-            email: "testuser@example.com",
-            phoneNumber: "1234567890",
-            password: "testpassword",
-        };
-        const key = randomstring.generate({ length: 10 });
-        await cacheData(RedisOperation.ConfirmEmail, key, userInfo);
+describe("createCode function", () => {
+    const user = {
+        name: "Test User",
+        userName: "testuser",
+        email: "testuser@example.com",
+        phoneNumber: "1234567890",
+        password: "initialPassword",
+    };
+    const expiresIn = 300;
+    const operation = RedisOperation.ConfirmEmail;
 
-        const expiresIn = 60 * 10; //seconds
-        await setExpiration(RedisOperation.ConfirmEmail, key, expiresIn);
+    it("should generate a code, hash the password, and call cacheData and setExpiration with correct values", async () => {
+        const cacheDataMock = jest
+            .spyOn(require("@services/auth/confirmation.service"), "cacheData")
+            .mockResolvedValueOnce(undefined);
+        const setExpirationMock = jest
+            .spyOn(require("@services/auth/confirmation.service"), "setExpiration")
+            .mockResolvedValueOnce(undefined);
 
-        const timeToLive = await getExpiration(RedisOperation.ConfirmEmail, key);
+        const mockCode = "ABCD1234";
+        jest.spyOn(randomstring, "generate").mockReturnValue(mockCode);
 
-        expect(timeToLive).toBeLessThanOrEqual(expiresIn);
-        expect(timeToLive).toBeGreaterThan(expiresIn - 10); //assuming it wont take longer than 10 seconds to get here
+        const code = await createCode(user, operation, expiresIn);
+
+        expect(cacheDataMock).toHaveBeenCalledWith(operation, code, {
+            ...user,
+            password: expect.any(String), // hashed password
+            expireAt: expect.any(String), // expiration date
+        });
+        expect(setExpirationMock).toHaveBeenCalledWith(operation, code, expiresIn);
+
+        expect(code).toEqual(mockCode);
+
+        cacheDataMock.mockRestore();
+        setExpirationMock.mockRestore();
+        jest.restoreAllMocks();
     });
 });
-
-// describe("createCode function", () => {
-//     it("should create and cache the verification code with the user's data", async () => {
-//         const userInfo = {
-//             name: "Test User",
-//             userName: "testuser",
-//             email: "testuser@example.com",
-//             phoneNumber: "1234567890",
-//             password: "testpassword",
-//         };
-//         const expiresIn = 60 * 5;
-//     });
-// });
