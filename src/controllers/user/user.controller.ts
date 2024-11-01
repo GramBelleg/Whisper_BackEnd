@@ -1,11 +1,10 @@
-import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import * as userServices from "@services/user/user.service";
 import { validateEmail } from "@validators/confirm.reset";
-import { createCode, sendCode } from "@services/auth/confirmation.service";
-import { checkEmailNotExistDB } from "@services/auth/signup.service";
+import { sendCode } from "@services/auth/confirmation.service";
+import { findEmail } from "@services/auth/signup.service";
 import RedisOperation from "@src/@types/redis.operation";
-import { getPresignedUrl } from "@services/media/blob.service";
+import HttpError from "@src/errors/HttpError";
 
 const updateBio = async (req: Request, res: Response) => {
     try {
@@ -58,26 +57,19 @@ const updateEmail = async (req: Request, res: Response) => {
     }
 };
 const emailCode = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { email } = req.body as Record<string, string>;
-        validateEmail(email);
+    const { email } = req.body as Record<string, string>;
+    validateEmail(email);
 
-        //in DB
-        await checkEmailNotExistDB(email);
-        const code = await createCode(email, RedisOperation.ConfirmEmail);
-        const emailBody = `<h3>Hello, </h3> <p>Thanks for joining our family. Use this code: <b>${code}</b> for verifing your email</p>`;
-        await sendCode(email, "confirmation code", emailBody);
+    const foundEmail = await findEmail(email);
+    if (foundEmail) throw new HttpError("Email already exists", 409);
 
-        res.status(200).json({
-            status: "success",
-        });
-    } catch (e: any) {
-        console.log(e.message);
-        res.status(400).json({
-            status: "failed",
-            message: e.message,
-        });
-    }
+    const code = await userServices.createCode(email, RedisOperation.ConfirmEmail);
+    const emailBody = `<h3>Hello, </h3> <p>Thanks for joining our family. Use this code: <b>${code}</b> for verifing your email</p>`;
+    await sendCode(email, "confirmation code", emailBody);
+
+    res.status(200).json({
+        status: "success",
+    });
 };
 
 const updatePhone = async (req: Request, res: Response) => {
@@ -103,9 +95,8 @@ const changePic = async (req: Request, res: Response) => {
     const id: number = req.userId;
     const blob = req.body.blobName;
     try {
-        await getPresignedUrl(blob, "read");
         await userServices.changePic(id, blob);
-        return res.status(200).json({
+        res.status(200).json({
             status: "success",
             name: blob,
         });

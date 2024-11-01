@@ -1,8 +1,10 @@
 node_modules
-*.env
+*.env*
 dist/
 tsconfig.tsbuildinfo
 frontend/
 Dockerfile
 .dockerignore
 docker-compose.yml
+migrations
+package-lock.json
