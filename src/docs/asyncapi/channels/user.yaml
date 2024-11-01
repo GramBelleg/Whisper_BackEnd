@@ -1,0 +1,114 @@
+pfp:
+  description: Channel for setting pfp.
+
+  subscribe:
+    operationId: setPfp
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          profilePic:
+            type: string
+            
+  publish:
+    operationId: getPfp
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          userId:
+            type: integer
+          profilePic:
+            type: string
+story:
+  description: Channel for setting story.
+
+  subscribe:
+    operationId: setStory
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          content:
+            type: string
+          media:
+            type: string
+
+  publish:
+    operationId: getStory
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          storyId:
+            type: integer
+          userId:
+            type: integer
+          content:
+            type: string
+          media:
+            type: string
+          time:
+            type: string
+            format: date-time
+likeStory:
+  description: Channel for liking a story.
+
+  subscribe:
+    operationId: likeStory
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          storyId:
+            type: integer
+
+
+  publish:
+    operationId: getLikesStory
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          storyId:
+            type: integer
+          userId:
+            type: integer
+          userName:
+            type: string
+          profilePic:             #added user details if you're on the likes list
+            type: string
+
+deleteStory:
+  description: Channel for deleting a story.
+
+  subscribe:
+    operationId: deleteStory
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          storyId:
+            type: integer
+
+
+  publish:
+    operationId: getStoryDeleted
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          storyId:
+            type: integer
+          userId:
+            type: integer
+
+
