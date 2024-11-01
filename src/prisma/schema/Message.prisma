@@ -6,7 +6,9 @@ enum MessageType {
   VM
   AUDIO
   IMAGE
-  FILE
+  DOC
+  CALL
+  EVENT
 }
 
 
@@ -21,9 +23,12 @@ model Message {
   pinned           Boolean           @default(false)
   edited           Boolean           @default(false)
   selfDestruct     Boolean           @default(false)
+  isAnnouncement   Boolean           @default(false)
+  isSecret         Boolean           @default(false)
   expiresAfter     Int?
-  type             String
+  type             MessageType
   sentAt           DateTime         
+  mentions         String[]
   media            String[]
   parentMessageId  Int?              @unique
   sender           User              @relation(fields: [senderId], references: [id])
@@ -42,7 +47,7 @@ model MessageStatus {
   delivered       DateTime?      
   time            DateTime            
   deleted         Boolean             @default(false)
-  lastMessageChat  ChatParticipant[]  @relation("LastMessageForChatParticipant") 
+  lastMessageChat ChatParticipant[]   @relation("LastMessageForChatParticipant") 
   message         Message             @relation(fields: [messageId], references: [id], onDelete: Cascade)
   user            User                @relation(fields: [userId], references: [id])
   @@unique([messageId,userId])

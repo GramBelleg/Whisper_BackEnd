@@ -6,12 +6,12 @@ export const socketWrapper = (handler: Function) => {
         try {
             return await handler(...args);
         } catch (err: Error | any) {
+            console.log("Socket error:", err.message || "Something went wrong");
             process.env.NODE_ENV === "development"
-                ? console.log("Socket error:", err.message)
+                ? console.error("Stack: ", err.stack)
                 : undefined;
             socket.emit("error", {
                 message: err.message || "Something went wrong",
-                stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
             });
         }
     };

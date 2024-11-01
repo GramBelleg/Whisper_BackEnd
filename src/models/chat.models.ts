@@ -1,10 +1,11 @@
 import { Message } from "@prisma/client";
 import { ChatType } from "@prisma/client";
+import { MessageType } from "@prisma/client";
 
 export type LastMessage = {
     id: number;
     content: string;
-    type: string;
+    type: MessageType;
     sentAt: Date;
     time: Date;
 };
@@ -16,26 +17,33 @@ export type ChatSummary = {
     unreadMessageCount: number;
 };
 
-export type ReceivedMessage = {
-    parentMessage: null | {
-        content: string;
-        media: string[];
-    };
-} & Message & { time: Date };
+type ParentMessage =
+    | null
+    | (Pick<Message, "id" | "content" | "type"> &
+          Partial<Pick<Message, "media">> & {
+              senderName: string;
+          });
 
-export type SentMessage = Pick<
-    Message,
-    | "chatId"
-    | "senderId"
-    | "content"
-    | "media"
-    | "sentAt"
-    | "forwarded"
-    | "selfDestruct"
-    | "expiresAfter"
-    | "type"
-    | "parentMessageId"
->;
+export type ReceivedMessage = Omit<Message, "parentMessageId"> & {
+    parentMessage?: ParentMessage;
+    time: Date;
+};
+
+export type SentMessage = Pick<Message, "chatId" | "senderId" | "content" | "sentAt" | "type"> &
+    Partial<
+        Pick<
+            Message,
+            | "forwarded"
+            | "selfDestruct"
+            | "expiresAfter"
+            | "media"
+            | "isSecret"
+            | "isAnnouncement"
+            | "mentions"
+        >
+    > & {
+        parentMessage?: ParentMessage;
+    };
 
 export type OmitSender<T> = Omit<T, "senderId">;
 

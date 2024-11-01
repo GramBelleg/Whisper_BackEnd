@@ -13,21 +13,35 @@ export const getOtherMessageStatus = async (excludeUserId: number, messageId: nu
     });
 };
 
+export const getMessageSummary = async (id: number | null) => {
+    if(!id) return null;
+    const result = await db.message.findUnique({
+        where: { id },
+        select: {
+            id: true,
+            content: true,
+            type: true,
+            sender: {
+                select: {
+                    userName: true,
+                },
+            },
+        },
+    });
+    if (!result) return null;
+    const {
+        sender: { userName: senderName },
+        ...rest
+    } = result;
+    const messageSummary = { ...rest, senderName };
+    return messageSummary;
+};
+
 export const getUserMessageStatus = async (userId: number, messageId: number) => {
     return await db.messageStatus.findFirst({
         where: { userId, messageId },
         select: {
             time: true,
-        },
-    });
-};
-
-export const getMessageSummary = async (id: number) => {
-    return await db.message.findUnique({
-        where: { id },
-        select: {
-            content: true,
-            media: true,
         },
     });
 };
@@ -74,15 +88,19 @@ const saveMessageStatuses = async (userId: number, message: Message, participant
         data: participantIds.map((participantId) => ({
             userId: participantId,
             messageId: message.id,
-            time: (participantId == userId ? message.sentAt : new Date().toISOString()),
+            time: participantId == userId ? message.sentAt : new Date().toISOString(),
         })),
     });
 };
 
-export const saveMessage = async (userId: number, message: SentMessage): Promise<Message> => {
+export const saveMessage = async (
+    userId: number,
+    message: Omit<SentMessage, "parentMessage">
+): Promise<Message> => {
     const savedMessage = await db.message.create({
-        data: { ...message },
+        data: message,
     });
+
     const participantIds = await getChatParticipantsIds(message.chatId);
     await saveMessageStatuses(userId, savedMessage, participantIds);
 

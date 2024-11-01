@@ -1,14 +1,21 @@
-import { Message } from "@prisma/client";
 import { saveMessage } from "@services/chat/message.service";
 import { setLastMessage } from "@services/chat/chat.service";
 import { saveExpiringMessage } from "@services/redis/chat.service";
 import { ReceivedMessage, SentMessage } from "@models/chat.models";
-import { buildReceivedMessage } from "../messages/format.message";
+import { buildMessageWithTime } from "../messages/format.message";
 
-const handleSaveMessage = async (userId: number, message: SentMessage): Promise<Message> => {
-    const savedMessage: Message = await saveMessage(userId, message);
+const handleSaveMessage = async (userId: number, message: SentMessage) => {
+    const { parentMessage, ...messageWithoutParent } = message;
+    const messageData = { ...messageWithoutParent, parentMessageId: parentMessage?.id };
+
+    const savedMessage = await saveMessage(userId, messageData);
+
+    const { parentMessageId, ...newSavedMessage } = savedMessage;
+    const savedMessageWithReply = { ...newSavedMessage, parentMessage };
+
     await setLastMessage(message.chatId, savedMessage.id);
-    return savedMessage;
+
+    return savedMessageWithReply;
 };
 
 export const handleSend = async (
@@ -16,11 +23,11 @@ export const handleSend = async (
     message: SentMessage
 ): Promise<ReceivedMessage[] | null> => {
     try {
-        const savedMessage: Message | null = await handleSaveMessage(userId, message);
+        const savedMessage = await handleSaveMessage(userId, message);
         if (message.selfDestruct) {
-            await saveExpiringMessage(savedMessage);
+            await saveExpiringMessage(savedMessage.id, savedMessage.expiresAfter);
         }
-        const result = await buildReceivedMessage(userId, savedMessage);
+        const result = await buildMessageWithTime(userId, savedMessage);
 
         return result;
     } catch (error) {

@@ -1,29 +1,38 @@
-import { Message } from "@prisma/client";
 import { ReceivedMessage } from "@models/chat.models";
+import { Message } from "@prisma/client";
 import {
     getOtherMessageStatus,
     getUserMessageStatus,
     getMessageSummary,
 } from "@services/chat/message.service";
 
+export const buildMessageWithTime = async (
+    userId: number,
+    message: Omit<ReceivedMessage, "time">
+): Promise<ReceivedMessage[]> => {
+    const addTimeHandler = async (handler: Function) => {
+        const timeData = await handler(userId, message.id);
+        if (!timeData) {
+            throw new Error("Time data is null");
+        }
+        return { ...message, ...timeData };
+    };
+
+    const senderMessage = await addTimeHandler(getUserMessageStatus);
+    const receiverMessage = await addTimeHandler(getOtherMessageStatus);
+
+    return [senderMessage, receiverMessage];
+};
+
 export const buildReceivedMessage = async (
     userId: number,
     message: Message
 ): Promise<ReceivedMessage[]> => {
-    const parentMessageId = message.parentMessageId;
-    const parentMessage = parentMessageId ? await getMessageSummary(parentMessageId) : null;
-    const senderTime = (await getUserMessageStatus(userId, message.id)) as { time: Date };
-    const receiverTime = (await getOtherMessageStatus(userId, message.id)) as { time: Date };
+    const parentSummary = await getMessageSummary(message.parentMessageId);
 
-    const senderMessage = {
-        parentMessage,
-        ...message,
-        ...senderTime,
-    };
-    const receiverMessage = {
-        parentMessage,
-        ...message,
-        ...receiverTime,
-    };
-    return [senderMessage, receiverMessage];
-};
+    const {parentMessageId, ...messageWithoutParentId} = message;
+
+    const result = {...messageWithoutParentId, parentMessage: parentSummary};
+    
+    return buildMessageWithTime(userId, result);
+}
