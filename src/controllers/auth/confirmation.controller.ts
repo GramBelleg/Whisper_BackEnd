@@ -18,7 +18,7 @@ const resendConfirmCode = async (req: Request, res: Response): Promise<void> => 
     email = email?.trim().toLowerCase();
     validateEmail(email);
 
-    const expiresIn = parseInt(process.env.EXPIRES_IN as string);
+    const expiresIn = parseInt(process.env.CODE_EXPIRES_IN as string);
     const code = await createCode(email, RedisOperation.ConfirmEmail, expiresIn);
 
     const emailSubject = "Email confirmation";
