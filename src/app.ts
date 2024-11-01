@@ -44,7 +44,7 @@ app.use(
 );
 app.use("/openapi-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/asyncapi-docs", express.static("./src/docs/asyncapi/output"));
-app.use("/api", asyncHandler(indexRouter));
+app.use("/api", indexRouter);
 
 initWebSocketServer(server);
 redisSubscribe();
