@@ -14,7 +14,7 @@ import { UserInfo } from "@models/user.models";
 import HttpError from "@src/errors/HttpError";
 
 const resendConfirmCode = async (req: Request, res: Response): Promise<void> => {
-    let email = req.body;
+    let email = req.body.email;
     email = email?.trim().toLowerCase();
     validateEmail(email);
 

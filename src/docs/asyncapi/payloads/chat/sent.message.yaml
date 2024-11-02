@@ -8,9 +8,11 @@ properties:
     description: The content of the message
   forwarded:
     type: boolean
+    nullable: true
     description: Indicates if the message is forwarded
   selfDestruct:
     type: boolean
+    nullable: true
     description: Indicates if the message is set to self-destruct
   expiresAfter:
     type: integer
@@ -22,14 +24,18 @@ properties:
   sentAt:
     type: string
     format: date-time
-    description: Timestamp when the message was sent
+    description: Timestamp(UTC format) when the message was sent
   media:
-    type: array
-    items:
-      type: string
-    description: Array of media URLs associated with the message
+    type: string
+    description: blobName
+    nullable: true
+  extension:
+    type: string
+    description: blobName
+    nullable: true
   parentMessage:
     type: object
+    nullable: true
     properties:
       id:
         type: integer 
@@ -41,6 +47,10 @@ properties:
         type: string 
       type:
         type: string 
+  mentions:
+    type: array
+    items:
+      type: string
   isSecret:
     type: boolean
     description: Is message in secret chat

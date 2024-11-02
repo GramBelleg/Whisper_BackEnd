@@ -46,7 +46,7 @@ properties:
   time:
     type: string
     format: date-time
-    description: Timestamp when the message was sent
+    description: Timestamp(UTC format) when the message was sent
   mentions:
     type: array
     items:

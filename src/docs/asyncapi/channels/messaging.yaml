@@ -159,9 +159,8 @@ deleteMessage:
           messages:
             type: array
             items:
-              messageId:
-                type: integer
-                description: Identifier of the message
+              type: integer
+              description: Identifier of the message
           chatId:
             type: integer
 
