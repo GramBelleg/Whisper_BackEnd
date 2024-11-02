@@ -1,7 +1,7 @@
 import { Response } from "express";
 import jwt from "jsonwebtoken";
-import db from "@DB";
-import { UserToken } from "@prisma/client";
+import { createUserToken } from "@services/prisma/auth/create.service";
+import { findUserByUserToken } from "@services/prisma/auth/find.service";
 
 function createTokenCookie(res: Response, token: string) {
     res.cookie("token", token, {
@@ -29,78 +29,18 @@ async function createAddToken(userId: number) {
             }
         );
         const expireAt = new Date(Date.now() + parseInt(process.env.TOKEN_EXPIRE as string) * 1000);
-        const token: UserToken = await db.userToken.create({
-            data: {
-                token: userToken,
-                expireAt,
-                userId,
-            },
-        });
+        await createUserToken(userToken, expireAt, userId);
         return userToken;
     } catch (err: any) {
-        throw err;
+        throw new Error("User token creation failed");
     }
 }
 
-async function deleteUserToken(userId: number, userToken: string) {
-    try {
-        await db.user.update({
-            where: { id: userId },
-            data: {
-                tokens: {
-                    deleteMany: {
-                        token: userToken,
-                    },
-                },
-            },
-        });
-    } catch (err) {
-        throw new Error("Error in deleting token");
-    }
-}
-
-async function deleteAllUserTokens(userId: number) {
-    try {
-        await db.user.update({
-            where: { id: userId },
-            data: {
-                tokens: {
-                    deleteMany: {},
-                },
-            },
-        });
-    } catch (err) {
-        throw new Error("Error in deleting all tokens of user");
-    }
-}
 
 async function checkUserTokenExist(userId: number, userToken: string) {
-    const user = await db.user.findUnique({
-        where: {
-            id: userId,
-            tokens: {
-                some: {
-                    token: userToken,
-                },
-            },
-        },
-    });
+    const user = await findUserByUserToken(userId, userToken);
     if (!user) {
-        throw new Error();
-    }
-}
-
-async function deleteExpiredTokens() {
-    try {
-        await db.userToken.deleteMany({
-            where: {
-                expireAt: {
-                    lte: new Date(),
-                },
-            },
-        });
-    } catch (err: any) {
-        console.log("Error in deleting expired tokens on database");
+        throw new Error("User token not found");
     }
 }
 
@@ -108,8 +48,5 @@ export {
     createTokenCookie,
     clearTokenCookie,
     createAddToken,
-    deleteUserToken,
-    deleteAllUserTokens,
     checkUserTokenExist,
-    deleteExpiredTokens,
 };

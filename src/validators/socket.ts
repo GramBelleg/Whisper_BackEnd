@@ -11,6 +11,7 @@ export const validateCookie = async (socket: Socket): Promise<number | undefined
     } else if (token) {
         return await verifyUserToken((token as string).replace("Bearer", "").trim());
     } else {
-        throw new Error("Authentication Error: No cookie found");
+        console.log("Authentication Error: No cookie found");
+        return undefined;
     }
 };

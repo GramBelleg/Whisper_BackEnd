@@ -145,6 +145,7 @@ const getUserId = async (userName: string): Promise<number | null> => {
     return result.id;
 };
 
+
 export {
     setStory,
     userInfo,

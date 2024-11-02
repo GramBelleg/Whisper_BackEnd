@@ -14,12 +14,12 @@ import { UserInfo } from "@models/user.models";
 import HttpError from "@src/errors/HttpError";
 
 const resendConfirmCode = async (req: Request, res: Response): Promise<void> => {
-    let email = req.body;
+    let email = req.body.email;
     email = email?.trim().toLowerCase();
     validateEmail(email);
 
-    const expiresIn = parseInt(process.env.CODE_EXPIRES_IN as string);
-    const code = await createCode(email, RedisOperation.ConfirmEmail, expiresIn);
+    const codeExpiry = parseInt(process.env.CODE_EXPIRES_IN as string);
+    const code = await createCode(email, RedisOperation.ConfirmEmail, codeExpiry);
 
     const emailSubject = "Email confirmation";
     const emailBody = `<h3>Hello, </h3> <p>Thanks for joining our family. Use this code: <b>${code}</b> for verifing your email</p>`;

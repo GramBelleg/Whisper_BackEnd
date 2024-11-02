@@ -1,6 +1,7 @@
 import { Request } from "express";
 import jwt, { TokenExpiredError } from "jsonwebtoken";
-import { checkUserTokenExist, deleteUserToken } from "./auth/token.service";
+import { checkUserTokenExist } from "./auth/token.service";
+import { deleteUserToken } from "./prisma/auth/delete.service";
 
 function getToken(req: Request) {
     let token: string;

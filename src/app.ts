@@ -11,7 +11,7 @@ import cron from "node-cron";
 import errorHandler from "@middlewares/error.handler";
 import { initWebSocketServer } from "@socket/web.socket";
 import { redisSubscribe } from "@src/redis/redis.sub.handlers";
-import { deleteExpiredTokens } from "@services/auth/token.service";
+import { deleteExpiredTokens } from "@services/prisma/auth/delete.service";
 
 dotenv.config();
 
@@ -52,6 +52,9 @@ app.use(errorHandler);
 
 cron.schedule("0 3 * * *", deleteExpiredTokens); // delete expired tokens every day at 3 AM
 
+// Comment this code in only testing to avoid EADDRINUSE error when running controllers tests which use the same port
 server.listen(parseInt(process.env.PORT as string), () => {
     console.log(`Listening on port ${process.env.PORT}`);
 });
+
+export default app;
