@@ -216,8 +216,7 @@ comment:
 
   # Channel for sending new messages
   subscribe:
-    summary: subscribe to channel
-    operationId: subscribe
+    operationId: comment
     message:
       contentType: application/json
       payload:
@@ -234,8 +233,7 @@ comment:
 
   # Channel for receiving chat messages
   publish:
-    summary: user subscribed to channel
-    operationId: joinChannel
+    operationId: receiveComment
     message:
       contentType: application/json
       payload:
