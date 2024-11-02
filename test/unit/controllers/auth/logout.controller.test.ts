@@ -1,11 +1,11 @@
 import request from "supertest";
 import { clearTokenCookie } from "@services/auth/token.service";
-import { deleteUserToken, deleteAllUserTokens } from "@services/prisma/delete.service";
+import { deleteUserToken, deleteAllUserTokens } from "@services/prisma/auth/delete.service";
 import { getToken } from "@services/auth.service";
 import app from "@src/app";
 
 jest.mock("@services/auth.service");
-jest.mock("@services/prisma/delete.service");
+jest.mock("@services/prisma/auth/delete.service");
 jest.mock("@services/auth/token.service");
 
 beforeAll(() => {

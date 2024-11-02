@@ -1,6 +1,6 @@
 import { checkEmailExistDB, checkPasswordCorrect } from "@src/services/auth/login.service";
 import { faker } from "@faker-js/faker";
-import { createRandomUser } from "@src/services/prisma/create.service";
+import { createRandomUser } from "@src/services/prisma/auth/create.service";
 
 
 describe("test check email exist in DB service", () => {

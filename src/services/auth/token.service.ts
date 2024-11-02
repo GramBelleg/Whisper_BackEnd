@@ -1,7 +1,7 @@
 import { Response } from "express";
 import jwt from "jsonwebtoken";
-import { createUserToken } from "@services/prisma/create.service";
-import { findUserByUserToken } from "@services/prisma/find.service";
+import { createUserToken } from "@services/prisma/auth/create.service";
+import { findUserByUserToken } from "@services/prisma/auth/find.service";
 
 function createTokenCookie(res: Response, token: string) {
     res.cookie("token", token, {

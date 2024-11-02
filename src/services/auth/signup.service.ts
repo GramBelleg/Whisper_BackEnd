@@ -1,5 +1,5 @@
 import DuplicateUserError from "@src/errors/DuplicateUserError";
-import { findUserByEmail, findUserByPhoneNumber, findUserByUserName } from "@services/prisma/find.service";
+import { findUserByEmail, findUserByPhoneNumber, findUserByUserName } from "@services/prisma/auth/find.service";
 import { DuplicateUserInfo } from "@models/user.models";
 import { fetchRobotTokenData } from "@services/auth/fetch.apis.service";
 

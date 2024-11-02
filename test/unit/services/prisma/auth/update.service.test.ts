@@ -1,5 +1,5 @@
-import { updatePassword } from "@services/prisma/update.service";
-import { createRandomUser } from "@src/services/prisma/create.service";
+import { updatePassword } from "@services/prisma/auth/update.service";
+import { createRandomUser } from "@src/services/prisma/auth/create.service";
 import { faker } from "@faker-js/faker";
 import bcrypt from "bcrypt";
 

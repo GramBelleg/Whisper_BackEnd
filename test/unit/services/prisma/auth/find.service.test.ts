@@ -1,5 +1,5 @@
-import { findUserByEmail, findUserByPhoneNumber, findUserByUserName, findUserByUserToken } from "@src/services/prisma/find.service";
-import { createRandomUser, createUserToken } from "@src/services/prisma/create.service";
+import { findUserByEmail, findUserByPhoneNumber, findUserByUserName, findUserByUserToken } from "@src/services/prisma/auth/find.service";
+import { createRandomUser, createUserToken } from "@src/services/prisma/auth/create.service";
 import { User } from "@prisma/client";
 
 // afterEach(async () => {

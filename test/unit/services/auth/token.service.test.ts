@@ -1,11 +1,11 @@
 import { Response } from "express";
 import jwt from "jsonwebtoken";
 import { createTokenCookie, clearTokenCookie, createAddToken, checkUserTokenExist } from "@services/auth/token.service";
-import { createUserToken } from "@services/prisma/create.service";
-import { findUserByUserToken } from "@services/prisma/find.service";
+import { createUserToken } from "@services/prisma/auth/create.service";
+import { findUserByUserToken } from "@services/prisma/auth/find.service";
 
-jest.mock("@services/prisma/create.service");
-jest.mock("@services/prisma/find.service");
+jest.mock("@services/prisma/auth/create.service");
+jest.mock("@services/prisma/auth/find.service");
 jest.mock("jsonwebtoken");
 
 let res: Response;

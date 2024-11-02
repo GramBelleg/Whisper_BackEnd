@@ -1,4 +1,4 @@
-import { findUserByEmail, findUserByPhoneNumber, findUserByUserName } from "@src/services/prisma/find.service";
+import { findUserByEmail, findUserByPhoneNumber, findUserByUserName } from "@src/services/prisma/auth/find.service";
 import { verifyRobotToken, isUniqueUser } from '@src/services/auth/signup.service';
 import { fetchRobotTokenData } from '@src/services/auth/fetch.apis.service';
 
@@ -6,7 +6,7 @@ import { fetchRobotTokenData } from '@src/services/auth/fetch.apis.service';
 jest.mock("@src/services/auth/fetch.apis.service");
 
 // Cast `findUserByEmail`, `findUserByPhoneNumber`, and `findUserByUserName` as Jest mocks in this test file only
-jest.mock("@src/services/prisma/find.service", () => ({
+jest.mock("@src/services/prisma/auth/find.service", () => ({
     findUserByEmail: jest.fn(),
     findUserByPhoneNumber: jest.fn(),
     findUserByUserName: jest.fn(),

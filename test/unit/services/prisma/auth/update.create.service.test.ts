@@ -1,8 +1,8 @@
-import { createRandomUser } from "@src/services/prisma/create.service";
+import { createRandomUser } from "@src/services/prisma/auth/create.service";
 import { faker } from "@faker-js/faker";
 import { User } from "@prisma/client";
 import db from "@src/prisma/PrismaClient";
-import { upsertUser } from "@src/services/prisma/update.create.service";
+import { upsertUser } from "@src/services/prisma/auth/update.create.service";
 
 // afterEach(async () => {
 //     await db.user.deleteMany({});

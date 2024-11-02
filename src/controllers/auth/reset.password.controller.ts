@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { User } from "@prisma/client";
 import { validateEmail, validateResetCode } from "@validators/confirm.reset";
-import { updatePassword } from "@services/prisma/update.service";
+import { updatePassword } from "@services/prisma/auth/update.service";
 import { checkEmailExistDB } from "@services/auth/login.service";
 import { createCode, sendCode, verifyCode } from "@services/auth/confirmation.service";
 import { createAddToken, createTokenCookie } from "@services/auth/token.service";

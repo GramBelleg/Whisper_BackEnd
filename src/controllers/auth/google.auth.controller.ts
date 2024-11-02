@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getAccessToken, getUserData } from "@services/auth/google.auth.service";
-import { upsertUser } from "@services/prisma/update.create.service";
+import { upsertUser } from "@services/prisma/auth/update.create.service";
 import { createTokenCookie, createAddToken } from "@services/auth/token.service";
 import { User } from "@prisma/client";
 

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import * as userServices from "@services/user/user.service";
 import { validateEmail } from "@validators/confirm.reset";
 import { sendCode } from "@services/auth/confirmation.service";
-import { findUserByEmail } from "@services/prisma/find.service";
+import { findUserByEmail } from "@services/prisma/auth/find.service";
 import { createCode } from "@services/auth/confirmation.service";
 import RedisOperation from "@src/@types/redis.operation";
 import HttpError from "@src/errors/HttpError";

@@ -11,7 +11,7 @@ import cron from "node-cron";
 import errorHandler from "@middlewares/error.handler";
 import { initWebSocketServer } from "@socket/web.socket";
 import { redisSubscribe } from "@src/redis/redis.sub.handlers";
-import { deleteExpiredTokens } from "@services/prisma/delete.service";
+import { deleteExpiredTokens } from "@services/prisma/auth/delete.service";
 
 dotenv.config();
 

@@ -1,6 +1,6 @@
-import { deleteUserToken, deleteAllUserTokens, deleteExpiredTokens } from "@src/services/prisma/delete.service";
-import { createRandomUser, createUserToken } from "@src/services/prisma/create.service";
-import { findUserByUserToken } from "@src/services/prisma/find.service";
+import { deleteUserToken, deleteAllUserTokens, deleteExpiredTokens } from "@src/services/prisma/auth/delete.service";
+import { createRandomUser, createUserToken } from "@src/services/prisma/auth/create.service";
+import { findUserByUserToken } from "@src/services/prisma/auth/find.service";
 import db from "@src/prisma/PrismaClient";
 
 // afterEach(async () => {

@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { findUserByEmail } from "@services/prisma/find.service";
+import { findUserByEmail } from "@services/prisma/auth/find.service";
 
 
 async function checkEmailExistDB(email: string) {
