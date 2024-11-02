@@ -1,35 +1,25 @@
 asyncapi: "2.0.0"
 info:
-    title: Chat WebSocket API
+    title: Chats, Groups and Channels WebSocket API 
     version: "1.0.0"
-    description: WebSocket API for real-time chat features, including sending, editing, pinning, unpinning, and deleting messages.
+    description: WebSocket API for real-time Chat and Channel Features
 
 servers:
   chat-server:
     url: http://localhost:5000
     protocol: ws
 channels:
-  message:
-    $ref: './channels/chat.yaml#/message'  # Reference to the chat channel file which contains multiple channels
-  editMessage:
-    $ref: './channels/chat.yaml#/editMessage'  # Reference to the chat channel file which contains multiple channels
-  pinMessage:
-    $ref: './channels/chat.yaml#/pinMessage'  # Reference to the chat channel file which contains multiple channels
-  unpinMessage:
-    $ref: './channels/chat.yaml#/unpinMessage'  # Reference to the chat channel file which contains multiple channels
-  deleteMessage:
-    $ref: './channels/chat.yaml#/deleteMessage'  # Reference to the chat channel file which contains multiple channels
   createChat:
-    $ref: './channels/chat.yaml#/createChat'  # Reference to the group channel file, which also contains multiple channels
+    $ref: './channels/chat.yaml#/createChat'  
   leaveGroup:
-    $ref: './channels/group.yaml#/leaveGroup'  # Reference to the group channel file, which also contains multiple channels
+    $ref: './channels/chat.yaml#/leaveGroup'  
   deleteGroup:
-    $ref: './channels/group.yaml#/deleteGroup'  # Reference to the group channel file, which also contains multiple channels
+    $ref: './channels/chat.yaml#/deleteGroup'  
   addAdmin:
-    $ref: './channels/group.yaml#/addAdmin'  # Reference to the group channel file, which also contains multiple channels
+    $ref: './channels/chat.yaml#/addAdmin'  
   addUser:
-    $ref: './channels/group.yaml#/addUser'  # Reference to the group channel file, which also contains multiple channels
+    $ref: './channels/chat.yaml#/addUser'  
   kickUser:
-    $ref: './channels/group.yaml#/kickUser'  # Reference to the group channel file, which also contains multiple channels
+    $ref: './channels/chat.yaml#/kickUser'  
   subscribe:
-    $ref: './channels/channel.yaml#/subscribe'  # Reference to the group channel file, which also contains multiple channels
+    $ref: './channels/chat.yaml#/subscribe'  
