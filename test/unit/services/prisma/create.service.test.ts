@@ -32,7 +32,8 @@ describe("test create user token prisma query", () => {
         try {
             await createUserToken("tokenB", new Date(), newUser.id);
         } catch (err: any) {
-            expect(err.message).toEqual("Error in creating user token");
+            expect(err.message).toEqual("User token creation failed");
+            expect(err.status).toEqual(409);
         }
     });
 });

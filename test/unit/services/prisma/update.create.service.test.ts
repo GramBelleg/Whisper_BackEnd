@@ -52,6 +52,7 @@ describe("test upsert user prisma query", () => {
             });
         } catch (err: any) {
             expect(err.message).toEqual("User upsert failed");
+            expect(err.status).toEqual(409);
         }
     });
 });

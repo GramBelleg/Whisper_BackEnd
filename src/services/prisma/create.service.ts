@@ -2,6 +2,7 @@ import db from "@DB";
 import { User } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { faker } from "@faker-js/faker";
+import HttpError from "@src/errors/HttpError";
 
 // common function to create a random user for only testing (not need to test this function)
 async function createRandomUser() {
@@ -19,7 +20,7 @@ async function createRandomUser() {
         return newUser;
     } catch (err: any) {
         console.log("Random user creation failed");
-        throw new Error("Random user creation failed");
+        throw new HttpError("Random user creation failed", 409);
     }
 }
 
@@ -34,7 +35,7 @@ async function createUserToken(token: string, expireAt: Date, userId: number) {
         });
     } catch (err: any) {
         console.log(err.message);
-        throw new Error("Error in creating user token");
+        throw new HttpError("User token creation failed", 409);
     }
 }
 

@@ -29,7 +29,8 @@ describe("test update password prisma query", () => {
         try {
             const updatedUser = await updatePassword(faker.internet.email(), password);
         } catch (err: any) {
-            expect(err.message).toEqual("Error updating password");
+            expect(err.message).toEqual("Password updating failed");
+            expect(err.status).toEqual(409);
         }
     });
 });

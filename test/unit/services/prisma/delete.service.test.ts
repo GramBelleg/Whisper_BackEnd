@@ -35,7 +35,8 @@ describe("test delete user token prisma query", () => {
         try {
             await deleteUserToken(10 * newUser.id, "token");
         } catch (err: any) {
-            expect(err.message).toEqual("Error in deleting token as user id or token is wrong");
+            expect(err.message).toEqual("User token deletion failed as user id or token is wrong");
+            expect(err.status).toEqual(409);
         }
     });
     it("should deletion user token be unsuccessful as token is wrong", async () => {
@@ -44,7 +45,8 @@ describe("test delete user token prisma query", () => {
         try {
             await deleteUserToken(newUser.id, "tokken");
         } catch (err: any) {
-            expect(err.message).toEqual("Error in deleting token as user id or token is wrong");
+            expect(err.message).toEqual("User token deletion failed as user id or token is wrong");
+            expect(err.status).toEqual(409);
         }
     });
 });
@@ -94,7 +96,8 @@ describe("test delete all user tokens of a user prisma query", () => {
         try {
             await deleteAllUserTokens(10 * newUser.id);
         } catch (err: any) {
-            expect(err.message).toEqual("Error in deleting all tokens of user as user id is wrong");
+            expect(err.message).toEqual("Deletion of all user tokens of the user failed as user id is wrong");
+            expect(err.status).toEqual(409);
         }
     });
 });

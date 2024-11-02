@@ -1,5 +1,6 @@
 import db from "@DB";
 import bcrypt from "bcrypt";
+import HttpError from "@src/errors/HttpError";
 
 async function updatePassword(email: string, password: string) {
     try {
@@ -11,7 +12,7 @@ async function updatePassword(email: string, password: string) {
         });
         return user;
     } catch {
-        throw new Error("Error updating password");
+        throw new HttpError("Password updating failed", 409);
     }
 }
 

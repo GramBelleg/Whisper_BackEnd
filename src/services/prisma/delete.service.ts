@@ -1,4 +1,5 @@
 import db from "@DB";
+import HttpError from "@src/errors/HttpError";
 
 async function deleteUserToken(userId: number, userToken: string) {
     try {
@@ -13,7 +14,7 @@ async function deleteUserToken(userId: number, userToken: string) {
             },
         });
     } catch (err: any) {
-        throw new Error("Error in deleting token as user id or token is wrong");
+        throw new HttpError("User token deletion failed as user id or token is wrong", 409);
     }
 }
 
@@ -28,7 +29,7 @@ async function deleteAllUserTokens(userId: number) {
             },
         });
     } catch (err: any) {
-        throw new Error("Error in deleting all tokens of user as user id is wrong");
+        throw new HttpError("Deletion of all user tokens of the user failed as user id is wrong", 409);
     }
 }
 
@@ -42,7 +43,7 @@ async function deleteExpiredTokens() {
             },
         });
     } catch (err: any) {
-        console.log("Error in deleting expired tokens on database");
+        console.log("Expired tokens deletion failed");
     }
 }
 
