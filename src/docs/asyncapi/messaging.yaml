@@ -19,4 +19,10 @@ channels:
     $ref: './channels/messaging.yaml#/unpinMessage'  
   deleteMessage:
     $ref: './channels/messaging.yaml#/deleteMessage'  
+  expireMessage:
+    $ref: './channels/messaging.yaml#/expireMessage'  
+  readMessage:
+    $ref: './channels/messaging.yaml#/readMessage'  
+  deliveredMessage:
+    $ref: './channels/messaging.yaml#/deliveredMessage'  
 

@@ -221,7 +221,7 @@ readMessage:
           profilePic:
             type: integer
 
-deliverMessage:
+deliveredMessage:
   description: Channel for delivered messages.
 
   subscribe:
