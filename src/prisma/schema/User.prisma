@@ -1,22 +1,24 @@
 model User {
-  id                 Int                  @id @default(autoincrement())
-  email              String               @unique
-  userName           String               @unique //*CHANGE THIS* it has to be unique but fix with oAuth
-  name               String?
-  password           String               @db.VarChar(256)
-  phoneNumber        String?              @unique
-  loggedInDevices    Int                  @default(0)
-  profilePic         String?
-  lastSeen           DateTime             @default(now())
-  hasStory           Boolean              @default(false)
-  bio                String?
-  Messages           Message[]
-  chatParticipant    ChatParticipant[]
-  groupParticipant   GroupParticipant[]
-  channelParticipant ChannelParticipant[]
-  tokens             UserToken[]
-  messageStatus      MessageStatus[]
-  story              Story[]
+  id                        Int                  @id @default(autoincrement())
+  email                     String               @unique
+  userName                  String               @unique //*CHANGE THIS* it has to be unique but fix with oAuth
+  name                      String?
+  password                  String               @db.VarChar(256)
+  phoneNumber               String?              @unique
+  loggedInDevices           Int                  @default(0)
+  profilePic                String?
+  lastSeen                  DateTime             @default(now())
+  hasStory                  Boolean              @default(false)
+  bio                       String?
+  status                    String?
+  AutomaticDownloadFileSize Int                  @default(0)
+  Messages                  Message[]
+  chatParticipant           ChatParticipant[]
+  groupParticipant          GroupParticipant[]
+  channelParticipant        ChannelParticipant[]
+  tokens                    UserToken[]
+  messageStatus             MessageStatus[]
+  story                     Story[]
 }
 
 model UserToken {

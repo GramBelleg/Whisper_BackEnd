@@ -96,7 +96,9 @@ const userInfo = async (email: string): Promise<any> => {
             bio: true,
             profilePic: true,
             lastSeen: true,
+            status: true,
             phoneNumber: true,
+            AutomaticDownloadFileSize: true,
         },
     });
     if (!User || !User.email) {
