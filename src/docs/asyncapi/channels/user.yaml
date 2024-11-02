@@ -67,6 +67,9 @@ likeStory:
         properties:
           storyId:
             type: integer
+          userId:
+            type: integer
+            description: id of the user who's story got liked
 
 
   publish:
