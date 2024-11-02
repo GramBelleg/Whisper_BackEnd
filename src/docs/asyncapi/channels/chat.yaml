@@ -49,7 +49,7 @@ leaveChat:
             type: string
             description: identifier of the group/channel
 
-deleteGroup:
+deleteChat:
   description: Channel for deleting Group/Channel.
 
   subscribe:

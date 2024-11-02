@@ -44,7 +44,7 @@ story:
       payload:
         type: object
         properties:
-          Id:
+          id:
             type: integer
           userId:
             type: integer
