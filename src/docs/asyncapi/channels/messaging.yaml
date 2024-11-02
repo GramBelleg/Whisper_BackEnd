@@ -164,23 +164,102 @@ deleteMessage:
                 description: Identifier of the message
           chatId:
             type: integer
-createChat:
-  description: Channel for creating chat.
 
-  # Channel for sending new messages
-  subscribe:
-    summary: Create a chat
-    operationId: createChat
-    message:
-      contentType: application/json
-      payload:
-        $ref: '../payloads/chat/create.chat.yaml'  # Reference to the sent message payload
+expireMessage:
+  description: Channel for expiring messages.
 
-  # Channel for receiving chat messages
   publish:
-    summary: Join Chat
-    operationId: joinChat
+    operationId: receiveExpiredMessage
     message:
       contentType: application/json
       payload:
-        $ref: '../payloads/chat/join.chat.yaml'  # Reference to the received message payload
+       type: object
+       properties:
+        messageId:
+          type: integer
+          description: Identifier of the message
+        chatId:
+            type: integer
+            description: Identifier of the chat
+readMessage:
+  description: Channel for read messages.
+
+  subscribe:
+    operationId: readMessage
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          messages:
+            type: array
+            items:
+              messageId:
+                type: integer
+                description: Identifier of the message
+          chatId:
+            type: integer
+
+  publish:
+    operationId: getReadMessage
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          messages:
+            type: array
+            items:
+              messageId:
+                type: integer
+                description: Identifier of the message
+          chatId:
+            type: integer
+          userId:
+            type: integer
+          userName:
+            type: integer
+          profilePic:
+            type: integer
+
+deliverMessage:
+  description: Channel for delivered messages.
+
+  subscribe:
+    operationId: deliverMessage
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          messages:
+            type: array
+            items:
+              messageId:
+                type: integer
+                description: Identifier of the message
+          chatId:
+            type: integer
+
+
+  publish:
+    operationId: getDeliveredMessage
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          messages:
+            type: array
+            items:
+              messageId:
+                type: integer
+                description: Identifier of the message
+          chatId:
+            type: integer
+          userId:
+            type: integer
+          userName:
+            type: integer
+          profilePic:
+            type: integer

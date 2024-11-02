@@ -1,3 +1,24 @@
+createChat:
+  description: Channel for creating chat.
+
+  # Channel for sending new messages
+  subscribe:
+    summary: Create a chat
+    operationId: createChat
+    message:
+      contentType: application/json
+      payload:
+        $ref: '../payloads/chat/create.chat.yaml'  # Reference to the sent message payload
+
+  # Channel for receiving chat messages
+  publish:
+    summary: Join Chat
+    operationId: joinChat
+    message:
+      contentType: application/json
+      payload:
+        $ref: '../payloads/chat/join.chat.yaml'  # Reference to the received message payload
+        
 leaveGroup:
   description: Channel for leaving Group/Channel.
 
