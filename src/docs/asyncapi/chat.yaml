@@ -11,10 +11,10 @@ servers:
 channels:
   createChat:
     $ref: './channels/chat.yaml#/createChat'  
-  leaveGroup:
-    $ref: './channels/chat.yaml#/leaveGroup'  
-  deleteGroup:
-    $ref: './channels/chat.yaml#/deleteGroup'  
+  leaveChat:
+    $ref: './channels/chat.yaml#/leaveChat'  
+  deleteChat:
+    $ref: './channels/chat.yaml#/deleteChat'  
   addAdmin:
     $ref: './channels/chat.yaml#/addAdmin'  
   addUser:
