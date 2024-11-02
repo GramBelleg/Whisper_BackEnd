@@ -87,9 +87,9 @@ const setStory = async (story: SaveableStory): Promise<Story> => {
 //TODO: fix delete story
 
 //TODO: check the type of the return value
-const userInfo = async (email: string): Promise<any> => {
+const userInfo = async (id: number): Promise<any> => {
     const User = await db.user.findUnique({
-        where: { email },
+        where: { id },
         select: {
             name: true,
             userName: true,
