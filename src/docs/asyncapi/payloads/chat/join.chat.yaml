@@ -13,17 +13,9 @@ properties:
   picture:
     type: string
     description: URL of the chat picture
-  participants:
-    type: array
-    items:
-      type: integer
-    description: An array of participant IDs
-  privacy:
-    type: string
-    description: The privacy level of the group/channel (e.g., public, private)
-  maxSize:
-    type: integer
-    description: The maximum number of participants allowed in the group
+  hasStory:
+    type: boolean
+    description: Is the chat muted
   isMuted:
     type: boolean
     description: Is the chat muted

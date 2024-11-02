@@ -19,7 +19,7 @@ createChat:
       payload:
         $ref: '../payloads/chat/join.chat.yaml'  # Reference to the received message payload
         
-leaveGroup:
+leaveChat:
   description: Channel for leaving Group/Channel.
 
   subscribe:
@@ -30,7 +30,7 @@ leaveGroup:
       payload:
         type: object
         properties:
-          id:
+          chatId:
             type: integer
             description: identifier for group/channel
 
@@ -60,7 +60,7 @@ deleteGroup:
       payload:
         type: object
         properties:
-          id:
+          chatId:
             type: integer
             description: identifier for group/channel
 
@@ -72,7 +72,7 @@ deleteGroup:
       payload:
         type: object
         properties:
-          id:
+          chatId:
             type: string
             description: identifier of the group/channel
 
@@ -102,7 +102,7 @@ addAdmin:
       payload:
         type: object
         properties:
-          userName:
+          userId:
             type: integer
             description: name of the user who became admin
           chatId:
@@ -134,7 +134,7 @@ addUser:
       payload:
         $ref: '../payloads/chat/join.chat.yaml'
 
-kickUser:
+removeUser:
   description: Channel for Kicking Users from Group/Channel.
 
   subscribe:
@@ -148,6 +148,8 @@ kickUser:
           userId:
             type: integer
             description: identifier for user
+          userName:
+            type: string
           chatId:
             type: integer
             description: identifier for group/channel
@@ -166,6 +168,9 @@ kickUser:
           userName:
             type: integer
             description: name of the user who left
+          removerUserName:
+            type: integer
+            description: name of the user who removed them
           chatId:
             type: string
             description: identifier of the group/channel
@@ -206,3 +211,60 @@ subscribe:
           profilePic:
             type: string
             description: Profile picture of the user
+comment:
+  description: Channel for commenting in a channel.
+
+  # Channel for sending new messages
+  subscribe:
+    summary: subscribe to channel
+    operationId: subscribe
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          messageId:
+            type: integer
+            description: Identifier of the message
+          chatId:
+            type: integer
+            description: Identifier of the chat room
+          content:
+            type: string
+
+  # Channel for receiving chat messages
+  publish:
+    summary: user subscribed to channel
+    operationId: joinChannel
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          commentId:
+            type: integer
+            description: Identifier of the comment
+          messageId:
+            type: integer
+            description: Identifier of the message
+          chatId:
+            type: integer
+            description: Identifier of the chat room
+          sender:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Identifier of the user
+              userName:
+                type: string
+                description: Name of the user
+              profilePic:
+                type: string
+                description: Profile picture of the user
+          time:
+            type: string
+            format: date-time
+          content:
+            type: string
+          

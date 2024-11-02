@@ -19,7 +19,9 @@ channels:
     $ref: './channels/chat.yaml#/addAdmin'  
   addUser:
     $ref: './channels/chat.yaml#/addUser'  
-  kickUser:
-    $ref: './channels/chat.yaml#/kickUser'  
+  removeUser:
+    $ref: './channels/chat.yaml#/removeUser'  
   subscribe:
     $ref: './channels/chat.yaml#/subscribe'  
+  comment:
+    $ref: './channels/chat.yaml#/comment'  

@@ -11,16 +11,6 @@ properties:
     type: array
     items:
       type: integer
-    description: Array of participant IDs (required for chat and group creation).
-  privacy:
+    description: Array of participant IDs (required for channel and group creation).
+  picture:
     type: string
-    description: Privacy level of the group (e.g., public, private) (only for groups).
-  maxSize:
-    type: integer
-    description: Maximum number of participants allowed in the group (only for groups).
-  topic:
-    type: string
-    description: The topic of the channel (only for channel creation).
-  description:
-    type: string
-    description: Description of the channel (only for channel creation).
