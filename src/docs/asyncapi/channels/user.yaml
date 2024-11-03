@@ -36,6 +36,8 @@ story:
             type: string
           media:
             type: string
+          type:
+            type: string
 
   publish:
     operationId: getStory
