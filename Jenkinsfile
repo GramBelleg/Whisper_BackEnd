@@ -8,32 +8,20 @@ pipeline {
         }
 
         stage('building') {
-            when{
-                not {
-                    branch 'Production'
-                }
-            }
             steps {
                 sh """
-                echo "**************************"
-                echo "***building the project***"
-                echo "**************************"
+                echo "******* building ********"
+
+                docker run --rm -v $WORKSPACE:/app -w /app node:18 npm install && npm run build
                 """
             }
         }
 
 
         stage('testing') {
-            when{
-                not {
-                    branch 'Production'
-                }
-            }
             steps {
                 sh """
-                echo "*************************"
-                echo "***testing the project***"
-                echo "*************************"
+                echo "******* testing ********"
                 """
             }
         }
@@ -44,9 +32,7 @@ pipeline {
             }
             steps {
                 sh """
-                echo "********************************"
-                echo "***pushing image to dockerhub***"
-                echo "********************************"
+                echo "******* pushing image ********"
                 """
             }
         }
@@ -57,9 +43,7 @@ pipeline {
             }
             steps {
                 sh """
-                echo "********************************"
-                echo "*************deploying**********"
-                echo "********************************"
+                 echo "******* deploying ********"
                 """
             }
         }
