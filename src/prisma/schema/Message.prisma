@@ -25,7 +25,7 @@ model Message {
   selfDestruct     Boolean           @default(false)
   isAnnouncement   Boolean           @default(false)
   isSecret         Boolean           @default(false)
-  expiresAfter     Int?
+  expiresAfter     Int?      
   type             MessageType
   sentAt           DateTime         
   mentions         String[]

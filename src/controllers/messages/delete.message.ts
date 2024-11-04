@@ -4,11 +4,11 @@ import { setNewLastMessage } from "@services/chat/chat.service";
 
 export const deleteMessagesForCurrentUser = async (req: Request, res: Response) => {
     const userId = req.userId;
-    const Ids = [Number(req.query.Ids)];
+    const Ids = JSON.parse(req.query.Ids as string).map(Number);
     const chatId = Number(req.params.chatId);
     await deleteMessagesForUser(userId, Ids);
     await setNewLastMessage(chatId);
-    res.status(200);
+    res.status(200).json({ Message: "Messages deleted successfully" });
 };
 
 export const deleteMessagesForAllUsers = async (Ids: number[], chatId: number) => {

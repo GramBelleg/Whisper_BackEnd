@@ -25,7 +25,7 @@ type ParentMessage =
           });
 
 export type ReceivedMessage = Omit<Message, "parentMessageId"> & {
-    parentMessage?: ParentMessage;
+    parentMessage: ParentMessage;
     time: Date;
 };
 
@@ -42,7 +42,7 @@ export type SentMessage = Pick<Message, "chatId" | "senderId" | "content" | "sen
             | "mentions"
         >
     > & {
-        parentMessage?: ParentMessage;
+        parentMessage: ParentMessage;
     };
 
 export type OmitSender<T> = Omit<T, "senderId">;
