@@ -1,4 +1,5 @@
 import { checkPhoneNumber } from "@src/validators/phone";
+import HttpError from "@src/errors/HttpError";
 
 
 describe("test check phone number function", () => {
@@ -8,35 +9,15 @@ describe("test check phone number function", () => {
         expect(checkedPhoneNumber).toEqual(phoneNumber);
     });
     it("should be an invalid phone number as there is not country code", () => {
-        const phoneNumber = "01234567890";
-        try {
-            checkPhoneNumber(phoneNumber);
-        } catch (err: any) {
-            expect(err.message).toEqual("Phone number structure is not valid");
-        }
+        expect(() => checkPhoneNumber("01234567890")).toThrow(new HttpError("Phone number structure is not valid", 422));
     });
     it("should be an invalid phone number as structure is not valid", () => {
-        const phoneNumber = "+2012345e67890";
-        try {
-            checkPhoneNumber(phoneNumber);
-        } catch (err: any) {
-            expect(err.message).toEqual("Phone number structure is not valid");
-        }
+        expect(() => checkPhoneNumber("+2012345e67890")).toThrow(new HttpError("Phone number structure is not valid", 422));
     });
     it("should be an invalid phone number as structure is not valid", () => {
-        const phoneNumber = "+2012345678901";
-        try {
-            checkPhoneNumber(phoneNumber);
-        } catch (err: any) {
-            expect(err.message).toEqual("Phone number structure is not valid");
-        }
+        expect(() => checkPhoneNumber("+2012345678901")).toThrow(new HttpError("Phone number structure is not valid", 422));
     });
     it("should be an invalid phone number as structure is not valid", () => {
-        const phoneNumber = "+20123456789";
-        try {
-            checkPhoneNumber(phoneNumber);
-        } catch (err: any) {
-            expect(err.message).toEqual("Phone number structure is not valid");
-        }
+        expect(() => checkPhoneNumber("+20123456789")).toThrow(new HttpError("Phone number structure is not valid", 422));
     });
 });

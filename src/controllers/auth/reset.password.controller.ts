@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { User } from "@prisma/client";
-import { validateEmail, validateResetCode } from "@validators/confirm.reset";
+import { validateEmail, validatePassword, validateConfirmPassword, validateCode } from "@validators/auth";
 import { updatePassword } from "@services/prisma/auth/update.service";
 import { checkEmailExistDB } from "@services/auth/login.service";
 import { createCode, sendCode, verifyCode } from "@services/auth/confirmation.service";
@@ -30,7 +30,10 @@ async function resetPassword(req: Request, res: Response) {
     req.body.email = req.body.email?.trim().toLowerCase();
     req.body.code = req.body.code?.trim();
     const { email, password, code } = req.body as Record<string, any>;
-    validateResetCode(req.body);
+    validateEmail(email);
+    validatePassword(password);
+    validateConfirmPassword(password, req.body.confirmPassword);
+    validateCode(code);
 
     await checkEmailExistDB(email);
 

@@ -1,7 +1,7 @@
 import { Response } from "express";
 import jwt from "jsonwebtoken";
 import { createUserToken } from "@services/prisma/auth/create.service";
-import { findUserByUserToken } from "@services/prisma/auth/find.service";
+import { findTokenByUserIdToken } from "@services/prisma/auth/find.service";
 
 function createTokenCookie(res: Response, token: string) {
     res.cookie("token", token, {
@@ -38,7 +38,7 @@ async function createAddToken(userId: number) {
 
 
 async function checkUserTokenExist(userId: number, userToken: string) {
-    const user = await findUserByUserToken(userId, userToken);
+    const user = await findTokenByUserIdToken(userId, userToken);
     if (!user) {
         throw new Error("User token not found");
     }

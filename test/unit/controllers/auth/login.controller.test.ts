@@ -2,11 +2,11 @@ import request from "supertest";
 import { faker } from "@faker-js/faker";
 import { createTokenCookie, createAddToken } from "@services/auth/token.service";
 import { checkEmailExistDB, checkPasswordCorrect } from "@services/auth/login.service";
-import { validateLogIn } from "@validators/user";
+import { validateEmail, validatePassword } from "@validators/auth";
 import HttpError from "@src/errors/HttpError";
 import app from "@src/app";
 
-jest.mock("@validators/user");
+jest.mock("@validators/auth");
 jest.mock("@services/auth/login.service");
 jest.mock("@services/auth/token.service");
 
@@ -33,12 +33,13 @@ describe("test login controller", () => {
             password: testData.password,
         });
         (checkPasswordCorrect as jest.Mock).mockReturnValue(undefined);
+        (validatePassword as jest.Mock).mockReturnValue(undefined);
     });
     afterEach(() => {
         jest.clearAllMocks();
     });
     it("should login be successfully", async () => {
-        (validateLogIn as jest.Mock).mockReturnValue(undefined);
+        (validateEmail as jest.Mock).mockReturnValue(undefined);
         const response = await request(app)
             .post("/api/auth/login")
             .send(testData);
@@ -55,7 +56,7 @@ describe("test login controller", () => {
         });
     });
     it("should login be unsuccessfully", async () => {
-        (validateLogIn as jest.Mock).mockImplementation(() => { throw new HttpError("Error in validating login data", 422) });
+        (validateEmail as jest.Mock).mockImplementation(() => { throw new HttpError("Error in validating login data", 422) });
         const response = await request(app)
             .post("/api/auth/login")
             .send(testData);

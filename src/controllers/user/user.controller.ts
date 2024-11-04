@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
 import * as userServices from "@services/user/user.service";
-import { validateEmail } from "@validators/confirm.reset";
+import { validateEmail } from "@validators/auth";
+import { validateReadReceipt } from "@validators/user";
 import { sendCode } from "@services/auth/confirmation.service";
 import { findUserByEmail } from "@services/prisma/auth/find.service";
 import { createCode } from "@services/auth/confirmation.service";
+import { updateReadReceipt } from "@services/prisma/user/update.service";
 import RedisOperation from "@src/@types/redis.operation";
 import HttpError from "@src/errors/HttpError";
 
@@ -94,6 +96,15 @@ const changeUserName = async (req: Request, res: Response) => {
     });
 };
 
+const changeReadReceipt = async (req: Request, res: Response) => {
+    validateReadReceipt(req.body.readReceipts);
+    await updateReadReceipt(req.userId, req.body.readReceipts);
+    res.status(200).json({
+        "status": "success",
+        "message": "Read receipts have been updated."
+    });
+}
+
 export {
     userInfo,
     updateBio,
@@ -103,4 +114,5 @@ export {
     updatePhone,
     changePic,
     changeUserName,
+    changeReadReceipt
 };

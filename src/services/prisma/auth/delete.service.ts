@@ -3,15 +3,13 @@ import HttpError from "@src/errors/HttpError";
 
 async function deleteUserToken(userId: number, userToken: string) {
     try {
-        await db.user.update({
-            where: { id: userId },
-            data: {
-                tokens: {
-                    deleteMany: {
-                        token: userToken,
-                    },
+        await db.userToken.delete({
+            where: {
+                userId_token: {
+                    userId,
+                    token: userToken,
                 },
-            },
+            }
         });
     } catch (err: any) {
         throw new HttpError("User token deletion failed as user id or token is wrong", 409);
@@ -20,12 +18,9 @@ async function deleteUserToken(userId: number, userToken: string) {
 
 async function deleteAllUserTokens(userId: number) {
     try {
-        await db.user.update({
-            where: { id: userId },
-            data: {
-                tokens: {
-                    deleteMany: {},
-                },
+        await db.userToken.deleteMany({
+            where: {
+                userId,
             },
         });
     } catch (err: any) {

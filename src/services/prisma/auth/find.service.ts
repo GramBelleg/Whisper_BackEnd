@@ -25,19 +25,17 @@ const findUserByPhoneNumber = async (phoneNumber: string): Promise<string | null
     return user ? user.phoneNumber : null;
 };
 
-const findUserByUserToken = async (userId: number, userToken: string) => {
-    const user = await db.user.findUnique({
+const findTokenByUserIdToken = async (userId: number, userToken: string) => {
+    const user = await db.userToken.findUnique({
         where: {
-            id: userId,
-            tokens: {
-                some: {
-                    token: userToken,
-                },
-            },
+            userId_token: {
+                userId, token: userToken
+            }
         },
-        select: { id: true, email: true, name: true, userName: true },
+        select: { userId: true, token: true }
     });
     return user;
 }
 
-export { findUserByEmail, findUserByPhoneNumber, findUserByUserName, findUserByUserToken };
+
+export { findUserByEmail, findUserByPhoneNumber, findUserByUserName, findTokenByUserIdToken };

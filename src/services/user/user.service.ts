@@ -1,6 +1,6 @@
 import db from "@src/prisma/PrismaClient";
 import { verifyCode } from "@services/auth/confirmation.service";
-import { validatePhone } from "@validators/user";
+import { validatePhoneNumber } from "@validators/auth";
 import RedisOperation from "@src/@types/redis.operation";
 import { saveStory } from "@services/redis/story.service";
 import { Story } from "@prisma/client";
@@ -59,7 +59,7 @@ const updatePhone = async (id: number, phoneNumber: string): Promise<string> => 
         throw new Error("Phone is required");
     }
     try {
-        const phone = validatePhone({ phoneNumber: phoneNumber });
+        const phone = validatePhoneNumber(phoneNumber);
         await db.user.update({
             where: { id },
             data: { phoneNumber: phone },

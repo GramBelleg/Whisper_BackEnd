@@ -1,6 +1,6 @@
 import { deleteUserToken, deleteAllUserTokens, deleteExpiredTokens } from "@src/services/prisma/auth/delete.service";
 import { createRandomUser, createUserToken } from "@src/services/prisma/auth/create.service";
-import { findUserByUserToken } from "@src/services/prisma/auth/find.service";
+import { findTokenByUserIdToken } from "@src/services/prisma/auth/find.service";
 import db from "@src/prisma/PrismaClient";
 
 // afterEach(async () => {
@@ -19,7 +19,7 @@ describe("test delete user token prisma query", () => {
         const newUser = await createRandomUser();
         await createUserToken("token", new Date(), newUser.id);
         await deleteUserToken(newUser.id, "token");
-        const foundUser = await findUserByUserToken(newUser.id, "token");
+        const foundUser = await findTokenByUserIdToken(newUser.id, "token");
         const foundToken = await db.userToken.findFirst({
             where: {
                 userId: newUser.id,
@@ -111,9 +111,9 @@ describe("test delete expired tokens prisma query", () => {
         await createUserToken("token2", new Date(Date.now() - 1000), newUser2.id);
         await createUserToken("token3", new Date(Date.now() - 1000), newUser2.id);
         await deleteExpiredTokens();
-        const foundUser1 = await findUserByUserToken(newUser1.id, "token1");
-        const foundUser2 = await findUserByUserToken(newUser2.id, "token2");
-        const foundUser3 = await findUserByUserToken(newUser2.id, "token3");
+        const foundUser1 = await findTokenByUserIdToken(newUser1.id, "token1");
+        const foundUser2 = await findTokenByUserIdToken(newUser2.id, "token2");
+        const foundUser3 = await findTokenByUserIdToken(newUser2.id, "token3");
         expect(foundUser1).toEqual(null);
         expect(foundUser2).toEqual(null);
         expect(foundUser3).toEqual(null);
@@ -122,16 +122,15 @@ describe("test delete expired tokens prisma query", () => {
         const newUser = await createRandomUser();
         await createUserToken("token1", new Date(Date.now() + 10000), newUser.id);
         await createUserToken("token2", new Date(Date.now() + 10000), newUser.id);
-        await createUserToken("token3", new Date(Date.now() + 10000), newUser.id);
+        await createUserToken("token3", new Date(Date.now() - 10000), newUser.id);
         await deleteExpiredTokens();
-        const foundUser1 = await findUserByUserToken(newUser.id, "token1");
-        const foundUser2 = await findUserByUserToken(newUser.id, "token2");
-        const foundUser3 = await findUserByUserToken(newUser.id, "token3");
-        expect(foundUser1?.id).toEqual(newUser.id);
-        expect(foundUser2?.id).toEqual(newUser.id);
-        expect(foundUser3?.id).toEqual(newUser.id);
-        expect(foundUser1?.email).toEqual(newUser.email);
-        expect(foundUser2?.email).toEqual(newUser.email);
-        expect(foundUser3?.email).toEqual(newUser.email);
+        const foundUser1 = await findTokenByUserIdToken(newUser.id, "token1");
+        const foundUser2 = await findTokenByUserIdToken(newUser.id, "token2");
+        const foundUser3 = await findTokenByUserIdToken(newUser.id, "token3");
+        expect(foundUser1?.userId).toEqual(newUser.id);
+        expect(foundUser2?.userId).toEqual(newUser.id);
+        expect(foundUser1?.token).toEqual("token1");
+        expect(foundUser2?.token).toEqual("token2");
+        expect(foundUser3).toEqual(null);
     });
 });

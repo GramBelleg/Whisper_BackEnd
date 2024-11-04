@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { validateEmail, validateConfirmCode } from "@validators/confirm.reset";
+import { validateEmail, validateCode } from "@validators/auth";
 
 import RedisOperation from "@src/@types/redis.operation";
 import { createTokenCookie, createAddToken } from "@services/auth/token.service";
@@ -35,7 +35,8 @@ const confirmEmail = async (req: Request, res: Response): Promise<void> => {
     email = email?.trim().toLowerCase();
     code = code?.trim();
 
-    validateConfirmCode(email, code);
+    validateEmail(email);
+    validateCode(code);
 
     await verifyCode(email, code, RedisOperation.ConfirmEmail);
 

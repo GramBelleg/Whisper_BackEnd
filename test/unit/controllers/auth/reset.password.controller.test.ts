@@ -1,6 +1,6 @@
 import request from "supertest";
 import { faker } from "@faker-js/faker";
-import { validateEmail, validateResetCode } from "@validators/confirm.reset";
+import { validateEmail, validatePassword, validateConfirmPassword, validateCode } from "@validators/auth";
 import { updatePassword } from "@services/prisma/auth/update.service";
 import { checkEmailExistDB } from "@services/auth/login.service";
 import { createCode, sendCode, verifyCode } from "@services/auth/confirmation.service";
@@ -9,7 +9,7 @@ import { createRandomUser } from "@src/services/prisma/auth/create.service";
 import HttpError from "@src/errors/HttpError";
 import app from "@src/app";
 
-jest.mock("@validators/confirm.reset");
+jest.mock("@validators/auth");
 jest.mock("@services/prisma/auth/update.service");
 jest.mock("@services/auth/login.service");
 jest.mock("@services/auth/confirmation.service");
@@ -65,7 +65,10 @@ describe("test reset password controller", () => {
     };
 
     beforeEach(() => {
-        (validateResetCode as jest.Mock).mockReturnValue(undefined);
+        (validateEmail as jest.Mock).mockReturnValue(undefined);
+        (validatePassword as jest.Mock).mockReturnValue(undefined);
+        (validateConfirmPassword as jest.Mock).mockReturnValue(undefined);
+        (validateCode as jest.Mock).mockReturnValue(undefined);
         (checkEmailExistDB as jest.Mock).mockResolvedValue(undefined);
         (verifyCode as jest.Mock).mockResolvedValue(undefined);
         (createTokenCookie as jest.Mock).mockReturnValue(undefined);

@@ -1,4 +1,4 @@
-import { findUserByEmail, findUserByPhoneNumber, findUserByUserName, findUserByUserToken } from "@src/services/prisma/auth/find.service";
+import { findUserByEmail, findUserByPhoneNumber, findUserByUserName, findTokenByUserIdToken } from "@src/services/prisma/auth/find.service";
 import { createRandomUser, createUserToken } from "@src/services/prisma/auth/create.service";
 import { User } from "@prisma/client";
 
@@ -66,13 +66,14 @@ describe("test find user by user token prisma query", () => {
     it("should find user using the token and be existed", async () => {
         const newUser: User = await createRandomUser();
         await createUserToken("tokenC", new Date(), newUser.id);
-        const foundUser = await findUserByUserToken(newUser.id, "tokenC");
-        expect(foundUser?.id).toEqual(newUser.id);
-        expect(foundUser?.email).toEqual(newUser.email);
+        const foundUser = await findTokenByUserIdToken(newUser.id, "tokenC");
+        expect(foundUser?.userId).toEqual(newUser.id);
+        expect(foundUser?.token).toEqual("tokenC");
     });
     it("should find user using the token but not be existed", async () => {
         const newUser: User = await createRandomUser();
-        const foundUser = await findUserByUserToken(newUser.id, "tokenD");
+        await createUserToken("tokenC", new Date(), newUser.id);
+        const foundUser = await findTokenByUserIdToken(newUser.id, "tokenD");
         expect(foundUser).toEqual(null);
     });
 });

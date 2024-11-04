@@ -1,6 +1,6 @@
 import request from "supertest";
 import { faker } from "@faker-js/faker";
-import { validateSingUp } from "@validators/user";
+import * as authValidator from "@validators/auth";
 import { isUniqueUser, verifyRobotToken } from "@services/auth/signup.service";
 import {
     cacheData,
@@ -11,7 +11,7 @@ import {
 import HttpError from "@src/errors/HttpError";
 import app from "@src/app";
 
-jest.mock("@validators/user");
+jest.mock("@validators/auth");
 jest.mock("@services/auth/signup.service");
 jest.mock("@services/auth/confirmation.service");
 
@@ -28,7 +28,13 @@ describe("test signup controller", () => {
         app.listen(5556);
     });
     beforeEach(() => {
-        (validateSingUp as jest.Mock).mockReturnValue("+201056908195");
+        (authValidator.validateName as jest.Mock).mockReturnValue(undefined);
+        (authValidator.validateUserName as jest.Mock).mockReturnValue(undefined);
+        (authValidator.validateEmail as jest.Mock).mockReturnValue(undefined);
+        (authValidator.validatePhoneNumber as jest.Mock).mockReturnValue("+201056908195");
+        (authValidator.validatePassword as jest.Mock).mockReturnValue(undefined);
+        (authValidator.validateConfirmPassword as jest.Mock).mockReturnValue(undefined);
+        (authValidator.validateRobotToken as jest.Mock).mockReturnValue(undefined);
         (isUniqueUser as jest.Mock).mockResolvedValue(undefined);
         (verifyRobotToken as jest.Mock).mockResolvedValue(undefined);
         (createCode as jest.Mock).mockResolvedValue("123456");

@@ -2,7 +2,7 @@ import { Response } from "express";
 import jwt from "jsonwebtoken";
 import { createTokenCookie, clearTokenCookie, createAddToken, checkUserTokenExist } from "@services/auth/token.service";
 import { createUserToken } from "@services/prisma/auth/create.service";
-import { findUserByUserToken } from "@services/prisma/auth/find.service";
+import { findTokenByUserIdToken } from "@services/prisma/auth/find.service";
 
 jest.mock("@services/prisma/auth/create.service");
 jest.mock("@services/prisma/auth/find.service");
@@ -70,7 +70,7 @@ describe("test check user token is exist", () => {
     it("should throw an error if user token does not exist", async () => {
         const userId = 1;
         const userToken = "testToken";
-        (findUserByUserToken as jest.Mock).mockResolvedValue(null);
+        (findTokenByUserIdToken as jest.Mock).mockResolvedValue(null);
         try {
             await checkUserTokenExist(userId, userToken);
         } catch (err: any) {
@@ -81,7 +81,7 @@ describe("test check user token is exist", () => {
     it("should not throw an error if user token exists", async () => {
         const userId = 1;
         const userToken = "testToken";
-        (findUserByUserToken as jest.Mock).mockResolvedValue({ id: userId, token: userToken });
+        (findTokenByUserIdToken as jest.Mock).mockResolvedValue({ id: userId, token: userToken });
         const returnValue = await checkUserTokenExist(userId, userToken);
         expect(returnValue).toBeUndefined();
     });

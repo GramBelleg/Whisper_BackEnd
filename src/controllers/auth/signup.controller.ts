@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { validateSingUp } from "@validators/user";
+import * as authValidator from "@validators/auth";
 import { isUniqueUser, verifyRobotToken } from "@services/auth/signup.service";
 import {
     cacheData,
@@ -16,7 +16,13 @@ const signup = async (req: Request, res: Response): Promise<void> => {
     user.email = user.email?.trim().toLowerCase();
     user.userName = user.userName?.trim().toLowerCase();
     user.phoneNumber = user.phoneNumber?.trim();
-    user.phoneNumber = validateSingUp(user);
+    authValidator.validateName(user.name);
+    authValidator.validateUserName(user.userName);
+    authValidator.validateEmail(user.email);
+    user.phoneNumber = authValidator.validatePhoneNumber(user);
+    authValidator.validatePassword(user.password);
+    authValidator.validateConfirmPassword(user.password, user.confirmPassword);
+    authValidator.validateRobotToken(user.robotToken);
 
     user.password = bcrypt.hashSync(user.password, 10);
 

@@ -12,6 +12,7 @@ model User {
   bio                       String?
   status                    String?
   AutomaticDownloadFileSize Int                  @default(0)
+  readReceipts              Boolean              @default(true)
   Messages                  Message[]
   chatParticipant           ChatParticipant[]
   groupParticipant          GroupParticipant[]
@@ -19,6 +20,8 @@ model User {
   tokens                    UserToken[]
   messageStatus             MessageStatus[]
   story                     Story[]
+  relating                  Relates[]            @relation("relating")
+  relatedBy                 Relates[]            @relation("relatedBy")
 }
 
 model UserToken {
@@ -28,6 +31,7 @@ model UserToken {
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@unique([userId, token])
+  @@index([userId])
 }
 
 model Story {
@@ -37,4 +41,15 @@ model Story {
   date    DateTime @default(now())
   content String
   media   String
+}
+
+model Relates {
+  relatingId  Int
+  relatedById Int
+  isBlocked   Boolean
+  isContact   Boolean
+  relating    User    @relation("relating", fields: [relatingId], references: [id])
+  relatedBy   User    @relation("relatedBy", fields: [relatedById], references: [id])
+
+  @@id([relatingId, relatedById])
 }
