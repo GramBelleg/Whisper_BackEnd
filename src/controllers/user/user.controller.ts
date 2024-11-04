@@ -2,12 +2,13 @@ import { Request, Response } from "express";
 import * as userServices from "@services/user/user.service";
 import { validateEmail } from "@validators/auth";
 import { validateReadReceipt } from "@validators/user";
-import { sendCode } from "@services/auth/confirmation.service";
-import { findUserByEmail } from "@services/prisma/auth/find.service";
-import { createCode } from "@services/auth/confirmation.service";
 import { updateReadReceipt } from "@services/prisma/user/update.service";
+import { findUserByEmail } from "@services/auth/prisma/find.service";
+import { createCode, sendCode } from "@services/auth/code.service";
 import RedisOperation from "@src/@types/redis.operation";
 import HttpError from "@src/errors/HttpError";
+import { MAX_UPLOAD_SIZE } from "@config/constants.config";
+import { Privacy } from "@prisma/client";
 
 const updateBio = async (req: Request, res: Response) => {
     let { bio = "" }: { bio: string } = req.body;
@@ -45,7 +46,6 @@ const emailCode = async (req: Request, res: Response): Promise<void> => {
 
     const foundEmail = await findUserByEmail(email);
     if (foundEmail) throw new HttpError("Email already exists", 409);
-
 
     const codeExpiry = parseInt(process.env.CODE_EXPIRES_IN as string);
     const code = await createCode(email, RedisOperation.ConfirmEmail, codeExpiry);
@@ -105,6 +105,46 @@ const changeReadReceipt = async (req: Request, res: Response) => {
     });
 }
 
+const changeAutoDownloadSize = async (req: Request, res: Response) => {
+    const size = req.body.size;
+    const userId = req.userId;
+    if (!size) throw new HttpError("Automatic Download Size not specified", 404);
+    if (size > MAX_UPLOAD_SIZE) throw new HttpError("Invalid file size specified", 400);
+    await userServices.changeAutoDownloadSize(userId, size);
+    res.status(200).json({
+        status: "success",
+        message: "Automatic download size updated.",
+    });
+};
+const changeLastSeenPrivacy = async (req: Request, res: Response) => {
+    const privacyValue = req.body.privacy;
+    const userId = req.userId;
+    if (!privacyValue) throw new HttpError("Privacy not specified", 404);
+
+    if (!(privacyValue in Privacy)) throw new HttpError("Invalid privacy setting", 400);
+    const privacy: Privacy = privacyValue;
+
+    await userServices.changeLastSeenPrivacy(userId, privacy);
+    res.status(200).json({
+        status: "success",
+        message: "Privacy settings updated.",
+    });
+};
+const changePfpPrivacy = async (req: Request, res: Response) => {
+    const privacyValue = req.body.privacy;
+    const userId = req.userId;
+    if (!privacyValue) throw new HttpError("Privacy not specified", 404);
+
+    if (!(privacyValue in Privacy)) throw new HttpError("Invalid privacy setting", 400);
+    const privacy: Privacy = privacyValue;
+
+    await userServices.changePfpPrivacy(userId, privacy);
+    res.status(200).json({
+        status: "success",
+        message: "Privacy settings updated.",
+    });
+};
+
 export {
     userInfo,
     updateBio,
@@ -115,4 +155,7 @@ export {
     changePic,
     changeUserName,
     changeReadReceipt
+    changeAutoDownloadSize,
+    changeLastSeenPrivacy,
+    changePfpPrivacy,
 };

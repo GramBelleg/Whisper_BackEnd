@@ -1,3 +1,13 @@
+enum Privacy {
+  Everyone
+  Contact
+  Nobody
+}
+enum Status {
+  Offline
+  Online
+}
+
 model User {
   id                        Int                  @id @default(autoincrement())
   email                     String               @unique
@@ -10,9 +20,11 @@ model User {
   lastSeen                  DateTime             @default(now())
   hasStory                  Boolean              @default(false)
   bio                       String?
-  status                    String?
-  AutomaticDownloadFileSize Int                  @default(0)
+  status                    Status               @default(Online)
+  autoDownloadSize          Int                  @default(0) //in MB
   readReceipts              Boolean              @default(true)
+  lastSeenPrivacy           Privacy              @default(Everyone)
+  pfpPrivacy                Privacy              @default(Everyone)
   Messages                  Message[]
   chatParticipant           ChatParticipant[]
   groupParticipant          GroupParticipant[]
@@ -46,8 +58,8 @@ model Story {
 model Relates {
   relatingId  Int
   relatedById Int
-  isBlocked   Boolean
-  isContact   Boolean
+  isBlocked   Boolean  @default(false)
+  isContact   Boolean  @default(false)
   relating    User    @relation("relating", fields: [relatingId], references: [id])
   relatedBy   User    @relation("relatedBy", fields: [relatedById], references: [id])
 

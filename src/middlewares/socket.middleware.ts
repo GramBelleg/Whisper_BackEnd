@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { Socket } from "socket.io";
-import { verifyUserToken } from "@services/auth.service";
+import { verifyUserToken } from "@services/auth/token.service";
 
 export const cookieParse = async (cookie: string, socket: Socket): Promise<number | undefined> => {
     // Extract token from cookie

@@ -1,7 +1,8 @@
-import { Response } from "express";
-import jwt from "jsonwebtoken";
-import { createUserToken } from "@services/prisma/auth/create.service";
-import { findTokenByUserIdToken } from "@services/prisma/auth/find.service";
+import { Request, Response } from "express";
+import jwt, { TokenExpiredError } from "jsonwebtoken";
+import { createUserToken } from "@services/auth/prisma/create.service";
+import { findUserByUserToken } from "@services/auth/prisma/find.service";
+import { deleteUserToken } from "./prisma/delete.service";
 
 function createTokenCookie(res: Response, token: string) {
     res.cookie("token", token, {
@@ -36,7 +37,6 @@ async function createAddToken(userId: number) {
     }
 }
 
-
 async function checkUserTokenExist(userId: number, userToken: string) {
     const user = await findTokenByUserIdToken(userId, userToken);
     if (!user) {
@@ -44,9 +44,44 @@ async function checkUserTokenExist(userId: number, userToken: string) {
     }
 }
 
+function getToken(req: Request) {
+    let token: string;
+    if (req.cookies.token) {
+        token = req.cookies.token;
+    } else if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+        token = req.headers.authorization.replace("Bearer", "").trim();
+    } else {
+        throw new Error("Token is not found");
+    }
+    return token;
+}
+
+async function verifyUserToken(userToken: string) {
+    let userId: number | undefined = undefined;
+    try {
+        userId = (
+            jwt.verify(userToken, process.env.JWT_SECRET as string, {
+                ignoreExpiration: true,
+            }) as Record<string, any>
+        ).id;
+        if (!userId) throw new Error();
+        await checkUserTokenExist(userId, userToken);
+        // check expiration of token
+        jwt.verify(userToken, process.env.JWT_SECRET as string);
+        return userId;
+    } catch (err: any) {
+        if (err instanceof TokenExpiredError) {
+            console.log("expired");
+            if (userId) deleteUserToken(userId, userToken);
+        }
+        throw new Error("Login again.");
+    }
+}
 export {
     createTokenCookie,
     clearTokenCookie,
     createAddToken,
     checkUserTokenExist,
+    getToken,
+    verifyUserToken,
 };

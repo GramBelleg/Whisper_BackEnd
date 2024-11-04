@@ -1,6 +1,10 @@
-import { deleteUserToken, deleteAllUserTokens, deleteExpiredTokens } from "@src/services/prisma/auth/delete.service";
-import { createRandomUser, createUserToken } from "@src/services/prisma/auth/create.service";
-import { findTokenByUserIdToken } from "@src/services/prisma/auth/find.service";
+import {
+    deleteUserToken,
+    deleteAllUserTokens,
+    deleteExpiredTokens,
+} from "@src/services/auth/prisma/delete.service";
+import { createRandomUser, createUserToken } from "@src/services/auth/prisma/create.service";
+import { findUserByUserToken } from "@src/services/auth/prisma/find.service";
 import db from "@src/prisma/PrismaClient";
 
 // afterEach(async () => {
@@ -63,7 +67,7 @@ describe("test delete all user tokens of a user prisma query", () => {
         await deleteAllUserTokens(newUser.id);
         const foundUser = await db.user.findUnique({
             where: { id: newUser.id },
-            include: { tokens: true }
+            include: { tokens: true },
         });
         const foundToken1 = await db.userToken.findFirst({
             where: {
@@ -96,12 +100,13 @@ describe("test delete all user tokens of a user prisma query", () => {
         try {
             await deleteAllUserTokens(10 * newUser.id);
         } catch (err: any) {
-            expect(err.message).toEqual("Deletion of all user tokens of the user failed as user id is wrong");
+            expect(err.message).toEqual(
+                "Deletion of all user tokens of the user failed as user id is wrong"
+            );
             expect(err.status).toEqual(409);
         }
     });
 });
-
 
 describe("test delete expired tokens prisma query", () => {
     it("should delete expired tokens successfully", async () => {

@@ -3,15 +3,12 @@ import { validateEmail, validateCode } from "@validators/auth";
 
 import RedisOperation from "@src/@types/redis.operation";
 import { createTokenCookie, createAddToken } from "@services/auth/token.service";
-import {
-    addUser,
-    createCode,
-    getCachedData,
-    sendCode,
-    verifyCode,
-} from "@services/auth/confirmation.service";
+
 import { UserInfo } from "@models/user.models";
 import HttpError from "@src/errors/HttpError";
+import { createCode, sendCode, verifyCode } from "@services/auth/code.service";
+import { getCachedData } from "@services/auth/redis.service";
+import { addUser } from "@services/auth/prisma/create.service";
 
 const resendConfirmCode = async (req: Request, res: Response): Promise<void> => {
     let email = req.body.email;

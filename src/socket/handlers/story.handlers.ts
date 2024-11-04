@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { getStoryParticipant } from "@services/story.service";
+import { getStoryParticipant } from "@services/user/story.service";
 import { sendToClient } from "@socket/utils/socket.utils";
 import redisClient from "@src/redis/redis.client";
 import { SaveableStory } from "@models/story.models";

@@ -1,4 +1,4 @@
-import { createRandomUser, createUserToken } from "@src/services/prisma/auth/create.service";
+import { createRandomUser, createUserToken } from "@src/services/auth/prisma/create.service";
 import db from "@src/prisma/PrismaClient";
 
 // afterEach(async () => {

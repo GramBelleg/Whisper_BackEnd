@@ -7,7 +7,7 @@ import { logoutAll, logoutOne } from "@controllers/auth/logout.controller";
 const router: Router = Router();
 
 router.get("/", (req, res) => {
-    res.status(200).json({ status: "success", userId: req.userId });
+    res.status(200).json({ userId: req.userId });
 });
 
 // Wrapping each controller function in asyncHandler
@@ -21,7 +21,10 @@ router.put("/profilepic", asyncHandler(userController.changePic)); // Use media 
 router.put("/username", asyncHandler(userController.changeUserName));
 router.post("/readReceipts", asyncHandler(userController.changeReadReceipt));
 router.get("/blocked", asyncHandler(getBlockedUsers));
-router.put('/block', asyncHandler(handleUserBlocks));
+router.put("/block", asyncHandler(handleUserBlocks));
+router.put("/setAutoDownloadSize", asyncHandler(userController.changeAutoDownloadSize));
+router.put("/lastSeen/privacy", asyncHandler(userController.changeLastSeenPrivacy));
+router.put("/pfp/privacy", asyncHandler(userController.changePfpPrivacy));
 router.get("/logoutOne", asyncHandler(logoutOne));
 router.get("/logoutAll", asyncHandler(logoutAll));
 

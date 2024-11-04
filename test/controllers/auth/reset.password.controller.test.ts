@@ -1,20 +1,19 @@
 import request from "supertest";
 import { faker } from "@faker-js/faker";
-import { validateEmail, validatePassword, validateConfirmPassword, validateCode } from "@validators/auth";
-import { updatePassword } from "@services/prisma/auth/update.service";
+import { validateEmail, validateResetCode } from "@validators/auth";
+import { updatePassword } from "@services/auth/prisma/update.service";
 import { checkEmailExistDB } from "@services/auth/login.service";
 import { createCode, sendCode, verifyCode } from "@services/auth/confirmation.service";
 import { createAddToken, createTokenCookie } from "@services/auth/token.service";
-import { createRandomUser } from "@src/services/prisma/auth/create.service";
+import { createRandomUser } from "@src/services/auth/prisma/create.service";
 import HttpError from "@src/errors/HttpError";
 import app from "@src/app";
 
 jest.mock("@validators/auth");
-jest.mock("@services/prisma/auth/update.service");
+jest.mock("@services/auth/prisma/update.service");
 jest.mock("@services/auth/login.service");
 jest.mock("@services/auth/confirmation.service");
 jest.mock("@services/auth/token.service");
-
 
 beforeAll(() => {
     app.listen(5558);
@@ -34,9 +33,7 @@ describe("test send reset code controller", () => {
     });
     it("should send reset code be successfully", async () => {
         (sendCode as jest.Mock).mockResolvedValueOnce(undefined);
-        const response = await request(app)
-            .post("/api/auth/sendResetCode")
-            .send(data);
+        const response = await request(app).post("/api/auth/sendResetCode").send(data);
         expect(response.status).toEqual(200);
         expect(response.body).toEqual({
             status: "success",
@@ -44,9 +41,7 @@ describe("test send reset code controller", () => {
     });
     it("should signup be unsuccessfully", async () => {
         (sendCode as jest.Mock).mockRejectedValueOnce(new HttpError("Error in sending code", 500));
-        const response = await request(app)
-            .post("/api/auth/sendResetCode")
-            .send(data);
+        const response = await request(app).post("/api/auth/sendResetCode").send(data);
         expect(response.status).toEqual(500);
         expect(response.body).toEqual({
             success: false,
@@ -59,9 +54,9 @@ describe("test send reset code controller", () => {
 describe("test reset password controller", () => {
     const data = {
         email: faker.internet.email().toLowerCase(),
-        password: '123456789',
-        confirmPassword: '123456789',
-        code: '123456',
+        password: "123456789",
+        confirmPassword: "123456789",
+        code: "123456",
     };
 
     beforeEach(() => {
@@ -80,9 +75,7 @@ describe("test reset password controller", () => {
     it("should send reset code be successfully", async () => {
         const user = await createRandomUser();
         (updatePassword as jest.Mock).mockResolvedValueOnce(user);
-        const response = await request(app)
-            .post("/api/auth/resetPassword")
-            .send(data);
+        const response = await request(app).post("/api/auth/resetPassword").send(data);
         expect(response.status).toEqual(200);
         expect(response.body).toEqual({
             status: "success",
@@ -96,10 +89,10 @@ describe("test reset password controller", () => {
         });
     });
     it("should signup be unsuccessfully", async () => {
-        (updatePassword as jest.Mock).mockRejectedValueOnce(new HttpError("Error in updating password", 500));
-        const response = await request(app)
-            .post("/api/auth/resetPassword")
-            .send(data);
+        (updatePassword as jest.Mock).mockRejectedValueOnce(
+            new HttpError("Error in updating password", 500)
+        );
+        const response = await request(app).post("/api/auth/resetPassword").send(data);
         expect(response.status).toEqual(500);
         expect(response.body).toEqual({
             success: false,

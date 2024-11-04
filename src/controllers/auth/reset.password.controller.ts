@@ -1,9 +1,14 @@
 import { Request, Response } from "express";
 import { User } from "@prisma/client";
-import { validateEmail, validatePassword, validateConfirmPassword, validateCode } from "@validators/auth";
-import { updatePassword } from "@services/prisma/auth/update.service";
+import {
+    validateEmail,
+    validatePassword,
+    validateConfirmPassword,
+    validateCode,
+} from "@validators/auth";
+import { updatePassword } from "@services/auth/prisma/update.service";
 import { checkEmailExistDB } from "@services/auth/login.service";
-import { createCode, sendCode, verifyCode } from "@services/auth/confirmation.service";
+import { createCode, sendCode, verifyCode } from "@services/auth/code.service";
 import { createAddToken, createTokenCookie } from "@services/auth/token.service";
 import RedisOperation from "@src/@types/redis.operation";
 

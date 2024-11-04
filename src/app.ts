@@ -4,14 +4,14 @@ import http from "http";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import indexRouter from "@routes/index.routes";
-import swaggerSpec from "./swagger";
+import swaggerSpec from "./docs/swagger";
 import swaggerUi from "swagger-ui-express";
 import session from "express-session";
 import cron from "node-cron";
 import errorHandler from "@middlewares/error.handler";
 import { initWebSocketServer } from "@socket/web.socket";
 import { redisSubscribe } from "@src/redis/redis.sub.handlers";
-import { deleteExpiredTokens } from "@services/prisma/auth/delete.service";
+import { deleteExpiredTokens } from "@services/auth/prisma/delete.service";
 
 dotenv.config();
 

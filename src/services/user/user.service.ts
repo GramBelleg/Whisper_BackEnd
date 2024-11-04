@@ -1,10 +1,11 @@
 import db from "@src/prisma/PrismaClient";
-import { verifyCode } from "@services/auth/confirmation.service";
 import { validatePhoneNumber } from "@validators/auth";
 import RedisOperation from "@src/@types/redis.operation";
-import { saveStory } from "@services/redis/story.service";
-import { Story } from "@prisma/client";
+import { saveStory } from "@services/user/redis.service";
+import { Prisma, Privacy, Story } from "@prisma/client";
 import { SaveableStory } from "@models/story.models";
+import { verifyCode } from "@services/auth/code.service";
+import HttpError from "@src/errors/HttpError";
 
 const updateBio = async (id: number, bio: string): Promise<string> => {
     try {
@@ -98,7 +99,7 @@ const userInfo = async (email: string): Promise<any> => {
             lastSeen: true,
             status: true,
             phoneNumber: true,
-            AutomaticDownloadFileSize: true,
+            autoDownloadSize: true,
         },
     });
     if (!User || !User.email) {
@@ -107,13 +108,16 @@ const userInfo = async (email: string): Promise<any> => {
     return User;
 };
 
-const changePic = async (id: number, name: string): Promise<string> => {
+const changePic = async (id: number, profilePic: string): Promise<string> => {
     try {
-        await db.user.update({
+        console.log(profilePic);
+        const user = await db.user.update({
             where: { id },
-            data: { profilePic: name },
+            data: { profilePic: profilePic },
         });
-        return name;
+        if (!user) throw new HttpError("User Not Found", 404);
+        if (!user.profilePic) throw new HttpError("PFP Not Found", 404);
+        return user.profilePic;
     } catch (error) {
         console.error("Error updating profile picture:", error);
         throw new Error("Unable to update profile picture");
@@ -144,7 +148,91 @@ const getUserId = async (userName: string): Promise<number | null> => {
     if (!result) return null;
     return result.id;
 };
-
+const changeAutoDownloadSize = async (userId: number, size: number) => {
+    try {
+        const result = await db.user.update({
+            where: { id: userId },
+            data: { autoDownloadSize: size },
+        });
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("User not found", 404);
+        }
+        throw error;
+    }
+};
+const changeLastSeenPrivacy = async (userId: number, privacy: Privacy) => {
+    try {
+        const result = await db.user.update({
+            where: { id: userId },
+            data: { lastSeenPrivacy: privacy },
+        });
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("User not found", 404);
+        }
+        throw error;
+    }
+};
+const changePfpPrivacy = async (userId: number, privacy: Privacy) => {
+    try {
+        const result = await db.user.update({
+            where: { id: userId },
+            data: { pfpPrivacy: privacy },
+        });
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("User not found", 404);
+        }
+        throw error;
+    }
+};
+const getPfpPrivacy = async (userId: number) => {
+    try {
+        const user = await db.user.findUnique({
+            where: { id: userId },
+            select: { pfpPrivacy: true },
+        });
+        return user?.pfpPrivacy;
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("User not found", 404);
+        }
+        throw error;
+    }
+};
+const getAllUserIds = async () => {
+    try {
+        const userIds: number[] = (
+            await db.user.findMany({
+                select: { id: true },
+            })
+        ).map((user) => user.id);
+        return userIds;
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("User not found", 404);
+        }
+        throw error;
+    }
+};
+const getUserContacts = async (userId: number) => {
+    try {
+        const userIds: number[] = (
+            await db.relates.findMany({
+                where: { relatingId: userId },
+                select: { relatedById: true },
+            })
+        ).map((user) => user.relatedById);
+        userIds.push(userId);
+        return userIds;
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("User not found", 404);
+        }
+        throw error;
+    }
+};
 
 export {
     setStory,
@@ -156,4 +244,10 @@ export {
     changePic,
     changeUserName,
     getUserId,
+    changeAutoDownloadSize,
+    changeLastSeenPrivacy,
+    changePfpPrivacy,
+    getPfpPrivacy,
+    getAllUserIds,
+    getUserContacts,
 };

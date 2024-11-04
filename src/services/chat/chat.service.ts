@@ -58,6 +58,7 @@ export const createChat = async (users: number[], type: ChatType) => {
     return chat;
 };
 
+//TODO: Set condition on lastSeen and profilePic based on privacy
 const getOtherChatParticipants = async (chatId: number, excludeUserId: number) => {
     return await db.chatParticipant.findMany({
         where: {
@@ -147,7 +148,6 @@ export const getLastMessage = async (
     return null;
 };
 
-
 export const setLastMessage = async (chatId: number, messageId: number): Promise<void> => {
     const messageStatus = await db.messageStatus.findFirst({
         where: { messageId },
@@ -177,4 +177,3 @@ export const setNewLastMessage = async (chatId: number): Promise<void> => {
         }
     });
 };
-

@@ -3,6 +3,7 @@ import { User } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { faker } from "@faker-js/faker";
 import HttpError from "@src/errors/HttpError";
+import { UserInfo } from "@models/user.models";
 
 // common function to create a random user for only testing (not need to test this function)
 async function createRandomUser() {
@@ -15,7 +16,7 @@ async function createRandomUser() {
                 password: bcrypt.hashSync("123456789", 10),
                 bio: faker.lorem.sentence(),
                 phoneNumber: faker.phone.number({ style: "international" }),
-            }
+            },
         });
         return newUser;
     } catch (err: any) {
@@ -38,5 +39,11 @@ async function createUserToken(token: string, expireAt: Date, userId: number) {
         throw new HttpError("User token creation failed", 409);
     }
 }
+const addUser = async (cachedUser: UserInfo) => {
+    const user: User = await db.user.create({
+        data: { ...cachedUser },
+    });
+    return user;
+};
 
-export { createRandomUser, createUserToken };
+export { createRandomUser, createUserToken, addUser };

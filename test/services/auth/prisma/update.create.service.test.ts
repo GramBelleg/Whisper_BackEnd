@@ -1,8 +1,8 @@
-import { createRandomUser } from "@src/services/prisma/auth/create.service";
+import { createRandomUser } from "@src/services/auth/prisma/create.service";
 import { faker } from "@faker-js/faker";
 import { User } from "@prisma/client";
 import db from "@src/prisma/PrismaClient";
-import { upsertUser } from "@src/services/prisma/auth/update.create.service";
+import { upsertUser } from "@src/services/auth/prisma/update.create.service";
 
 // afterEach(async () => {
 //     await db.user.deleteMany({});
@@ -21,9 +21,9 @@ describe("test upsert user prisma query", () => {
             userName: faker.internet.username(),
             email: faker.internet.email(),
         });
-        const foundUser = await db.user.findUnique({
+        const foundUser = (await db.user.findUnique({
             where: { email: newUser.email },
-        }) as User;
+        })) as User;
         expect(foundUser.userName).toEqual(newUser.userName);
         expect(foundUser.email).toEqual(newUser.email);
     });
@@ -33,9 +33,9 @@ describe("test upsert user prisma query", () => {
             userName: faker.internet.username(),
             email: newUser.email,
         });
-        const foundUser = await db.user.findUnique({
+        const foundUser = (await db.user.findUnique({
             where: { email: updatedUser.email },
-        }) as User;
+        })) as User;
         // console.log(newUser, updatedUser, foundUser);
         expect(foundUser.userName).toEqual(newUser.userName);
         expect(foundUser.email).toEqual(newUser.email);

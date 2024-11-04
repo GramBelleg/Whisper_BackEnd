@@ -1,5 +1,10 @@
-import { findUserByEmail, findUserByPhoneNumber, findUserByUserName, findTokenByUserIdToken } from "@src/services/prisma/auth/find.service";
-import { createRandomUser, createUserToken } from "@src/services/prisma/auth/create.service";
+import {
+    findUserByEmail,
+    findUserByPhoneNumber,
+    findUserByUserName,
+    findUserByUserToken,
+} from "@src/services/auth/prisma/find.service";
+import { createRandomUser, createUserToken } from "@src/services/auth/prisma/create.service";
 import { User } from "@prisma/client";
 
 // afterEach(async () => {
@@ -9,7 +14,6 @@ import { User } from "@prisma/client";
 // afterAll(async () => {
 //     await db.$disconnect();
 // });
-
 
 describe("test find email prisma query", () => {
     // afterEach(async () => {
@@ -22,7 +26,7 @@ describe("test find email prisma query", () => {
     });
     it("should find user using his email but not be existed", async () => {
         const newUser: User = await createRandomUser();
-        const foundUser = await findUserByEmail('a' + newUser.email);
+        const foundUser = await findUserByEmail("a" + newUser.email);
         expect(foundUser).toEqual(null);
     });
 });
@@ -38,7 +42,7 @@ describe("test find user name prisma query", () => {
     });
     it("should find user using his user name but not be existed", async () => {
         const newUser: User = await createRandomUser();
-        const foundUser = await findUserByUserName('a' + newUser.userName);
+        const foundUser = await findUserByUserName("a" + newUser.userName);
         expect(foundUser).toEqual(null);
     });
 });
@@ -54,7 +58,7 @@ describe("test find phone number prisma query", () => {
     });
     it("should find user using his phone number but not be existed", async () => {
         const newUser: User = await createRandomUser();
-        const foundUser = await findUserByPhoneNumber(newUser.phoneNumber as string + '5');
+        const foundUser = await findUserByPhoneNumber((newUser.phoneNumber as string) + "5");
         expect(foundUser).toEqual(null);
     });
 });

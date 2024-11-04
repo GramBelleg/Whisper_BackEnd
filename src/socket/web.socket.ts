@@ -7,6 +7,7 @@ import * as storyHandler from "./handlers/story.handlers";
 import { setupMessageEvents } from "./events/message.events";
 import { setupStoryEvents } from "./events/story.events";
 import { socketWrapper } from "./handlers/error.handler";
+import { setupPfpEvents } from "./events/pfp.events";
 
 const clients: Map<number, Socket> = new Map();
 
@@ -41,6 +42,8 @@ export const initWebSocketServer = (server: HTTPServer) => {
         setupMessageEvents(socket, userId, clients);
 
         setupStoryEvents(socket, userId, clients);
+
+        setupPfpEvents(socket, userId, clients);
 
         socket.on("close", () => {
             connectionHandler.endConnection(userId, clients);

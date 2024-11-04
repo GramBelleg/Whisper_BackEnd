@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { clearTokenCookie } from "@services/auth/token.service";
-import { deleteUserToken, deleteAllUserTokens } from "@services/prisma/auth/delete.service";
-import { getToken } from "@services/auth.service";
+import { deleteUserToken, deleteAllUserTokens } from "@services/auth/prisma/delete.service";
+import { getToken } from "@services/auth/token.service";
 
 async function logoutOne(req: Request, res: Response): Promise<void> {
     const userToken = getToken(req);

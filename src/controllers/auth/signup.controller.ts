@@ -1,15 +1,10 @@
 import { Request, Response } from "express";
 import * as authValidator from "@validators/auth";
 import { isUniqueUser, verifyRobotToken } from "@services/auth/signup.service";
-import {
-    cacheData,
-    createCode,
-    sendCode,
-    setExpiration,
-} from "@services/auth/confirmation.service";
+import { createCode, sendCode } from "@services/auth/code.service";
 import RedisOperation from "@src/@types/redis.operation";
 import bcrypt from "bcrypt";
-
+import { cacheData, setExpiration } from "@services/auth/redis.service";
 
 const signup = async (req: Request, res: Response): Promise<void> => {
     const user = req.body;
@@ -28,8 +23,9 @@ const signup = async (req: Request, res: Response): Promise<void> => {
 
     await isUniqueUser(user.email, user.userName, user.phoneNumber);
 
-    await verifyRobotToken(user.robotToken);
+    // await verifyRobotToken(user.robotToken);
 
+    //cache code with user email
     const codeExpiry = parseInt(process.env.CODE_EXPIRES_IN as string);
     const code = await createCode(user.email, RedisOperation.ConfirmEmail, codeExpiry);
 
