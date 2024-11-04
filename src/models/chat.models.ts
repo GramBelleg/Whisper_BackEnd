@@ -40,6 +40,7 @@ export type SentMessage = Pick<Message, "chatId" | "senderId" | "content" | "sen
             | "isSecret"
             | "isAnnouncement"
             | "mentions"
+            | "parentMessageId"
         >
     > & {
         parentMessage: ParentMessage;

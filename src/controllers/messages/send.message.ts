@@ -6,7 +6,7 @@ import { buildMessageWithTime } from "../messages/format.message";
 
 const handleSaveMessage = async (userId: number, message: SentMessage) => {
     const { parentMessage, ...messageWithoutParent } = message;
-    const messageData = { ...messageWithoutParent, parentMessageId: parentMessage ? parentMessage.id : null };
+    const messageData = { ...messageWithoutParent, parentMessageId: parentMessage?.id };
 
     const savedMessage = await saveMessage(userId, messageData);
 

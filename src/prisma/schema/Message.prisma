@@ -30,12 +30,12 @@ model Message {
   sentAt           DateTime         
   mentions         String[]
   media            String[]
-  parentMessageId  Int?              @unique
+  parentMessageId  Int?              
   sender           User              @relation(fields: [senderId], references: [id])
   chat             Chat              @relation(fields: [chatId], references: [id]) 
   voiceMessage     VoiceMessage?
   parentMessage    Message?          @relation("ReplyToMessage", fields: [parentMessageId], references: [id])
-  reply            Message?          @relation("ReplyToMessage") 
+  replies          Message[]         @relation("ReplyToMessage") 
   messageStatus    MessageStatus[]   
 }
 
