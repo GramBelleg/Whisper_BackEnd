@@ -72,20 +72,6 @@ const updatePhone = async (id: number, phoneNumber: string): Promise<string> => 
     }
 };
 
-const setStory = async (story: SaveableStory): Promise<Story> => {
-    try {
-        const createdStory = await db.story.create({
-            data: { ...story },
-        });
-        await saveStory(createdStory);
-        return createdStory;
-    } catch (error) {
-        throw new Error("Unable to set story");
-    }
-};
-
-//TODO: fix delete story
-
 //TODO: check the type of the return value
 const userInfo = async (email: string): Promise<any> => {
     const User = await db.user.findUnique({
@@ -235,7 +221,6 @@ const getUserContacts = async (userId: number) => {
 };
 
 export {
-    setStory,
     userInfo,
     updateBio,
     updateName,

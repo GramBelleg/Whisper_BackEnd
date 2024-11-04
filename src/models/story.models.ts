@@ -6,10 +6,13 @@ type SaveableStory = Pick<
     | "userId"
     | "content"
     | "media"
+    | "privacy"
 >;
 
 type omitId = Omit<SaveableStory, "id">;
+type body = Omit<omitId, "userId">;
 
-export type { SaveableStory, omitId };
+
+export type { SaveableStory, omitId, body };
 
 

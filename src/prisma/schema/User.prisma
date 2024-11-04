@@ -34,6 +34,7 @@ model User {
   story                     Story[]
   relating                  Relates[]            @relation("relating")
   relatedBy                 Relates[]            @relation("relatedBy")
+  storyView          storyView[]
 }
 
 model UserToken {
@@ -47,12 +48,27 @@ model UserToken {
 }
 
 model Story {
-  id      Int      @id @default(autoincrement())
+  id         Int         @id @unique @default(autoincrement())
+  userId     Int
+  user       User        @relation(fields: [userId], references: [id])
+  date       DateTime    @default(now())
+  isArchived Boolean     @default(false)
+  content    String
+  media      String
+  views      Int         @default(0)
+  privacy    Privacy     @default(Contact)
+  storyView  storyView[]
+}
+
+model storyView {
+  storyId Int
   userId  Int
   user    User     @relation(fields: [userId], references: [id])
-  date    DateTime @default(now())
-  content String
-  media   String
+  story   Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  isLiked Boolean  @default(false)
+  data    DateTime @default(now())
+
+  @@id([storyId, userId])
 }
 
 model Relates {
