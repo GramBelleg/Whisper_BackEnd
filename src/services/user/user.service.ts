@@ -1,9 +1,7 @@
 import db from "@src/prisma/PrismaClient";
 import { validatePhoneNumber } from "@validators/auth";
 import RedisOperation from "@src/@types/redis.operation";
-import { saveStory } from "@services/user/redis.service";
 import { Prisma, Privacy, Story } from "@prisma/client";
-import { SaveableStory } from "@models/story.models";
 import { verifyCode } from "@services/auth/code.service";
 import HttpError from "@src/errors/HttpError";
 

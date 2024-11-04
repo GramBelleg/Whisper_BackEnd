@@ -5,17 +5,17 @@ import { sendToClient } from "@socket/utils/socket.utils";
 import redisClient from "@src/redis/redis.client";
 import { SaveableStory } from "@models/story.models";
 import * as userServices from "@services/user/user.service";
-import { privacy, Story } from "@prisma/client";
+import { Privacy, Story } from "@prisma/client";
 
 const stroyParticipants = async (story: Story, clients: Map<number, Socket>): Promise<number[]> => {
     try {
-        const privacy: privacy = story.privacy;
+        const privacy: Privacy = story.privacy;
         let participants: number[] = [];
         switch (privacy) {
-            case "EVERYONE":
+            case "Everyone":
                 participants = Array.from(clients.keys());
                 break;
-            case "CONTACTS":
+            case "Contact":
                 participants = await getContacts(story.userId);
                 break;
             default:
