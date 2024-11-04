@@ -1,7 +1,7 @@
 import db from "@DB";
 import { Message } from "@prisma/client";
 import { getChatParticipantsIds } from "@services/chat/chat.service";
-import { SentMessage } from "@models/chat.models";
+import { SentMessage } from "@models/messages.models";
 
 //will be used with a web socket on(read) or on(delivered) for the status info view of the message
 export const getOtherMessageStatus = async (excludeUserId: number, messageId: number) => {
@@ -14,7 +14,7 @@ export const getOtherMessageStatus = async (excludeUserId: number, messageId: nu
 };
 
 export const getMessageSummary = async (id: number | null) => {
-    if(!id) return null;
+    if (!id) return null;
     const result = await db.message.findUnique({
         where: { id },
         select: {

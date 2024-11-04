@@ -1,6 +1,6 @@
 import { Socket } from "socket.io";
 import { socketWrapper } from "@socket/handlers/error.handler";
-import * as types from "@models/chat.models";
+import * as types from "@models/messages.models";
 import * as sendController from "@controllers/messages/send.message";
 import * as editController from "@controllers/messages/edit.message";
 import * as deleteController from "@controllers/messages/delete.message";

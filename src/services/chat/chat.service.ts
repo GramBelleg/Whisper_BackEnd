@@ -2,6 +2,7 @@ import db from "@DB";
 import { ChatSummary, LastMessage } from "@models/chat.models";
 import { ChatType } from "@prisma/client";
 import { getMessage } from "./message.service";
+import { MemberSummary } from "@models/chat.models";
 
 const getUserChats = async (userId: number) => {
     return await db.chatParticipant.findMany({
@@ -33,6 +34,31 @@ const getUserChats = async (userId: number) => {
             },
         },
     });
+};
+
+export const muteChat = async (chatId: number, userId: number): Promise<void> => {
+    await db.chatParticipant.update({
+        where: { chatId_userId: { chatId, userId } },
+        data: { isMuted: true },
+    });
+};
+
+export const getChatMembers = async (chatId: number): Promise<MemberSummary[]> => {
+    const chatParticipants = await db.chatParticipant.findMany({
+        where: { chatId },
+        select: {
+            user: {
+                select: {
+                    id: true,
+                    userName: true,
+                    profilePic: true,
+                    lastSeen: true,
+                    hasStory: true,
+                },
+            },
+        },
+    });
+    return chatParticipants.map((participant) => participant.user);
 };
 
 const createChatParticipants = async (users: number[], chatId: number) => {
@@ -147,7 +173,6 @@ export const getLastMessage = async (
     return null;
 };
 
-
 export const setLastMessage = async (chatId: number, messageId: number): Promise<void> => {
     const messageStatus = await db.messageStatus.findFirst({
         where: { messageId },
@@ -177,4 +202,3 @@ export const setNewLastMessage = async (chatId: number): Promise<void> => {
         }
     });
 };
-

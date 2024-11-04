@@ -1,7 +1,7 @@
 import { saveMessage } from "@services/chat/message.service";
 import { setLastMessage } from "@services/chat/chat.service";
 import { saveExpiringMessage } from "@services/redis/chat.service";
-import { ReceivedMessage, SentMessage } from "@models/chat.models";
+import { ReceivedMessage, SentMessage } from "@models/messages.models";
 import { buildMessageWithTime } from "../messages/format.message";
 
 const handleSaveMessage = async (userId: number, message: SentMessage) => {

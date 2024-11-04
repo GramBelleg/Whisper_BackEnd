@@ -1,4 +1,4 @@
-import { ReceivedMessage } from "@models/chat.models";
+import { ReceivedMessage } from "@models/messages.models";
 import { Message } from "@prisma/client";
 import {
     getOtherMessageStatus,
@@ -30,9 +30,9 @@ export const buildReceivedMessage = async (
 ): Promise<ReceivedMessage[]> => {
     const parentSummary = await getMessageSummary(message.parentMessageId);
 
-    const {parentMessageId, ...messageWithoutParentId} = message;
+    const { parentMessageId, ...messageWithoutParentId } = message;
 
-    const result = {...messageWithoutParentId, parentMessage: parentSummary};
-    
+    const result = { ...messageWithoutParentId, parentMessage: parentSummary };
+
     return buildMessageWithTime(userId, result);
-}
+};
