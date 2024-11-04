@@ -15,6 +15,8 @@ channels:
     $ref: './channels/user.yaml#/story'  
   likeStory:
     $ref: './channels/user.yaml#/likeStory'  
+  viewStory:
+    $ref: './channels/user.yaml#/viewStory'  
   deleteStory:
     $ref: './channels/user.yaml#/deleteStory'
   
