@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import * as userServices from "@services/user/user.service";
 import { validateEmail } from "@validators/auth";
 import { validateReadReceipt } from "@validators/user";
-import { updateReadReceipt } from "@services/prisma/user/update.service";
+import { updateReadReceipt } from "@services/user/prisma/update.service";
 import { findUserByEmail } from "@services/auth/prisma/find.service";
 import { createCode, sendCode } from "@services/auth/code.service";
 import RedisOperation from "@src/@types/redis.operation";
@@ -100,10 +100,10 @@ const changeReadReceipt = async (req: Request, res: Response) => {
     validateReadReceipt(req.body.readReceipts);
     await updateReadReceipt(req.userId, req.body.readReceipts);
     res.status(200).json({
-        "status": "success",
-        "message": "Read receipts have been updated."
+        status: "success",
+        message: "Read receipts have been updated.",
     });
-}
+};
 
 const changeAutoDownloadSize = async (req: Request, res: Response) => {
     const size = req.body.size;
@@ -154,7 +154,7 @@ export {
     updatePhone,
     changePic,
     changeUserName,
-    changeReadReceipt
+    changeReadReceipt,
     changeAutoDownloadSize,
     changeLastSeenPrivacy,
     changePfpPrivacy,

@@ -1,7 +1,6 @@
 import { Request } from "express";
 import jwt, { TokenExpiredError } from "jsonwebtoken";
-import { getToken, verifyUserToken } from "@services/auth/token.service";
-import { checkUserTokenExist } from "@services/auth/token.service";
+import { getToken, verifyUserToken, checkUserTokenExist } from "@services/auth/token.service";
 import { deleteUserToken } from "@services/auth/prisma/delete.service";
 
 jest.mock("@services/auth/token.service");

@@ -2,26 +2,22 @@ import request from "supertest";
 import { faker } from "@faker-js/faker";
 import * as authValidator from "@validators/auth";
 import { isUniqueUser, verifyRobotToken } from "@services/auth/signup.service";
-import {
-    cacheData,
-    createCode,
-    sendCode,
-    setExpiration,
-} from "@services/auth/confirmation.service";
+import { cacheData, setExpiration } from "@services/auth/redis.service";
+import { createCode, sendCode } from "@services/auth/code.service";
 import HttpError from "@src/errors/HttpError";
 import app from "@src/app";
 
 jest.mock("@validators/auth");
 jest.mock("@services/auth/signup.service");
-jest.mock("@services/auth/confirmation.service");
-
+jest.mock("@services/auth/code.service");
+jest.mock("@services/auth/redis.service");
 
 describe("test signup controller", () => {
     const data = {
         email: faker.internet.email().toLowerCase(),
         userName: faker.internet.username().toLowerCase(),
         name: faker.person.fullName().toLowerCase(),
-        password: '123456789',
+        password: "123456789",
         phoneNumber: faker.phone.number({ style: "international" }),
     };
     beforeAll(() => {
@@ -46,9 +42,7 @@ describe("test signup controller", () => {
     });
     it("should signup be successfully", async () => {
         (sendCode as jest.Mock).mockResolvedValueOnce(undefined);
-        const response = await request(app)
-            .post("/api/auth/signup")
-            .send(data);
+        const response = await request(app).post("/api/auth/signup").send(data);
         expect(response.status).toEqual(200);
         expect(response.body).toEqual({
             status: "success",
@@ -60,9 +54,7 @@ describe("test signup controller", () => {
     });
     it("should signup be unsuccessfully", async () => {
         (sendCode as jest.Mock).mockRejectedValueOnce(new HttpError("Error in sending code", 500));
-        const response = await request(app)
-            .post("/api/auth/signup")
-            .send(data);
+        const response = await request(app).post("/api/auth/signup").send(data);
         expect(response.status).toEqual(500);
         expect(response.body).toEqual({
             success: false,

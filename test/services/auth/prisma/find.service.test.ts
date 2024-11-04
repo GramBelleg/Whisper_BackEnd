@@ -2,7 +2,7 @@ import {
     findUserByEmail,
     findUserByPhoneNumber,
     findUserByUserName,
-    findUserByUserToken,
+    findTokenByUserIdToken,
 } from "@src/services/auth/prisma/find.service";
 import { createRandomUser, createUserToken } from "@src/services/auth/prisma/create.service";
 import { User } from "@prisma/client";

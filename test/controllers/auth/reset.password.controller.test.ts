@@ -1,9 +1,14 @@
 import request from "supertest";
 import { faker } from "@faker-js/faker";
-import { validateEmail, validateResetCode } from "@validators/auth";
+import {
+    validateEmail,
+    validatePassword,
+    validateConfirmPassword,
+    validateCode,
+} from "@validators/auth";
 import { updatePassword } from "@services/auth/prisma/update.service";
 import { checkEmailExistDB } from "@services/auth/login.service";
-import { createCode, sendCode, verifyCode } from "@services/auth/confirmation.service";
+import { createCode, sendCode, verifyCode } from "@services/auth/code.service";
 import { createAddToken, createTokenCookie } from "@services/auth/token.service";
 import { createRandomUser } from "@src/services/auth/prisma/create.service";
 import HttpError from "@src/errors/HttpError";
@@ -12,7 +17,7 @@ import app from "@src/app";
 jest.mock("@validators/auth");
 jest.mock("@services/auth/prisma/update.service");
 jest.mock("@services/auth/login.service");
-jest.mock("@services/auth/confirmation.service");
+jest.mock("@services/auth/code.service");
 jest.mock("@services/auth/token.service");
 
 beforeAll(() => {

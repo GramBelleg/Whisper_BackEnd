@@ -2,9 +2,20 @@ import HttpError from "@src/errors/HttpError";
 import Joi, { ObjectSchema, ValidationError } from "joi";
 import { checkPhoneNumber } from "./phone";
 
+const validateSignUp = (user: any): any => {
+    validateName(user.name);
+    validateUserName(user.userName);
+    validateEmail(user.email);
+    user.phoneNumber = validatePhoneNumber(user);
+    validatePassword(user.password);
+    validateConfirmPassword(user.password, user.confirmPassword);
+    validateRobotToken(user.robotToken);
+};
 const validateName = (name: any) => {
     const schema: ObjectSchema = Joi.object({
-        name: Joi.string().min(6).max(50)
+        name: Joi.string()
+            .min(6)
+            .max(50)
             .messages({
                 "string.base": "name must be a string",
                 "string.empty": "name cannot be empty",
@@ -25,11 +36,13 @@ const validateName = (name: any) => {
 
 const validateUserName = (userName: any) => {
     const schema: ObjectSchema = Joi.object({
-        userName: Joi.string().min(6).max(50)
+        userName: Joi.string()
+            .min(1)
+            .max(50)
             .messages({
                 "string.base": "user name must be a string",
                 "string.empty": "user name cannot be empty",
-                "string.min": "user name must be at least 6 characters",
+                "string.min": "user name must be at least 1 character",
                 "string.max": "user name must be at most 50 characters",
                 "any.required": "user name is required",
             })
@@ -46,7 +59,8 @@ const validateUserName = (userName: any) => {
 
 const validateEmail = (email: any) => {
     const schema: ObjectSchema = Joi.object({
-        email: Joi.string().email()
+        email: Joi.string()
+            .email()
             .messages({
                 "string.base": "email must be a string",
                 "string.empty": "email cannot be empty",
@@ -76,9 +90,12 @@ const validatePhoneNumber = (phoneNumber: any) => {
             })
             .required(),
     });
-    const error: ValidationError | undefined = schema.validate({ phoneNumber }, {
-        abortEarly: false,
-    }).error;
+    const error: ValidationError | undefined = schema.validate(
+        { phoneNumber },
+        {
+            abortEarly: false,
+        }
+    ).error;
     if (error) {
         throw new HttpError(error.details[0].message, 422);
     }
@@ -87,7 +104,9 @@ const validatePhoneNumber = (phoneNumber: any) => {
 
 const validatePassword = (password: any) => {
     const schema: ObjectSchema = Joi.object({
-        password: Joi.string().min(6).max(50)
+        password: Joi.string()
+            .min(6)
+            .max(50)
             .messages({
                 "string.base": "password must be a string",
                 "string.empty": "password cannot be empty",
@@ -108,21 +127,17 @@ const validatePassword = (password: any) => {
 
 const validateConfirmPassword = (password: any, confirmPassword: any) => {
     const schema: ObjectSchema = Joi.object({
-        password: Joi.string().required()
-            .messages({
-                "string.base": "password must be a string",
-                "string.empty": "password cannot be empty",
-                "any.required": "password is required",
-            }),
-        confirmPassword: Joi.string()
-            .valid(Joi.ref("password"))
-            .required()
-            .messages({
-                "any.only": "passwords don't match",
-                "string.base": "confirm password must be a string",
-                "string.empty": "confirm password cannot be empty",
-                "any.required": "confirm password is required",
-            }),
+        password: Joi.string().required().messages({
+            "string.base": "password must be a string",
+            "string.empty": "password cannot be empty",
+            "any.required": "password is required",
+        }),
+        confirmPassword: Joi.string().valid(Joi.ref("password")).required().messages({
+            "any.only": "passwords don't match",
+            "string.base": "confirm password must be a string",
+            "string.empty": "confirm password cannot be empty",
+            "any.required": "confirm password is required",
+        }),
     });
     const error: ValidationError | undefined = schema.validate(
         { password, confirmPassword },
@@ -154,7 +169,8 @@ const validateRobotToken = (robotToken: any) => {
 
 const validateCode = (code: any) => {
     const schema: ObjectSchema = Joi.object({
-        code: Joi.string().length(8)
+        code: Joi.string()
+            .length(8)
             .messages({
                 "string.base": "code must be a string",
                 "string.empty": "code cannot be empty",
@@ -170,7 +186,7 @@ const validateCode = (code: any) => {
     if (error) {
         throw new HttpError(error.details[0].message, 422);
     }
-}
+};
 
 export {
     validateName,
@@ -181,4 +197,5 @@ export {
     validateConfirmPassword,
     validateRobotToken,
     validateCode,
+    validateSignUp,
 };

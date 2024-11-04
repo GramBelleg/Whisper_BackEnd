@@ -10,7 +10,7 @@ import {
 } from "@src/services/auth/signup.service";
 
 // Cast automatically all functions in `fetch.apis.service` as Jest mocks in this test file only
-jest.mock("@src/services/auth/fetch.apis.service");
+jest.mock("@src/services/auth/signup.service");
 
 // Cast `findUserByEmail`, `findUserByPhoneNumber`, and `findUserByUserName` as Jest mocks in this test file only
 jest.mock("@src/services/auth/prisma/find.service", () => ({

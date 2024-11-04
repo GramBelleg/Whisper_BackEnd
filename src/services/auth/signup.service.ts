@@ -36,4 +36,4 @@ const isUniqueUser = async (email: string, userName: string, phoneNumber: string
         throw new DuplicateUserError("User already exists", 409, duplicate);
 };
 
-export { verifyRobotToken, isUniqueUser };
+export { verifyRobotToken, isUniqueUser, fetchRobotTokenData };

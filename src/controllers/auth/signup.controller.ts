@@ -6,24 +6,21 @@ import RedisOperation from "@src/@types/redis.operation";
 import bcrypt from "bcrypt";
 import { cacheData, setExpiration } from "@services/auth/redis.service";
 
-const signup = async (req: Request, res: Response): Promise<void> => {
-    const user = req.body;
+const cleanUserInfo = (user: any) => {
     user.email = user.email?.trim().toLowerCase();
     user.userName = user.userName?.trim().toLowerCase();
     user.phoneNumber = user.phoneNumber?.trim();
-    authValidator.validateName(user.name);
-    authValidator.validateUserName(user.userName);
-    authValidator.validateEmail(user.email);
-    user.phoneNumber = authValidator.validatePhoneNumber(user);
-    authValidator.validatePassword(user.password);
-    authValidator.validateConfirmPassword(user.password, user.confirmPassword);
-    authValidator.validateRobotToken(user.robotToken);
+};
+const signup = async (req: Request, res: Response): Promise<void> => {
+    const user = req.body;
 
+    cleanUserInfo(user);
+    authValidator.validateSignUp(user);
     user.password = bcrypt.hashSync(user.password, 10);
 
     await isUniqueUser(user.email, user.userName, user.phoneNumber);
 
-    // await verifyRobotToken(user.robotToken);
+    await verifyRobotToken(user.robotToken);
 
     //cache code with user email
     const codeExpiry = parseInt(process.env.CODE_EXPIRES_IN as string);

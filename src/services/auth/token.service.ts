@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import jwt, { TokenExpiredError } from "jsonwebtoken";
 import { createUserToken } from "@services/auth/prisma/create.service";
-import { findUserByUserToken } from "@services/auth/prisma/find.service";
+import { findTokenByUserIdToken } from "@services/auth/prisma/find.service";
 import { deleteUserToken } from "./prisma/delete.service";
 
 function createTokenCookie(res: Response, token: string) {
@@ -45,15 +45,13 @@ async function checkUserTokenExist(userId: number, userToken: string) {
 }
 
 function getToken(req: Request) {
-    let token: string;
     if (req.cookies.token) {
-        token = req.cookies.token;
+        return req.cookies.token;
     } else if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
-        token = req.headers.authorization.replace("Bearer", "").trim();
+        return req.headers.authorization.replace("Bearer", "").trim();
     } else {
         throw new Error("Token is not found");
     }
-    return token;
 }
 
 async function verifyUserToken(userToken: string) {

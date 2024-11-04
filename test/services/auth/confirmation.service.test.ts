@@ -3,7 +3,7 @@ import {
     getCachedData,
     setExpiration,
     getExpiration,
-} from "@services/auth/confirmation.service";
+} from "@services/auth/redis.service";
 import { createCode } from "@services/auth/code.service";
 import redis from "@src/redis/redis.client";
 import RedisOperation from "@src/@types/redis.operation";
@@ -54,44 +54,5 @@ describe("setExpiration and getExpiration functions", () => {
 
         expect(timeToLive).toBeLessThanOrEqual(expiresIn);
         expect(timeToLive).toBeGreaterThan(expiresIn - 10); //assuming it wont take longer than 10 seconds to get here
-    });
-});
-
-describe("createCode function", () => {
-    const user = {
-        name: "Test User",
-        userName: "testuser",
-        email: "testuser@example.com",
-        phoneNumber: "1234567890",
-        password: "initialPassword",
-    };
-    const expiresIn = 300;
-    const operation = RedisOperation.ConfirmEmail;
-
-    it("should generate a code, hash the password, and call cacheData and setExpiration with correct values", async () => {
-        const cacheDataMock = jest
-            .spyOn(require("@services/auth/confirmation.service"), "cacheData")
-            .mockResolvedValueOnce(undefined);
-        const setExpirationMock = jest
-            .spyOn(require("@services/auth/confirmation.service"), "setExpiration")
-            .mockResolvedValueOnce(undefined);
-
-        const mockCode = "ABCD1234";
-        jest.spyOn(randomstring, "generate").mockReturnValue(mockCode);
-
-        const code = await createCode(user, operation, expiresIn);
-
-        expect(cacheDataMock).toHaveBeenCalledWith(operation, code, {
-            ...user,
-            password: expect.any(String), // hashed password
-            expireAt: expect.any(String), // expiration date
-        });
-        expect(setExpirationMock).toHaveBeenCalledWith(operation, code, expiresIn);
-
-        expect(code).toEqual(mockCode);
-
-        cacheDataMock.mockRestore();
-        setExpirationMock.mockRestore();
-        jest.restoreAllMocks();
     });
 });

@@ -53,8 +53,8 @@ app.use(errorHandler);
 cron.schedule("0 3 * * *", deleteExpiredTokens); // delete expired tokens every day at 3 AM
 
 // Comment this code in only testing to avoid EADDRINUSE error when running controllers tests which use the same port
-server.listen(parseInt(process.env.PORT as string), () => {
-    console.log(`Listening on port ${process.env.PORT}`);
-});
+// server.listen(parseInt(process.env.PORT as string), () => {
+//     console.log(`Listening on port ${process.env.PORT}`);
+// });
 
 export default app;

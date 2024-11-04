@@ -7,7 +7,7 @@ import {
     checkUserTokenExist,
 } from "@services/auth/token.service";
 import { createUserToken } from "@services/auth/prisma/create.service";
-import { findUserByUserToken } from "@services/auth/prisma/find.service";
+import { findTokenByUserIdToken } from "@services/auth/prisma/find.service";
 
 jest.mock("@services/auth/prisma/create.service");
 jest.mock("@services/auth/prisma/find.service");
