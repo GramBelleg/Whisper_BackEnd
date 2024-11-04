@@ -89,6 +89,38 @@ likeStory:
             type: string
           profilePic:             #added user details if you're on the likes list
             type: string
+viewStory:
+  description: Channel for viewing a story.
+
+  subscribe:
+    operationId: viewStory
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          storyId:
+            type: integer
+          userId:
+            type: integer
+            description: id of the user who's story got liked
+
+
+  publish:
+    operationId: getViewsStory
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          storyId:
+            type: integer
+          userId:
+            type: integer
+          userName:
+            type: string
+          profilePic:             #added user details if you're on the likes list
+            type: string
 
 deleteStory:
   description: Channel for deleting a story.
