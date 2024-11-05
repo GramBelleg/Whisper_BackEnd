@@ -1,7 +1,7 @@
 import db from "@DB";
 import { Message } from "@prisma/client";
 import { getChatParticipantsIds } from "@services/chat/chat.service";
-import { SentMessage } from "@models/messages.models";
+import { ReceivedMessage, SentMessage } from "@models/messages.models";
 
 //will be used with a web socket on(read) or on(delivered) for the status info view of the message
 export const getOtherMessageStatus = async (excludeUserId: number, messageId: number) => {
@@ -11,6 +11,22 @@ export const getOtherMessageStatus = async (excludeUserId: number, messageId: nu
             time: true,
         },
     });
+};
+
+export const getForwardedFromMessage = async (
+    forwarded: boolean,
+    forwardedFromUserId: number | null
+) => {
+    if (!forwarded || !forwardedFromUserId) return null;
+    const result = await db.user.findUnique({
+        where: { id: forwardedFromUserId },
+        select: {
+            id: true,
+            userName: true,
+        },
+    });
+    if (!result) return null;
+    return result;
 };
 
 export const getMessageSummary = async (id: number | null) => {

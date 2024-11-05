@@ -2,7 +2,7 @@ import { saveMessage } from "@services/chat/message.service";
 import { setLastMessage } from "@services/chat/chat.service";
 import { saveExpiringMessage } from "@services/redis/chat.service";
 import { ReceivedMessage, SentMessage } from "@models/messages.models";
-import { buildMessageWithTime } from "../messages/format.message";
+import { buildMessageWithCustomObjects } from "../messages/format.message";
 
 const handleSaveMessage = async (userId: number, message: SentMessage) => {
     const { parentMessage, ...messageWithoutParent } = message;
@@ -10,8 +10,7 @@ const handleSaveMessage = async (userId: number, message: SentMessage) => {
 
     const savedMessage = await saveMessage(userId, messageData);
 
-    const { parentMessageId, ...newSavedMessage } = savedMessage;
-    const savedMessageWithReply = { ...newSavedMessage, parentMessage };
+    const savedMessageWithReply = { ...savedMessage, parentMessage };
 
     await setLastMessage(message.chatId, savedMessage.id);
 
@@ -27,7 +26,7 @@ export const handleSend = async (
         if (message.selfDestruct) {
             await saveExpiringMessage(savedMessage.id, savedMessage.expiresAfter);
         }
-        const result = await buildMessageWithTime(userId, savedMessage);
+        const result = await buildMessageWithCustomObjects(userId, savedMessage);
 
         return result;
     } catch (error) {

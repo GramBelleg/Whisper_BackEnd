@@ -1,27 +1,46 @@
-import { ReceivedMessage } from "@models/messages.models";
+import { ReceivedMessage, ToBeFormattedMessage } from "@models/messages.models";
 import { Message } from "@prisma/client";
 import {
     getOtherMessageStatus,
     getUserMessageStatus,
     getMessageSummary,
+    getForwardedFromMessage,
 } from "@services/chat/message.service";
 
-export const buildMessageWithTime = async (
+const addTimeHandler = async (
+    handler: Function,
     userId: number,
-    message: Omit<ReceivedMessage, "time">
+    messageId: number,
+    message: any
+) => {
+    const timeData = await handler(userId, messageId);
+    if (!timeData) throw new Error("Time data is null");
+    return { ...message, ...timeData };
+};
+
+export const buildMessageWithCustomObjects = async (
+    userId: number,
+    message: ToBeFormattedMessage
 ): Promise<ReceivedMessage[]> => {
-    const addTimeHandler = async (handler: Function) => {
-        const timeData = await handler(userId, message.id);
-        if (!timeData) {
-            throw new Error("Time data is null");
-        }
-        return { ...message, ...timeData };
-    };
+    const senderMessage = await addTimeHandler(getUserMessageStatus, userId, message.id, message);
+    const receiverMessage = await addTimeHandler(
+        getOtherMessageStatus,
+        userId,
+        message.id,
+        message
+    );
 
-    const senderMessage = await addTimeHandler(getUserMessageStatus);
-    const receiverMessage = await addTimeHandler(getOtherMessageStatus);
+    const forwardedFrom = await getForwardedFromMessage(
+        message.forwarded,
+        message.forwardedFromUserId
+    );
 
-    return [senderMessage, receiverMessage];
+    const messages = [senderMessage, receiverMessage].map((msg) => {
+        const { forwardedFromUserId, parentMessageId, ...rest } = msg;
+        return { ...rest, forwardedFrom };
+    });
+
+    return messages;
 };
 
 export const buildReceivedMessage = async (
@@ -29,10 +48,6 @@ export const buildReceivedMessage = async (
     message: Message
 ): Promise<ReceivedMessage[]> => {
     const parentSummary = await getMessageSummary(message.parentMessageId);
-
-    const { parentMessageId, ...messageWithoutParentId } = message;
-
-    const result = { ...messageWithoutParentId, parentMessage: parentSummary };
-
-    return buildMessageWithTime(userId, result);
+    const result = { ...message, parentMessage: parentSummary };
+    return buildMessageWithCustomObjects(userId, result);
 };

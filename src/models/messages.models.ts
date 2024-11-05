@@ -1,4 +1,4 @@
-import { Message } from "@prisma/client";
+import { Message, User } from "@prisma/client";
 
 type ParentMessage =
     | null
@@ -7,8 +7,13 @@ type ParentMessage =
               senderName: string;
           });
 
-export type ReceivedMessage = Omit<Message, "parentMessageId"> & {
+type ForwardedFrom = null | Pick<User, "id" | "userName">;
+
+export type ToBeFormattedMessage = Omit<Message, "time"> & { parentMessage: ParentMessage };
+
+export type ReceivedMessage = Omit<Message, "forwardedFromUserId" | "parentMessageId"> & {
     parentMessage: ParentMessage;
+    forwardedFrom: ForwardedFrom;
     time: Date;
 };
 
@@ -24,6 +29,7 @@ export type SentMessage = Pick<Message, "chatId" | "senderId" | "content" | "sen
             | "isAnnouncement"
             | "mentions"
             | "parentMessageId"
+            | "forwardedFromUserId"
         >
     > & {
         parentMessage: ParentMessage;

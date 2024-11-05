@@ -13,30 +13,32 @@ enum MessageType {
 
 
 model Message {
-  id               Int               @id @default(autoincrement())
-  chatId           Int 
-  senderId         Int 
-  content          String
-  read             Boolean           @default(false)
-  delivered        Boolean           @default(false)
-  forwarded        Boolean           @default(false)
-  pinned           Boolean           @default(false)
-  edited           Boolean           @default(false)
-  selfDestruct     Boolean           @default(false)
-  isAnnouncement   Boolean           @default(false)
-  isSecret         Boolean           @default(false)
-  expiresAfter     Int?      
-  type             MessageType
-  sentAt           DateTime         
-  mentions         String[]
-  media            String[]
-  parentMessageId  Int?              
-  sender           User              @relation(fields: [senderId], references: [id])
-  chat             Chat              @relation(fields: [chatId], references: [id]) 
-  voiceMessage     VoiceMessage?
-  parentMessage    Message?          @relation("ReplyToMessage", fields: [parentMessageId], references: [id])
-  replies          Message[]         @relation("ReplyToMessage") 
-  messageStatus    MessageStatus[]   
+  id                    Int                @id @default(autoincrement())
+  chatId                Int
+  senderId              Int
+  content               String
+  forwardedFromUserId   Int?
+  read                  Boolean            @default(false)
+  delivered             Boolean            @default(false)
+  forwarded             Boolean            @default(false)
+  pinned                Boolean            @default(false)
+  edited                Boolean            @default(false)
+  selfDestruct          Boolean            @default(false)
+  isAnnouncement        Boolean            @default(false)
+  isSecret              Boolean            @default(false)
+  expiresAfter          Int?
+  type                  MessageType
+  sentAt                DateTime
+  mentions              String[]
+  media                 String[]
+  parentMessageId       Int?
+  sender                User               @relation(fields: [senderId], references: [id])
+  chat                  Chat               @relation(fields: [chatId], references: [id])
+  voiceMessage          VoiceMessage?
+  parentMessage         Message?           @relation("ReplyToMessage", fields: [parentMessageId], references: [id])
+  replies               Message[]          @relation("ReplyToMessage")
+  forwardedFrom         User?              @relation("ForwardedMessage", fields: [forwardedFromUserId], references: [id])
+  messageStatus         MessageStatus[]
 }
 
 model MessageStatus {
