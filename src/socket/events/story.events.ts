@@ -16,13 +16,17 @@ export const setupStoryEvents = (
         "story",
         socketWrapper(async (story: storyTypes.body) => {
             try {
+                console.log(story);
                 const createdStory = await storyController.setStory({
                     ...story,
                     userId: connectedUserId,
                 });
+                console.log(story);
+
                 if (createdStory) {
                     await storyHandler.postStory(clients, "story", createdStory);
                 }
+                console.log(story);
             } catch (e: any) {
                 throw new Error("Failed to create story");
             }
@@ -31,14 +35,9 @@ export const setupStoryEvents = (
 
     socket.on(
         "deleteStory",
-        socketWrapper(async (storyId: number) => {
-            try {
-                const deletedStory = await storyController.deleteStory(connectedUserId, storyId);
-                if (deletedStory)
-                    await storyHandler.deleteStory(clients, "deleteStory", deletedStory);
-            } catch (e: any) {
-                throw new Error("Failed to delete story");
-            }
+        socketWrapper(async (story: { storyId: number }) => {
+            const deletedStory = await storyController.deleteStory(connectedUserId, story.storyId);
+            if (deletedStory) await storyHandler.deleteStory(clients, "deleteStory", deletedStory);
         })
     );
 

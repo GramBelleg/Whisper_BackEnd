@@ -1,5 +1,4 @@
 import { Socket } from "socket.io";
-import { getContacts } from "@services/story/story.service";
 import { archiveStory } from "@services/story/story.service";
 import { sendToClient } from "@socket/utils/socket.utils";
 import redisClient from "@src/redis/redis.client";
@@ -16,7 +15,7 @@ const stroyParticipants = async (story: Story, clients: Map<number, Socket>): Pr
                 participants = Array.from(clients.keys());
                 break;
             case "Contact":
-                participants = await getContacts(story.userId);
+                participants = await userServices.getUserContacts(story.userId);
                 break;
             default:
                 participants = [story.userId];

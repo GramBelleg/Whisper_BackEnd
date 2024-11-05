@@ -144,6 +144,17 @@ const changePfpPrivacy = async (req: Request, res: Response) => {
         message: "Privacy settings updated.",
     });
 };
+const addContact = async (req: Request, res: Response) => {
+    const relatedById = req.body.id;
+    const relatingId = req.userId;
+    if (!relatedById) throw new HttpError("No user specified to add", 404);
+
+    await userServices.addContact(relatingId, relatedById);
+    res.status(200).json({
+        status: "success",
+        message: "User added successfully.",
+    });
+};
 
 export {
     userInfo,
@@ -158,4 +169,5 @@ export {
     changeAutoDownloadSize,
     changeLastSeenPrivacy,
     changePfpPrivacy,
+    addContact,
 };

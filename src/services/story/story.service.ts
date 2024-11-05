@@ -3,72 +3,52 @@ import { Story, storyView } from "@prisma/client";
 import * as storyType from "@models/story.models";
 import { tr } from "@faker-js/faker/.";
 
-
 //TODO: except bloced people !!!!!!!!!!!!
-const getContacts = async (userId: number): Promise<number[]> => {
-    const blocked: Array<number> = [];
-    const contacts = await db.chat.findMany({
-        where: {
-            participants: {
-                some: {
-                    userId,
-                    isContact: true,
-                    NOT: { userId: { in: [...blocked] } }
-                }
-            },
-            type: "DM"
-        },
-        select: { participants: { select: { userId: true } } },
-    });
-    const results = contacts.flatMap((contact) => contact.participants.map((participant) => participant.userId));
-    return results;
-};
 
 const saveStory = async (story: storyType.omitId): Promise<Story> => {
-
     try {
-    const createdStory: Story = await db.story.create({
-        data: {
-            ...story,
-        },
-    });
-    return createdStory;
+        const createdStory: Story = await db.story.create({
+            data: {
+                ...story,
+            },
+        });
+        return createdStory;
     } catch (e: any) {
         throw new Error("Failed to create story");
     }
 };
 
-const archiveStory = async (userId: number ,storyId: number): Promise<void> => {
+const archiveStory = async (userId: number, storyId: number): Promise<void> => {
     try {
-        const archivedStory: Story =  await db.story.update({
+        const archivedStory: Story = await db.story.update({
             where: {
                 id: storyId,
-                userId: userId
+                userId: userId,
             },
             data: {
-                isArchived: true
+                isArchived: true,
             },
         });
-        if(!archivedStory) throw new Error("Failed to archive story");
+        if (!archivedStory) throw new Error("Failed to archive story");
     } catch (error: any) {
         throw new Error(`Error in archiveStory: ${error.message}`);
     }
-}
+};
 
-const deleteStory = async (userId: number ,storyId: number): Promise<Story> => {
+const deleteStory = async (userId: number, storyId: number): Promise<Story> => {
     try {
         const deletedStory: Story = await db.story.delete({
             where: {
                 id: storyId,
-                userId: userId
-            }
+                userId: userId,
+            },
         });
-        if(!deletedStory) throw new Error("Failed to delete story");
+        if (!deletedStory) throw new Error("Failed to delete story");
         return deletedStory;
     } catch (error: any) {
         throw new Error(`Error in deleteStory: ${error.message}`);
     }
-}
+};
 
 const likeStory = async (userId: number, storyId: number): Promise<storyView> => {
     try {
@@ -77,15 +57,14 @@ const likeStory = async (userId: number, storyId: number): Promise<storyView> =>
             where: {
                 storyId_userId: {
                     storyId,
-                    userId
-                }
+                    userId,
+                },
             },
             data: {
-                isLiked: true
-            }
+                isLiked: true,
+            },
         });
-        if(!likedStory) 
-            throw new Error("Story not found");
+        if (!likedStory) throw new Error("Story not found");
         return likedStory;
     } catch (error: any) {
         // Check if the error indicates that the record does not exist
@@ -97,17 +76,15 @@ const getStoryUserId = async (storyId: number): Promise<number> => {
     try {
         const story = await db.story.findUnique({
             where: {
-                id: storyId
+                id: storyId,
             },
-            select: {  
-                userId: true
-            }
+            select: {
+                userId: true,
+            },
         });
-        if(!story) 
-            throw new Error("Story not found");
+        if (!story) throw new Error("Story not found");
         return story.userId;
-    }
-    catch (error: any) {
+    } catch (error: any) {
         throw new Error(`Error in getStoryUserId: ${error.message}`);
     }
 };
@@ -117,23 +94,22 @@ const viewStory = async (userId: number, storyId: number): Promise<storyView> =>
         const data: storyView = await db.storyView.create({
             data: {
                 userId,
-                storyId
-            }
+                storyId,
+            },
         });
         await db.story.update({
             where: {
-                id: storyId
+                id: storyId,
             },
             data: {
                 views: {
-                    increment: 1
-                }
-            }
+                    increment: 1,
+                },
+            },
         });
         return data;
-    }
-    catch (error: any) {
+    } catch (error: any) {
         throw new Error(`Error in viewStory: ${error.message}`);
     }
 };
-export { getContacts, saveStory, archiveStory, deleteStory, likeStory, getStoryUserId, viewStory };
+export { saveStory, archiveStory, deleteStory, likeStory, getStoryUserId, viewStory };

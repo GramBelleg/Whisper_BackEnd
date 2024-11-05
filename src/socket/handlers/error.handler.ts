@@ -7,7 +7,7 @@ export const socketWrapper = (handler: Function) => {
             return await handler(...args);
         } catch (err: Error | any) {
             process.env.NODE_ENV === "development"
-                ? console.log("Socket error:", err.message)
+                ? console.log("Socket error:", err.message, "\n", err.stack)
                 : undefined;
             socket.emit("error", {
                 message: err.message || "Something went wrong",

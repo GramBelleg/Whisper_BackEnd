@@ -14,13 +14,9 @@ const setStory = async (story: storyType.omitId): Promise<Story> => {
 };
 
 const deleteStory = async (userId: number, storyId: number): Promise<Story> => {
-    try {
-        const deletedStory = await storyService.deleteStory(userId, storyId);
-        await redisService.deleteStory(deletedStory.userId, deletedStory.id);
-        return deletedStory;
-    } catch (e: any) {
-        throw new Error("Failed to delete story");
-    }
+    const deletedStory = await storyService.deleteStory(userId, storyId);
+    await redisService.deleteStory(deletedStory.userId, deletedStory.id);
+    return deletedStory;
 };
 
 const likeStory = async (userId: number, storyId: number): Promise<void> => {

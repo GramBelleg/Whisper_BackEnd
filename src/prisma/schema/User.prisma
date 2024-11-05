@@ -54,9 +54,9 @@ model Story {
   date       DateTime    @default(now())
   isArchived Boolean     @default(false)
   content    String
-  media      String
+  media      String?
   views      Int         @default(0)
-  privacy    Privacy     @default(Contact)
+  privacy    Privacy     @default(Everyone)
   storyView  storyView[]
 }
 

@@ -25,6 +25,7 @@ router.put("/block", asyncHandler(handleUserBlocks));
 router.put("/setAutoDownloadSize", asyncHandler(userController.changeAutoDownloadSize));
 router.put("/lastSeen/privacy", asyncHandler(userController.changeLastSeenPrivacy));
 router.put("/pfp/privacy", asyncHandler(userController.changePfpPrivacy));
+router.post("/contact", asyncHandler(userController.addContact));
 router.get("/logoutOne", asyncHandler(logoutOne));
 router.get("/logoutAll", asyncHandler(logoutAll));
 

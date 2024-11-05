@@ -5,10 +5,10 @@ import { SaveableStory } from "@models/story.models";
 import * as userServices from "@services/user/user.service";
 import { PrismaClient, Privacy } from "@prisma/client";
 
-const getAllowedUsers = async (userId: number) => {
+const getAllowedUsers = async (userId: number, clients: Map<number, Socket>) => {
     //includes the user himslef is that right?
     const privacy = await userServices.getPfpPrivacy(userId);
-    if (privacy == Privacy.Everyone) return await userServices.getAllUserIds();
+    if (privacy == Privacy.Everyone) return Array.from(clients.keys());
     else if (privacy == Privacy.Contact) return await userServices.getUserContacts(userId);
     else return [userId];
 };
@@ -19,7 +19,7 @@ export const broadCast = async (
     emitMessage: any
 ): Promise<void> => {
     try {
-        const userIds = await getAllowedUsers(userId);
+        const userIds = await getAllowedUsers(userId, clients);
         if (userIds) {
             for (const user of userIds) {
                 sendToClient(user, clients, emitEvent, emitMessage);

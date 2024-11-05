@@ -217,6 +217,18 @@ const getUserContacts = async (userId: number) => {
         throw error;
     }
 };
+const addContact = async (relatingId: number, relatedById: number) => {
+    try {
+        await db.relates.create({
+            data: { relatingId, relatedById },
+        });
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("User not found", 404);
+        }
+        throw error;
+    }
+};
 
 export {
     userInfo,
@@ -233,4 +245,5 @@ export {
     getPfpPrivacy,
     getAllUserIds,
     getUserContacts,
+    addContact,
 };
