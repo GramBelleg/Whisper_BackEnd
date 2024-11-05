@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        JOB_PATH = "/home/azureuser/Whisper_Devops/jenkins/jenkins_home/workspace/${JOB_NAME}"
+        JOB_PATH = "/home/azureuser/Whisper_Devops/jenkins/jenkins_home/workspace/whisperBackend_${JOB_NAME}"
     }
 
     stages {
