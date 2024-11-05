@@ -16,7 +16,7 @@ pipeline {
                 sh """
                 echo "******* building ********"
 
-                docker run --rm -v "$JOB_PATH":/app -w /app node:18 npm install && npm run build
+                docker run --rm -v "$JOB_PATH:/app" -w /app node:18 /bin/bash -c "npm install && npm run build"
                 """
             }
         }
