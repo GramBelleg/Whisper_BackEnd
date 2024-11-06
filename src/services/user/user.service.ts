@@ -173,6 +173,19 @@ const changePfpPrivacy = async (userId: number, privacy: Privacy) => {
         throw error;
     }
 };
+const changeStoryPrivacy = async (userId: number, privacy: Privacy) => {
+    try {
+        const result = await db.user.update({
+            where: { id: userId },
+            data: { storyPrivacy: privacy },
+        });
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("User not found", 404);
+        }
+        throw error;
+    }
+};
 const getPfpPrivacy = async (userId: number) => {
     try {
         const user = await db.user.findUnique({
@@ -292,4 +305,5 @@ export {
     getLastSeenPrivacy,
     updateStatus,
     savedBy,
+    changeStoryPrivacy,
 };

@@ -14,7 +14,7 @@ const stroyParticipants = async (story: Story, clients: Map<number, Socket>): Pr
             case "Everyone":
                 participants = Array.from(clients.keys());
                 break;
-            case "Contact":
+            case "Contacts":
                 participants = await userServices.getUserContacts(story.userId);
                 break;
             default:

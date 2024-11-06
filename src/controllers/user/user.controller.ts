@@ -144,6 +144,21 @@ const changePfpPrivacy = async (req: Request, res: Response) => {
         message: "Privacy settings updated.",
     });
 };
+const changeStoryPrivacy = async (req: Request, res: Response) => {
+    const privacyValue = req.body.privacy;
+    const userId = req.userId;
+    if (!privacyValue) throw new HttpError("Privacy not specified", 404);
+
+    if (!(privacyValue in Privacy)) throw new HttpError("Invalid privacy setting", 400);
+    const privacy: Privacy = privacyValue;
+
+    await userServices.changeStoryPrivacy(userId, privacy);
+    res.status(200).json({
+        status: "success",
+        message: "Privacy settings updated.",
+    });
+};
+
 const addContact = async (req: Request, res: Response) => {
     const relatedByUserName = req.body.userName;
     const relatingId = req.userId;
@@ -209,4 +224,5 @@ export {
     getStoryUsers,
     getUserStories,
     getStoryViews,
+    changeStoryPrivacy,
 };

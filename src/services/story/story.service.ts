@@ -1,14 +1,20 @@
 import db from "@DB";
-import { Story, storyView } from "@prisma/client";
+import { Prisma, Privacy, Story, storyView } from "@prisma/client";
 import * as storyType from "@models/story.models";
 import { getUserContacts, savedBy } from "@services/user/user.service";
+import HttpError from "@src/errors/HttpError";
 //TODO: except bloced people !!!!!!!!!!!!
 
 const saveStory = async (story: storyType.omitId): Promise<Story> => {
     try {
+        const user = await db.user.findUnique({
+            where: { id: story.userId },
+            select: { storyPrivacy: true },
+        });
         const createdStory: Story = await db.story.create({
             data: {
                 ...story,
+                privacy: user?.storyPrivacy,
             },
         });
         return createdStory;
@@ -188,7 +194,7 @@ const getStoryUsers = async (userId: number): Promise<any> => {
                             userId: {
                                 in: mutualContacts,
                             },
-                            privacy: "Contact",
+                            privacy: "Contacts",
                         },
                     ],
                 },
@@ -233,7 +239,7 @@ const getStoriesByUserId = async (userId: number, storyUserId: number): Promise<
                         privacy: "Everyone",
                     },
                     {
-                        privacy: "Contact",
+                        privacy: "Contacts",
                         userId: {
                             in: mutualContacts,
                         },
@@ -277,6 +283,19 @@ const getStoryViews = async (storyId: number) => {
         throw new Error(`Error in getStoryUserId: ${error.message}`);
     }
 };
+const changeStoryPrivacy = async (storyId: number, privacy: Privacy) => {
+    try {
+        const result = await db.story.update({
+            where: { id: storyId },
+            data: { privacy },
+        });
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("Story not found", 404);
+        }
+        throw error;
+    }
+};
 export {
     saveStory,
     archiveStory,
@@ -288,4 +307,5 @@ export {
     getStoryUsers,
     getStoriesByUserId,
     getStoryViews,
+    changeStoryPrivacy,
 };

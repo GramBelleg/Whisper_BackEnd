@@ -1,6 +1,6 @@
 enum Privacy {
   Everyone
-  Contact
+  Contacts
   Nobody
 }
 enum Status {
@@ -25,6 +25,7 @@ model User {
   readReceipts              Boolean              @default(true)
   lastSeenPrivacy           Privacy              @default(Everyone)
   pfpPrivacy                Privacy              @default(Everyone)
+  storyPrivacy                Privacy              @default(Everyone)
   Messages                  Message[]
   chatParticipant           ChatParticipant[]
   groupParticipant          GroupParticipant[]

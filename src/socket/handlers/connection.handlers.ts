@@ -6,7 +6,7 @@ export const getAllowedUsers = async (userId: number, clients: Map<number, Socke
     //includes the user himslef is that right?
     const privacy = await userServices.getLastSeenPrivacy(userId);
     if (privacy == Privacy.Everyone) return Array.from(clients.keys());
-    else if (privacy == Privacy.Contact) return await userServices.getUserContacts(userId);
+    else if (privacy == Privacy.Contacts) return await userServices.getUserContacts(userId);
     else return [userId];
 };
 

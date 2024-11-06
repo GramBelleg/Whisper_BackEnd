@@ -9,7 +9,7 @@ const getAllowedUsers = async (userId: number, clients: Map<number, Socket>) => 
     //includes the user himslef is that right?
     const privacy = await userServices.getPfpPrivacy(userId);
     if (privacy == Privacy.Everyone) return Array.from(clients.keys());
-    else if (privacy == Privacy.Contact) return await userServices.getUserContacts(userId);
+    else if (privacy == Privacy.Contacts) return await userServices.getUserContacts(userId);
     else return [userId];
 };
 export const broadCast = async (

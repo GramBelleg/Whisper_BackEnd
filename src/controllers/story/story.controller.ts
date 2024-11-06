@@ -1,7 +1,10 @@
 import * as redisService from "@services/user/redis.service";
 import * as storyService from "@services/story/story.service";
-import { Story } from "@prisma/client";
+import { Privacy, Story } from "@prisma/client";
 import * as storyType from "@models/story.models";
+import { Request, Response } from "express";
+import HttpError from "@src/errors/HttpError";
+import * as userServices from "@services/user/user.service";
 
 const setStory = async (story: storyType.omitId): Promise<Story> => {
     try {
@@ -26,5 +29,19 @@ const likeStory = async (userId: number, storyId: number, liked: boolean): Promi
 const viewStory = async (userId: number, storyId: number): Promise<void> => {
     const viwedStory = await storyService.viewStory(userId, storyId);
 };
+const changeStoryPrivacy = async (req: Request, res: Response) => {
+    const privacyValue = req.body.privacy;
+    const storyId = parseInt(req.params.storyId);
+    if (!privacyValue) throw new HttpError("Privacy not specified", 404);
+    if (!storyId) throw new HttpError("Story not specified", 404);
 
-export { setStory, deleteStory, likeStory, viewStory };
+    if (!(privacyValue in Privacy)) throw new HttpError("Invalid privacy setting", 400);
+    const privacy: Privacy = privacyValue;
+
+    await storyService.changeStoryPrivacy(storyId, privacy);
+    res.status(200).json({
+        status: "success",
+        message: "Story Privacy updated.",
+    });
+};
+export { setStory, deleteStory, likeStory, viewStory, changeStoryPrivacy };
