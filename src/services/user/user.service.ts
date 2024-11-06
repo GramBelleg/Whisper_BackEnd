@@ -71,9 +71,9 @@ const updatePhone = async (id: number, phoneNumber: string): Promise<string> => 
 };
 
 //TODO: check the type of the return value
-const userInfo = async (email: string): Promise<any> => {
+const userInfo = async (id: number): Promise<any> => {
     const User = await db.user.findUnique({
-        where: { email },
+        where: { id },
         select: {
             name: true,
             userName: true,
