@@ -1,0 +1,6 @@
+node_modules
+dist
+tsconfig.tsbuildinfo
+docs/
+__tests__/
+package-lock.json
