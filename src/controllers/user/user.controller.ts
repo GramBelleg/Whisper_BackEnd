@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as userServices from "@services/user/user.service";
+import * as storyServices from "@services/story/story.service";
 import { validateEmail } from "@validators/auth";
 import { validateReadReceipt } from "@validators/user";
 import { updateReadReceipt } from "@services/user/prisma/update.service";
@@ -156,6 +157,25 @@ const addContact = async (req: Request, res: Response) => {
     });
 };
 
+const getStoryArchive = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const stories = await storyServices.getStoryArchive(userId);
+    res.status(200).json({
+        stories: stories
+    });
+};
+
+//TODO: api doc
+const getStories = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const stories = await storyServices.getStories(userId);
+    res.status(200).json({
+        stories: stories
+    });
+}
+
+
+
 export {
     userInfo,
     updateBio,
@@ -170,4 +190,5 @@ export {
     changeLastSeenPrivacy,
     changePfpPrivacy,
     addContact,
+    getStoryArchive,
 };

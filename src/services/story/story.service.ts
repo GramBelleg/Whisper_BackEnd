@@ -1,8 +1,7 @@
 import db from "@DB";
-import { Story, storyView } from "@prisma/client";
+import { Story, storyView, } from "@prisma/client";
 import * as storyType from "@models/story.models";
-import { tr } from "@faker-js/faker/.";
-
+import {getUserContacts, isSavedByUser} from "@services/user/user.service";
 //TODO: except bloced people !!!!!!!!!!!!
 
 const saveStory = async (story: storyType.omitId): Promise<Story> => {
@@ -112,4 +111,68 @@ const viewStory = async (userId: number, storyId: number): Promise<storyView> =>
         throw new Error(`Error in viewStory: ${error.message}`);
     }
 };
-export { saveStory, archiveStory, deleteStory, likeStory, getStoryUserId, viewStory };
+
+//TODO: api doc
+const getStoryArchive = async (userId: number): Promise<Story[]> => {
+    try {
+        const stories: Story[] = await db.story.findMany({
+            where: {
+                userId,
+                isArchived: true,
+            },
+        });
+        return stories;
+    } catch (error: any) {
+        throw new Error(`Error in getStoryArchive: ${error.message}`);
+    }
+}
+
+const getStories = async (userId: number): Promise<Story[]> => {
+    {
+        try {
+            const contacts = await getUserContacts(userId); //IDs of contacts I saved
+            const savedBy = await isSavedByUser(userId); //IDs of users who saved me as contact
+            const mutualContacts = contacts.filter((id) => savedBy.includes(id)); //IDs of mutual contacts
+
+            const stories: Story[] = await db.story.findMany({
+                where: {
+                    isArchived: false,
+                    OR: [
+                        {
+                            userId: {
+                                in: contacts,
+                            },
+                            privacy: "Everyone",
+                        },
+                        {
+                            userId: {
+                                in: mutualContacts,
+                            },
+                            privacy: "Contact",
+                        },
+                    ],
+                },
+                distinct: ['id'],  // Ensure stories are unique by their `id`
+            });
+
+
+
+
+
+
+            return stories;
+        } catch (error: any) {
+            throw new Error(`Error in getStories: ${error.message}`);
+        }
+    }
+}
+
+const getStoriesById = async (userId: number): Promise<Story[]> => {
+
+};
+
+
+
+
+
+export { saveStory, archiveStory, deleteStory, likeStory, getStoryUserId, viewStory, getStoryArchive, };

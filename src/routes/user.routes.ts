@@ -28,5 +28,8 @@ router.put("/pfp/privacy", asyncHandler(userController.changePfpPrivacy));
 router.post("/contact", asyncHandler(userController.addContact));
 router.get("/logoutOne", asyncHandler(logoutOne));
 router.get("/logoutAll", asyncHandler(logoutAll));
+router.get("/sotryArchive", asyncHandler(userController.getStoryArchive));
+router.get("/story", asyncHandler(userController.getStory));
+router.get("/story/:userId", asyncHandler(userController.getStoryByUserId));
 
 export default router;
