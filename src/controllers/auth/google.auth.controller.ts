@@ -33,6 +33,9 @@ async function googleAuth(req: Request, res: Response): Promise<void> {
                 profilePic: user.profilePic,
                 email: user.email,
                 readReceipts: user.readReceipts,
+                storyPrivacy: user.storyPrivacy,
+                pfpPrivacy: user.pfpPrivacy,
+                lastSeenPrivacy: user.lastSeenPrivacy,
             },
             userToken,
         });

@@ -19,6 +19,9 @@ router.get(
             profilePic: user.profilePic,
             email: user.email,
             readReceipts: user.readReceipts,
+            storyPrivacy: user.storyPrivacy,
+            pfpPrivacy: user.pfpPrivacy,
+            lastSeenPrivacy: user.lastSeenPrivacy,
         });
     })
 );

@@ -86,6 +86,9 @@ const userInfo = async (id: number): Promise<any> => {
             phoneNumber: true,
             autoDownloadSize: true,
             readReceipts: true,
+            storyPrivacy: true,
+            pfpPrivacy: true,
+            lastSeenPrivacy: true,
         },
     });
     if (!User || !User.email) {

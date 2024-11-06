@@ -18,12 +18,15 @@ const login = async (req: Request, res: Response) => {
     res.status(200).json({
         status: "success",
         user: {
-            id: user.id,
-            name: user.name,
+            id: req.userId,
             userName: user.userName,
+            name: user.name,
+            profilePic: user.profilePic,
             email: user.email,
             readReceipts: user.readReceipts,
-            profilePic: user.profilePic,
+            storyPrivacy: user.storyPrivacy,
+            pfpPrivacy: user.pfpPrivacy,
+            lastSeenPrivacy: user.lastSeenPrivacy,
         },
         userToken,
     });
