@@ -1,8 +1,7 @@
 import db from "@DB";
-import { Story, storyView } from "@prisma/client";
+import { Story, storyView, } from "@prisma/client";
 import * as storyType from "@models/story.models";
-import { tr } from "@faker-js/faker/.";
-
+import {getUserContacts, savedBy} from "@services/user/user.service";
 //TODO: except bloced people !!!!!!!!!!!!
 
 const saveStory = async (story: storyType.omitId): Promise<Story> => {
@@ -112,4 +111,107 @@ const viewStory = async (userId: number, storyId: number): Promise<storyView> =>
         throw new Error(`Error in viewStory: ${error.message}`);
     }
 };
-export { saveStory, archiveStory, deleteStory, likeStory, getStoryUserId, viewStory };
+
+//TODO: api doc
+const getStoryArchive = async (userId: number): Promise<Story[]> => {
+    try {
+        const stories: Story[] = await db.story.findMany({
+            where: {
+                userId,
+                isArchived: true,
+            },
+        });
+        return stories;
+    } catch (error: any) {
+        throw new Error(`Error in getStoryArchive: ${error.message}`);
+    }
+}
+
+const getStoryUsers = async (userId: number): Promise<any> => {
+    {
+        try {
+            const contacts = await getUserContacts(userId); //IDs of contacts I saved
+            const savedByIds = await savedBy(userId); //IDs of users who saved me as contact
+            const mutualContacts = contacts.filter((id) => savedByIds.includes(id)); //IDs of mutual contacts
+
+            const stories: Story[] = await db.story.findMany({
+                where: {
+                    isArchived: false,
+                    OR: [
+                        {
+                            userId: {
+                                in: contacts,
+                            },
+                            privacy: "Everyone",
+                        },
+                        {
+                            userId: {
+                                in: mutualContacts,
+                            },
+                            privacy: "Contact",
+                        },
+                    ],
+                },
+                distinct: ['id'],  // Ensure stories are unique by their `id`
+            });
+
+            const IDs = stories.map((story) => story.userId);
+            const users = await db.user.findMany({
+                where: {
+                    id: {
+                        in: IDs,
+                    },
+                },
+                select: {
+                    id: true,
+                    userName: true,
+                    profilePic: true,
+                },
+                distinct: ['id'],  // Ensure users are unique by their `id`
+            });
+            return {
+                //stories,
+                users,
+            };
+        } catch (error: any) {
+            throw new Error(`Error in getStories: ${error.message}`);
+        }
+    }
+}
+
+const getStoriesByUserId = async (userId: number, storyUserId: number): Promise<Story[]> => {
+    try {
+        const contacts = await getUserContacts(userId); //IDs of contacts I saved
+        const savedByIds = await savedBy(userId); //IDs of users who saved me as contact
+        const mutualContacts = contacts.filter((id) => savedByIds.includes(id)); //IDs of mutual contacts
+        const stories: Story[] = await db.story.findMany({
+            where: {
+                userId: storyUserId,
+                isArchived: false,
+                OR: [
+                    {
+                        privacy: "Everyone",
+                    },
+                    {
+                        privacy: "Contact",
+                        userId: {
+                            in: mutualContacts,
+                        },
+                    },
+                ],
+            },
+        });
+        return stories;
+        
+    } catch (error: any) {
+        throw new Error(`Error in getStories: ${error.message}`);
+    }
+};
+
+
+
+
+
+
+
+export { saveStory, archiveStory, deleteStory, likeStory, getStoryUserId, viewStory, getStoryArchive, getStoryUsers, getStoriesByUserId };
