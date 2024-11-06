@@ -80,7 +80,7 @@ const changePic = async (req: Request, res: Response) => {
 };
 
 const userInfo = async (req: Request, res: Response) => {
-    let user = await userServices.userInfo(req.body.email);
+    let user = await userServices.userInfo(req.userId);
     res.status(200).json({
         status: "success",
         data: user,

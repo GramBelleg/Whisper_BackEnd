@@ -4,12 +4,22 @@ import * as userController from "@controllers/user/user.controller";
 import * as storyController from "@controllers/story/story.controller";
 import { getBlockedUsers, handleUserBlocks } from "@controllers/user/block.controller";
 import { logoutAll, logoutOne } from "@controllers/auth/logout.controller";
+import { userInfo } from "@services/user/user.service";
 
 const router: Router = Router();
 
-router.get("/", (req, res) => {
-    res.status(200).json({ userId: req.userId });
-});
+router.get(
+    "/",
+    asyncHandler(async (req, res) => {
+        const user = await userInfo(req.userId);
+        res.status(200).json({
+            userId: req.userId,
+            userName: user.userName,
+            profilePic: user.profilePic,
+            email: user.email,
+        });
+    })
+);
 
 // Wrapping each controller function in asyncHandler
 router.put("/name", asyncHandler(userController.updateName));
