@@ -52,6 +52,14 @@ const deleteStory = async (userId: number, storyId: number): Promise<Story> => {
 const likeStory = async (userId: number, storyId: number, liked: boolean): Promise<storyView> => {
     try {
         // Attempt to update the record
+        const previousState: storyView | null = await db.storyView.findUnique({
+            where: {
+                storyId_userId: {
+                    storyId,
+                    userId,
+                },
+            },
+        });
         const likedStory: storyView = await db.storyView.update({
             where: {
                 storyId_userId: {
@@ -63,24 +71,24 @@ const likeStory = async (userId: number, storyId: number, liked: boolean): Promi
                 liked,
             },
         });
-        if (!likedStory.liked)
+        if (!likedStory.liked && previousState?.liked)
             await db.story.update({
                 where: {
                     id: storyId,
                 },
                 data: {
-                    views: {
+                    likes: {
                         decrement: 1,
                     },
                 },
             });
-        else {
+        else if (likedStory.liked && !previousState?.liked) {
             await db.story.update({
                 where: {
                     id: storyId,
                 },
                 data: {
-                    views: {
+                    likes: {
                         increment: 1,
                     },
                 },
@@ -126,6 +134,7 @@ const viewStory = async (userId: number, storyId: number): Promise<storyView> =>
             },
             update: { viewedAgain: true },
         });
+        console.log(data.viewedAgain);
         if (!data.viewedAgain)
             await db.story.update({
                 where: {

@@ -20,19 +20,11 @@ const deleteStory = async (userId: number, storyId: number): Promise<Story> => {
 };
 
 const likeStory = async (userId: number, storyId: number, liked: boolean): Promise<void> => {
-    try {
-        const likedStory = await storyService.likeStory(userId, storyId, liked); //userId is the id of the user who liked the story
-    } catch (e: any) {
-        throw new Error("Failed to like story");
-    }
+    const likedStory = await storyService.likeStory(userId, storyId, liked); //userId is the id of the user who liked the story
 };
 
 const viewStory = async (userId: number, storyId: number): Promise<void> => {
-    try {
-        const viwedStory = await storyService.viewStory(userId, storyId);
-    } catch (e: any) {
-        throw new Error("Failed to view story");
-    }
+    const viwedStory = await storyService.viewStory(userId, storyId);
 };
 
 export { setStory, deleteStory, likeStory, viewStory };

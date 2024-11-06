@@ -44,20 +44,20 @@ export const setupStoryEvents = (
     socket.on(
         "likeStory",
         socketWrapper(
-            async (
-                userId: number,
-                storyId: number,
-                userName: string,
-                profilePic: string,
-                liked: boolean
-            ) => {
-                await storyController.likeStory(connectedUserId, storyId, liked);
+            async (data: {
+                userId: number;
+                storyId: number;
+                userName: string;
+                profilePic: string;
+                liked: boolean;
+            }) => {
+                await storyController.likeStory(connectedUserId, data.storyId, data.liked);
                 //TODO: only notifies owner of story??
-                await storyHandler.likeStory(userId, clients, "likeStory", {
+                await storyHandler.likeStory(data.userId, clients, "likeStory", {
                     userId: connectedUserId,
-                    storyId: storyId,
-                    userName: userName,
-                    profilePic: profilePic,
+                    storyId: data.storyId,
+                    userName: data.userName,
+                    profilePic: data.profilePic,
                 });
             }
         )
@@ -66,19 +66,20 @@ export const setupStoryEvents = (
     socket.on(
         "viewStory",
         socketWrapper(
-            async (userId: number, storyId: number, userName: string, profilePic: string) => {
-                try {
-                    await storyController.viewStory(connectedUserId, storyId);
-                    //TODO: only notifies owner of story?
-                    await storyHandler.viewStory(userId, clients, "viewStory", {
-                        userId: connectedUserId,
-                        storyId: storyId,
-                        userName: userName,
-                        profilePic: profilePic,
-                    });
-                } catch (e: any) {
-                    throw new Error("Failed to view story");
-                }
+            async (data: {
+                userId: number;
+                storyId: number;
+                userName: string;
+                profilePic: string;
+            }) => {
+                await storyController.viewStory(connectedUserId, data.storyId);
+                //TODO: only notifies owner of story?
+                await storyHandler.viewStory(data.userId, clients, "viewStory", {
+                    userId: connectedUserId,
+                    storyId: data.storyId,
+                    userName: data.userName,
+                    profilePic: data.profilePic,
+                });
             }
         )
     );
