@@ -54,6 +54,7 @@ export const setupStoryEvents = (
                     storyId: data.storyId,
                     userName: data.userName,
                     profilePic: data.profilePic,
+                    liked: data.liked,
                 });
             }
         )

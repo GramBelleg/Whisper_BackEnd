@@ -116,6 +116,7 @@ const likeStory = async (
                 storyId: data.storyId,
                 userName: data.userName,
                 profilePic: data.profilePic,
+                liked: data.liked,
             });
         }
     } catch (error: any) {
