@@ -104,6 +104,8 @@ likeStory:
             type: string
           profilePic:
             type: string
+          liked:
+            type: boolean
 
 
   publish:
@@ -121,6 +123,8 @@ likeStory:
             type: string
           profilePic:             #added user details if you're on the likes list
             type: string
+          liked:
+            type: boolean
 viewStory:
   description: Channel for viewing a story.
 
