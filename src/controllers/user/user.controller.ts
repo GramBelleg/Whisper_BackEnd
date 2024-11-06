@@ -3,7 +3,7 @@ import * as userServices from "@services/user/user.service";
 import { validateEmail } from "@validators/auth";
 import { validateReadReceipt } from "@validators/user";
 import { updateReadReceipt } from "@services/user/prisma/update.service";
-import { findUserByEmail } from "@services/auth/prisma/find.service";
+import { findUserByEmail, findUserByUserName } from "@services/auth/prisma/find.service";
 import { createCode, sendCode } from "@services/auth/code.service";
 import RedisOperation from "@src/@types/redis.operation";
 import HttpError from "@src/errors/HttpError";
@@ -145,8 +145,9 @@ const changePfpPrivacy = async (req: Request, res: Response) => {
     });
 };
 const addContact = async (req: Request, res: Response) => {
-    const relatedById = req.body.id;
+    const relatedByUserName = req.body.userName;
     const relatingId = req.userId;
+    const relatedById = await findUserByUserName(relatedByUserName);
     if (!relatedById) throw new HttpError("No user specified to add", 404);
 
     await userServices.addContact(relatingId, relatedById);
