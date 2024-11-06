@@ -8,6 +8,7 @@ import { setupMessageEvents } from "./events/message.events";
 import { setupStoryEvents } from "./events/story.events";
 import { socketWrapper } from "./handlers/error.handler";
 import { setupPfpEvents } from "./events/pfp.events";
+import { setupStatusEvents } from "./events/status.events";
 type HandlerFunction = (key: string, clients: Map<number, Socket>) => any;
 const clients: Map<number, Socket> = new Map();
 
@@ -59,7 +60,7 @@ export const initWebSocketServer = (server: HTTPServer) => {
 
         setupPfpEvents(socket, userId, clients);
 
-        //setupStatusEvents(socket, userId, clients);  not sure how to implement away event with front
+        setupStatusEvents(socket, userId, clients);
 
         socket.on("disconnect", () => {
             if (userId) connectionHandler.endConnection(userId, clients);

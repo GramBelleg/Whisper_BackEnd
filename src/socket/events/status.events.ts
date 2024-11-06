@@ -1,19 +1,17 @@
 import { Socket } from "socket.io";
 import { socketWrapper } from "@socket/handlers/error.handler";
-import * as pfpHandler from "@socket/handlers/pfp.handlers";
+import * as connectionHandler from "@socket/handlers/connection.handlers";
 import { changePic } from "@services/user/user.service";
+import { Status } from "@prisma/client";
 
-//not Sure how to implement from the front
+//Need it to implement Away status from the frontEnd
 
-// export const setupPfpEvents = (socket: Socket, userId: number, clients: Map<number, Socket>) => {
-//     socket.on(
-//         "away",
-//         socketWrapper(async (user: { profilePic: string }) => {
-//             if (!user || !user.profilePic) throw new Error("No Profile picture given");
-//             const profilePic = await changePic(userId, user.profilePic);
-//             if (profilePic) {
-//                 await pfpHandler.broadCast(userId, clients, "pfp", { userId, profilePic });
-//             }
-//         })
-//     );
-// };
+export const setupStatusEvents = (socket: Socket, userId: number, clients: Map<number, Socket>) => {
+    socket.on(
+        "status",
+        socketWrapper(async (data: { status: Status }) => {
+            if (!data || !data.status) throw new Error("No Status given");
+            await connectionHandler.broadCast(userId, clients, data.status);
+        })
+    );
+};

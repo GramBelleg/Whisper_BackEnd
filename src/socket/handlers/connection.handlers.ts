@@ -2,12 +2,22 @@ import { Socket } from "socket.io";
 import * as userServices from "@services/user/user.service";
 import { Privacy, Status } from "@prisma/client";
 import { sendToClient } from "@socket/utils/socket.utils";
-const getAllowedUsers = async (userId: number, clients: Map<number, Socket>) => {
+export const getAllowedUsers = async (userId: number, clients: Map<number, Socket>) => {
     //includes the user himslef is that right?
     const privacy = await userServices.getLastSeenPrivacy(userId);
     if (privacy == Privacy.Everyone) return Array.from(clients.keys());
     else if (privacy == Privacy.Contact) return await userServices.getUserContacts(userId);
     else return [userId];
+};
+
+export const broadCast = async (userId: number, clients: Map<number, Socket>, status: Status) => {
+    const userIds = await getAllowedUsers(userId, clients);
+    const lastSeen = await userServices.updateStatus(userId, status);
+    if (userIds) {
+        for (const user of userIds) {
+            sendToClient(user, clients, "status", { userId, status, lastSeen });
+        }
+    }
 };
 
 export const startConnection = async (
@@ -28,15 +38,5 @@ export const endConnection = async (
     await broadCast(userId, clients, Status.Offline);
     if (clients.has(userId)) {
         clients.delete(userId);
-    }
-};
-
-const broadCast = async (userId: number, clients: Map<number, Socket>, status: Status) => {
-    const userIds = await getAllowedUsers(userId, clients);
-    const lastSeen = await userServices.updateStatus(userId, status);
-    if (userIds) {
-        for (const user of userIds) {
-            sendToClient(user, clients, "status", { userId, status, lastSeen });
-        }
     }
 };
