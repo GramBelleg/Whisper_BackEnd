@@ -61,8 +61,8 @@ export const initWebSocketServer = (server: HTTPServer) => {
 
         //setupStatusEvents(socket, userId, clients);  not sure how to implement away event with front
 
-        socket.on("close", () => {
-            connectionHandler.endConnection(userId, clients);
+        socket.on("disconnect", () => {
+            if (userId) connectionHandler.endConnection(userId, clients);
         });
     });
 };
