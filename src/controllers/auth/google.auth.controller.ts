@@ -27,7 +27,7 @@ async function googleAuth(req: Request, res: Response): Promise<void> {
         res.status(200).json({
             status: "success",
             user: {
-                id: req.userId,
+                id: user.id,
                 userName: user.userName,
                 name: user.name,
                 profilePic: user.profilePic,
