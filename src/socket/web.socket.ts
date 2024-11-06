@@ -56,6 +56,8 @@ export const initWebSocketServer = (server: HTTPServer) => {
 
         setupPfpEvents(socket, userId, clients);
 
+        //setupStatusEvents(socket, userId, clients);  not sure how to implement away event with front
+
         socket.on("close", () => {
             connectionHandler.endConnection(userId, clients);
         });

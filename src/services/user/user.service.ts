@@ -1,7 +1,7 @@
 import db from "@src/prisma/PrismaClient";
 import { validatePhoneNumber } from "@validators/auth";
 import RedisOperation from "@src/@types/redis.operation";
-import { Prisma, Privacy, Story } from "@prisma/client";
+import { Prisma, Privacy, Status, Story } from "@prisma/client";
 import { verifyCode } from "@services/auth/code.service";
 import HttpError from "@src/errors/HttpError";
 
@@ -185,6 +185,20 @@ const getPfpPrivacy = async (userId: number) => {
         throw error;
     }
 };
+const getLastSeenPrivacy = async (userId: number) => {
+    try {
+        const user = await db.user.findUnique({
+            where: { id: userId },
+            select: { lastSeenPrivacy: true },
+        });
+        return user?.lastSeenPrivacy;
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("User not found", 404);
+        }
+        throw error;
+    }
+};
 const getAllUserIds = async () => {
     try {
         const userIds: number[] = (
@@ -204,7 +218,7 @@ const getUserContacts = async (userId: number) => {
     try {
         const userIds: number[] = (
             await db.relates.findMany({
-                where: { relatingId: userId },
+                where: { relatingId: userId, isContact: true, isBlocked: false },
                 select: { relatedById: true },
             })
         ).map((user) => user.relatedById);
@@ -220,8 +234,22 @@ const getUserContacts = async (userId: number) => {
 const addContact = async (relatingId: number, relatedById: number) => {
     try {
         await db.relates.create({
-            data: { relatingId, relatedById },
+            data: { relatingId, relatedById, isContact: true },
         });
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("User not found", 404);
+        }
+        throw error;
+    }
+};
+const updateStatus = async (id: number, status: Status) => {
+    try {
+        const user = await db.user.update({
+            where: { id },
+            data: { status, lastSeen: new Date() },
+        });
+        return user.lastSeen;
     } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
             throw new HttpError("User not found", 404);
@@ -246,4 +274,6 @@ export {
     getAllUserIds,
     getUserContacts,
     addContact,
+    getLastSeenPrivacy,
+    updateStatus,
 };
