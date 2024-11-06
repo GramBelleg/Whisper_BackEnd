@@ -69,9 +69,10 @@ likeStory:
         properties:
           storyId:
             type: integer
-          userId:
-            type: integer
-            description: id of the user who's story got liked
+          userName:
+            type: string
+          profilePic:
+            type: string
 
 
   publish:
@@ -101,9 +102,10 @@ viewStory:
         properties:
           storyId:
             type: integer
-          userId:
-            type: integer
-            description: id of the user who's story got liked
+          userName:
+            type: string
+          profilePic:
+            type: string
 
 
   publish:
