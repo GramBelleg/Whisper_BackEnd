@@ -104,38 +104,38 @@ const deleteStory = async (
 };
 
 const likeStory = async (
-    userId: number,
     clients: Map<number, Socket>,
     emitEvent: string,
     data: any
 ): Promise<void> => {
     try {
-        sendToClient(userId, clients, emitEvent, {
-            userId: data.userId,
-            storyId: data.storyId,
-            userName: data.userName,
-            profilePic: data.profilePic,
-        });
+        const participants = await stroyParticipants(data.storyId, clients);
+        for (const participant of participants) {
+            sendToClient(participant, clients, emitEvent, {
+                userId: data.userId,
+                storyId: data.storyId,
+                userName: data.userName,
+                profilePic: data.profilePic,
+            });
+        }
     } catch (error: any) {
         throw new Error(`Error in likeStory: ${error.message}`);
     }
 };
 
 const viewStory = async (
-    userId: number,
     clients: Map<number, Socket>,
     emitEvent: string,
     data: any
 ): Promise<void> => {
-    try {
-        sendToClient(userId, clients, emitEvent, {
+    const participants = await stroyParticipants(data.storyId, clients);
+    for (const participant of participants) {
+        sendToClient(participant, clients, emitEvent, {
             userId: data.userId,
             storyId: data.storyId,
             userName: data.userName,
             profilePic: data.profilePic,
         });
-    } catch (error: any) {
-        throw new Error(`Error in viewStory: ${error.message}`);
     }
 };
 
