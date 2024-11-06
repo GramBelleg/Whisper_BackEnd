@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import * as userServices from "@services/user/user.service";
+import * as storyServices from "@services/story/story.service";
 import { validateEmail } from "@validators/auth";
 import { validateReadReceipt } from "@validators/user";
 import { updateReadReceipt } from "@services/user/prisma/update.service";
-import { findUserByEmail } from "@services/auth/prisma/find.service";
+import { findUserByEmail, findUserByUserName } from "@services/auth/prisma/find.service";
 import { createCode, sendCode } from "@services/auth/code.service";
 import RedisOperation from "@src/@types/redis.operation";
 import HttpError from "@src/errors/HttpError";
@@ -144,14 +145,49 @@ const changePfpPrivacy = async (req: Request, res: Response) => {
     });
 };
 const addContact = async (req: Request, res: Response) => {
-    const relatedById = req.body.id;
+    const relatedByUserName = req.body.userName;
     const relatingId = req.userId;
+    const relatedById = await findUserByUserName(relatedByUserName);
     if (!relatedById) throw new HttpError("No user specified to add", 404);
 
     await userServices.addContact(relatingId, relatedById);
     res.status(200).json({
         status: "success",
         message: "User added successfully.",
+    });
+};
+
+const getStoryArchive = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const stories = await storyServices.getStoryArchive(userId);
+    res.status(200).json({
+        stories: stories,
+    });
+};
+
+//TODO: api doc
+const getStoryUsers = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const users = await storyServices.getStoryUsers(userId);
+    res.status(200).json({
+        users: users,
+    });
+};
+
+//TODO: api doc
+const getUserStories = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const storyUserId: number = Number(req.params.userId);
+    const stories = await storyServices.getStoriesByUserId(userId, storyUserId);
+    res.status(200).json({
+        stories: stories,
+    });
+};
+const getStoryViews = async (req: Request, res: Response) => {
+    const storyId: number = Number(req.params.storyId);
+    const users = await storyServices.getStoryViews(storyId);
+    res.status(200).json({
+        users,
     });
 };
 
@@ -169,4 +205,8 @@ export {
     changeLastSeenPrivacy,
     changePfpPrivacy,
     addContact,
+    getStoryArchive,
+    getStoryUsers,
+    getUserStories,
+    getStoryViews,
 };

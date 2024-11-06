@@ -16,17 +16,14 @@ export const setupStoryEvents = (
         "story",
         socketWrapper(async (story: storyTypes.body) => {
             try {
-                console.log(story);
                 const createdStory = await storyController.setStory({
                     ...story,
                     userId: connectedUserId,
                 });
-                console.log(story);
 
                 if (createdStory) {
                     await storyHandler.postStory(clients, "story", createdStory);
                 }
-                console.log(story);
             } catch (e: any) {
                 throw new Error("Failed to create story");
             }
@@ -44,38 +41,36 @@ export const setupStoryEvents = (
     socket.on(
         "likeStory",
         socketWrapper(
-            async (userId: number, storyId: number, userName: string, profilePic: string) => {
-                try {
-                    await storyController.likeStory(connectedUserId, storyId);
-                    await storyHandler.likeStory(userId, clients, "likeStory", {
-                        userId: connectedUserId,
-                        storyId: storyId,
-                        userName: userName,
-                        profilePic: profilePic,
-                    });
-                } catch (e: any) {
-                    throw new Error("Failed to like story");
-                }
+            async (data: {
+                storyId: number;
+                userName: string;
+                profilePic: string;
+                liked: boolean;
+            }) => {
+                await storyController.likeStory(connectedUserId, data.storyId, data.liked);
+                //TODO: only notifies owner of story??
+                await storyHandler.likeStory(clients, "likeStory", {
+                    userId: connectedUserId,
+                    storyId: data.storyId,
+                    userName: data.userName,
+                    profilePic: data.profilePic,
+                    liked: data.liked,
+                });
             }
         )
     );
 
     socket.on(
         "viewStory",
-        socketWrapper(
-            async (userId: number, storyId: number, userName: string, profilePic: string) => {
-                try {
-                    await storyController.viewStory(connectedUserId, storyId);
-                    await storyHandler.viewStory(userId, clients, "viewStory", {
-                        userId: connectedUserId,
-                        storyId: storyId,
-                        userName: userName,
-                        profilePic: profilePic,
-                    });
-                } catch (e: any) {
-                    throw new Error("Failed to view story");
-                }
-            }
-        )
+        socketWrapper(async (data: { storyId: number; userName: string; profilePic: string }) => {
+            await storyController.viewStory(connectedUserId, data.storyId);
+            //TODO: only notifies owner of story?
+            await storyHandler.viewStory(clients, "viewStory", {
+                userId: connectedUserId,
+                storyId: data.storyId,
+                userName: data.userName,
+                profilePic: data.profilePic,
+            });
+        })
     );
 };
