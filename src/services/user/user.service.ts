@@ -261,5 +261,5 @@ export {
     getAllUserIds,
     getUserContacts,
     addContact,
-    isSavedByUser
+    savedBy,
 };

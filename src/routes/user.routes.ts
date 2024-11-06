@@ -1,6 +1,7 @@
 import { Router } from "express";
 import asyncHandler from "express-async-handler";
 import * as userController from "@controllers/user/user.controller";
+import * as storyController from "@controllers/story/story.controller";
 import { getBlockedUsers, handleUserBlocks } from "@controllers/user/block.controller";
 import { logoutAll, logoutOne } from "@controllers/auth/logout.controller";
 
@@ -29,7 +30,7 @@ router.post("/contact", asyncHandler(userController.addContact));
 router.get("/logoutOne", asyncHandler(logoutOne));
 router.get("/logoutAll", asyncHandler(logoutAll));
 router.get("/sotryArchive", asyncHandler(userController.getStoryArchive));
-router.get("/story", asyncHandler(userController.getStory));
-router.get("/story/:userId", asyncHandler(userController.getStoryByUserId));
+router.get("/story", asyncHandler(userController.getStoryUsers));
+router.get("/story/:userId", asyncHandler(userController.getStoryUsers));
 
 export default router;
