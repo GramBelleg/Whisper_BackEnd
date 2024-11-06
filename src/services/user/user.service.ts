@@ -6,6 +6,7 @@ import { saveStory } from "@services/redis/story.service";
 import { Story } from "@prisma/client";
 import { SaveableStory } from "@models/story.models";
 import redis from "@src/redis/redis.client";
+import * as Randomstring from 'randomstring';
 
 const updateBio = async (id: number, bio: string): Promise<string> => {
     try {
