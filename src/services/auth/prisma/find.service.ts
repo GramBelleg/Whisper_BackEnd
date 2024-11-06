@@ -3,7 +3,6 @@ import db from "@DB";
 const findUserByEmail = async (email: string) => {
     const user = await db.user.findUnique({
         where: { email },
-        select: { id: true, email: true, name: true, userName: true, password: true },
     });
     return user;
 };

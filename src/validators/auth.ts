@@ -6,7 +6,7 @@ const validateSignUp = (user: any): any => {
     validateName(user.name);
     validateUserName(user.userName);
     validateEmail(user.email);
-    user.phoneNumber = validatePhoneNumber(user);
+    user.phoneNumber = validatePhoneNumber(user.phoneNumber);
     validatePassword(user.password);
     validateConfirmPassword(user.password, user.confirmPassword);
     validateRobotToken(user.robotToken);

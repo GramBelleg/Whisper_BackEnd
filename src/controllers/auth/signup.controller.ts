@@ -20,7 +20,7 @@ const signup = async (req: Request, res: Response): Promise<void> => {
 
     await isUniqueUser(user.email, user.userName, user.phoneNumber);
 
-    await verifyRobotToken(user.robotToken);
+    // await verifyRobotToken(user.robotToken);
 
     //cache code with user email
     const codeExpiry = parseInt(process.env.CODE_EXPIRES_IN as string);
@@ -39,8 +39,12 @@ const signup = async (req: Request, res: Response): Promise<void> => {
     res.status(200).json({
         status: "success",
         userData: {
-            email: user.email,
+            id: req.userId,
+            userName: user.userName,
             name: user.name,
+            profilePic: user.profilePic,
+            email: user.email,
+            readReceipts: user.readReceipts,
         },
     });
 };

@@ -85,6 +85,7 @@ const userInfo = async (id: number): Promise<any> => {
             status: true,
             phoneNumber: true,
             autoDownloadSize: true,
+            readReceipts: true,
         },
     });
     if (!User || !User.email) {

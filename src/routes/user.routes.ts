@@ -13,10 +13,12 @@ router.get(
     asyncHandler(async (req, res) => {
         const user = await userInfo(req.userId);
         res.status(200).json({
-            userId: req.userId,
+            id: req.userId,
             userName: user.userName,
+            name: user.name,
             profilePic: user.profilePic,
             email: user.email,
+            readReceipts: user.readReceipts,
         });
     })
 );
