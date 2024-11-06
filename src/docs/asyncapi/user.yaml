@@ -9,6 +9,8 @@ servers:
     url: http://localhost:5000
     protocol: ws
 channels:
+  status:
+    $ref: './channels/user.yaml#/status'
   pfp:
     $ref: './channels/user.yaml#/pfp'  
   story:
@@ -19,6 +21,5 @@ channels:
     $ref: './channels/user.yaml#/viewStory'  
   deleteStory:
     $ref: './channels/user.yaml#/deleteStory'
-  status:
-    $ref: './channels/user.yaml#/status'
+
   

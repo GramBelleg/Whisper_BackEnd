@@ -1,3 +1,34 @@
+status:
+  description: Channel for status and last seen.
+
+  subscribe:
+    operationId: setStatus
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          status:
+            type: string
+            enum: [Online, Offline, Away]
+
+
+  publish:
+    operationId: getStatus
+    message:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          userId:
+            type: integer
+          status:
+            type: string
+            enum: [Online, Offline, Away]
+          lastSeen:
+            type: string
+            format: date-time
+
 pfp:
   description: Channel for setting pfp.
 
