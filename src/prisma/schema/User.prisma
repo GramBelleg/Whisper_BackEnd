@@ -55,7 +55,9 @@ model Story {
   isArchived Boolean     @default(false)
   content    String
   media      String?
+  type      String?
   views      Int         @default(0)
+  likes      Int         @default(0)
   privacy    Privacy     @default(Everyone)
   storyView  storyView[]
 }
@@ -65,8 +67,9 @@ model storyView {
   userId  Int
   user    User     @relation(fields: [userId], references: [id])
   story   Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
-  isLiked Boolean  @default(false)
-  data    DateTime @default(now())
+  liked Boolean  @default(false)
+  viewedAgain Boolean @default(false)
+  date    DateTime @default(now())
 
   @@id([storyId, userId])
 }

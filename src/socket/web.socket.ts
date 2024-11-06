@@ -47,7 +47,10 @@ export const initWebSocketServer = (server: HTTPServer) => {
         socket.data.userId = await socketWrapper(validateCookie)(socket);
 
         const userId = socket.data.userId;
-
+        if (!userId) {
+            socket.disconnect(true);
+            return;
+        }
         connectionHandler.startConnection(userId, clients, socket);
 
         setupMessageEvents(socket, userId, clients);

@@ -19,9 +19,9 @@ const deleteStory = async (userId: number, storyId: number): Promise<Story> => {
     return deletedStory;
 };
 
-const likeStory = async (userId: number, storyId: number): Promise<void> => {
+const likeStory = async (userId: number, storyId: number, liked: boolean): Promise<void> => {
     try {
-        const likedStory = await storyService.likeStory(userId, storyId); //userId is the id of the user who liked the story
+        const likedStory = await storyService.likeStory(userId, storyId, liked); //userId is the id of the user who liked the story
     } catch (e: any) {
         throw new Error("Failed to like story");
     }

@@ -32,15 +32,11 @@ export const endConnection = async (
 };
 
 const broadCast = async (userId: number, clients: Map<number, Socket>, status: Status) => {
-    try {
-        const userIds = await getAllowedUsers(userId, clients);
-        const lastSeen = await userServices.updateStatus(userId, status);
-        if (userIds) {
-            for (const user of userIds) {
-                sendToClient(user, clients, "status", { userId, status, lastSeen });
-            }
+    const userIds = await getAllowedUsers(userId, clients);
+    const lastSeen = await userServices.updateStatus(userId, status);
+    if (userIds) {
+        for (const user of userIds) {
+            sendToClient(user, clients, "status", { userId, status, lastSeen });
         }
-    } catch (error: any) {
-        throw new Error(`Error in broadCast: ${error.message}`);
     }
 };

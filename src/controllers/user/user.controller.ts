@@ -162,7 +162,7 @@ const getStoryArchive = async (req: Request, res: Response) => {
     const userId = req.userId;
     const stories = await storyServices.getStoryArchive(userId);
     res.status(200).json({
-        stories: stories
+        stories: stories,
     });
 };
 
@@ -171,9 +171,9 @@ const getStoryUsers = async (req: Request, res: Response) => {
     const userId = req.userId;
     const users = await storyServices.getStoryUsers(userId);
     res.status(200).json({
-        users: users
+        users: users,
     });
-}
+};
 
 //TODO: api doc
 const getUserStories = async (req: Request, res: Response) => {
@@ -181,11 +181,16 @@ const getUserStories = async (req: Request, res: Response) => {
     const storyUserId: number = Number(req.params.userId);
     const stories = await storyServices.getStoriesByUserId(userId, storyUserId);
     res.status(200).json({
-        stories: stories
+        stories: stories,
     });
 };
-
-
+const getStoryViews = async (req: Request, res: Response) => {
+    const storyId: number = Number(req.params.storyId);
+    const users = await storyServices.getStoryViews(storyId);
+    res.status(200).json({
+        users,
+    });
+};
 
 export {
     userInfo,
@@ -202,5 +207,7 @@ export {
     changePfpPrivacy,
     addContact,
     getStoryArchive,
-    getStoryUsers
+    getStoryUsers,
+    getUserStories,
+    getStoryViews,
 };

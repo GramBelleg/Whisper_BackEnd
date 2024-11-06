@@ -44,18 +44,21 @@ export const setupStoryEvents = (
     socket.on(
         "likeStory",
         socketWrapper(
-            async (userId: number, storyId: number, userName: string, profilePic: string) => {
-                try {
-                    await storyController.likeStory(connectedUserId, storyId);
-                    await storyHandler.likeStory(userId, clients, "likeStory", {
-                        userId: connectedUserId,
-                        storyId: storyId,
-                        userName: userName,
-                        profilePic: profilePic,
-                    });
-                } catch (e: any) {
-                    throw new Error("Failed to like story");
-                }
+            async (
+                userId: number,
+                storyId: number,
+                userName: string,
+                profilePic: string,
+                liked: boolean
+            ) => {
+                await storyController.likeStory(connectedUserId, storyId, liked);
+                //TODO: only notifies owner of story??
+                await storyHandler.likeStory(userId, clients, "likeStory", {
+                    userId: connectedUserId,
+                    storyId: storyId,
+                    userName: userName,
+                    profilePic: profilePic,
+                });
             }
         )
     );
@@ -66,6 +69,7 @@ export const setupStoryEvents = (
             async (userId: number, storyId: number, userName: string, profilePic: string) => {
                 try {
                     await storyController.viewStory(connectedUserId, storyId);
+                    //TODO: only notifies owner of story?
                     await storyHandler.viewStory(userId, clients, "viewStory", {
                         userId: connectedUserId,
                         storyId: storyId,

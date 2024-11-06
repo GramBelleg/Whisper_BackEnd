@@ -1,7 +1,7 @@
 import db from "@DB";
-import { Story, storyView, } from "@prisma/client";
+import { Story, storyView } from "@prisma/client";
 import * as storyType from "@models/story.models";
-import {getUserContacts, savedBy} from "@services/user/user.service";
+import { getUserContacts, savedBy } from "@services/user/user.service";
 //TODO: except bloced people !!!!!!!!!!!!
 
 const saveStory = async (story: storyType.omitId): Promise<Story> => {
@@ -49,7 +49,7 @@ const deleteStory = async (userId: number, storyId: number): Promise<Story> => {
     }
 };
 
-const likeStory = async (userId: number, storyId: number): Promise<storyView> => {
+const likeStory = async (userId: number, storyId: number, liked: boolean): Promise<storyView> => {
     try {
         // Attempt to update the record
         const likedStory: storyView = await db.storyView.update({
@@ -60,9 +60,32 @@ const likeStory = async (userId: number, storyId: number): Promise<storyView> =>
                 },
             },
             data: {
-                isLiked: true,
+                liked,
             },
         });
+        if (!likedStory.liked)
+            await db.story.update({
+                where: {
+                    id: storyId,
+                },
+                data: {
+                    views: {
+                        decrement: 1,
+                    },
+                },
+            });
+        else {
+            await db.story.update({
+                where: {
+                    id: storyId,
+                },
+                data: {
+                    views: {
+                        increment: 1,
+                    },
+                },
+            });
+        }
         if (!likedStory) throw new Error("Story not found");
         return likedStory;
     } catch (error: any) {
@@ -90,22 +113,30 @@ const getStoryUserId = async (storyId: number): Promise<number> => {
 
 const viewStory = async (userId: number, storyId: number): Promise<storyView> => {
     try {
-        const data: storyView = await db.storyView.create({
-            data: {
-                userId,
-                storyId,
-            },
-        });
-        await db.story.update({
+        const data: storyView = await db.storyView.upsert({
             where: {
-                id: storyId,
-            },
-            data: {
-                views: {
-                    increment: 1,
+                storyId_userId: {
+                    storyId,
+                    userId,
                 },
             },
+            create: {
+                storyId,
+                userId,
+            },
+            update: { viewedAgain: true },
         });
+        if (!data.viewedAgain)
+            await db.story.update({
+                where: {
+                    id: storyId,
+                },
+                data: {
+                    views: {
+                        increment: 1,
+                    },
+                },
+            });
         return data;
     } catch (error: any) {
         throw new Error(`Error in viewStory: ${error.message}`);
@@ -125,7 +156,7 @@ const getStoryArchive = async (userId: number): Promise<Story[]> => {
     } catch (error: any) {
         throw new Error(`Error in getStoryArchive: ${error.message}`);
     }
-}
+};
 
 const getStoryUsers = async (userId: number): Promise<any> => {
     {
@@ -152,7 +183,7 @@ const getStoryUsers = async (userId: number): Promise<any> => {
                         },
                     ],
                 },
-                distinct: ['id'],  // Ensure stories are unique by their `id`
+                distinct: ["id"], // Ensure stories are unique by their `id`
             });
 
             const IDs = stories.map((story) => story.userId);
@@ -167,7 +198,7 @@ const getStoryUsers = async (userId: number): Promise<any> => {
                     userName: true,
                     profilePic: true,
                 },
-                distinct: ['id'],  // Ensure users are unique by their `id`
+                distinct: ["id"], // Ensure users are unique by their `id`
             });
             return {
                 //stories,
@@ -177,7 +208,7 @@ const getStoryUsers = async (userId: number): Promise<any> => {
             throw new Error(`Error in getStories: ${error.message}`);
         }
     }
-}
+};
 
 const getStoriesByUserId = async (userId: number, storyUserId: number): Promise<Story[]> => {
     try {
@@ -198,20 +229,54 @@ const getStoriesByUserId = async (userId: number, storyUserId: number): Promise<
                             in: mutualContacts,
                         },
                     },
+                    {
+                        userId: storyUserId,
+                    },
                 ],
             },
         });
         return stories;
-        
     } catch (error: any) {
         throw new Error(`Error in getStories: ${error.message}`);
     }
 };
 
-
-
-
-
-
-
-export { saveStory, archiveStory, deleteStory, likeStory, getStoryUserId, viewStory, getStoryArchive, getStoryUsers, getStoriesByUserId };
+const getStoryViews = async (storyId: number) => {
+    try {
+        const storyViews = await db.storyView.findMany({
+            where: {
+                storyId,
+            },
+            select: {
+                user: {
+                    select: {
+                        id: true,
+                        userName: true,
+                        profilePic: true,
+                    },
+                },
+                liked: true,
+            },
+        });
+        return storyViews.map((view) => ({
+            id: view.user.id,
+            userName: view.user.userName,
+            profilePic: view.user.profilePic,
+            liked: view.liked,
+        }));
+    } catch (error: any) {
+        throw new Error(`Error in getStoryUserId: ${error.message}`);
+    }
+};
+export {
+    saveStory,
+    archiveStory,
+    deleteStory,
+    likeStory,
+    getStoryUserId,
+    viewStory,
+    getStoryArchive,
+    getStoryUsers,
+    getStoriesByUserId,
+    getStoryViews,
+};
