@@ -48,7 +48,6 @@ export const setupStoryEvents = (
                 liked: boolean;
             }) => {
                 await storyController.likeStory(connectedUserId, data.storyId, data.liked);
-                //TODO: only notifies owner of story??
                 await storyHandler.likeStory(clients, "likeStory", {
                     userId: connectedUserId,
                     storyId: data.storyId,
@@ -64,7 +63,6 @@ export const setupStoryEvents = (
         "viewStory",
         socketWrapper(async (data: { storyId: number; userName: string; profilePic: string }) => {
             await storyController.viewStory(connectedUserId, data.storyId);
-            //TODO: only notifies owner of story?
             await storyHandler.viewStory(clients, "viewStory", {
                 userId: connectedUserId,
                 storyId: data.storyId,

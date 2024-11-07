@@ -39,15 +39,8 @@ const signup = async (req: Request, res: Response): Promise<void> => {
     res.status(200).json({
         status: "success",
         userData: {
-            id: user.id,
-            userName: user.userName,
-            name: user.name,
-            profilePic: user.profilePic,
             email: user.email,
-            readReceipts: user.readReceipts,
-            storyPrivacy: user.storyPrivacy,
-            pfpPrivacy: user.pfpPrivacy,
-            lastSeenPrivacy: user.lastSeenPrivacy,
+            name: user.name,
         },
     });
 };

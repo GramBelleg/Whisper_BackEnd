@@ -42,18 +42,13 @@ const confirmEmail = async (req: Request, res: Response): Promise<void> => {
         throw new HttpError("Email verification took too long, Please Sign up again");
 
     const user = await addUser(foundUser);
-
+    const { password, ...userWithoutPassword } = user;
     const userToken: string = await createAddToken(user.id);
     createTokenCookie(res, userToken);
 
     res.status(200).json({
         status: "success",
-        user: {
-            id: user.id,
-            name: user.name,
-            userName: user.userName,
-            email: user.email,
-        },
+        user: userWithoutPassword,
         userToken,
     });
 };

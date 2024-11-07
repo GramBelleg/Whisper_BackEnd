@@ -11,23 +11,14 @@ const login = async (req: Request, res: Response) => {
     validatePassword(password);
 
     const user = await checkEmailExistDB(email);
+    const { password: hashedPassword, ...userWithoutPassword } = user;
     checkPasswordCorrect(password, user.password);
 
     const userToken = await createAddToken(user.id);
     createTokenCookie(res, userToken);
     res.status(200).json({
         status: "success",
-        user: {
-            id: user.id,
-            userName: user.userName,
-            name: user.name,
-            profilePic: user.profilePic,
-            email: user.email,
-            readReceipts: user.readReceipts,
-            storyPrivacy: user.storyPrivacy,
-            pfpPrivacy: user.pfpPrivacy,
-            lastSeenPrivacy: user.lastSeenPrivacy,
-        },
+        user: userWithoutPassword,
         userToken,
     });
 };

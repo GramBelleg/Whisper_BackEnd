@@ -12,16 +12,10 @@ router.get(
     "/",
     asyncHandler(async (req, res) => {
         const user = await userInfo(req.userId);
+        const { password, ...userWithoutPassword } = user;
         res.status(200).json({
             id: req.userId,
-            userName: user.userName,
-            name: user.name,
-            profilePic: user.profilePic,
-            email: user.email,
-            readReceipts: user.readReceipts,
-            storyPrivacy: user.storyPrivacy,
-            pfpPrivacy: user.pfpPrivacy,
-            lastSeenPrivacy: user.lastSeenPrivacy,
+            ...userWithoutPassword,
         });
     })
 );
