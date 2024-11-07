@@ -79,6 +79,21 @@ export const getMessage = async (id: number) => {
     });
 };
 
+export const getFullMessage = async (userId: number, id: number) => {
+    return await db.messageStatus.findUnique({
+        where: {
+            messageId_userId: {
+                messageId: id,
+                userId: userId,
+            },
+            deleted: false,
+        },
+        select: {
+            message: true,
+        }
+    });
+};
+
 export const getMessages = async (userId: number, chatId: number) => {
     const messages = await db.messageStatus.findMany({
         where: {

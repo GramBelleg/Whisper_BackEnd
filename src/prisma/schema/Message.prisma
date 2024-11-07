@@ -28,7 +28,7 @@ model Message {
   isSecret              Boolean            @default(false)
   expiresAfter          Int?
   type                  MessageType
-  sentAt                DateTime
+  sentAt                DateTime           
   mentions              String[]
   media                 String[]
   parentMessageId       Int?
