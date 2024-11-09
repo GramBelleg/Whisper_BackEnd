@@ -85,7 +85,7 @@ export const searchMessagesInES = async (userId: number, chatId: number, keyword
         index: "messages",
         query: {
             bool: {
-                must: [{ wildcard: { content: `*${keyword}*` } }],
+                must: [{ match: { content: keyword } }],
                 filter: [{ match: { chatId } }, { match: { userId } }],
             },
         },

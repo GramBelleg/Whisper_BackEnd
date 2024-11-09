@@ -120,7 +120,7 @@ export const getPinnedMessages = async (chatId: number) => {
     });
 };
 
-export const getSinglMessage = async (userId: number, id: number) => {
+export const getSingleMessage = async (userId: number, id: number) => {
     return await db.messageStatus.findUnique({
         where: {
             messageId_userId: {
