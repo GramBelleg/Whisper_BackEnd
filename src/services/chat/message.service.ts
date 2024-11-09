@@ -182,7 +182,8 @@ const enrichMessageWithParentContent = async (message: SentMessage) => {
 
     return {
         ...message,
-        ...parentContentAndMedia,
+        parentContent: parentContentAndMedia.content,
+        parentMedia: parentContentAndMedia.media,
     };
 };
 
