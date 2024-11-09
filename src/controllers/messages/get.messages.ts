@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getFullMessage, getMessages } from "@services/chat/message.service";
+import { getSinglMessage, getMessages, getPinnedMessages } from "@services/chat/message.service";
 import { buildReceivedMessage } from "./format.message";
 import { getLastMessage } from "@services/chat/chat.service";
 import { Message } from "@prisma/client";
@@ -16,17 +16,21 @@ export const handleGetAllMessages = async (req: Request, res: Response) => {
 
     const messages = await Promise.all(
         result.map(async (message) => {
-            return await getPerUserMessage(userId, message.message);
+            return await getPerUserMessage(userId, message);
         })
     );
 
-    res.status(200).json(messages);
+    const pinnedMessages = await getPinnedMessages(chatId);
+
+    const formattedMessages = { pinnedMessages, messages };
+
+    res.status(200).json(formattedMessages);
 };
 
 export const handleGetMessage = async (req: Request, res: Response) => {
     const userId = req.userId;
     const messageId = Number(req.params.messageId);
-    const result = await getFullMessage(userId, messageId);
+    const result = await getSinglMessage(userId, messageId);
     if (!result) {
         res.status(404).json({ message: "Message not found" });
         return;

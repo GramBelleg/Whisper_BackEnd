@@ -29,9 +29,11 @@ model Message {
   expiresAfter          Int?
   type                  MessageType
   sentAt                DateTime           
-  mentions              String[]
+  mentions              Int[]
   media                 String[]
   parentMessageId       Int?
+  parentContent         String?
+  parentMedia           String[]
   sender                User               @relation(fields: [senderId], references: [id])
   chat                  Chat               @relation(fields: [chatId], references: [id])
   voiceMessage          VoiceMessage?

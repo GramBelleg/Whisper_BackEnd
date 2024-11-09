@@ -3,28 +3,18 @@ import { ChatSummary, LastMessage } from "@models/chat.models";
 import { ChatType } from "@prisma/client";
 import { getMessage } from "./message.service";
 import { MemberSummary } from "@models/chat.models";
+import { getLastMessageSender } from "@services/user/user.service";
 
-const getUserChats = async (userId: number) => {
+const getUserChats = async (userId: number, type: ChatType | null) => {
+    const whereClause = !type ? { userId } : { userId, chat: { type } };
     return await db.chatParticipant.findMany({
-        where: { userId },
+        where: whereClause,
         select: {
             chatId: true,
             unreadMessageCount: true,
             chat: {
                 select: {
                     type: true,
-                },
-            },
-            lastMessage: {
-                select: {
-                    message: {
-                        select: {
-                            id: true,
-                            content: true,
-                            type: true,
-                            sentAt: true,
-                        },
-                    },
                 },
             },
         },
@@ -107,24 +97,47 @@ const getOtherChatParticipants = async (chatId: number, excludeUserId: number) =
     });
 };
 
+const getDMContent = async (participant: any) => {
+    return {
+        othersId: participant.user.id,
+        name: participant.user.userName,
+        picture: participant.user.profilePic,
+        hasStory: participant.user.hasStory,
+        lastSeen: participant.user.lastSeen,
+        isMuted: participant.isMuted,
+    };
+};
+
+const getTypeDependantContent = async (type: ChatType, participant: any) => {
+    if (type === "DM") {
+        return getDMContent(participant);
+    }
+};
+
 export const getChatSummary = async (
     userChat: any,
     userId: number
 ): Promise<ChatSummary | null> => {
     const participant = (await getOtherChatParticipants(userChat.chatId, userId))[0];
+    const lastMessage = await getLastMessage(userId, userChat.chatId);
     if (!participant) return null;
+    const typeDependantContent = await getTypeDependantContent(userChat.chat.type, participant);
+    if (!typeDependantContent) return null;
     const chatSummary = {
         id: userChat.chatId,
-        other: { ...participant.user, isMuted: participant.isMuted },
+        ...typeDependantContent,
         type: userChat.chat.type,
-        lastMessage: { ...userChat.lastMessage.message, time: userChat.lastMessage.time },
+        lastMessage: lastMessage,
         unreadMessageCount: userChat.unreadMessageCount,
     };
     return chatSummary;
 };
 
-export const getChatsSummaries = async (userId: number): Promise<ChatSummary[]> => {
-    const userChats = await getUserChats(userId);
+export const getChatsSummaries = async (
+    userId: number,
+    type: ChatType | null
+): Promise<ChatSummary[]> => {
+    const userChats = await getUserChats(userId, type);
     const chatSummaries: ChatSummary[] = [];
 
     for (const userChat of userChats) {
@@ -163,12 +176,14 @@ export const getLastMessage = async (
         where: { chatId, userId },
         select: { lastMessageId: true },
     });
-
     if (chatParticipant && chatParticipant.lastMessageId) {
-        const result = await getMessage(chatParticipant.lastMessageId);
+        const messageId = chatParticipant.lastMessageId;
+        const result = await getMessage(messageId);
         if (!result) return null;
         const lastMessage = { ...result.message, time: result.time };
-        return lastMessage;
+        const lastMessageSender = await getLastMessageSender(messageId);
+        if (!lastMessageSender) return null;
+        return { ...lastMessage, ...lastMessageSender };
     }
     return null;
 };

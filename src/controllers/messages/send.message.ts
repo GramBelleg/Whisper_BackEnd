@@ -1,20 +1,35 @@
 import { saveMessage } from "@services/chat/message.service";
-import { setLastMessage } from "@services/chat/chat.service";
+import { getChatParticipantsIds, setLastMessage } from "@services/chat/chat.service";
 import { saveExpiringMessage } from "@services/redis/chat.service";
 import { ReceivedMessage, SentMessage } from "@models/messages.models";
-import { buildMessageWithCustomObjects } from "../messages/format.message";
+import { buildReceivedMessage } from "../messages/format.message";
+import { indexMessageInES } from "@services/elasticsearch/message.service";
 
 const handleSaveMessage = async (userId: number, message: SentMessage) => {
-    const { parentMessage, ...messageWithoutParent } = message;
-    const messageData = { ...messageWithoutParent, parentMessageId: parentMessage?.id };
-
-    const savedMessage = await saveMessage(userId, messageData);
-
-    const savedMessageWithReply = { ...savedMessage, parentMessage };
-
+    const savedMessage = await saveMessage(userId, message);
     await setLastMessage(message.chatId, savedMessage.id);
+    return savedMessage;
+};
 
-    return savedMessageWithReply;
+const indexMessage = async (userId: number, ReceivedMessage: ReceivedMessage) => {
+    const {
+        sender: { id: senderId, userName, profilePic },
+        id: messageId,
+        ...messageProps
+    } = ReceivedMessage;
+
+    const indexedMessage = {
+        messageId,
+        userId,
+        senderId,
+        userName,
+        profilePic,
+        media: messageProps.media,
+        content: messageProps.content,
+        chatId: messageProps.chatId,
+        time: messageProps.time,
+    };
+    await indexMessageInES(indexedMessage);
 };
 
 export const handleSend = async (
@@ -26,7 +41,13 @@ export const handleSend = async (
         if (message.selfDestruct) {
             await saveExpiringMessage(savedMessage.id, savedMessage.expiresAfter);
         }
-        const result = await buildMessageWithCustomObjects(userId, savedMessage);
+        const result = await buildReceivedMessage(userId, savedMessage);
+
+        const participants = await getChatParticipantsIds(savedMessage.chatId);
+        for (const participant of participants) {
+            const senderIdx = userId === participant ? 0 : 1;
+            await indexMessage(participant, result[senderIdx]);
+        }
 
         return result;
     } catch (error) {

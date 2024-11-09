@@ -9,7 +9,7 @@ export const addClient = (clientId: number, res: Response): void => {
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
 
-    console.log(`User ${clientId} subscribed to SSE`);
+    //console.log(`User ${clientId} subscribed to SSE`);
 
     sendMessage(clientId, "connected", "Successfully subscribed to SSE");
 

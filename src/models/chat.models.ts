@@ -1,17 +1,24 @@
-import { ChatType, MessageType, User } from "@prisma/client";
+import { ChatType, Message, User } from "@prisma/client";
 
-export type LastMessage = {
-    id: number;
-    content: string;
-    type: MessageType;
-    sentAt: Date;
-    time: Date;
-};
+type LastMessageSender = Pick<User, "id" | "userName">;
+
+export type LastMessage =
+    | null
+    | (Pick<Message, "id" | "content" | "type" | "media"> & {
+          time: Date;
+          sender: LastMessageSender;
+      });
 
 export type ChatSummary = {
-    other: any;
+    id: number;
+    othersId: number;
     type: ChatType;
-    lastMessage: any;
+    name: string;
+    lastSeen: Date;
+    isMuted: boolean;
+    hasStory: boolean;
+    picture: string;
+    lastMessage: LastMessage;
     unreadMessageCount: number;
 };
 
