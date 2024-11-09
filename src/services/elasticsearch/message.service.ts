@@ -40,7 +40,6 @@ export const indexMessageInES = async (message: MessageIndex) => {
 export const editMessageInES = async (messageId: number, newContent: string) => {
     return await esClient.updateByQuery({
         index: "messages",
-        refresh: true,
         body: {
             script: {
                 source: "ctx._source.content = params.newContent",
@@ -69,7 +68,6 @@ export const deleteMessagesforUserInES = async (userId: number, Ids: number[]) =
 export const deleteMessagesForAllInES = async (Ids: number[]) => {
     await esClient.deleteByQuery({
         index: "messages",
-        refresh: true,
         body: {
             query: {
                 bool: {
@@ -103,4 +101,6 @@ export const searchMessagesInES = async (userId: number, chatId: number, keyword
     return ret;
 };
 
-createMessagesIndex();
+(async () => {
+    await createMessagesIndex();
+})();
