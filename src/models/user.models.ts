@@ -1,3 +1,5 @@
+import { User } from "@prisma/client";
+
 export type UserInfo = {
     email: string;
     userName: string;
@@ -11,3 +13,5 @@ export type DuplicateUserInfo = {
     userName?: string;
     phoneNumber?: string;
 };
+
+export type SenderInfo = Pick<User, "id" | "userName" | "profilePic">;

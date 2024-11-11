@@ -10,13 +10,14 @@ model User {
   lastSeen           DateTime             @default(now())
   hasStory           Boolean              @default(false)
   bio                String?
-  Messages           Message[]
+  Messages           Message[]            
   chatParticipant    ChatParticipant[]
   groupParticipant   GroupParticipant[]
   channelParticipant ChannelParticipant[]
   tokens             UserToken[]
   messageStatus      MessageStatus[]
   story              Story[]
+  forwards           Message[]            @relation("ForwardedMessage")
 }
 
 model UserToken {
