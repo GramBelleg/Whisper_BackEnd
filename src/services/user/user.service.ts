@@ -88,7 +88,7 @@ export const setStory = async (story: SaveableStory): Promise<Story> => {
 //TODO: fix delete story
 
 //TODO: check the type of the return value
-const userInfo = async (id: number): Promise<any> => {
+export const userInfo = async (id: number): Promise<any> => {
     const User = await db.user.findUnique({
         where: { id },
         select: {
