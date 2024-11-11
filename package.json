@@ -25,6 +25,7 @@
     "license": "ISC",
     "dependencies": {
         "@azure/storage-blob": "^12.25.0",
+        "@elastic/elasticsearch": "^8.15.1",
         "@prisma/client": "^5.20.0",
         "axios": "^1.7.7",
         "bcrypt": "^5.1.1",
@@ -91,6 +92,7 @@
         "@middlewares": "./dist/middlewares",
         "@DB": "./dist/prisma/PrismaClient",
         "@services": "./dist/services",
+        "@ES": "./dist/elasticsearch/elasticsearchClient",
         "@config": "./dist/config",
         "@validators": "./dist/validators",
         "@routes": "./dist/routes",

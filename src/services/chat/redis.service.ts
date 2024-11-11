@@ -1,9 +1,11 @@
 import redisClient from "@src/redis/redis.client";
-import { Message } from "@prisma/client";
 
-export const saveExpiringMessage = async (message: Message): Promise<void> => {
-    if (!message.expiresAfter) {
+export const saveExpiringMessage = async (
+    id: number,
+    expiresAfter: number | null
+): Promise<void> => {
+    if (!expiresAfter) {
         throw new Error("Expiry time not provided");
     }
-    await redisClient.setex(`messageId:${message.id}`, message.expiresAfter, "");
+    await redisClient.setex(`messageId:${id}`, expiresAfter, "");
 };

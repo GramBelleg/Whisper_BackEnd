@@ -36,6 +36,7 @@ model User {
   relating                  Relates[]            @relation("relating")
   relatedBy                 Relates[]            @relation("relatedBy")
   storyView          storyView[]
+  forwards           Message[]            @relation("ForwardedMessage")
 }
 
 model UserToken {

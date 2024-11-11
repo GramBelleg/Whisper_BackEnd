@@ -4,9 +4,8 @@ import RedisOperation from "@src/@types/redis.operation";
 import { Prisma, Privacy, Status, Story } from "@prisma/client";
 import { verifyCode } from "@services/auth/code.service";
 import HttpError from "@src/errors/HttpError";
-import { promises } from "dns";
 
-const updateBio = async (id: number, bio: string): Promise<string> => {
+export const updateBio = async (id: number, bio: string): Promise<string> => {
     try {
         await db.user.update({
             where: { id },
@@ -19,7 +18,7 @@ const updateBio = async (id: number, bio: string): Promise<string> => {
     }
 };
 
-const updateName = async (id: number, name: string): Promise<string> => {
+export const updateName = async (id: number, name: string): Promise<string> => {
     if (!name) {
         throw new Error("Name is required");
     }
@@ -36,7 +35,7 @@ const updateName = async (id: number, name: string): Promise<string> => {
     }
 };
 
-const updateEmail = async (id: number, email: string, code: string): Promise<string> => {
+export const updateEmail = async (id: number, email: string, code: string): Promise<string> => {
     if (!email) {
         throw new Error("Email is required");
     }
@@ -54,7 +53,7 @@ const updateEmail = async (id: number, email: string, code: string): Promise<str
 };
 
 //TODO: check the structure of the phone number
-const updatePhone = async (id: number, phoneNumber: string): Promise<string> => {
+export const updatePhone = async (id: number, phoneNumber: string): Promise<string> => {
     if (!phoneNumber) {
         throw new Error("Phone is required");
     }
@@ -72,7 +71,7 @@ const updatePhone = async (id: number, phoneNumber: string): Promise<string> => 
 };
 
 //TODO: check the type of the return value
-const userInfo = async (id: number): Promise<any> => {
+export const userInfo = async (id: number): Promise<any> => {
     const User = await db.user.findUnique({
         where: { id },
         select: {
@@ -97,9 +96,8 @@ const userInfo = async (id: number): Promise<any> => {
     return User;
 };
 
-const changePic = async (id: number, profilePic: string): Promise<string> => {
+export const changePic = async (id: number, profilePic: string): Promise<string | null> => {
     try {
-        console.log(profilePic);
         const user = await db.user.update({
             where: { id },
             data: { profilePic: profilePic },
@@ -113,7 +111,7 @@ const changePic = async (id: number, profilePic: string): Promise<string> => {
     }
 };
 
-const changeUserName = async (id: number, userName: string): Promise<string> => {
+export const changeUserName = async (id: number, userName: string): Promise<string> => {
     try {
         if (!id || !userName) {
             throw new Error("User ID and username are required");
@@ -129,7 +127,7 @@ const changeUserName = async (id: number, userName: string): Promise<string> => 
     }
 };
 
-const getUserId = async (userName: string): Promise<number | null> => {
+export const getUserId = async (userName: string): Promise<number | null> => {
     const result = await db.user.findFirst({
         where: { userName },
         select: { id: true },
@@ -137,7 +135,7 @@ const getUserId = async (userName: string): Promise<number | null> => {
     if (!result) return null;
     return result.id;
 };
-const changeAutoDownloadSize = async (userId: number, size: number) => {
+export const changeAutoDownloadSize = async (userId: number, size: number) => {
     try {
         const result = await db.user.update({
             where: { id: userId },
@@ -150,7 +148,7 @@ const changeAutoDownloadSize = async (userId: number, size: number) => {
         throw error;
     }
 };
-const changeLastSeenPrivacy = async (userId: number, privacy: Privacy) => {
+export const changeLastSeenPrivacy = async (userId: number, privacy: Privacy) => {
     try {
         const result = await db.user.update({
             where: { id: userId },
@@ -163,7 +161,7 @@ const changeLastSeenPrivacy = async (userId: number, privacy: Privacy) => {
         throw error;
     }
 };
-const changePfpPrivacy = async (userId: number, privacy: Privacy) => {
+export const changePfpPrivacy = async (userId: number, privacy: Privacy) => {
     try {
         const result = await db.user.update({
             where: { id: userId },
@@ -176,7 +174,7 @@ const changePfpPrivacy = async (userId: number, privacy: Privacy) => {
         throw error;
     }
 };
-const changeStoryPrivacy = async (userId: number, privacy: Privacy) => {
+export const changeStoryPrivacy = async (userId: number, privacy: Privacy) => {
     try {
         const result = await db.user.update({
             where: { id: userId },
@@ -189,7 +187,7 @@ const changeStoryPrivacy = async (userId: number, privacy: Privacy) => {
         throw error;
     }
 };
-const getPfpPrivacy = async (userId: number) => {
+export const getPfpPrivacy = async (userId: number) => {
     try {
         const user = await db.user.findUnique({
             where: { id: userId },
@@ -203,7 +201,7 @@ const getPfpPrivacy = async (userId: number) => {
         throw error;
     }
 };
-const getLastSeenPrivacy = async (userId: number) => {
+export const getLastSeenPrivacy = async (userId: number) => {
     try {
         const user = await db.user.findUnique({
             where: { id: userId },
@@ -217,7 +215,7 @@ const getLastSeenPrivacy = async (userId: number) => {
         throw error;
     }
 };
-const getAllUserIds = async () => {
+export const getAllUserIds = async () => {
     try {
         const userIds: number[] = (
             await db.user.findMany({
@@ -232,7 +230,7 @@ const getAllUserIds = async () => {
         throw error;
     }
 };
-const getUserContacts = async (userId: number) => {
+export const getUserContacts = async (userId: number) => {
     try {
         const userIds: number[] = (
             await db.relates.findMany({
@@ -250,7 +248,7 @@ const getUserContacts = async (userId: number) => {
     }
 };
 
-const savedBy = async (userId: number): Promise<number[]> => {
+export const savedBy = async (userId: number): Promise<number[]> => {
     try {
         const saved = await db.relates.findMany({
             select: { relatingId: true },
@@ -262,7 +260,7 @@ const savedBy = async (userId: number): Promise<number[]> => {
     }
 };
 
-const addContact = async (relatingId: number, relatedById: number) => {
+export const addContact = async (relatingId: number, relatedById: number) => {
     try {
         await db.relates.create({
             data: { relatingId, relatedById, isContact: true },
@@ -274,7 +272,7 @@ const addContact = async (relatingId: number, relatedById: number) => {
         throw error;
     }
 };
-const updateStatus = async (id: number, status: Status) => {
+export const updateStatus = async (id: number, status: Status) => {
     try {
         const user = await db.user.update({
             where: { id },
@@ -289,24 +287,29 @@ const updateStatus = async (id: number, status: Status) => {
     }
 };
 
-export {
-    userInfo,
-    updateBio,
-    updateName,
-    updateEmail,
-    updatePhone,
-    changePic,
-    changeUserName,
-    getUserId,
-    changeAutoDownloadSize,
-    changeLastSeenPrivacy,
-    changePfpPrivacy,
-    getPfpPrivacy,
-    getAllUserIds,
-    getUserContacts,
-    addContact,
-    getLastSeenPrivacy,
-    updateStatus,
-    savedBy,
-    changeStoryPrivacy,
+export const getLastMessageSender = async (messageId: number) => {
+    const result = await db.message.findUnique({
+        where: { id: messageId },
+        select: {
+            sender: {
+                select: {
+                    id: true,
+                    userName: true,
+                },
+            },
+        },
+    });
+    if (!result) return null;
+    return result;
+};
+
+export const getSenderInfo = async (id: number) => {
+    return await db.user.findUnique({
+        where: { id },
+        select: {
+            id: true,
+            userName: true,
+            profilePic: true,
+        },
+    });
 };
