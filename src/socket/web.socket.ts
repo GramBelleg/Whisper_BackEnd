@@ -7,13 +7,26 @@ import * as storyHandler from "./handlers/story.handlers";
 import { setupMessageEvents } from "./events/message.events";
 import { setupStoryEvents } from "./events/story.events";
 import { socketWrapper } from "./handlers/error.handler";
-
+import { setupPfpEvents } from "./events/pfp.events";
+import { setupStatusEvents } from "./events/status.events";
+type HandlerFunction = (key: string, clients: Map<number, Socket>) => any;
 const clients: Map<number, Socket> = new Map();
 
+const handlers: Record<string, HandlerFunction> = {
+    messageId: messageHandler.notifyExpiry,
+    storyExpired: storyHandler.notifyExpiry,
+    // Add more keyParts and handlers here as needed
+};
+
 export const notifyExpiry = (key: string) => {
-    const keyParts = key.split(":")[0];
-    if (keyParts === "messageId") messageHandler.notifyExpiry(key, clients);
-    if (keyParts === "storyExpired") storyHandler.notifyExpiry(key, clients);
+    const keyParts: string = key.split(":")[0];
+    const handler = handlers[keyParts];
+
+    if (handler) {
+        handler(key, clients);
+    } else {
+        console.warn(`No handler found for key: ${key}`);
+    }
 };
 
 export const initWebSocketServer = (server: HTTPServer) => {
@@ -35,15 +48,22 @@ export const initWebSocketServer = (server: HTTPServer) => {
         socket.data.userId = await socketWrapper(validateCookie)(socket);
 
         const userId = socket.data.userId;
-
+        if (!userId) {
+            socket.disconnect(true);
+            return;
+        }
         connectionHandler.startConnection(userId, clients, socket);
 
         setupMessageEvents(socket, userId, clients);
 
         setupStoryEvents(socket, userId, clients);
 
-        socket.on("close", () => {
-            connectionHandler.endConnection(userId, clients);
+        setupPfpEvents(socket, userId, clients);
+
+        setupStatusEvents(socket, userId, clients);
+
+        socket.on("disconnect", () => {
+            if (userId) connectionHandler.endConnection(userId, clients);
         });
     });
 };

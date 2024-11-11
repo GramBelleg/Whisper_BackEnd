@@ -1,28 +1,74 @@
 import { Socket } from "socket.io";
 import { socketWrapper } from "@socket/handlers/error.handler";
 import * as storyTypes from "@models/story.models";
-import * as storyController from "@controllers/user/story.controller";
+import * as storyController from "@controllers/story/story.controller";
 import * as storyHandler from "@socket/handlers/story.handlers";
+import { Privacy } from "@prisma/client";
 
-export const setupStoryEvents = (socket: Socket, userId: number, clients: Map<number, Socket>) => {
+//note the connectedUserId is the id of the user who is sending on the socket
+
+export const setupStoryEvents = (
+    socket: Socket,
+    connectedUserId: number,
+    clients: Map<number, Socket>
+) => {
     socket.on(
-        "uploadStory",
-        socketWrapper(async (story: storyTypes.omitId) => {
-            const createdStory = await storyController.setStory({
-                ...story,
-                userId,
-            });
-            if (createdStory) {
-                await storyHandler.broadCast(userId, clients, "receiveStory", createdStory);
+        "story",
+        socketWrapper(async (story: storyTypes.body) => {
+            try {
+                const createdStory = await storyController.setStory({
+                    ...story,
+                    userId: connectedUserId,
+                });
+
+                if (createdStory) {
+                    await storyHandler.postStory(clients, "story", createdStory);
+                }
+            } catch (e: any) {
+                throw new Error("Failed to create story");
             }
         })
     );
 
     socket.on(
         "deleteStory",
-        socketWrapper(async (storyId: number) => {
-            await storyController.deleteStory(storyId);
-            await storyHandler.broadCast(userId, clients, "deleteStory", storyId);
+        socketWrapper(async (story: { storyId: number }) => {
+            const deletedStory = await storyController.deleteStory(connectedUserId, story.storyId);
+            if (deletedStory) await storyHandler.deleteStory(clients, "deleteStory", deletedStory);
+        })
+    );
+
+    socket.on(
+        "likeStory",
+        socketWrapper(
+            async (data: {
+                storyId: number;
+                userName: string;
+                profilePic: string;
+                liked: boolean;
+            }) => {
+                await storyController.likeStory(connectedUserId, data.storyId, data.liked);
+                await storyHandler.likeStory(clients, "likeStory", {
+                    userId: connectedUserId,
+                    storyId: data.storyId,
+                    userName: data.userName,
+                    profilePic: data.profilePic,
+                    liked: data.liked,
+                });
+            }
+        )
+    );
+
+    socket.on(
+        "viewStory",
+        socketWrapper(async (data: { storyId: number; userName: string; profilePic: string }) => {
+            await storyController.viewStory(connectedUserId, data.storyId);
+            await storyHandler.viewStory(clients, "viewStory", {
+                userId: connectedUserId,
+                storyId: data.storyId,
+                userName: data.userName,
+                profilePic: data.profilePic,
+            });
         })
     );
 };

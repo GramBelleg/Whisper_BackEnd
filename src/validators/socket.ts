@@ -1,7 +1,7 @@
 import { Socket } from "socket.io";
 import { socketWrapper } from "@socket/handlers/error.handler";
 import { cookieParse } from "@middlewares/socket.middleware";
-import { verifyUserToken } from "@services/auth.service";
+import { verifyUserToken } from "@services/auth/token.service";
 
 export const validateCookie = async (socket: Socket): Promise<number | undefined> => {
     const cookie = socket.handshake.headers.cookie;

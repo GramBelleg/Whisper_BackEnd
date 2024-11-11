@@ -1,12 +1,9 @@
 import db from "@src/prisma/PrismaClient";
-import { verifyCode } from "@services/auth/confirmation.service";
-import { validatePhone } from "@validators/user";
+import { validatePhoneNumber } from "@validators/auth";
 import RedisOperation from "@src/@types/redis.operation";
-import { saveStory } from "@services/redis/story.service";
-import { Story } from "@prisma/client";
-import { SaveableStory } from "@models/story.models";
-import redis from "@src/redis/redis.client";
-import * as Randomstring from 'randomstring';
+import { Prisma, Privacy, Status, Story } from "@prisma/client";
+import { verifyCode } from "@services/auth/code.service";
+import HttpError from "@src/errors/HttpError";
 
 export const updateBio = async (id: number, bio: string): Promise<string> => {
     try {
@@ -61,7 +58,7 @@ export const updatePhone = async (id: number, phoneNumber: string): Promise<stri
         throw new Error("Phone is required");
     }
     try {
-        const phone = validatePhone({ phoneNumber: phoneNumber });
+        const phone = validatePhoneNumber(phoneNumber);
         await db.user.update({
             where: { id },
             data: { phoneNumber: phone },
@@ -72,20 +69,6 @@ export const updatePhone = async (id: number, phoneNumber: string): Promise<stri
         throw new Error("Unable to update phone");
     }
 };
-
-export const setStory = async (story: SaveableStory): Promise<Story> => {
-    try {
-        const createdStory = await db.story.create({
-            data: { ...story },
-        });
-        await saveStory(createdStory);
-        return createdStory;
-    } catch (error) {
-        throw new Error("Unable to set story");
-    }
-};
-
-//TODO: fix delete story
 
 //TODO: check the type of the return value
 export const userInfo = async (id: number): Promise<any> => {
@@ -98,7 +81,13 @@ export const userInfo = async (id: number): Promise<any> => {
             bio: true,
             profilePic: true,
             lastSeen: true,
+            status: true,
             phoneNumber: true,
+            autoDownloadSize: true,
+            readReceipts: true,
+            storyPrivacy: true,
+            pfpPrivacy: true,
+            lastSeenPrivacy: true,
         },
     });
     if (!User || !User.email) {
@@ -107,13 +96,15 @@ export const userInfo = async (id: number): Promise<any> => {
     return User;
 };
 
-export const changePic = async (id: number, name: string): Promise<string> => {
+export const changePic = async (id: number, profilePic: string): Promise<string | null> => {
     try {
-        await db.user.update({
+        const user = await db.user.update({
             where: { id },
-            data: { profilePic: name },
+            data: { profilePic: profilePic },
         });
-        return name;
+        if (!user) throw new HttpError("User Not Found", 404);
+        if (!user.profilePic) throw new HttpError("PFP Not Found", 404);
+        return user.profilePic;
     } catch (error) {
         console.error("Error updating profile picture:", error);
         throw new Error("Unable to update profile picture");
@@ -144,15 +135,156 @@ export const getUserId = async (userName: string): Promise<number | null> => {
     if (!result) return null;
     return result.id;
 };
+export const changeAutoDownloadSize = async (userId: number, size: number) => {
+    try {
+        const result = await db.user.update({
+            where: { id: userId },
+            data: { autoDownloadSize: size },
+        });
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("User not found", 404);
+        }
+        throw error;
+    }
+};
+export const changeLastSeenPrivacy = async (userId: number, privacy: Privacy) => {
+    try {
+        const result = await db.user.update({
+            where: { id: userId },
+            data: { lastSeenPrivacy: privacy },
+        });
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("User not found", 404);
+        }
+        throw error;
+    }
+};
+export const changePfpPrivacy = async (userId: number, privacy: Privacy) => {
+    try {
+        const result = await db.user.update({
+            where: { id: userId },
+            data: { pfpPrivacy: privacy },
+        });
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("User not found", 404);
+        }
+        throw error;
+    }
+};
+export const changeStoryPrivacy = async (userId: number, privacy: Privacy) => {
+    try {
+        const result = await db.user.update({
+            where: { id: userId },
+            data: { storyPrivacy: privacy },
+        });
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("User not found", 404);
+        }
+        throw error;
+    }
+};
+export const getPfpPrivacy = async (userId: number) => {
+    try {
+        const user = await db.user.findUnique({
+            where: { id: userId },
+            select: { pfpPrivacy: true },
+        });
+        return user?.pfpPrivacy;
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("User not found", 404);
+        }
+        throw error;
+    }
+};
+export const getLastSeenPrivacy = async (userId: number) => {
+    try {
+        const user = await db.user.findUnique({
+            where: { id: userId },
+            select: { lastSeenPrivacy: true },
+        });
+        return user?.lastSeenPrivacy;
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("User not found", 404);
+        }
+        throw error;
+    }
+};
+export const getAllUserIds = async () => {
+    try {
+        const userIds: number[] = (
+            await db.user.findMany({
+                select: { id: true },
+            })
+        ).map((user) => user.id);
+        return userIds;
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("User not found", 404);
+        }
+        throw error;
+    }
+};
+export const getUserContacts = async (userId: number) => {
+    try {
+        const userIds: number[] = (
+            await db.relates.findMany({
+                where: { relatingId: userId, isContact: true, isBlocked: false },
+                select: { relatedById: true },
+            })
+        ).map((user) => user.relatedById);
+        userIds.push(userId);
+        return userIds;
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("User not found", 404);
+        }
+        throw error;
+    }
+};
 
-export const createCode = async (email: string, operation: RedisOperation) => {
-    const firstCode: string = Randomstring.generate(8);
-    const code = firstCode.replace(/[Il]/g, "s");
-    const expireAt = new Date(Date.now() + 300000).toString(); // after 5 minutes
+export const savedBy = async (userId: number): Promise<number[]> => {
+    try {
+        const saved = await db.relates.findMany({
+            select: { relatingId: true },
+            where: { relatedById: userId, isContact: true, isBlocked: false },
+        });
+        return saved.map((user) => user.relatingId);
+    } catch (error) {
+        throw error;
+    }
+};
 
-    await redis.hmset(`${operation}:${code}`, { email, expireAt });
-    await redis.expire(`${operation}:${code}`, 600); // expire in 10 minutes
-    return code;
+export const addContact = async (relatingId: number, relatedById: number) => {
+    try {
+        await db.relates.create({
+            data: { relatingId, relatedById, isContact: true },
+        });
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("User not found", 404);
+        }
+        throw error;
+    }
+};
+export const updateStatus = async (id: number, status: Status) => {
+    try {
+        const user = await db.user.update({
+            where: { id },
+            data: { status, lastSeen: new Date() },
+        });
+        return user.lastSeen;
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            throw new HttpError("User not found", 404);
+        }
+        throw error;
+    }
 };
 
 export const getLastMessageSender = async (messageId: number) => {

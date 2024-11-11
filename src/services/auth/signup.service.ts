@@ -1,61 +1,39 @@
-import { User } from "@prisma/client";
-import db from "@DB";
+import DuplicateUserError from "@src/errors/DuplicateUserError";
+import {
+    findUserByEmail,
+    findUserByPhoneNumber,
+    findUserByUserName,
+} from "@services/auth/prisma/find.service";
+import { DuplicateUserInfo } from "@models/user.models";
 import axios from "axios";
-import bcrypt from "bcrypt";
-import randomstring from "randomstring";
 
-const findEmail = async (email: string): Promise<string | null> => {
-    const user = await db.user.findUnique({
-        where: { email },
-        select: { email: true },
-    });
-    return user ? user.email : null;
-};
-
-const findUserName = async (userName: string): Promise<string | null> => {
-    const user = await db.user.findUnique({
-        where: { userName },
-        select: { userName: true },
-    });
-    return user ? user.userName : null;
-};
-
-const findPhoneNumber = async (phoneNumber: string): Promise<string | null> => {
-    const user = await db.user.findUnique({
-        where: { phoneNumber },
-        select: { phoneNumber: true },
-    });
-    return user ? user.phoneNumber : null;
-};
-
-async function verifyRobotToken(robotToken: string) {
+async function fetchRobotTokenData(robotToken: string) {
     const verificationURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCAPTCHA_SECRET}&response=${robotToken}`;
     const response = await axios.post(verificationURL);
-    if (!response || !response.data.success) {
+    console.log("response", response.data);
+    return response.data;
+}
+
+async function verifyRobotToken(robotToken: string) {
+    try {
+        const responseData = await fetchRobotTokenData(robotToken);
+        if (!responseData || !responseData.success) {
+            throw new Error();
+        }
+    } catch (err) {
         throw new Error("Invalid robot token");
     }
 }
 
-const upsertUser = async (data: Record<string, any>): Promise<User> => {
-    const userData: {
-        userName: string;
-        email: string;
-        password: string;
-    } = {
-        userName: data.userName,
-        email: data.email,
-        password: bcrypt.hashSync(randomstring.generate({ length: 250 }), 10),
-    };
-    // update in case user already exists and just logs in
-    // create in case user does not exist and logs in
-    const user: User = await db.user.upsert({
-        where: { email: userData.email },
-        update: {},
-        create: {
-            ...userData,
-        },
-    });
-    return user;
+const isUniqueUser = async (email: string, userName: string, phoneNumber: string) => {
+    const duplicate: DuplicateUserInfo = {};
+    if (await findUserByEmail(email)) duplicate.email = "Email already exists ";
+    if (await findUserByUserName(userName)) duplicate.userName = "Username already exists";
+    if (await findUserByPhoneNumber(phoneNumber))
+        duplicate.phoneNumber = "Phone number already exists";
+
+    if (Object.keys(duplicate).length != 0)
+        throw new DuplicateUserError("User already exists", 409, duplicate);
 };
 
-export { verifyRobotToken, upsertUser, findEmail, findUserName, findPhoneNumber };
+export { verifyRobotToken, isUniqueUser, fetchRobotTokenData };

@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
 import { MessageIndex } from "@models/es.models";
+import { Request, Response } from "express";
 
 const formatMessages = (messages: MessageIndex[]) => {
     return messages.map((message) => {

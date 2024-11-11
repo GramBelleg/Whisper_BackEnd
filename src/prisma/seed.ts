@@ -13,7 +13,7 @@ async function createUsers(numUsers: number) {
         const user: User = await db.user.create({
             data: {
                 email: faker.internet.email().toLowerCase(),
-                userName: faker.internet.userName().toLowerCase(),
+                userName: faker.internet.username().toLowerCase(),
                 name: faker.person.fullName().toLowerCase(),
                 password: bcrypt.hashSync(passwords[i], 10),
                 bio: faker.lorem.sentence(),
@@ -97,11 +97,25 @@ async function createChatMessages(chats: Array<{ chat: Chat; participants: User[
     }
 }
 
+const createStories = async (users: User[], numStories: number) => {
+    for (const user of users) {
+        for (let i = 0; i < numStories; i += 1) {
+            await db.story.create({
+                data: {
+                    userId: user.id,
+                    content: "content",
+                    media: "media",
+                    type: "VIDEO",
+                },
+            });
+        }
+    }
+};
 // Main function to implement the seeding
 async function main() {
     const numUsers = 5;
     const numChats = 3;
-
+    const numStories = 3;
     //Create Users
     const users = await createUsers(numUsers);
     console.log(`Created ${users.length} users.`);
@@ -112,7 +126,9 @@ async function main() {
 
     //Create Messages for each chat
     await createChatMessages(chats);
-    console.log("Created messages for all chats.");
+
+    await createStories(users, numStories);
+    console.log("Created stories for all users.");
 }
 
 main().catch((e) => {

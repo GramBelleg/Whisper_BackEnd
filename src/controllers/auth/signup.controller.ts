@@ -1,44 +1,28 @@
 import { Request, Response } from "express";
-import { validateSingUp } from "@validators/user";
-import {
-    findEmail,
-    findPhoneNumber,
-    findUserName,
-    verifyRobotToken,
-} from "@services/auth/signup.service";
-import {
-    cacheData,
-    createCode,
-    sendCode,
-    setExpiration,
-} from "@services/auth/confirmation.service";
+import * as authValidator from "@validators/auth";
+import { isUniqueUser, verifyRobotToken } from "@services/auth/signup.service";
+import { createCode, sendCode } from "@services/auth/code.service";
 import RedisOperation from "@src/@types/redis.operation";
-import { DuplicateUserInfo, UserInfo } from "@models/user.models";
-import DuplicateUserError from "@src/errors/DuplicateUserError";
 import bcrypt from "bcrypt";
-import randomstring from "randomstring";
+import { cacheData, setExpiration } from "@services/auth/redis.service";
 
-const isUniqueUser = async (email: string, userName: string, phoneNumber: string) => {
-    const duplicate: DuplicateUserInfo = {};
-    if (await findEmail(email)) duplicate.email = "Email already exists ";
-    if (await findUserName(userName)) duplicate.userName = "Username already exists";
-    if (await findPhoneNumber(phoneNumber)) duplicate.phoneNumber = "Phone number already exists";
-    if (Object.keys(duplicate).length != 0)
-        throw new DuplicateUserError("User already exists", 409, duplicate);
-};
-
-const signup = async (req: Request, res: Response): Promise<void> => {
-    const user = req.body;
+const cleanUserInfo = (user: any) => {
     user.email = user.email?.trim().toLowerCase();
     user.userName = user.userName?.trim().toLowerCase();
-    validateSingUp(user);
+    user.phoneNumber = user.phoneNumber?.trim();
+};
+const signup = async (req: Request, res: Response): Promise<void> => {
+    const user = req.body;
 
+    cleanUserInfo(user);
+    authValidator.validateSignUp(user);
     user.password = bcrypt.hashSync(user.password, 10);
 
     await isUniqueUser(user.email, user.userName, user.phoneNumber);
 
     await verifyRobotToken(user.robotToken);
 
+    //cache code with user email
     const codeExpiry = parseInt(process.env.CODE_EXPIRES_IN as string);
     const code = await createCode(user.email, RedisOperation.ConfirmEmail, codeExpiry);
 

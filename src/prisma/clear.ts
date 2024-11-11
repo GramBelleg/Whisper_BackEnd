@@ -8,6 +8,8 @@ async function main() {
     await db.message.deleteMany({});
     await db.chatParticipant.deleteMany({});
     await db.chat.deleteMany({});
+    await db.story.deleteMany({});
+    await db.storyView.deleteMany({});
     await db.user.deleteMany({});
 
     console.log("Database cleared!");
