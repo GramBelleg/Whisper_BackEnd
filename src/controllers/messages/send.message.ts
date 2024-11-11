@@ -3,7 +3,6 @@ import { getChatParticipantsIds, setLastMessage } from "@services/chat/chat.serv
 import { saveExpiringMessage } from "@services/redis/chat.service";
 import { ReceivedMessage, SentMessage } from "@models/messages.models";
 import { buildReceivedMessage } from "../messages/format.message";
-import { indexMessageInES } from "@services/elasticsearch/message.service";
 
 const handleSaveMessage = async (userId: number, message: SentMessage) => {
     const savedMessage = await saveMessage(userId, message);
@@ -29,7 +28,6 @@ const indexMessage = async (userId: number, ReceivedMessage: ReceivedMessage) =>
         chatId: messageProps.chatId,
         time: messageProps.time,
     };
-    await indexMessageInES(indexedMessage);
 };
 
 export const handleSend = async (

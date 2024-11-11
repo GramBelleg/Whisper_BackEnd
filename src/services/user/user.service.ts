@@ -169,6 +169,7 @@ export const getLastMessageSender = async (messageId: number) => {
     if (!result) return null;
     return result;
 };
+
 export const getSenderInfo = async (id: number) => {
     return await db.user.findUnique({
         where: { id },
