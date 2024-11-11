@@ -1,7 +1,7 @@
 import db from "@DB";
 import { Message } from "@prisma/client";
 import { getChatParticipantsIds } from "@services/chat/chat.service";
-import { SentMessage } from "@models/chat.models";
+import { ReceivedMessage, SentMessage } from "@models/messages.models";
 
 //will be used with a web socket on(read) or on(delivered) for the status info view of the message
 export const getOtherMessageStatus = async (excludeUserId: number, messageId: number) => {
@@ -13,21 +13,79 @@ export const getOtherMessageStatus = async (excludeUserId: number, messageId: nu
     });
 };
 
+export const getForwardedFromMessage = async (
+    forwarded: boolean,
+    forwardedFromUserId: number | null
+) => {
+    if (!forwarded || !forwardedFromUserId) return null;
+    const result = await db.user.findUnique({
+        where: { id: forwardedFromUserId },
+        select: {
+            id: true,
+            userName: true,
+            profilePic: true,
+        },
+    });
+    if (!result) return null;
+    return result;
+};
+
+export const getMentions = async (messageId: number) => {
+    const result = await db.message.findUnique({
+        where: { id: messageId },
+        select: {
+            mentions: true,
+        },
+    });
+    if (!result) return null;
+    const userNames = await db.user.findMany({
+        where: {
+            id: {
+                in: result.mentions,
+            },
+        },
+        select: {
+            userName: true,
+        },
+    });
+    return userNames.map((user) => user.userName);
+};
+
+export const getParentMessageContent = async (messageId: number) => {
+    const result = await db.message.findUnique({
+        where: { id: messageId },
+        select: {
+            parentContent: true,
+            parentMedia: true,
+        },
+    });
+    if (!result) return null;
+    const { parentContent: content, parentMedia: media } = result;
+    return { content, media };
+};
+export const getMessageSummary = async (id: number | null) => {
+    if (!id) return null;
+    const result = await db.message.findUnique({
+        where: { id },
+        select: {
+            id: true,
+            sender: {
+                select: {
+                    id: true,
+                    userName: true,
+                    profilePic: true,
+                },
+            },
+        },
+    });
+    return result;
+};
+
 export const getUserMessageStatus = async (userId: number, messageId: number) => {
     return await db.messageStatus.findFirst({
         where: { userId, messageId },
         select: {
             time: true,
-        },
-    });
-};
-
-export const getMessageSummary = async (id: number) => {
-    return await db.message.findUnique({
-        where: { id },
-        select: {
-            content: true,
-            media: true,
         },
     });
 };
@@ -40,11 +98,39 @@ export const getMessage = async (id: number) => {
                 select: {
                     id: true,
                     content: true,
+                    media: true,
                     type: true,
-                    sentAt: true,
                 },
             },
             time: true,
+        },
+    });
+};
+
+export const getPinnedMessages = async (chatId: number) => {
+    return await db.message.findMany({
+        where: {
+            chatId,
+            pinned: true,
+        },
+        select: {
+            id: true,
+            content: true,
+        },
+    });
+};
+
+export const getSingleMessage = async (userId: number, id: number) => {
+    return await db.messageStatus.findUnique({
+        where: {
+            messageId_userId: {
+                messageId: id,
+                userId: userId,
+            },
+            deleted: false,
+        },
+        select: {
+            message: true,
         },
     });
 };
@@ -66,7 +152,7 @@ export const getMessages = async (userId: number, chatId: number) => {
         },
     });
 
-    return messages;
+    return messages.map((message) => message.message);
 };
 
 const saveMessageStatuses = async (userId: number, message: Message, participantIds: number[]) => {
@@ -74,15 +160,40 @@ const saveMessageStatuses = async (userId: number, message: Message, participant
         data: participantIds.map((participantId) => ({
             userId: participantId,
             messageId: message.id,
-            time: (participantId == userId ? message.sentAt : new Date().toISOString()),
+            time: participantId == userId ? message.sentAt : new Date().toISOString(),
         })),
     });
 };
 
-export const saveMessage = async (userId: number, message: SentMessage): Promise<Message> => {
-    const savedMessage = await db.message.create({
-        data: { ...message },
+const getMessageContent = async (messageId: number | null) => {
+    if (!messageId) return null;
+    const message = await db.message.findUnique({
+        where: { id: messageId },
+        select: { content: true, media: true },
     });
+    return message;
+};
+
+const enrichMessageWithParentContent = async (message: SentMessage) => {
+    if (!message.parentMessageId) return message;
+
+    const parentContentAndMedia = await getMessageContent(message.parentMessageId);
+    if (!parentContentAndMedia) return message;
+
+    return {
+        ...message,
+        parentContent: parentContentAndMedia.content,
+        parentMedia: parentContentAndMedia.media,
+    };
+};
+
+export const saveMessage = async (userId: number, message: SentMessage): Promise<Message> => {
+    const messageData = await enrichMessageWithParentContent(message);
+
+    const savedMessage = await db.message.create({
+        data: messageData,
+    });
+
     const participantIds = await getChatParticipantsIds(message.chatId);
     await saveMessageStatuses(userId, savedMessage, participantIds);
 

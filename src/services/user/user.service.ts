@@ -6,8 +6,9 @@ import { saveStory } from "@services/redis/story.service";
 import { Story } from "@prisma/client";
 import { SaveableStory } from "@models/story.models";
 import redis from "@src/redis/redis.client";
+import * as Randomstring from 'randomstring';
 
-const updateBio = async (id: number, bio: string): Promise<string> => {
+export const updateBio = async (id: number, bio: string): Promise<string> => {
     try {
         await db.user.update({
             where: { id },
@@ -20,7 +21,7 @@ const updateBio = async (id: number, bio: string): Promise<string> => {
     }
 };
 
-const updateName = async (id: number, name: string): Promise<string> => {
+export const updateName = async (id: number, name: string): Promise<string> => {
     if (!name) {
         throw new Error("Name is required");
     }
@@ -37,7 +38,7 @@ const updateName = async (id: number, name: string): Promise<string> => {
     }
 };
 
-const updateEmail = async (id: number, email: string, code: string): Promise<string> => {
+export const updateEmail = async (id: number, email: string, code: string): Promise<string> => {
     if (!email) {
         throw new Error("Email is required");
     }
@@ -55,7 +56,7 @@ const updateEmail = async (id: number, email: string, code: string): Promise<str
 };
 
 //TODO: check the structure of the phone number
-const updatePhone = async (id: number, phoneNumber: string): Promise<string> => {
+export const updatePhone = async (id: number, phoneNumber: string): Promise<string> => {
     if (!phoneNumber) {
         throw new Error("Phone is required");
     }
@@ -72,7 +73,7 @@ const updatePhone = async (id: number, phoneNumber: string): Promise<string> => 
     }
 };
 
-const setStory = async (story: SaveableStory): Promise<Story> => {
+export const setStory = async (story: SaveableStory): Promise<Story> => {
     try {
         const createdStory = await db.story.create({
             data: { ...story },
@@ -106,7 +107,7 @@ const userInfo = async (id: number): Promise<any> => {
     return User;
 };
 
-const changePic = async (id: number, name: string): Promise<string> => {
+export const changePic = async (id: number, name: string): Promise<string> => {
     try {
         await db.user.update({
             where: { id },
@@ -119,7 +120,7 @@ const changePic = async (id: number, name: string): Promise<string> => {
     }
 };
 
-const changeUserName = async (id: number, userName: string): Promise<string> => {
+export const changeUserName = async (id: number, userName: string): Promise<string> => {
     try {
         if (!id || !userName) {
             throw new Error("User ID and username are required");
@@ -135,7 +136,7 @@ const changeUserName = async (id: number, userName: string): Promise<string> => 
     }
 };
 
-const getUserId = async (userName: string): Promise<number | null> => {
+export const getUserId = async (userName: string): Promise<number | null> => {
     const result = await db.user.findFirst({
         where: { userName },
         select: { id: true },
@@ -144,7 +145,7 @@ const getUserId = async (userName: string): Promise<number | null> => {
     return result.id;
 };
 
-const createCode = async (email: string, operation: RedisOperation) => {
+export const createCode = async (email: string, operation: RedisOperation) => {
     const firstCode: string = Randomstring.generate(8);
     const code = firstCode.replace(/[Il]/g, "s");
     const expireAt = new Date(Date.now() + 300000).toString(); // after 5 minutes
@@ -153,15 +154,30 @@ const createCode = async (email: string, operation: RedisOperation) => {
     await redis.expire(`${operation}:${code}`, 600); // expire in 10 minutes
     return code;
 };
-export {
-    setStory,
-    userInfo,
-    updateBio,
-    updateName,
-    updateEmail,
-    updatePhone,
-    changePic,
-    changeUserName,
-    getUserId,
-    createCode,
+
+export const getLastMessageSender = async (messageId: number) => {
+    const result = await db.message.findUnique({
+        where: { id: messageId },
+        select: {
+            sender: {
+                select: {
+                    id: true,
+                    userName: true,
+                },
+            },
+        },
+    });
+    if (!result) return null;
+    return result;
+};
+
+export const getSenderInfo = async (id: number) => {
+    return await db.user.findUnique({
+        where: { id },
+        select: {
+            id: true,
+            userName: true,
+            profilePic: true,
+        },
+    });
 };
