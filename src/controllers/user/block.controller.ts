@@ -8,11 +8,13 @@ import { validateBlockData } from "@validators/user";
 const getBlockedUsers = async (req: Request, res: Response) => {
     const blockedUsers = await findBlockedUsers(req.userId);
     res.status(200).json(
-        blockedUsers.map((user) => ({
-            userId: user.id,
-            userName: user.userName,
-            profilePic: user.profilePic,
-        }))
+        {
+            users: blockedUsers.map(user => ({
+                userId: user.id,
+                userName: user.userName,
+                profilePic: user.profilePic
+            }))
+        }
     );
 };
 

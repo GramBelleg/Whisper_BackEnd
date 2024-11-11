@@ -28,7 +28,7 @@ router.put("/email", asyncHandler(userController.updateEmail));
 router.post("/emailcode", asyncHandler(userController.emailCode));
 router.put("/phoneNumber", asyncHandler(userController.updatePhone));
 router.put("/profilepic", asyncHandler(userController.changePic)); // Use media route "/write" first to upload image
-router.put("/username", asyncHandler(userController.changeUserName));
+router.put("/userName", asyncHandler(userController.changeUserName));
 router.post("/readReceipts", asyncHandler(userController.changeReadReceipt));
 router.get("/blocked", asyncHandler(getBlockedUsers));
 router.put("/block", asyncHandler(handleUserBlocks));

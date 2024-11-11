@@ -12,6 +12,7 @@ import errorHandler from "@middlewares/error.handler";
 import { initWebSocketServer } from "@socket/web.socket";
 import { redisSubscribe } from "@src/redis/redis.sub.handlers";
 import { deleteExpiredTokens } from "@services/auth/prisma/delete.service";
+import { deleteExtraRelates } from "@services/user/prisma/delete.service";
 
 dotenv.config();
 
@@ -51,6 +52,7 @@ redisSubscribe();
 app.use(errorHandler);
 
 cron.schedule("0 3 * * *", deleteExpiredTokens); // delete expired tokens every day at 3 AM
+cron.schedule("0 3 * * *", () => deleteExtraRelates); // delete extra relates every day at 3 AM
 
 // Comment this code in only testing to avoid EADDRINUSE error when running controllers tests which use the same port
 server.listen(parseInt(process.env.PORT as string), () => {
