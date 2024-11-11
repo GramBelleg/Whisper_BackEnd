@@ -1,14 +1,17 @@
 import { Socket } from "socket.io";
-import { archiveStory } from "@services/story/story.service";
+import { archiveStory, getStoryPrivacy } from "@services/story/story.service";
 import { sendToClient } from "@socket/utils/socket.utils";
 import redisClient from "@src/redis/redis.client";
 import { SaveableStory } from "@models/story.models";
 import * as userServices from "@services/user/user.service";
 import { Privacy, Story } from "@prisma/client";
 
-const stroyParticipants = async (story: Story, clients: Map<number, Socket>): Promise<number[]> => {
+const stroyParticipants = async (story: any, clients: Map<number, Socket>): Promise<number[]> => {
     try {
-        const privacy: Privacy = story.privacy;
+        let privacy: Privacy;
+        if (!story.privacy) privacy = await getStoryPrivacy(story.id);
+        else privacy = story.privacy;
+
         let participants: number[] = [];
         switch (privacy) {
             case "Everyone":
@@ -109,7 +112,7 @@ const likeStory = async (
     data: any
 ): Promise<void> => {
     try {
-        const participants = await stroyParticipants(data.storyId, clients);
+        const participants = await stroyParticipants({ id: data.storyId }, clients);
         for (const participant of participants) {
             sendToClient(participant, clients, emitEvent, {
                 userId: data.userId,
@@ -129,7 +132,7 @@ const viewStory = async (
     emitEvent: string,
     data: any
 ): Promise<void> => {
-    const participants = await stroyParticipants(data.storyId, clients);
+    const participants = await stroyParticipants({ id: data.storyId }, clients);
     for (const participant of participants) {
         sendToClient(participant, clients, emitEvent, {
             userId: data.userId,

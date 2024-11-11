@@ -124,7 +124,22 @@ const getStoryUserId = async (storyId: number): Promise<number> => {
         throw new Error(`Error in getStoryUserId: ${error.message}`);
     }
 };
-
+const getStoryPrivacy = async (storyId: number): Promise<Privacy> => {
+    try {
+        const story = await db.story.findUnique({
+            where: {
+                id: storyId,
+            },
+            select: {
+                privacy: true,
+            },
+        });
+        if (!story) throw new Error("Story not found");
+        return story.privacy;
+    } catch (error: any) {
+        throw new Error(`Error in getStoryPrivacy: ${error.message}`);
+    }
+};
 const viewStory = async (userId: number, storyId: number): Promise<storyView> => {
     try {
         const data: storyView = await db.storyView.upsert({
@@ -140,7 +155,6 @@ const viewStory = async (userId: number, storyId: number): Promise<storyView> =>
             },
             update: { viewedAgain: true },
         });
-        console.log(data.viewedAgain);
         if (!data.viewedAgain)
             await db.story.update({
                 where: {
@@ -308,4 +322,5 @@ export {
     getStoriesByUserId,
     getStoryViews,
     changeStoryPrivacy,
+    getStoryPrivacy,
 };
