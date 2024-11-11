@@ -45,18 +45,14 @@ async function resetPassword(req: Request, res: Response) {
     await verifyCode(email, code, RedisOperation.ResetPassword);
 
     const user: User = await updatePassword(email, password);
+    const { password: userPassword, ...userWithoutPassword } = user;
 
     const userToken = await createAddToken(user.id);
     createTokenCookie(res, userToken);
 
     res.status(200).json({
         status: "success",
-        user: {
-            id: user.id,
-            name: user.name,
-            userName: user.userName,
-            email: user.email,
-        },
+        user: userWithoutPassword,
         userToken,
     });
 }
