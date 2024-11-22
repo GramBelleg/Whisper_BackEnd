@@ -8,3 +8,4 @@ Dockerfile
 docker-compose.yml
 migrations
 package-lock.json
+backend.log

@@ -33,20 +33,12 @@ properties:
     type: string
     description: blobName
     nullable: true
-  parentMessage:
-    type: object
+  parentMessageId:
+    type: integer
     nullable: true
-    properties:
-      id:
-        type: integer 
-      content:
-        type: string 
-      senderName:
-        type: string 
-      media:
-        type: string 
-      type:
-        type: string 
+  forwardedFromUserId:
+    type: integer
+    nullable: true
   mentions:
     type: array
     items:
