@@ -1,5 +1,11 @@
 pipeline {
     agent any
+
+    options {
+        disableConcurrentBuilds() 
+        timeout(time: 2, unit: 'HOURS') 
+    }
+
     environment {
         JOB_PATH = "/home/azureuser/Whisper_Devops/jenkins/jenkins_home/workspace/whisperBackend_${BRANCH_NAME}"
         DOCKER_PASS=credentials('dockerPassword') 
@@ -30,7 +36,7 @@ pipeline {
         stage('testing') {
             steps {
                 sh """
-                echo "******* testing ********"
+                echo "******* testing ********"> testsLogs.txt
                 """
             }
         }
@@ -64,6 +70,18 @@ pipeline {
     }
     post {
         always {
+            emailext (
+                    subject: "Build Notification: ${JOB_NAME} #${BUILD_NUMBER} [${BRANCH_NAME}]",
+                    body: """
+                        The build for ${BRANCH_NAME} has completed.
+                        - Job Name: ${JOB_NAME}
+                        - Build Number: ${BUILD_NUMBER}
+                        - Build Status: ${currentBuild.result ?: 'SUCCESS'}
+                
+                    """,
+                    to: "grambell.whisper@gmail.com",
+                    attachmentsPattern: "testsLogs.txt"
+            )
             echo 'Cleaning up the workspace...'
             cleanWs()
         }
