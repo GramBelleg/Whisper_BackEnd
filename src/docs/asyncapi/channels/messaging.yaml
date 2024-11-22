@@ -75,9 +75,6 @@ pinMessage:
           chatId:
             type: integer
             description: Identifier of the message
-          duration:
-            type: integer
-            description: duration of the pin
 
   publish:
     summary: Receive pinned chat messages
