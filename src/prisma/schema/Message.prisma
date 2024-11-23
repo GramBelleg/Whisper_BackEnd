@@ -30,10 +30,10 @@ model Message {
   type                  MessageType
   sentAt                DateTime           
   mentions              Int[]
-  media                 String[]
+  media                 String?
   parentMessageId       Int?
   parentContent         String?
-  parentMedia           String[]
+  parentMedia           String?
   sender                User               @relation(fields: [senderId], references: [id])
   chat                  Chat               @relation(fields: [chatId], references: [id])
   voiceMessage          VoiceMessage?

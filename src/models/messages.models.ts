@@ -5,7 +5,7 @@ export type ParentMessage =
     | null
     | (Pick<Message, "id"> & {
           content: string | null;
-          media: string[];
+          media: string | null;
           senderId: number;
           senderName: string;
           senderProfilePic: string;

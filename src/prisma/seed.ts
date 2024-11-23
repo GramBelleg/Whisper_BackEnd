@@ -71,6 +71,7 @@ async function createChatMessages(chats: Array<{ chat: Chat; participants: User[
             });
 
             // Loop over every participant except the sender
+            console.log(chat.participants);
             for (const participant of chat.participants) {
                 // Skip the sender
 

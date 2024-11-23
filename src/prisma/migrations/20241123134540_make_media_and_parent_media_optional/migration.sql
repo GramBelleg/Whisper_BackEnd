@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Message" ALTER COLUMN "media" DROP NOT NULL,
+ALTER COLUMN "parentMedia" DROP NOT NULL;
