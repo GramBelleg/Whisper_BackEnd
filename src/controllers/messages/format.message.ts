@@ -41,6 +41,7 @@ export const buildMessageWithCustomObjects = async (
             senderId,
             parentContent,
             parentMedia,
+            parentExtension,
             ...rest
         } = msg;
         return { ...rest };

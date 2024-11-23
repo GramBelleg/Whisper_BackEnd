@@ -28,6 +28,7 @@ export type ReceivedMessage = Omit<
     | "senderId"
     | "parentContent"
     | "parentMedia"
+    | "parentExtension"
 > & {
     parentMessage: ParentMessage;
     forwardedFrom: ForwardedFrom;
@@ -44,6 +45,7 @@ export type SentMessage = Pick<Message, "chatId" | "senderId" | "content" | "sen
             | "selfDestruct"
             | "expiresAfter"
             | "media"
+            | "extension"
             | "isSecret"
             | "isAnnouncement"
             | "mentions"

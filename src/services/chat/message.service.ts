@@ -57,10 +57,11 @@ export const getParentMessageContent = async (messageId: number) => {
         select: {
             parentContent: true,
             parentMedia: true,
+            parentExtension: true,
         },
     });
     if (!result) return null;
-    const { parentContent: content, parentMedia: media } = result;
+    const { parentContent: content, parentMedia: media, parentExtension: extension } = result;
     return { content, media };
 };
 export const getMessageSummary = async (id: number | null) => {
@@ -169,7 +170,7 @@ const getMessageContent = async (messageId: number | null) => {
     if (!messageId) return null;
     const message = await db.message.findUnique({
         where: { id: messageId },
-        select: { content: true, media: true },
+        select: { content: true, media: true, extension: true },
     });
     return message;
 };
@@ -184,6 +185,7 @@ const enrichMessageWithParentContent = async (message: SentMessage) => {
         ...message,
         parentContent: parentContentAndMedia.content,
         parentMedia: parentContentAndMedia.media,
+        parentExtension: parentContentAndMedia.extension,
     };
 };
 

@@ -12,7 +12,7 @@ export const setupMessageEvents = (
     clients: Map<number, Socket>
 ) => {
     socket.on(
-        "sendMessage",
+        "message",
         socketWrapper(async (message: types.OmitSender<types.SentMessage>) => {
             const savedMessage = await sendController.handleSend(userId, {
                 ...message,
@@ -23,7 +23,7 @@ export const setupMessageEvents = (
                     userId,
                     message.chatId,
                     clients,
-                    "receiveMessage",
+                    "message",
                     savedMessage
                 );
             }
