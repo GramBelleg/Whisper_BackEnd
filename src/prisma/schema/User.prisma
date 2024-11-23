@@ -86,3 +86,7 @@ model Relates {
 
   @@id([relatingId, relatedById])
 }
+
+model Stickers {
+  blobName String @id
+}
