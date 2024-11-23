@@ -40,7 +40,7 @@ export const setupMessageEvents = (
             if (editedMessage) {
                 await messageHandler.broadCast(message.chatId, clients, "editMessage", {
                     messageId: editedMessage.id,
-                    content: message.content,
+                    content: editedMessage.content,
                     chatId: message.chatId,
                 });
             }
@@ -75,9 +75,9 @@ export const setupMessageEvents = (
 
     socket.on(
         "deleteMessage",
-        socketWrapper(async ({ Ids, chatId }: { Ids: number[]; chatId: number }) => {
-            await deleteController.deleteMessagesForAllUsers(Ids, chatId);
-            await messageHandler.broadCast(chatId, clients, "deleteMessage", { Ids, chatId });
+        socketWrapper(async ({ messages, chatId }: { messages: number[]; chatId: number }) => {
+            await deleteController.deleteMessagesForAllUsers(messages, chatId);
+            await messageHandler.broadCast(chatId, clients, "deleteMessage", { messages, chatId });
         })
     );
 };
