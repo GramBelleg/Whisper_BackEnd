@@ -34,7 +34,7 @@ export const setupMessageEvents = (
         "editMessage",
         socketWrapper(async (message: types.OmitSender<types.EditableMessage>) => {
             const editedMessage = await editController.handleEditContent(
-                message.id,
+                message.messageId,
                 message.content
             );
             if (editedMessage) {
@@ -49,7 +49,7 @@ export const setupMessageEvents = (
     socket.on(
         "pinMessage",
         socketWrapper(async (message: types.MessageReference) => {
-            const pinnedMessage = await editController.handlePinMessage(message.id);
+            const pinnedMessage = await editController.handlePinMessage(message.messageId);
             if (pinnedMessage) {
                 await messageHandler.broadCast(message.chatId, clients, "pinMessage", {
                     pinnedMessage,
@@ -62,7 +62,7 @@ export const setupMessageEvents = (
     socket.on(
         "unpinMessage",
         socketWrapper(async (message: types.MessageReference) => {
-            const unpinnedMessage = await editController.handleUnpinMessage(message.id);
+            const unpinnedMessage = await editController.handleUnpinMessage(message.messageId);
             if (unpinnedMessage) {
                 await messageHandler.broadCast(message.chatId, clients, "unpinMessage", {
                     unpinnedMessage,

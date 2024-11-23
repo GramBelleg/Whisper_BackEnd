@@ -56,7 +56,7 @@ export type SentMessage = Pick<Message, "chatId" | "senderId" | "content" | "sen
 
 export type OmitSender<T> = Omit<T, "senderId">;
 
-export type MessageReference = Pick<Message, "id" | "senderId" | "chatId">;
+export type MessageReference = Pick<Message, "senderId" | "chatId"> & { messageId: number };
 
 export type EditableMessage = MessageReference & Pick<Message, "content">;
 
