@@ -1,7 +1,6 @@
 import { Socket } from "socket.io";
 import { socketWrapper } from "@socket/handlers/error.handler";
 import * as connectionHandler from "@socket/handlers/connection.handlers";
-import { changePic } from "@services/user/user.service";
 import { Status } from "@prisma/client";
 
 //Need it to implement Away status from the frontEnd
