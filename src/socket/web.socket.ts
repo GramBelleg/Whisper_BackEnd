@@ -16,6 +16,7 @@ const clients: Map<number, Socket> = new Map();
 const handlers: Record<string, HandlerFunction> = {
     messageId: messageHandler.notifyExpiry,
     storyExpired: storyHandler.notifyExpiry,
+    chatId: messageHandler.notifyUnmute,
 };
 
 export const notifyExpiry = (key: string) => {

@@ -9,3 +9,11 @@ export const saveExpiringMessage = async (
     }
     await redisClient.setex(`messageId:${id}`, expiresAfter, "");
 };
+
+export const saveMuteDuration = async(
+    userId: number,
+    chatId: number,
+    duration: number
+): Promise<void> => {
+    await redisClient.setex(`chatId:${chatId}userId:${userId}`, duration, "");
+}

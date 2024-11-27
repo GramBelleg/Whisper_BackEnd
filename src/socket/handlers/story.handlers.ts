@@ -6,7 +6,7 @@ import { SaveableStory } from "@models/story.models";
 import * as userServices from "@services/user/user.service";
 import { Privacy, Story } from "@prisma/client";
 
-const stroyParticipants = async (story: any, clients: Map<number, Socket>): Promise<number[]> => {
+const storyParticipants = async (story: any, clients: Map<number, Socket>): Promise<number[]> => {
     try {
         let privacy: Privacy;
         if (!story.privacy) privacy = await getStoryPrivacy(story.id);
@@ -31,13 +31,12 @@ const stroyParticipants = async (story: any, clients: Map<number, Socket>): Prom
 };
 
 const broadCast = async (
-    userId: number,
     clients: Map<number, Socket>,
     emitEvent: string,
     emitMessage: any
 ): Promise<void> => {
     try {
-        const participants = await stroyParticipants(emitMessage, clients);
+        const participants = await storyParticipants(emitMessage, clients);
         if (participants) {
             for (const participant of participants) {
                 sendToClient(participant, clients, emitEvent, emitMessage);
@@ -54,7 +53,7 @@ const postStory = async (
     emitStory: Story
 ): Promise<void> => {
     try {
-        const participants = await stroyParticipants(emitStory, clients);
+        const participants = await storyParticipants(emitStory, clients);
         for (const participant of participants) {
             sendToClient(participant, clients, emitEvent, {
                 id: emitStory.id,
@@ -79,7 +78,7 @@ const notifyExpiry = async (key: string, clients: Map<number, Socket>): Promise<
         const story: Story = JSON.parse(value);
         await redisClient.del(key); //delete the key from redis
         await archiveStory(story.userId, story.id); //database operation
-        const participants = await stroyParticipants(story, clients);
+        const participants = await storyParticipants(story, clients);
         for (const participant of participants) {
             sendToClient(participant, clients, "storyExpired", { storyId: story.id });
         }
@@ -94,7 +93,7 @@ const deleteStory = async (
     deletedStory: Story
 ): Promise<void> => {
     try {
-        const participants = await stroyParticipants(deletedStory, clients);
+        const participants = await storyParticipants(deletedStory, clients);
         for (const participant of participants) {
             sendToClient(participant, clients, emitEvent, {
                 storyId: deletedStory.id,
@@ -112,7 +111,7 @@ const likeStory = async (
     data: any
 ): Promise<void> => {
     try {
-        const participants = await stroyParticipants({ id: data.storyId }, clients);
+        const participants = await storyParticipants({ id: data.storyId }, clients);
         for (const participant of participants) {
             sendToClient(participant, clients, emitEvent, {
                 userId: data.userId,
@@ -132,7 +131,7 @@ const viewStory = async (
     emitEvent: string,
     data: any
 ): Promise<void> => {
-    const participants = await stroyParticipants({ id: data.storyId }, clients);
+    const participants = await storyParticipants({ id: data.storyId }, clients);
     for (const participant of participants) {
         sendToClient(participant, clients, emitEvent, {
             userId: data.userId,

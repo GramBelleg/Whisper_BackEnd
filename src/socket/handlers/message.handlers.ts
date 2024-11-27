@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { getChatId } from "@services/chat/chat.service";
+import { getChatId, unmuteChat } from "@services/chat/chat.service";
 import { sendToClient } from "@socket/utils/socket.utils";
 import { deleteMessagesForAllUsers } from "@controllers/messages/delete.message";
 import { getChatParticipantsIds } from "@services/chat/chat.service";
@@ -83,6 +83,21 @@ export const deliverAllUserMessages = async (userId: number, clients: Map<number
     const directTo = await handleDeliverAllMessages(userId);
     if (directTo) {
         sendReadAndDeliveredGroups(clients, directTo, "deliverMessage");
+    }
+};
+
+export const notifyUnmute = async (key: string, clients: Map<number, Socket>): Promise<void> => {
+    try {
+        const match = key.match(/chatId:(\d+)userId:(\d+)/);
+        if (!match) return;
+
+        const chatId = Number(match[1]);
+        const userId = Number(match[2]);
+
+        await unmuteChat(chatId, userId);
+        sendToClient(userId, clients, "unmuteChat", { chatId });
+    } catch (error: any) {
+        throw new Error(`Error in notifyUnmute: ${error.message}`);
     }
 };
 
