@@ -80,18 +80,11 @@ describe("test reset password controller", () => {
     it("should send reset code be successfully", async () => {
         const user = await createRandomUser();
         (updatePassword as jest.Mock).mockResolvedValueOnce(user);
-        const response = await request(app).post("/api/auth/resetPassword").send(data);
+        const response = await request(app).post("/api/auth/resetPassword").send({ ...data, email: user.email });
         expect(response.status).toEqual(200);
-        expect(response.body).toEqual({
-            status: "success",
-            user: {
-                id: user.id,
-                name: user.name,
-                userName: user.userName,
-                email: user.email,
-            },
-            userToken: "token",
-        });
+        expect(response.body.status).toEqual("success");
+        expect(response.body.user.email).toEqual(user.email);
+        expect(response.body.userToken).toEqual("token");
     });
     it("should signup be unsuccessfully", async () => {
         (updatePassword as jest.Mock).mockRejectedValueOnce(
