@@ -6,6 +6,7 @@ import {
     handleGetLastMessage,
     handleGetMessage,
 } from "@controllers/messages/get.messages";
+import { handleGetMessageStatus } from "@controllers/messages/edit.message";
 import { handleSearchMessages } from "@controllers/messages/search.messages";
 
 const router: Router = Router();
@@ -15,5 +16,6 @@ router.route("/:chatId/deleteForMe").delete(asyncHandler(deleteMessagesForCurren
 router.route("/:chatId/lastMessage").get(asyncHandler(handleGetLastMessage));
 router.route("/:messageId/getMessage").get(asyncHandler(handleGetMessage));
 router.route("/:chatId/searchMessages").get(asyncHandler(handleSearchMessages));
+router.route("/:messageId/getMessageStatus").get(asyncHandler(handleGetMessageStatus));
 
 export default router;

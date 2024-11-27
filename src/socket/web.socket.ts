@@ -9,13 +9,13 @@ import { setupStoryEvents } from "./events/story.events";
 import { socketWrapper } from "./handlers/error.handler";
 import { setupPfpEvents } from "./events/pfp.events";
 import { setupStatusEvents } from "./events/status.events";
+
 type HandlerFunction = (key: string, clients: Map<number, Socket>) => any;
 const clients: Map<number, Socket> = new Map();
 
 const handlers: Record<string, HandlerFunction> = {
     messageId: messageHandler.notifyExpiry,
     storyExpired: storyHandler.notifyExpiry,
-    // Add more keyParts and handlers here as needed
 };
 
 export const notifyExpiry = (key: string) => {

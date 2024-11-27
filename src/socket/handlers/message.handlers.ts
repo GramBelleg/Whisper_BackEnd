@@ -3,6 +3,10 @@ import { getChatId } from "@services/chat/chat.service";
 import { sendToClient } from "@socket/utils/socket.utils";
 import { deleteMessagesForAllUsers } from "@controllers/messages/delete.message";
 import { getChatParticipantsIds } from "@services/chat/chat.service";
+import {
+    handleDeliverAllMessages,
+    handleReadAllMessages,
+} from "@controllers/messages/edit.message";
 
 export const broadCast = async (
     chatId: number,
@@ -44,6 +48,41 @@ export const userBroadCast = async (
         }
     } catch (error: any) {
         throw new Error(`Error in broadCast: ${error.message}`);
+    }
+};
+
+export const sendReadAndDeliveredGroups = async (
+    clients: Map<number, Socket>,
+    directTo: {
+        chatId: number;
+        messageIds: number[];
+    }[][],
+    emitEvent: string
+): Promise<void> => {
+    for (const key in directTo) {
+        const senderId = parseInt(key);
+        const groups = directTo[senderId];
+        for (const group of groups) {
+            sendToClient(senderId, clients, emitEvent, group);
+        }
+    }
+};
+
+export const readAllUserMessages = async (
+    userId: number,
+    clients: Map<number, Socket>,
+    messages: number[]
+) => {
+    const directTo = await handleReadAllMessages(userId, messages);
+    if (directTo) {
+        sendReadAndDeliveredGroups(clients, directTo, "readMessage");
+    }
+};
+
+export const deliverAllUserMessages = async (userId: number, clients: Map<number, Socket>) => {
+    const directTo = await handleDeliverAllMessages(userId);
+    if (directTo) {
+        sendReadAndDeliveredGroups(clients, directTo, "deliverMessage");
     }
 };
 

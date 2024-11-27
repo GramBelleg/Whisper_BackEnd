@@ -1,8 +1,8 @@
 import { ReceivedMessage, ToBeFormattedMessage } from "@models/messages.models";
 import { Message } from "@prisma/client";
 import {
-    getOtherMessageStatus,
-    getUserMessageStatus,
+    getOtherMessageTime,
+    getUserMessageTime,
     getMessageSummary,
     getForwardedFromMessage,
     getParentMessageContent,
@@ -26,13 +26,8 @@ export const buildMessageWithCustomObjects = async (
     userId: number,
     message: ToBeFormattedMessage
 ): Promise<ReceivedMessage[]> => {
-    const senderMessage = await addTimeHandler(getUserMessageStatus, userId, message.id, message);
-    const receiverMessage = await addTimeHandler(
-        getOtherMessageStatus,
-        userId,
-        message.id,
-        message
-    );
+    const senderMessage = await addTimeHandler(getUserMessageTime, userId, message.id, message);
+    const receiverMessage = await addTimeHandler(getOtherMessageTime, userId, message.id, message);
 
     const messages: ReceivedMessage[] = [senderMessage, receiverMessage].map((msg) => {
         const {
