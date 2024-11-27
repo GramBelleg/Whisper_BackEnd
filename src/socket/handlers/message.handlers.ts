@@ -71,9 +71,10 @@ export const sendReadAndDeliveredGroups = async (
 export const readAllUserMessages = async (
     userId: number,
     clients: Map<number, Socket>,
-    messages: number[]
+    messages: number[],
+    chatId: number,
 ) => {
-    const directTo = await handleReadAllMessages(userId, messages);
+    const directTo = await handleReadAllMessages(userId, messages, chatId);
     if (directTo) {
         sendReadAndDeliveredGroups(clients, directTo, "readMessage");
     }

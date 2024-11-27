@@ -67,9 +67,9 @@ export const handleDeliverMessage = async (messageId: number, chatId: number) =>
     }
 };
 
-export const handleReadAllMessages = async (userId: number, messages: number[]) => {
+export const handleReadAllMessages = async (userId: number, messages: number[], chatId: number) => {
     try {
-        return await readAllMessages(userId, messages);
+        return await readAllMessages(userId, messages, chatId);
     } catch (error) {
         console.error(error);
         return null;

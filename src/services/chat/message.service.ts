@@ -411,9 +411,13 @@ export const deliverMessage = async (userId: number, messageId: number) => {
     return await updateDeliverMessage(messageId);
 };
 
-const updateReadMessagesStatuses = async (userId: number, messages: number[]) => {
+const updateReadMessagesStatuses = async (userId: number, messages: number[], chatId: number) => {
     const result = await db.messageStatus.findMany({
-        where: { userId, messageId: { in: messages }, read: null },
+        where: {
+            userId,
+            message: { id: { in: messages }, chatId },
+            read: null,
+        },
         select: {
             message: {
                 select: {
@@ -470,7 +474,7 @@ const updateReadMessages = async (messages: MessageReference[]) => {
     return Object.values(groupedRecords);
 };
 
-export const readAllMessages = async (userId: number, messages: number[]) => {
-    const readMessages = await updateReadMessagesStatuses(userId, messages);
+export const readAllMessages = async (userId: number, messages: number[], chatId: number) => {
+    const readMessages = await updateReadMessagesStatuses(userId, messages, chatId);
     return await updateReadMessages(readMessages);
 };

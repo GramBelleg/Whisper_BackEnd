@@ -87,14 +87,17 @@ export const setupMessageEvents = (
         socketWrapper(async ({ messageId, chatId }: { messageId: number; chatId: number }) => {
             const result = await editController.handleDeliverMessage(messageId, chatId);
             if (!result) return;
-            sendToClient(result.senderId, clients, "deliverMessage", {chatId, messageIds: [messageId]});
+            sendToClient(result.senderId, clients, "deliverMessage", {
+                chatId,
+                messageIds: [messageId],
+            });
         })
     );
 
     socket.on(
         "readMessage",
-        socketWrapper(async ({ messages }: { messages: number[] }) => {
-            await messageHandler.readAllUserMessages(userId, clients, messages);
+        socketWrapper(async ({ messages, chatId }: { messages: number[]; chatId: number }) => {
+            await messageHandler.readAllUserMessages(userId, clients, messages, chatId);
         })
     );
 };
