@@ -6,9 +6,9 @@ export const handleMuteChat = async (req: Request, res: Response) => {
     const userId = req.userId;
     const chatId = Number(req.params.chatId);
     const type = req.body.type; //NOT NEEDED SINCE ONLY DMs ARE IMPLEMENTED
-    const duration = req.body.duration; 
+    const duration = req.body.duration;
     await muteChat(chatId, userId);
-    await saveMuteDuration(userId, chatId, duration);
+    if (duration) await saveMuteDuration(userId, chatId, duration);
     res.status(200).json({ Message: `Chat ${chatId} muted successfully` });
 };
 
