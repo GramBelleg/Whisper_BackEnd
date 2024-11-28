@@ -95,9 +95,22 @@ export const setupMessageEvents = (
     );
 
     socket.on(
+        "readAllMessages",
+        socketWrapper(async (chatId: number) => {
+            const directTo = await editController.handleReadAllMessages(userId, chatId);
+            if (directTo) {
+                messageHandler.sendReadAndDeliveredGroups(clients, directTo, "readMessage");
+            }
+        })
+    );
+
+    socket.on(
         "readMessage",
         socketWrapper(async ({ messages, chatId }: { messages: number[]; chatId: number }) => {
-            await messageHandler.readAllUserMessages(userId, clients, messages, chatId);
+            const directTo = await editController.handleReadMessages(userId, messages, chatId);
+            if (directTo) {
+                messageHandler.sendReadAndDeliveredGroups(clients, directTo, "readMessage");
+            }
         })
     );
 };

@@ -5,6 +5,7 @@ import {
     unpinMessage,
     deliverAllMessages,
     deliverMessage,
+    readMessages,
     readAllMessages,
     getMessageStatus,
 } from "@services/chat/message.service";
@@ -67,9 +68,18 @@ export const handleDeliverMessage = async (messageId: number, chatId: number) =>
     }
 };
 
-export const handleReadAllMessages = async (userId: number, messages: number[], chatId: number) => {
+export const handleReadMessages = async (userId: number, messages: number[], chatId: number) => {
     try {
-        return await readAllMessages(userId, messages, chatId);
+        return await readMessages(userId, messages, chatId);
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
+export const handleReadAllMessages = async (userId: number, chatId: number) => {
+    try {
+        return await readAllMessages(userId, chatId);
     } catch (error) {
         console.error(error);
         return null;

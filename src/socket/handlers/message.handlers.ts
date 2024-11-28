@@ -3,10 +3,7 @@ import { getChatId, unmuteChat } from "@services/chat/chat.service";
 import { sendToClient } from "@socket/utils/socket.utils";
 import { deleteMessagesForAllUsers } from "@controllers/messages/delete.message";
 import { getChatParticipantsIds } from "@services/chat/chat.service";
-import {
-    handleDeliverAllMessages,
-    handleReadAllMessages,
-} from "@controllers/messages/edit.message";
+import { handleDeliverAllMessages } from "@controllers/messages/edit.message";
 
 export const broadCast = async (
     chatId: number,
@@ -51,32 +48,20 @@ export const userBroadCast = async (
     }
 };
 
-export const sendReadAndDeliveredGroups = async (
+export const sendReadAndDeliveredGroups = (
     clients: Map<number, Socket>,
     directTo: {
         chatId: number;
         messageIds: number[];
     }[][],
     emitEvent: string
-): Promise<void> => {
+) => {
     for (const key in directTo) {
         const senderId = parseInt(key);
         const groups = directTo[senderId];
         for (const group of groups) {
             sendToClient(senderId, clients, emitEvent, group);
         }
-    }
-};
-
-export const readAllUserMessages = async (
-    userId: number,
-    clients: Map<number, Socket>,
-    messages: number[],
-    chatId: number,
-) => {
-    const directTo = await handleReadAllMessages(userId, messages, chatId);
-    if (directTo) {
-        sendReadAndDeliveredGroups(clients, directTo, "readMessage");
     }
 };
 

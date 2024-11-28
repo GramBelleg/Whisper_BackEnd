@@ -411,11 +411,19 @@ export const deliverMessage = async (userId: number, messageId: number) => {
     return await updateDeliverMessage(messageId);
 };
 
-const updateReadMessagesStatuses = async (userId: number, messages: number[], chatId: number) => {
+const updateReadMessagesStatuses = async (
+    messagesFilter: boolean,
+    userId: number,
+    messages: number[],
+    chatId: number
+) => {
     const result = await db.messageStatus.findMany({
         where: {
             userId,
-            message: { id: { in: messages }, chatId },
+            message: {
+                ...(messagesFilter && { id: { in: messages } }),
+                chatId,
+            },
             read: null,
         },
         select: {
@@ -474,7 +482,12 @@ const updateReadMessages = async (messages: MessageReference[]) => {
     return Object.values(groupedRecords);
 };
 
-export const readAllMessages = async (userId: number, messages: number[], chatId: number) => {
-    const readMessages = await updateReadMessagesStatuses(userId, messages, chatId);
-    return await updateReadMessages(readMessages);
+export const readMessages = async (userId: number, messages: number[], chatId: number) => {
+    const unreadMessages = await updateReadMessagesStatuses(true, userId, messages, chatId);
+    return await updateReadMessages(unreadMessages);
+};
+
+export const readAllMessages = async (userId: number, chatId: number) => {
+    const unreadMessages = await updateReadMessagesStatuses(false, userId, [], chatId);
+    return await updateReadMessages(unreadMessages);
 };
