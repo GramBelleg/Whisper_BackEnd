@@ -103,7 +103,7 @@ export const changePic = async (id: number, profilePic: string): Promise<string 
             data: { profilePic: profilePic },
         });
         if (!user) throw new HttpError("User Not Found", 404);
-        if (!user.profilePic) throw new HttpError("PFP Not Found", 404);
+        if (user.profilePic == null) throw new HttpError("PFP Not Found", 404);
         return user.profilePic;
     } catch (error) {
         console.error("Error updating profile picture:", error);
