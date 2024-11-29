@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { draftMessage, getDraftedMessage } from "@services/chat/message.service";
+import { draftMessage, getDraftedMessage, undraftMessage } from "@services/chat/message.service";
 import { DraftMessage } from "@models/messages.models";
 import { buildDraftedMessage } from "./format.message";
 
@@ -21,4 +21,11 @@ export const handleGetDraftedMessage = async (req: Request, res: Response) => {
     }
     const draftedMessage = await buildDraftedMessage(userId, chatId, result);
     res.status(200).json(draftedMessage);
+};
+
+export const handleUndraftMessage = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const chatId = Number(req.params.chatId);
+    await undraftMessage(userId, chatId);
+    res.status(200).json("Undrafted message successfully");
 };

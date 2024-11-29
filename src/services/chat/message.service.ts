@@ -541,6 +541,23 @@ export const draftMessage = async (userId: number, chatId: number, message: Draf
     });
 };
 
+export const undraftMessage = async ( userId: number, chatId: number) => {
+    await db.chatParticipant.update({
+        where: {
+            chatId_userId: {
+                chatId,
+                userId,
+            },
+        },
+        data: {
+            draftContent: "",
+            draftTime: null,
+            draftParentMessageId: null,
+        },
+    });
+}
+
+
 export const getDraftedMessage = async (userId: number, chatId: number) => {
     return await db.chatParticipant.findUnique({
         where: {
