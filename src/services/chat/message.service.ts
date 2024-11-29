@@ -1,7 +1,7 @@
 import db from "@DB";
 import { Message } from "@prisma/client";
 import { getChatParticipantsIds } from "@services/chat/chat.service";
-import { MessageReference, SentMessage } from "@models/messages.models";
+import { DraftMessage, MessageReference, SentMessage } from "@models/messages.models";
 
 export const getOtherMessageTime = async (excludeUserId: number, messageId: number) => {
     return await db.messageStatus.findFirst({
@@ -61,8 +61,27 @@ export const getParentMessageContent = async (messageId: number) => {
     });
     if (!result) return null;
     const { parentContent: content, parentMedia: media, parentExtension: extension } = result;
-    return { content, media };
+    return { content, media, extension };
 };
+
+export const getDraftParentMessageContent = async (userId: number, chatId: number) => {
+    const result = await db.chatParticipant.findUnique({
+        where: { chatId_userId: { userId, chatId } },
+        select: {
+            draftParentContent: true,
+            draftParentMedia: true,
+            draftParentExtension: true,
+        },
+    });
+    if (!result) return null;
+    const {
+        draftParentContent: content,
+        draftParentMedia: media,
+        draftParentExtension: extension,
+    } = result;
+    return { content, media, extension };
+};
+
 export const getMessageSummary = async (id: number | null) => {
     if (!id) return null;
     const result = await db.message.findUnique({
@@ -490,4 +509,50 @@ export const readMessages = async (userId: number, messages: number[], chatId: n
 export const readAllMessages = async (userId: number, chatId: number) => {
     const unreadMessages = await updateReadMessagesStatuses(false, userId, [], chatId);
     return await updateReadMessages(unreadMessages);
+};
+
+const enrichDraftWithParentContent = async (message: DraftMessage) => {
+    if (!message.draftParentMessageId) return message;
+
+    const parentContentAndMedia = await getMessageContent(message.draftParentMessageId);
+    if (!parentContentAndMedia) return message;
+
+    return {
+        ...message,
+        draftParentContent: parentContentAndMedia.content,
+        draftParentMedia: parentContentAndMedia.media,
+        draftParentExtension: parentContentAndMedia.extension,
+    };
+};
+
+export const draftMessage = async (userId: number, chatId: number, message: DraftMessage) => {
+    const messageData = await enrichDraftWithParentContent(message);
+
+    await db.chatParticipant.update({
+        where: {
+            chatId_userId: {
+                chatId,
+                userId,
+            },
+        },
+        data: {
+            ...messageData,
+        },
+    });
+};
+
+export const getDraftedMessage = async (userId: number, chatId: number) => {
+    return await db.chatParticipant.findUnique({
+        where: {
+            chatId_userId: {
+                chatId,
+                userId,
+            },
+        },
+        select: {
+            draftContent: true,
+            draftTime: true,
+            draftParentMessageId: true,
+        },
+    });
 };

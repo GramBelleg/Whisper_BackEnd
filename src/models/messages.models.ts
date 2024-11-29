@@ -1,4 +1,4 @@
-import { Message, MessageType, User } from "@prisma/client";
+import { ChatParticipant, Message, MessageType, User } from "@prisma/client";
 import { SenderInfo } from "./user.models";
 
 export type ParentMessage =
@@ -13,6 +13,13 @@ export type ParentMessage =
       });
 
 type ForwardedFrom = null | Pick<User, "id" | "userName" | "profilePic">;
+
+export type DraftMessage = Pick<ChatParticipant, "draftContent" | "draftTime"> &
+    Partial<Pick<ChatParticipant, "draftParentMessageId">>;
+
+export type ReceivedDraftMessage = Pick<ChatParticipant, "draftContent" | "draftTime"> & {
+    parentMessage: ParentMessage;
+};
 
 export type ToBeFormattedMessage = Omit<Message, "time" | "mentions"> & {
     parentMessage: ParentMessage;

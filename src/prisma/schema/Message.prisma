@@ -41,6 +41,7 @@ model Message {
   voiceMessage          VoiceMessage?
   parentMessage         Message?           @relation("ReplyToMessage", fields: [parentMessageId], references: [id])
   replies               Message[]          @relation("ReplyToMessage")
+  draftReplies          ChatParticipant[]          @relation("DraftReplyToMessage")
   forwardedFrom         User?              @relation("ForwardedMessage", fields: [forwardedFromUserId], references: [id])
   messageStatus         MessageStatus[]
 }

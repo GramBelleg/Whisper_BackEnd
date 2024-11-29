@@ -40,6 +40,13 @@ model ChatParticipant {
   lastMessageId         Int?             
   isContact             Boolean           @default(false)
   isMuted               Boolean           @default(false)
+  draftContent          String            @default("")
+  draftTime             DateTime?
+  draftParentMessageId  Int?
+  draftParentContent    String?
+  draftParentMedia      String?
+  draftParentExtension  String?
+  parentMessage         Message?          @relation("DraftReplyToMessage", fields: [draftParentMessageId], references: [id])
   lastMessage           MessageStatus?    @relation("LastMessageForChatParticipant", fields: [lastMessageId], references: [id])
   chat                  Chat              @relation(fields: [chatId], references: [id])
   user                  User              @relation(fields: [userId], references: [id])

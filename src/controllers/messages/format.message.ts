@@ -1,4 +1,9 @@
-import { ReceivedMessage, ToBeFormattedMessage } from "@models/messages.models";
+import {
+    DraftMessage,
+    ReceivedDraftMessage,
+    ReceivedMessage,
+    ToBeFormattedMessage,
+} from "@models/messages.models";
 import { Message } from "@prisma/client";
 import {
     getOtherMessageTime,
@@ -7,6 +12,7 @@ import {
     getForwardedFromMessage,
     getParentMessageContent,
     getMentions,
+    getDraftParentMessageContent,
 } from "@services/chat/message.service";
 
 import { getSenderInfo } from "@services/user/user.service";
@@ -45,25 +51,39 @@ export const buildMessageWithCustomObjects = async (
     return messages;
 };
 
-const formatParentMessage = async (parentMessage: any | null, messageId: number) => {
+const formatParentMessage = async (parentMessage: any, parentMessageContent: any | null) => {
     if (!parentMessage) return null;
-    const parentMessageContent = await getParentMessageContent(messageId);
     if (!parentMessageContent) throw new Error("Parent message content not found");
     const senderInfo = {
-        id: parentMessage.id,
         senderId: parentMessage.sender.id,
         senderName: parentMessage.sender.userName,
         senderProfilePic: parentMessage.sender.profilePic,
     };
-    return { ...senderInfo, type: parentMessage.type, ...parentMessageContent };
+    return {
+        id: parentMessage.id,
+        ...senderInfo,
+        type: parentMessage.type,
+        ...parentMessageContent,
+    };
+};
+
+const buildParentMessage = async (messageId: number, parentId: number | null) => {
+    const parentSummary = await getMessageSummary(parentId);
+    const parentMessageContent = await getParentMessageContent(messageId);
+    return await formatParentMessage(parentSummary, parentMessageContent);
+};
+
+const buildDraftParentMessage = async (userId: number, chatId: number, parentId: number | null) => {
+    const parentSummary = await getMessageSummary(parentId);
+    const parentMessageContent = await getDraftParentMessageContent(userId, chatId);
+    return await formatParentMessage(parentSummary, parentMessageContent);
 };
 
 export const buildReceivedMessage = async (
     userId: number,
     message: Message
 ): Promise<ReceivedMessage[]> => {
-    const parentSummary = await getMessageSummary(message.parentMessageId);
-    const formattedParent = await formatParentMessage(parentSummary, message.id);
+    const formattedParent = await buildParentMessage(message.id, message.parentMessageId);
     const sender = await getSenderInfo(message.senderId);
     if (!sender) throw new Error("Sender not found");
 
@@ -82,4 +102,18 @@ export const buildReceivedMessage = async (
         forwardedFrom,
     };
     return buildMessageWithCustomObjects(userId, result);
+};
+
+export const buildDraftedMessage = async (
+    userId: number,
+    chatId: number,
+    message: DraftMessage
+): Promise<ReceivedDraftMessage> => {
+    if (!message.draftParentMessageId) return { ...message, parentMessage: null };
+    const formattedParent = await buildDraftParentMessage(
+        userId,
+        chatId,
+        message.draftParentMessageId
+    );
+    return { ...message, parentMessage: formattedParent };
 };
