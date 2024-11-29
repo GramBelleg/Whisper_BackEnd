@@ -5,10 +5,10 @@ import { buildDraftedMessage } from "./format.message";
 
 export const handleDraftMessage = async (req: Request, res: Response) => {
     const userId = req.userId;
-    const message: DraftMessage & { chatId: number } = req.body;
-    const { chatId } = message;
-    const result = await draftMessage(userId, chatId, message);
-    res.status(200).json(result);
+    const chatId = Number(req.params.chatId);
+    const message: DraftMessage = req.body;
+    await draftMessage(userId, chatId, message);
+    res.status(200).json("Drafted message successfully");
 };
 
 export const handleGetDraftedMessage = async (req: Request, res: Response) => {
