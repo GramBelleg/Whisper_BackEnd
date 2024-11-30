@@ -38,7 +38,7 @@ model Message {
   parentMessageId       Int?
   parentContent         String?
   parentMedia           String?
-  parentType           String?
+  parentType            MessageType?
   parentExtension       String?
   sender                User               @relation(fields: [senderId], references: [id])
   chat                  Chat               @relation(fields: [chatId], references: [id])
