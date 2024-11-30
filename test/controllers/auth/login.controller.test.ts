@@ -19,7 +19,7 @@ describe("test login controller", () => {
         password: "123456789",
     };
     beforeAll(() => {
-        app.listen(5555);
+        app.listen(5559);
     });
     beforeEach(() => {
         (createTokenCookie as jest.Mock).mockReturnValue(undefined);
