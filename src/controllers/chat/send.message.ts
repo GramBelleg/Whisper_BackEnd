@@ -1,7 +1,7 @@
 import { Message } from "@prisma/client";
 import { saveMessage } from "@services/chat/message.service";
 import { setLastMessage } from "@services/chat/chat.service";
-import { saveExpiringMessage } from "@services/redis/chat.service";
+import { saveExpiringMessage } from "@services/chat/redis.service";
 import { ReceivedMessage, SentMessage } from "@models/messages.models";
 import { buildReceivedMessage } from "./format.message";
 
