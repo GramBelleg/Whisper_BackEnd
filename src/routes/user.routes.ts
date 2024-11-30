@@ -44,9 +44,4 @@ router.get("/sotryArchive", asyncHandler(userController.getStoryArchive));
 router.get("/story", asyncHandler(userController.getStoryUsers));
 router.get("/story/:userId", asyncHandler(userController.getUserStories));
 router.get("/story/getViews/:storyId", asyncHandler(userController.getStoryViews));
-router.get("/sotryArchive", asyncHandler(userController.getStoryArchive));
-router.get("/story", asyncHandler(userController.getStoryUsers));
-router.get("/story/:userId", asyncHandler(userController.getUserStories));
-router.get("/story/getViews/:storyId", asyncHandler(userController.getStoryViews));
-
 export default router;
