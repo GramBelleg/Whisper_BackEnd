@@ -95,6 +95,19 @@ export const userInfo = async (id: number): Promise<any> => {
     }
     return User;
 };
+export const partialUserInfo = async (id: number): Promise<any> => {
+    const User = await db.user.findUnique({
+        where: { id },
+        select: {
+            userName: true,
+            profilePic: true,
+        },
+    });
+    if (!User) {
+        throw new Error("User not found");
+    }
+    return User;
+};
 
 export const changePic = async (id: number, profilePic: string): Promise<string | null> => {
     try {

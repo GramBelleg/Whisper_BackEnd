@@ -35,6 +35,7 @@ router.get(
 router.put("/name", asyncHandler(userController.updateName));
 router.put("/bio", asyncHandler(userController.updateBio));
 router.get("/info", asyncHandler(userController.userInfo));
+router.get("/:userId/info", asyncHandler(userController.otherUserInfo));
 router.put("/email", asyncHandler(userController.updateEmail));
 router.post("/emailcode", asyncHandler(userController.emailCode));
 router.put("/phoneNumber", asyncHandler(userController.updatePhone));

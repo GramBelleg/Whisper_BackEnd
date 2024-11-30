@@ -85,6 +85,14 @@ const userInfo = async (req: Request, res: Response) => {
         ...user,
     });
 };
+const otherUserInfo = async (req: Request, res: Response) => {
+    const userId: number = Number(req.params.userId);
+    if (isNaN(userId)) throw new HttpError("Invalid userId", 400);
+    const user = await userServices.partialUserInfo(userId);
+    res.status(200).json({
+        ...user,
+    });
+};
 
 const changeUserName = async (req: Request, res: Response) => {
     let { userName = "" }: { userName: string } = req.body;
@@ -208,6 +216,7 @@ const getStoryViews = async (req: Request, res: Response) => {
 
 export {
     userInfo,
+    otherUserInfo,
     updateBio,
     updateName,
     updateEmail,
