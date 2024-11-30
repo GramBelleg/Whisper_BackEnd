@@ -19,17 +19,6 @@ router.get(
         });
     })
 );
-router.get(
-    "/",
-    asyncHandler(async (req, res) => {
-        const user = await userInfo(req.userId);
-        const { password, ...userWithoutPassword } = user;
-        res.status(200).json({
-            id: req.userId,
-            ...userWithoutPassword,
-        });
-    })
-);
 
 // Wrapping each controller function in asyncHandler
 router.put("/name", asyncHandler(userController.updateName));
