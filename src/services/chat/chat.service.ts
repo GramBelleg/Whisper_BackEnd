@@ -1,9 +1,10 @@
 import db from "@DB";
 import { ChatSummary, LastMessage } from "@models/chat.models";
 import { ChatType } from "@prisma/client";
-import { getMessage } from "./message.service";
+import { getDraftedMessage, getMessage } from "./message.service";
 import { MemberSummary } from "@models/chat.models";
 import { getLastMessageSender } from "@services/user/user.service";
+import { buildDraftedMessage } from "@controllers/messages/format.message";
 
 const getUserChats = async (userId: number, type: ChatType | null) => {
     const whereClause = !type ? { userId } : { userId, chat: { type } };
@@ -39,7 +40,6 @@ export const unmuteChat = async (chatId: number, userId: number): Promise<void> 
         data: { isMuted: false },
     });
 };
-
 
 export const getChatMembers = async (chatId: number): Promise<MemberSummary[]> => {
     const chatParticipants = await db.chatParticipant.findMany({
@@ -123,12 +123,20 @@ const getTypeDependantContent = async (type: ChatType, participant: any) => {
     }
 };
 
+export const formatDraftedMessage = async (userId: number, chatId: number) => {
+    const draftedMessage = await getDraftedMessage(userId, chatId);
+    if (!draftedMessage) return null;
+    return await buildDraftedMessage(userId, chatId, draftedMessage);
+};
+
 export const getChatSummary = async (
     userChat: any,
     userId: number
 ): Promise<ChatSummary | null> => {
     const participant = (await getOtherChatParticipants(userChat.chatId, userId))[0];
     const lastMessage = await getLastMessage(userId, userChat.chatId);
+    const draftMessage = await formatDraftedMessage(userId, userChat.chatId);
+
     if (!participant) return null;
     const typeDependantContent = await getTypeDependantContent(userChat.chat.type, participant);
     if (!typeDependantContent) return null;
@@ -136,7 +144,8 @@ export const getChatSummary = async (
         id: userChat.chatId,
         ...typeDependantContent,
         type: userChat.chat.type,
-        lastMessage: lastMessage,
+        lastMessage,
+        draftMessage,
         unreadMessageCount: userChat.unreadMessageCount,
     };
     return chatSummary;

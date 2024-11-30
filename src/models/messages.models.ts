@@ -17,9 +17,11 @@ type ForwardedFrom = null | Pick<User, "id" | "userName" | "profilePic">;
 export type DraftMessage = Pick<ChatParticipant, "draftContent" | "draftTime"> &
     Partial<Pick<ChatParticipant, "draftParentMessageId">>;
 
-export type ReceivedDraftMessage = Pick<ChatParticipant, "draftContent" | "draftTime"> & {
-    parentMessage: ParentMessage;
-};
+export type ReceivedDraftMessage =
+    | null
+    | (Pick<ChatParticipant, "draftContent" | "draftTime"> & {
+          parentMessage: ParentMessage;
+      });
 
 export type ToBeFormattedMessage = Omit<Message, "time" | "mentions"> & {
     parentMessage: ParentMessage;
