@@ -63,8 +63,22 @@ const createChatParticipants = async (users: number[], chatId: number) => {
         userId,
         chatId,
     }));
-    const chatParticipants=await db.chatParticipant.createMany({
-        data: participantsData,
+    const chatParticipantIds = await db.$queryRawUnsafe<{ id: number }[]>(`
+        INSERT INTO "chatParticipant" ("chatId", "userId")
+        VALUES ${participantsData.map((p) => `(${p.chatId}, ${p.userId})`).join(", ")}
+        RETURNING "id";
+    `);
+
+    return chatParticipantIds.map((record) => record.id);
+};
+const createGroupParticipants = async (participantIds: number[], userId: number) => {
+    const groupParticipantsData = participantIds.map((participantId) => ({
+        id: participantId,
+        isAdmin: participantId == userId ? true : false,
+    }));
+
+    await db.groupParticipant.createMany({
+        data: groupParticipantsData,
     });
 };
 
@@ -77,18 +91,23 @@ export const createChat = async (users: number[], type: ChatType) => {
             id: true,
         },
     });
-    const participants=await createChatParticipants(users, chat.id);
-    return {chatId:chat.id,participants};
+    const participants = await createChatParticipants(users, chat.id);
+    return { chatId: chat.id, participants };
 };
-export const createGroup = async (chatId: number, newGroup: newChat) => {
+export const createGroup = async (
+    chatId: number,
+    participants: number[],
+    newGroup: newChat,
+    userId: number
+) => {
     const chat = await db.group.create({
         data: {
-            chatId
+            chatId,
             picture: newGroup.picture,
             name: newGroup.name,
         },
     });
-    await createGroupParticipants(users, chat.id);
+    await createGroupParticipants(participants, userId);
     return chat;
 };
 
