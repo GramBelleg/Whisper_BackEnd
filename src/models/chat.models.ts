@@ -22,5 +22,11 @@ export type ChatSummary = {
     lastMessage: LastMessage;
     unreadMessageCount: number;
 };
+export type newChat = {
+    type: ChatType;
+    name: string;
+    picture: string;
+    participants: number[];
+};
 
 export type MemberSummary = Pick<User, "id" | "userName" | "profilePic" | "lastSeen" | "hasStory">;

@@ -16,11 +16,10 @@ model Chat {
 model Group {
   chatId  Int    @id
   name    String
-  maxSize Int
-  privacy String
+  picture String?
+  maxSize Int    @default(100)
+  privacy String @default("Private")
   chat    Chat   @relation(fields: [chatId], references: [id])
-
-  participants GroupParticipant[]
 }
 
 model Channel {
@@ -33,6 +32,7 @@ model Channel {
 }
 
 model ChatParticipant {
+  id                    Int               @id @default(autoincrement())
   userId                Int
   chatId                Int
   isArchived            Boolean           @default(false)
@@ -43,24 +43,19 @@ model ChatParticipant {
   lastMessage           MessageStatus?    @relation("LastMessageForChatParticipant", fields: [lastMessageId], references: [id])
   chat                  Chat              @relation(fields: [chatId], references: [id])
   user                  User              @relation(fields: [userId], references: [id])
+  groupParticipant      GroupParticipant?
 
   @@unique([chatId, userId])
 }
 
 model GroupParticipant {
-  id          Int     @id @default(autoincrement())
-  groupId     Int
-  userId      Int
+  id          Int     @id 
   isAdmin     Boolean @default(false)
-  isMuted     Boolean @default(false)
   canDownload Boolean @default(true)
   canDelete   Boolean @default(true)
   canPost     Boolean @default(true)
   canEdit     Boolean @default(true)
-  group       Group   @relation(fields: [groupId], references: [chatId])
-  participant User    @relation(fields: [userId], references: [id])
-
-  @@unique([groupId, userId])
+  chatParticipant          ChatParticipant @relation(fields:[id],references: [id])
 }
 
 model ChannelParticipant {

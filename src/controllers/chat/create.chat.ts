@@ -1,20 +1,14 @@
 import { Request, Response } from "express";
-import { createChat } from "@services/chat/chat.service";
+import { createChat, createGroup } from "@services/chat/chat.service";
 import { getUserId } from "@services/user/user.service";
+import { newChat } from "@models/chat.models";
 
-export const handleCreateChat = async (req: Request, res: Response) => {
-    const userId = req.userId;
-    if(!req.query.userName) {
-        res.status(400).json({ message: "Missing userName query parameter" });
-        return;
+export const handleCreateChat = async (userId: number, newChat: newChat) => {
+    if (!newChat.name) {
+        throw new Error("Missing Chat Name");
     }
-    const otherUserName = (req.query.userName).toString();
-    const otherUserId = await getUserId(otherUserName);
-    if (!otherUserId) {
-        res.status(404).json({ message: "User not found" });
-        return;
-    }
-    const users = [userId, otherUserId];
-    const chat = await createChat(users, "DM");
-    res.status(200).json(chat);
+    const { chatId, participants } = await createChat(newChat.participants, newChat.type);
+    if (newChat.type == "GROUP") await createGroup(chatId, newChat);
+
+    return createdChat;
 };

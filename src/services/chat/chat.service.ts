@@ -1,5 +1,5 @@
 import db from "@DB";
-import { ChatSummary, LastMessage } from "@models/chat.models";
+import { ChatSummary, LastMessage, newChat } from "@models/chat.models";
 import { ChatType } from "@prisma/client";
 import { getMessage } from "./message.service";
 import { MemberSummary } from "@models/chat.models";
@@ -40,7 +40,6 @@ export const unmuteChat = async (chatId: number, userId: number): Promise<void> 
     });
 };
 
-
 export const getChatMembers = async (chatId: number): Promise<MemberSummary[]> => {
     const chatParticipants = await db.chatParticipant.findMany({
         where: { chatId },
@@ -64,7 +63,7 @@ const createChatParticipants = async (users: number[], chatId: number) => {
         userId,
         chatId,
     }));
-    await db.chatParticipant.createMany({
+    const chatParticipants=await db.chatParticipant.createMany({
         data: participantsData,
     });
 };
@@ -78,7 +77,18 @@ export const createChat = async (users: number[], type: ChatType) => {
             id: true,
         },
     });
-    await createChatParticipants(users, chat.id);
+    const participants=await createChatParticipants(users, chat.id);
+    return {chatId:chat.id,participants};
+};
+export const createGroup = async (chatId: number, newGroup: newChat) => {
+    const chat = await db.group.create({
+        data: {
+            chatId
+            picture: newGroup.picture,
+            name: newGroup.name,
+        },
+    });
+    await createGroupParticipants(users, chat.id);
     return chat;
 };
 

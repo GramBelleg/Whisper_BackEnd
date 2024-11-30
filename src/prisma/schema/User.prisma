@@ -28,7 +28,6 @@ model User {
   storyPrivacy                Privacy              @default(Everyone)
   Messages                  Message[]
   chatParticipant           ChatParticipant[]
-  groupParticipant          GroupParticipant[]
   channelParticipant        ChannelParticipant[]
   tokens                    UserToken[]
   messageStatus             MessageStatus[]
