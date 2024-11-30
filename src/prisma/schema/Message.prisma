@@ -6,32 +6,46 @@ enum MessageType {
   VM
   AUDIO
   IMAGE
-  FILE
+  DOC
+  CALL
+  EVENT
 }
 
 
 model Message {
-  id               Int               @id @default(autoincrement())
-  chatId           Int 
-  senderId         Int 
-  content          String
-  read             Boolean           @default(false)
-  delivered        Boolean           @default(false)
-  forwarded        Boolean           @default(false)
-  pinned           Boolean           @default(false)
-  edited           Boolean           @default(false)
-  selfDestruct     Boolean           @default(false)
-  expiresAfter     Int?
-  type             String
-  sentAt           DateTime          @default(now())
-  media            String[]
-  parentMessageId  Int?              @unique
-  sender           User              @relation(fields: [senderId], references: [id])
-  chat             Chat              @relation(fields: [chatId], references: [id]) 
-  voiceMessage     VoiceMessage?
-  parentMessage    Message?          @relation("ReplyToMessage", fields: [parentMessageId], references: [id])
-  reply            Message?          @relation("ReplyToMessage") 
-  messageStatus    MessageStatus[]   
+  id                    Int                @id @default(autoincrement())
+  chatId                Int
+  senderId              Int
+  content               String
+  forwardedFromUserId   Int?
+  read                  Boolean            @default(false)
+  delivered             Boolean            @default(false)
+  forwarded             Boolean            @default(false)
+  pinned                Boolean            @default(false)
+  edited                Boolean            @default(false)
+  selfDestruct          Boolean            @default(false)
+  isAnnouncement        Boolean            @default(false)
+  isSecret              Boolean            @default(false)
+  expiresAfter          Int?
+  sentAt                DateTime           
+  mentions              Int[]
+  media                 String?
+  attachmentName        String?
+  attachmentType        String?
+  type                  MessageType
+  extension             String?
+  size                  Int?
+  parentMessageId       Int?
+  parentContent         String?
+  parentMedia           String?
+  parentExtension       String?
+  sender                User               @relation(fields: [senderId], references: [id])
+  chat                  Chat               @relation(fields: [chatId], references: [id])
+  voiceMessage          VoiceMessage?
+  parentMessage         Message?           @relation("ReplyToMessage", fields: [parentMessageId], references: [id])
+  replies               Message[]          @relation("ReplyToMessage")
+  forwardedFrom         User?              @relation("ForwardedMessage", fields: [forwardedFromUserId], references: [id])
+  messageStatus         MessageStatus[]
 }
 
 model MessageStatus {
@@ -40,9 +54,9 @@ model MessageStatus {
   userId          Int
   read            DateTime?       
   delivered       DateTime?      
-  time            DateTime            @default(now())  
+  time            DateTime            
   deleted         Boolean             @default(false)
-  lastMessageChat  ChatParticipant[]  @relation("LastMessageForChatParticipant") 
+  lastMessageChat ChatParticipant[]   @relation("LastMessageForChatParticipant") 
   message         Message             @relation(fields: [messageId], references: [id], onDelete: Cascade)
   user            User                @relation(fields: [userId], references: [id])
   @@unique([messageId,userId])

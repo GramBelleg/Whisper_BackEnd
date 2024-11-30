@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getAccessToken, getUserData } from "@services/auth/github.auth.service";
-import { upsertUser } from "@services/auth/signup.service";
+import { upsertUser } from "@services/auth/prisma/update.create.service";
 import { createTokenCookie, createAddToken } from "@services/auth/token.service";
 import { User } from "@prisma/client";
 
@@ -19,18 +19,14 @@ async function githubAuth(req: Request, res: Response): Promise<void> {
         }
 
         const user: User = await upsertUser(userData);
+        const { password, ...userWithoutPassword } = user;
 
         const userToken = await createAddToken(user.id);
         createTokenCookie(res, userToken);
 
         res.status(200).json({
             status: "success",
-            user: {
-                id: user.id,
-                name: user.name,
-                userName: user.userName,
-                email: user.email,
-            },
+            user: userWithoutPassword,
             userToken,
         });
     } catch (err: any) {

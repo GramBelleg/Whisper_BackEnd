@@ -1,18 +1,18 @@
 import express, { Express } from "express";
-import asyncHandler from "express-async-handler";
 import dotenv from "dotenv";
 import http from "http";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import indexRouter from "@routes/index.routes";
-import swaggerSpec from "./swagger";
+import swaggerSpec from "./docs/swagger";
 import swaggerUi from "swagger-ui-express";
 import session from "express-session";
 import cron from "node-cron";
 import errorHandler from "@middlewares/error.handler";
 import { initWebSocketServer } from "@socket/web.socket";
 import { redisSubscribe } from "@src/redis/redis.sub.handlers";
-import { deleteExpiredTokens } from "@services/auth/token.service";
+import { deleteExpiredTokens } from "@services/auth/prisma/delete.service";
+import { deleteExtraRelates } from "@services/user/prisma/delete.service";
 
 dotenv.config();
 
@@ -44,7 +44,7 @@ app.use(
     })
 );
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use("/api", asyncHandler(indexRouter));
+app.use("/api", indexRouter);
 
 initWebSocketServer(server);
 redisSubscribe();
@@ -52,7 +52,6 @@ redisSubscribe();
 app.use(errorHandler);
 
 cron.schedule("0 3 * * *", deleteExpiredTokens); // delete expired tokens every day at 3 AM
+cron.schedule("0 3 * * *", () => deleteExtraRelates); // delete extra relates every day at 3 AM
 
-server.listen(parseInt(process.env.PORT as string), () => {
-    console.log(`Listening on port ${process.env.PORT}`);
-});
+export { server, app };

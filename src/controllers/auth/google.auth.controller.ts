@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getAccessToken, getUserData } from "@services/auth/google.auth.service";
-import { upsertUser } from "@services/auth/signup.service";
+import { upsertUser } from "@services/auth/prisma/update.create.service";
 import { createTokenCookie, createAddToken } from "@services/auth/token.service";
 import { User } from "@prisma/client";
 
@@ -19,6 +19,7 @@ async function googleAuth(req: Request, res: Response): Promise<void> {
         }
 
         const user: User = await upsertUser(userData);
+        const { password, ...userWithoutPassword } = user;
 
         const userToken = await createAddToken(user.id);
         //*IMPORTANT* Make sure frontend sets withcredential: true so that the cookies are sent with the request
@@ -26,11 +27,7 @@ async function googleAuth(req: Request, res: Response): Promise<void> {
 
         res.status(200).json({
             status: "success",
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-            },
+            user: userWithoutPassword,
             userToken,
         });
     } catch (err: any) {

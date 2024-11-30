@@ -2,7 +2,7 @@ import { Message } from "@prisma/client";
 import { saveMessage } from "@services/chat/message.service";
 import { setLastMessage } from "@services/chat/chat.service";
 import { saveExpiringMessage } from "@services/redis/chat.service";
-import { ReceivedMessage, SentMessage } from "@models/chat.models";
+import { ReceivedMessage, SentMessage } from "@models/messages.models";
 import { buildReceivedMessage } from "./format.message";
 
 const handleSaveMessage = async (userId: number, message: SentMessage): Promise<Message> => {
@@ -14,11 +14,11 @@ const handleSaveMessage = async (userId: number, message: SentMessage): Promise<
 export const handleSend = async (
     userId: number,
     message: SentMessage
-): Promise<ReceivedMessage | null> => {
+): Promise<ReceivedMessage[] | null> => {
     try {
         const savedMessage: Message | null = await handleSaveMessage(userId, message);
         if (message.selfDestruct) {
-            await saveExpiringMessage(savedMessage);
+            await saveExpiringMessage(savedMessage.id, savedMessage.expiresAfter);
         }
         const result = await buildReceivedMessage(userId, savedMessage);
 

@@ -1,80 +1,44 @@
-import Joi, { ObjectSchema } from "joi";
-import { ValidationError } from "joi";
-import { phone } from "phone";
+import Joi, { ObjectSchema, ValidationError } from 'joi';
+import HttpError from "@src/errors/HttpError";
 
-
-const validateSingUp = (requestBody: Record<string, string>) => {
+const validateBlockData = (users: number[], blocked: boolean) => {
     const schema: ObjectSchema = Joi.object({
-        name: Joi.string()
-            .min(6)
-            .max(50)
+        users: Joi.array()
+            .items(Joi.number())
+            .min(1)
+            .messages({
+                "any.required": "Users are required",
+                "array.base": "Users must be an array",
+                "array.min": "At least one user is required",
+                "number.base": "User must be a number",
+            })
             .required(),
-        userName: Joi.string()
-            .min(6)
-            .max(50).required(),
-        email: Joi.string().email().required(),
-        phoneNumber: Joi.string()
-            .pattern(/^\+[0-9\-\s]+$/) // start with + and allow only numbers and - and white spaces
-            .required(),
-        password: Joi.string().min(6).max(50).required(),
-        confirmPassword: Joi.string()
-            .valid(Joi.ref("password"))
-            .required()
-            .messages({ "any.only": "Passwords don't match" }),
-        robotToken: Joi.string().required(),
+        blocked: Joi.boolean().required().messages({
+            "any.required": "Block is required",
+            "boolean.base": "Block must be a boolean",
+        }),
     });
-    const error: ValidationError | undefined = schema.validate(requestBody, {
+    const error: ValidationError | undefined = schema.validate({ users, blocked }, {
         abortEarly: false,
     }).error;
     if (error) {
-        throw new Error(error.details[0].message);
+        throw new HttpError(error.details[0].message, 422);
     }
-    // get country of phoneNumber and check structure and format of phoneNumber
-    const { countryIso3 } = phone(requestBody.phoneNumber);
-    if (!countryIso3) {
-        throw new Error("Phone number structure is not valid");
-    }
-    const phoneValidate = phone(requestBody.phoneNumber, { country: countryIso3 });
-    if (!phoneValidate.isValid) {
-        throw new Error("Phone number structure is not valid");
-    }
-    return phoneValidate.phoneNumber;
-};
+}
 
-const validatePhone = (requestBody: Record<string, string>) => {
+const validateReadReceipt = (readReceipts: boolean) => {
     const schema: ObjectSchema = Joi.object({
-        phoneNumber: Joi.string()
-            .pattern(/^\+[0-9\-\s]+$/)
-            .required(),
+        readReceipts: Joi.boolean().strict().required().messages({
+            "any.required": "Read receipts is required",
+            "boolean.base": "Read receipts must be a boolean",
+        }),
     });
-    const error: ValidationError | undefined = schema.validate(requestBody, {
+    const error: ValidationError | undefined = schema.validate({ readReceipts }, {
         abortEarly: false,
     }).error;
     if (error) {
-        throw new Error(error.details[0].message);
+        throw new HttpError(error.details[0].message, 422);
     }
-    const { countryIso3 } = phone(requestBody.phoneNumber);
-    if (!countryIso3) {
-        throw new Error("Phone number structure is not valid");
-    }
-    const phoneValidate = phone(requestBody.phoneNumber, { country: countryIso3 });
-    if (!phoneValidate.isValid) {
-        throw new Error("Phone number structure is not valid");
-    }
-    return phoneValidate.phoneNumber;
-};
+}
 
-const validateLogIn = (requestBody: Record<string, string>) => {
-    const schema: ObjectSchema = Joi.object({
-        email: Joi.string().email().required(),
-        password: Joi.string().min(6).max(50).required(),
-    });
-    const error: ValidationError | undefined = schema.validate(requestBody, {
-        abortEarly: false,
-    }).error;
-    if (error) {
-        throw new Error(error.details[0].message);
-    }
-};
-
-export { validateSingUp, validateLogIn, validatePhone };
+export { validateBlockData, validateReadReceipt };

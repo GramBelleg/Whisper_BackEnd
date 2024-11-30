@@ -1,11 +1,15 @@
 import { Request, Response } from "express";
 import { getPresignedUrl } from "@services/media/blob.service";
+import { addSticker } from "@services/stickers/sticker.service";
 
 const writeBlob = async (req: Request, res: Response) => {
     try {
         const fileExtension = req.body.fileExtension;
         const userId = req.userId;
         const blobName = `${userId}${Date.now()}.${fileExtension}`;
+        if (fileExtension == "sticker") {
+            await addSticker(blobName);
+        }
         const presignedUrl = await getPresignedUrl(blobName, "write");
 
         //save blobName in the media of the message on the frontend

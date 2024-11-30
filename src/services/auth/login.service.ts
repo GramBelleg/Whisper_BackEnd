@@ -1,13 +1,11 @@
-import db from "@DB";
 import bcrypt from "bcrypt";
-
+import { findUserByEmail } from "@services/auth/prisma/find.service";
+import HttpError from "@src/errors/HttpError";
 
 async function checkEmailExistDB(email: string) {
-    const user = await db.user.findUnique({
-        where: { email },
-    });
+    const user = await findUserByEmail(email);
     if (!user) {
-        throw new Error("Email is not existed in DB");
+        throw new HttpError("User Email doesn't exist", 404);
     }
     return user;
 }
