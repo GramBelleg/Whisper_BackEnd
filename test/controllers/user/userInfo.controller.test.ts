@@ -1,5 +1,5 @@
 import request from "supertest";
-import app from "@src/app";
+import { app } from "@src/app";
 import db from "@src/prisma/PrismaClient";
 import { User } from "@prisma/client";
 
@@ -13,7 +13,7 @@ jest.mock("@src/middlewares/auth.middleware", () => {
 describe("User Info Controller", () => {
     let user: User;
     beforeAll(async () => {
-        user = await db.user.findUnique({ where: { id: 1 } }) as User;
+        user = (await db.user.findUnique({ where: { id: 1 } })) as User;
     });
 
     afterAll(async () => {
@@ -22,7 +22,6 @@ describe("User Info Controller", () => {
 
     describe("GET /user/info", () => {
         it("should return user info", async () => {
-
             const response = await request(app).get("/api/user/info");
             expect(response.status).toBe(200);
             expect(response.body).toMatchObject({

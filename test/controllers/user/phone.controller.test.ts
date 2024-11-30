@@ -1,11 +1,10 @@
 import request from "supertest";
-import app from "@src/app";
+import { app } from "@src/app";
 import db from "@src/prisma/PrismaClient";
 import { User } from "@prisma/client";
 import { validatePhoneNumber } from "@src/validators/auth";
-import { createRandomUser } from '@src/services/auth/prisma/create.service';
+import { createRandomUser } from "@src/services/auth/prisma/create.service";
 import HttpError from "@src/errors/HttpError";
-
 
 jest.mock("@src/middlewares/auth.middleware", () => {
     return jest.fn((req, res, next) => {
@@ -14,8 +13,7 @@ jest.mock("@src/middlewares/auth.middleware", () => {
     });
 });
 
-jest.mock('@src/validators/auth');
-
+jest.mock("@src/validators/auth");
 
 describe("PUT /phone Route", () => {
     let user: User;
@@ -23,8 +21,8 @@ describe("PUT /phone Route", () => {
     const phone = "+201002003000";
 
     beforeAll(async () => {
-        user = await db.user.findUnique({ where: { id: 1 } }) as User;
-        existUser = await createRandomUser() as User;
+        user = (await db.user.findUnique({ where: { id: 1 } })) as User;
+        existUser = (await createRandomUser()) as User;
     });
 
     afterAll(async () => {
@@ -40,10 +38,8 @@ describe("PUT /phone Route", () => {
     });
 
     it("should update the phone and return success response", async () => {
-        (validatePhoneNumber as jest.Mock).mockReturnValue('+201002003000');
-        const response = await request(app)
-            .put("/api/user/phoneNumber")
-            .send({ phone });
+        (validatePhoneNumber as jest.Mock).mockReturnValue("+201002003000");
+        const response = await request(app).put("/api/user/phoneNumber").send({ phone });
 
         const updatedUser = await db.user.findUnique({ where: { id: user.id } });
         expect(response.status).toBe(200);
@@ -77,5 +73,4 @@ describe("PUT /phone Route", () => {
         expect(response.body.success).toBe(false);
         expect(response.body.message).toBe("phone number structure is not valid");
     });
-
 });

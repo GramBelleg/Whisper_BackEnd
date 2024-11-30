@@ -1,5 +1,5 @@
 import request from "supertest";
-import app from "@src/app";
+import { app } from "@src/app";
 import db from "@src/prisma/PrismaClient";
 import { User } from "@prisma/client";
 import { reset } from "module-alias";
@@ -18,7 +18,7 @@ describe("PUT /bio Route", () => {
 
     beforeAll(async () => {
         // Create a test user
-        user = await db.user.findUnique({ where: { id: 1 } }) as User;
+        user = (await db.user.findUnique({ where: { id: 1 } })) as User;
     });
 
     afterAll(async () => {
@@ -36,9 +36,7 @@ describe("PUT /bio Route", () => {
     });
 
     it("should update the bio and return success response", async () => {
-        const response = await request(app)
-            .put("/api/user/bio")
-            .send({ bio });
+        const response = await request(app).put("/api/user/bio").send({ bio });
 
         const updatedUser = await db.user.findUnique({ where: { id: user.id } });
         expect(response.status).toBe(200);
