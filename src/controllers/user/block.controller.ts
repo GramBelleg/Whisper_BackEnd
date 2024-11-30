@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { findBlockedUsers } from "@services/user/prisma/find.service";
 import { checkUsersExistDB, checkUserExistUsers } from "@services/user/block.service";
-import { updateRelates } from "@services/user/prisma/update.service";
+import { updateBlockOfRelates } from "@services/user/prisma/update.service";
 import { createRelates } from "@services/user/prisma/create.service";
 import { validateBlockData } from "@validators/user";
 
@@ -22,8 +22,8 @@ const handleUserBlocks = async (req: Request, res: Response) => {
     validateBlockData(req.body.users, req.body.blocked);
     checkUserExistUsers(req.userId, req.body.users);
     await checkUsersExistDB(req.body.users);
-    await updateRelates(req.userId, req.body.users, req.body.blocked);
-    await createRelates(req.userId, req.body.users, req.body.blocked);
+    await updateBlockOfRelates(req.userId, req.body.users, req.body.blocked);
+    await createRelates(req.userId, req.body.users, req.body.blocked, false);
     res.status(200).json({
         status: "success",
         message: "User has been blocked or unblocked successfully.",

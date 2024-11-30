@@ -1,15 +1,15 @@
 import db from "@DB";
 import HttpError from "@src/errors/HttpError";
 
-const createRelates = async (userId: number, users: number[], blocked: boolean) => {
+const createRelates = async (userId: number, users: number[], isBlocked: boolean, isContacted: boolean) => {
     try {
         await db.relates.createMany({
             data: users.map((user) => {
                 return {
                     relatingId: userId,
                     relatedById: user,
-                    isBlocked: blocked,
-                    isContact: false
+                    isBlocked: isBlocked,
+                    isContact: isContacted
                 }
             }),
             skipDuplicates: true

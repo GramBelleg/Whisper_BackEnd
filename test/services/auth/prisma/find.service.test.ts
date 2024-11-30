@@ -37,8 +37,8 @@ describe("test find user name prisma query", () => {
     // });
     it("should find user using his user name and be existed", async () => {
         const newUser: User = await createRandomUser();
-        const foundUser = await findUserByUserName(newUser.userName);
-        expect(foundUser).toEqual(newUser.userName);
+        const foundUserID = await findUserByUserName(newUser.userName);
+        expect(foundUserID).toEqual(newUser.id);
     });
     it("should find user using his user name but not be existed", async () => {
         const newUser: User = await createRandomUser();
