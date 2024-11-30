@@ -106,6 +106,7 @@ const getDMContent = async (participant: any) => {
         hasStory: participant.user.hasStory,
         lastSeen: participant.user.lastSeen,
         isMuted: participant.isMuted,
+        status: participant.status,
     };
 };
 
