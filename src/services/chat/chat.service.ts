@@ -33,6 +33,14 @@ export const muteChat = async (chatId: number, userId: number): Promise<void> =>
     });
 };
 
+export const unmuteChat = async (chatId: number, userId: number): Promise<void> => {
+    await db.chatParticipant.update({
+        where: { chatId_userId: { chatId, userId } },
+        data: { isMuted: false },
+    });
+};
+
+
 export const getChatMembers = async (chatId: number): Promise<MemberSummary[]> => {
     const chatParticipants = await db.chatParticipant.findMany({
         where: { chatId },

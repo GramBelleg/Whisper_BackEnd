@@ -60,7 +60,7 @@ const formatParentMessage = async (parentMessage: any | null, messageId: number)
         senderName: parentMessage.sender.userName,
         senderProfilePic: parentMessage.sender.profilePic,
     };
-    return { ...senderInfo, ...parentMessageContent };
+    return { ...senderInfo, type: parentMessage.type, ...parentMessageContent };
 };
 
 export const buildReceivedMessage = async (

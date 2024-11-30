@@ -3,7 +3,6 @@ import { socketWrapper } from "@socket/handlers/error.handler";
 import * as storyTypes from "@models/story.models";
 import * as storyController from "@controllers/story/story.controller";
 import * as storyHandler from "@socket/handlers/story.handlers";
-import { Privacy } from "@prisma/client";
 
 //note the connectedUserId is the id of the user who is sending on the socket
 

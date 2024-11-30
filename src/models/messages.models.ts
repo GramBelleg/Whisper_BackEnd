@@ -1,4 +1,4 @@
-import { Message, User } from "@prisma/client";
+import { Message, MessageType, User } from "@prisma/client";
 import { SenderInfo } from "./user.models";
 
 export type ParentMessage =
@@ -6,6 +6,7 @@ export type ParentMessage =
     | (Pick<Message, "id"> & {
           content: string | null;
           media: string | null;
+          type: MessageType;
           senderId: number;
           senderName: string;
           senderProfilePic: string;

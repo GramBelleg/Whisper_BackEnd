@@ -70,6 +70,7 @@ export const getMessageSummary = async (id: number | null) => {
         where: { id },
         select: {
             id: true,
+            type: true,
             sender: {
                 select: {
                     id: true,
