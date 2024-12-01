@@ -36,7 +36,10 @@ pipeline {
         stage('testing') {
             steps {
                 sh """
-                echo "******* testing ********"> testsLogs.txt
+                echo "******* testing ********"
+                cp /opt/backend/.env.test .env.test
+                chmod +x ./scripts/unitTests.sh
+                ./scripts/unitTests.sh > testsLogs.txt
                 """
             }
         }
