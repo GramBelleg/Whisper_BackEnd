@@ -4,6 +4,7 @@ module.exports = {
     transform: {
         "^.+.tsx?$": ["ts-jest", {}],
     },
+    testTimeout: 15000,
 
     moduleNameMapper: {
         "^@services/(.*)$": "<rootDir>/src/services/$1",
@@ -16,4 +17,5 @@ module.exports = {
         "^@src/(.*)$": "<rootDir>/src/$1",
         "^@socket/(.*)$": "<rootDir>/src/socket/$1",
     },
+    globalSetup: "./jest.setup.js", // Path to the setup script
 };
