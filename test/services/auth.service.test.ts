@@ -1,11 +1,8 @@
 import { Request } from "express";
 import jwt, { TokenExpiredError } from "jsonwebtoken";
-import { 
-    getToken, 
-    verifyUserToken, 
-} from "@services/auth/token.service";
+import { getToken, verifyUserToken } from "@services/auth/token.service";
 import { deleteUserToken } from "@services/auth/prisma/delete.service";
-import {findTokenByUserIdToken} from "@services/auth/prisma/find.service";
+import { findTokenByUserIdToken } from "@services/auth/prisma/find.service";
 
 jest.mock("@services/auth/prisma/delete.service");
 jest.mock("@services/auth/prisma/find.service");
@@ -59,12 +56,12 @@ describe("test verify user token", () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
-        (findTokenByUserIdToken as jest.Mock).mockResolvedValue({ userId});
+        (findTokenByUserIdToken as jest.Mock).mockResolvedValue({ userId });
     });
 
     it("should verify user token and return userId", async () => {
         const userToken = jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
-            expiresIn: process.env.JWT_EXPIRE as string,
+            expiresIn: "1h",
         });
         const result = await verifyUserToken(userToken);
         expect(result).toEqual(userId);
