@@ -1,5 +1,5 @@
 import request from "supertest";
-import app from "@src/app";
+import { app } from "@src/app";
 import db from "@src/prisma/PrismaClient";
 import { User } from "@prisma/client";
 jest.mock("@services/user/user.service");

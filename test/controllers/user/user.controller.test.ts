@@ -1,7 +1,7 @@
 import request from "supertest";
 import { Request, Response, NextFunction } from "express";
 import HttpError from "@src/errors/HttpError";
-import app from "@src/app";
+import { app } from "@src/app";
 import { validateReadReceipt } from "@validators/user";
 import * as  userServices from '@services/user/user.service';
 import { updateReadReceipt } from "@services/user/prisma/update.service";
@@ -11,9 +11,7 @@ jest.mock("@validators/user");
 jest.mock("@services/user/prisma/update.service");
 jest.mock("@services/user/user.service");
 
-beforeAll(() => {
-    app.listen(5564);
-});
+
 
 // mock user auth middleware to pass to the controller
 jest.mock("@src/middlewares/auth.middleware", () => {

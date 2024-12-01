@@ -1,8 +1,7 @@
 import request from "supertest";
-import app from "@src/app";
+import {app} from "@src/app";
 import * as userServices from "@services/user/user.service";
 import HttpError from "@src/errors/HttpError";
-
 
 jest.mock("@src/middlewares/auth.middleware", () => {
     return jest.fn((req, res, next) => {
@@ -55,5 +54,4 @@ describe("PUT /phone Route", () => {
         expect(response.body.success).toBe(false);
         expect(response.body.message).toBe("phone number structure is not valid");
     });
-
 });
