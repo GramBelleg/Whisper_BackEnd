@@ -62,14 +62,14 @@ export const getChatMembers = async (chatId: number): Promise<MemberSummary[]> =
 
 const createChatParticipants = async (
     users: number[],
-    userId: number,
+    userID: number,
     senderKey: null | number,
     chatId: number
 ) => {
-    const participantsData = users.map((user) => ({
+    const participantsData = users.map((userId) => ({
         userId,
         chatId,
-        keyId: user === userId ? senderKey : null,
+        keyId: userID === userId ? senderKey : null,
     }));
     await db.chatParticipant.createMany({
         data: participantsData,
