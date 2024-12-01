@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { archiveStory, getStoryPrivacy } from "@services/story/story.service";
+import { archiveStory, getStoryPrivacy, getStoryUserId } from "@services/story/story.service";
 import { sendToClient } from "@socket/utils/socket.utils";
 import redisClient from "@src/redis/redis.client";
 import { SaveableStory } from "@models/story.models";
@@ -112,16 +112,15 @@ const likeStory = async (
     data: any
 ): Promise<void> => {
     try {
-        const participants = await stroyParticipants({ id: data.storyId }, clients);
-        for (const participant of participants) {
-            sendToClient(participant, clients, emitEvent, {
+        const storyUserId = await getStoryUserId(data.storyId);
+            sendToClient(storyUserId, clients, emitEvent, {
                 userId: data.userId,
                 storyId: data.storyId,
                 userName: data.userName,
                 profilePic: data.profilePic,
                 liked: data.liked,
             });
-        }
+        
     } catch (error: any) {
         throw new Error(`Error in likeStory: ${error.message}`);
     }
@@ -132,15 +131,13 @@ const viewStory = async (
     emitEvent: string,
     data: any
 ): Promise<void> => {
-    const participants = await stroyParticipants({ id: data.storyId }, clients);
-    for (const participant of participants) {
-        sendToClient(participant, clients, emitEvent, {
-            userId: data.userId,
-            storyId: data.storyId,
-            userName: data.userName,
-            profilePic: data.profilePic,
-        });
-    }
+    const storyUserId = await getStoryUserId(data.storyId);
+    sendToClient(storyUserId, clients, emitEvent, {
+        userId: data.userId,
+        storyId: data.storyId,
+        userName: data.userName,
+        profilePic: data.profilePic,
+    });
 };
 
-export { broadCast, notifyExpiry, postStory, deleteStory, likeStory, viewStory };
+export { broadCast, notifyExpiry, postStory, deleteStory, likeStory, viewStory, stroyParticipants };
