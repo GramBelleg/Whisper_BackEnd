@@ -5,7 +5,7 @@ import {
     handleCreateKey,
     handleGetKey,
     handleGetOtherUserKey,
-} from "@controllers/chat/encryption_key";
+} from "@controllers/chat/encryption";
 
 const router: Router = Router();
 
