@@ -62,14 +62,14 @@ export const getChatMembers = async (chatId: number): Promise<MemberSummary[]> =
 
 const createChatParticipants = async (
     users: number[],
-    userID: number,
+    currentUserId: number,
     senderKey: null | number,
     chatId: number
 ) => {
     const participantsData = users.map((userId) => ({
         userId,
         chatId,
-        keyId: userID === userId ? senderKey : null,
+        keyId: currentUserId === userId ? senderKey : null,
     }));
     await db.chatParticipant.createMany({
         data: participantsData,
@@ -133,7 +133,8 @@ const getOtherChatParticipants = async (chatId: number, excludeUserId: number) =
     });
 };
 
-const getDMContent = async (participant: any) => {
+const getDMContent = async (participant: any, chatId: number) => {
+    const participantKeys = await getChatKeys(chatId);
     return {
         othersId: participant.user.id,
         name: participant.user.userName,
@@ -141,12 +142,13 @@ const getDMContent = async (participant: any) => {
         hasStory: participant.user.hasStory,
         lastSeen: participant.user.lastSeen,
         isMuted: participant.isMuted,
+        participantKeys,
     };
 };
 
-const getTypeDependantContent = async (type: ChatType, participant: any) => {
+const getTypeDependantContent = async (type: ChatType, participant: any, chatId: number) => {
     if (type === "DM") {
-        return getDMContent(participant);
+        return getDMContent(participant, chatId);
     }
 };
 
@@ -157,11 +159,13 @@ export const formatDraftedMessage = async (userId: number, chatId: number) => {
 };
 
 export const getChatKeys = async (chatId: number) => {
-    return await db.chatParticipant.findMany({
+    const keyObjects = await db.chatParticipant.findMany({
         where: { chatId },
         select: { keyId: true },
     });
+    return keyObjects.map((participant) => participant.keyId);
 };
+
 export const getChatSummary = async (
     userChat: any,
     userId: number
@@ -169,10 +173,13 @@ export const getChatSummary = async (
     const participant = (await getOtherChatParticipants(userChat.chatId, userId))[0];
     const lastMessage = await getLastMessage(userId, userChat.chatId);
     const draftMessage = await formatDraftedMessage(userId, userChat.chatId);
-    const participantKeys = await getChatKeys(userChat.chatId);
 
     if (!participant) return null;
-    const typeDependantContent = await getTypeDependantContent(userChat.chat.type, participant);
+    const typeDependantContent = await getTypeDependantContent(
+        userChat.chat.type,
+        participant,
+        userChat.chatId
+    );
     if (!typeDependantContent) return null;
     const chatSummary = {
         id: userChat.chatId,
@@ -181,7 +188,6 @@ export const getChatSummary = async (
         lastMessage,
         draftMessage,
         unreadMessageCount: userChat.unreadMessageCount,
-        participantKeys,
     };
     return chatSummary;
 };
