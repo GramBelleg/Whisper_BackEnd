@@ -1,9 +1,6 @@
 import request from "supertest";
 import app from "@src/app";
-import db from "@src/prisma/PrismaClient";
-import { User } from "@prisma/client";
-import { reset } from "module-alias";
-import { mock } from "node:test";
+import * as userServices from "@services/user/user.service";
 
 jest.mock("@src/middlewares/auth.middleware", () => {
     return jest.fn((req, res, next) => {
@@ -12,38 +9,20 @@ jest.mock("@src/middlewares/auth.middleware", () => {
     });
 });
 
+jest.mock("@services/user/user.service");
+
 describe("PUT /bio Route", () => {
-    let user: User;
     const bio = "This is my new bio";
-
-    beforeAll(async () => {
-        // Create a test user
-        user = await db.user.findUnique({ where: { id: 1 } }) as User;
-    });
-
-    afterAll(async () => {
-        // Clean up test user
-        await db.user.update({ where: { id: user.id }, data: { bio: user.bio } });
-        await db.$disconnect();
-    });
-
-    afterEach(async () => {
-        // Reset bio after each test
-        await db.user.update({
-            where: { id: user.id },
-            data: { bio: user.bio },
-        });
-    });
-
     it("should update the bio and return success response", async () => {
-        const response = await request(app)
-            .put("/api/user/bio")
-            .send({ bio });
+        (userServices.updateBio as jest.Mock).mockResolvedValue(undefined);
+        const response = await request(app).put("/api/user/bio").send({ bio });
 
-        const updatedUser = await db.user.findUnique({ where: { id: user.id } });
+        // const updatedUser = await db.user.findUnique({ where: { id: user.id } });
+        expect(userServices.updateBio).toHaveBeenCalledWith(1, bio);
+        expect(userServices.updateBio).toHaveBeenCalledTimes(1);
         expect(response.status).toBe(200);
         expect(response.body.status).toBe("success");
         expect(response.body.data).toBe(bio);
-        expect(updatedUser?.bio).toBe(bio);
+        // expect(updatedUser?.bio).toBe(bio);
     });
 });
