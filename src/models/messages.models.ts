@@ -49,7 +49,10 @@ export type ReceivedMessage = Omit<
     time: Date;
 };
 
-export type SentMessage = Pick<Message, "chatId" | "senderId" | "content" | "sentAt" | "type"> &
+export type SentMessage = Pick<
+    Message,
+    "chatId" | "senderId" | "content" | "sentAt" | "type" | "key"
+> &
     Partial<
         Pick<
             Message,

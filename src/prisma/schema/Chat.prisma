@@ -5,12 +5,12 @@ enum ChatType {
 }
 
 model Chat {
-  id           Int               @id @default(autoincrement())
-  type         ChatType
-  messages     Message[]
-  participants ChatParticipant[]
-  group        Group?
-  channel      Channel?
+  id            Int               @id @default(autoincrement())
+  type          ChatType
+  messages      Message[]
+  participants  ChatParticipant[]
+  group         Group?
+  channel       Channel?
 }
 
 model Group {
@@ -46,6 +46,8 @@ model ChatParticipant {
   draftParentContent    String?
   draftParentMedia      String?
   draftParentExtension  String?
+  keyId                 Int?
+  publicKey             PublicKey?        @relation(fields: [keyId], references: [id])
   parentMessage         Message?          @relation("DraftReplyToMessage", fields: [draftParentMessageId], references: [id])
   lastMessage           MessageStatus?    @relation("LastMessageForChatParticipant", fields: [lastMessageId], references: [id])
   chat                  Chat              @relation(fields: [chatId], references: [id])

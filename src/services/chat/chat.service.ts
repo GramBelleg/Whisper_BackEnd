@@ -5,6 +5,7 @@ import { getDraftedMessage, getMessage } from "./message.service";
 import { MemberSummary } from "@models/chat.models";
 import { getLastMessageSender } from "@services/user/user.service";
 import { buildDraftedMessage } from "@controllers/messages/format.message";
+import { createUserKey } from "./encryption.service";
 
 const getUserChats = async (userId: number, type: ChatType | null) => {
     const whereClause = !type ? { userId } : { userId, chat: { type } };
@@ -59,17 +60,29 @@ export const getChatMembers = async (chatId: number): Promise<MemberSummary[]> =
     return chatParticipants.map((participant) => participant.user);
 };
 
-const createChatParticipants = async (users: number[], chatId: number) => {
+const createChatParticipants = async (
+    users: number[],
+    userId: number,
+    senderKey: null | string,
+    chatId: number
+) => {
+    const senderPublicKeyId = senderKey ? await createUserKey(userId, senderKey) : null;
     const participantsData = users.map((userId) => ({
         userId,
         chatId,
+        keyId: userId === userId ? senderPublicKeyId : null,
     }));
     await db.chatParticipant.createMany({
         data: participantsData,
     });
 };
 
-export const createChat = async (users: number[], type: ChatType) => {
+export const createChat = async (
+    users: number[],
+    userId: number,
+    senderKey: null | string,
+    type: ChatType
+) => {
     const chat = await db.chat.create({
         data: {
             type,
@@ -78,10 +91,25 @@ export const createChat = async (users: number[], type: ChatType) => {
             id: true,
         },
     });
-    await createChatParticipants(users, chat.id);
+    await createChatParticipants(users, userId, senderKey, chat.id);
     return chat;
 };
 
+export const getOtherUserId = async (excludedUserId: number, chatId: number) => {
+    const otherUserId = await db.chat.findUnique({
+        where: { id: chatId },
+        select: {
+            participants: {
+                where: { userId: { not: excludedUserId } },
+                select: {
+                    userId: true,
+                },
+            },
+        },
+    });
+    if (!otherUserId) return null;
+    return otherUserId.participants[0].userId;
+};
 //TODO: Set condition on lastSeen and profilePic based on privacy
 const getOtherChatParticipants = async (chatId: number, excludeUserId: number) => {
     return await db.chatParticipant.findMany({
@@ -149,6 +177,27 @@ export const getChatSummary = async (
         unreadMessageCount: userChat.unreadMessageCount,
     };
     return chatSummary;
+};
+
+const getUserChat = async (userId: number, chatId: number) => {
+    return await db.chatParticipant.findFirst({
+        where: { chatId, userId },
+        select: {
+            chatId: true,
+            unreadMessageCount: true,
+            chat: {
+                select: {
+                    type: true,
+                },
+            },
+        },
+    });
+};
+
+export const getChat = async (userId: number, chatId: number): Promise<ChatSummary | null> => {
+    const userChat = getUserChat(userId, chatId);
+    if (!userChat) return null;
+    return await getChatSummary(userChat, userId);
 };
 
 export const getChatsSummaries = async (

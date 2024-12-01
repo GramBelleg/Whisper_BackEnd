@@ -9,6 +9,12 @@ export type LastMessage =
           sender: LastMessageSender;
       });
 
+export type CreatedChat = {
+    users: number[];
+    senderKey: null | string;
+    type: ChatType;
+};
+
 export type ChatSummary = {
     id: number;
     othersId: number;
