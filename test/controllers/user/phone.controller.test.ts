@@ -3,6 +3,7 @@ import {app} from "@src/app";
 import * as userServices from "@services/user/user.service";
 import HttpError from "@src/errors/HttpError";
 
+
 jest.mock("@src/middlewares/auth.middleware", () => {
     return jest.fn((req, res, next) => {
         req.userId = 1;

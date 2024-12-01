@@ -16,4 +16,5 @@ module.exports = {
         "^@src/(.*)$": "<rootDir>/src/$1",
         "^@socket/(.*)$": "<rootDir>/src/socket/$1",
     },
+    globalSetup: "./jest.setup.js", // Path to the setup script
 };
