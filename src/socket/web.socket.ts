@@ -9,6 +9,7 @@ import { setupStoryEvents } from "./events/story.events";
 import { socketWrapper } from "./handlers/error.handler";
 import { setupPfpEvents } from "./events/pfp.events";
 import { setupStatusEvents } from "./events/status.events";
+import { setupChatEvents } from "./events/chat.events";
 
 type HandlerFunction = (key: string, clients: Map<number, Socket>) => any;
 const clients: Map<number, Socket> = new Map();
@@ -56,6 +57,8 @@ export const initWebSocketServer = (server: HTTPServer) => {
         connectionHandler.startConnection(userId, clients, socket);
 
         setupMessageEvents(socket, userId, clients);
+
+        setupChatEvents(socket, userId, clients);
 
         setupStoryEvents(socket, userId, clients);
 
