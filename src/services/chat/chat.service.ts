@@ -63,14 +63,13 @@ export const getChatMembers = async (chatId: number): Promise<MemberSummary[]> =
 const createChatParticipants = async (
     users: number[],
     userId: number,
-    senderKey: null | string,
+    senderKey: null | number,
     chatId: number
 ) => {
-    const senderPublicKeyId = senderKey ? await createUserKey(userId, senderKey) : null;
-    const participantsData = users.map((userId) => ({
+    const participantsData = users.map((user) => ({
         userId,
         chatId,
-        keyId: userId === userId ? senderPublicKeyId : null,
+        keyId: user === userId ? senderKey : null,
     }));
     await db.chatParticipant.createMany({
         data: participantsData,
@@ -80,7 +79,7 @@ const createChatParticipants = async (
 export const createChat = async (
     users: number[],
     userId: number,
-    senderKey: null | string,
+    senderKey: null | number,
     type: ChatType
 ) => {
     const chat = await db.chat.create({
@@ -157,6 +156,12 @@ export const formatDraftedMessage = async (userId: number, chatId: number) => {
     return await buildDraftedMessage(userId, chatId, draftedMessage);
 };
 
+export const getChatKeys = async (chatId: number) => {
+    return await db.chatParticipant.findMany({
+        where: { chatId },
+        select: { keyId: true },
+    });
+};
 export const getChatSummary = async (
     userChat: any,
     userId: number
@@ -164,6 +169,7 @@ export const getChatSummary = async (
     const participant = (await getOtherChatParticipants(userChat.chatId, userId))[0];
     const lastMessage = await getLastMessage(userId, userChat.chatId);
     const draftMessage = await formatDraftedMessage(userId, userChat.chatId);
+    const participantKeys = await getChatKeys(userChat.chatId);
 
     if (!participant) return null;
     const typeDependantContent = await getTypeDependantContent(userChat.chat.type, participant);
@@ -175,6 +181,7 @@ export const getChatSummary = async (
         lastMessage,
         draftMessage,
         unreadMessageCount: userChat.unreadMessageCount,
+        participantKeys,
     };
     return chatSummary;
 };
