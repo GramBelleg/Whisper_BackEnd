@@ -456,7 +456,14 @@ const updateReadMessagesStatuses = async (
         },
     });
     await db.messageStatus.updateMany({
-        where: { userId, read: null },
+        where: {
+            userId,
+            message: {
+                ...(messagesFilter && { id: { in: messages } }),
+                chatId,
+            },
+            read: null,
+        },
         data: { read: new Date().toISOString() },
     });
     return result.map((message) => message.message);
