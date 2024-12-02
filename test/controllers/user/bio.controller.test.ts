@@ -1,5 +1,5 @@
 import request from "supertest";
-import {app} from "@src/app";
+import { app, closeApp } from "@src/app";
 import * as userServices from "@services/user/user.service";
 
 jest.mock("@src/middlewares/auth.middleware", () => {
@@ -12,6 +12,11 @@ jest.mock("@src/middlewares/auth.middleware", () => {
 jest.mock("@services/user/user.service");
 
 jest.mock("@services/user/user.service");
+
+afterAll(async () => {
+    await closeApp();
+});
+
 
 describe("PUT /bio Route", () => {
     const bio = "This is my new bio";

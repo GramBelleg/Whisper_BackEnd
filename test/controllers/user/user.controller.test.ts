@@ -1,7 +1,7 @@
 import request from "supertest";
 import { Request, Response, NextFunction } from "express";
 import HttpError from "@src/errors/HttpError";
-import { app } from "@src/app";
+import { app, closeApp } from "@src/app";
 import { validateReadReceipt } from "@validators/user";
 import * as  userServices from '@services/user/user.service';
 import { updateReadReceipt } from "@services/user/prisma/update.service";
@@ -20,6 +20,11 @@ jest.mock("@src/middlewares/auth.middleware", () => {
         next();
     };
 });
+
+afterAll(async () => {
+    await closeApp();
+});
+
 
 describe("test update read receipt controller", () => {
     afterEach(() => {

@@ -1,7 +1,5 @@
 import request from "supertest";
-import { app } from "@src/app";
-import db from "@src/prisma/PrismaClient";
-import { User } from "@prisma/client";
+import { app, closeApp } from "@src/app";
 jest.mock("@services/user/user.service");
 import * as userServices from "@services/user/user.service";
 import HttpError from "@src/errors/HttpError";
@@ -18,6 +16,10 @@ afterEach(() => {
     jest.clearAllMocks();
 });
 jest.mock("@services/user/user.service");
+
+afterAll(async () => {
+    await closeApp();
+});
 
 
 describe("PUT /email Route", () => {

@@ -5,12 +5,17 @@ import { isUniqueUser, verifyRobotToken } from "@services/auth/signup.service";
 import { cacheData, setExpiration } from "@services/auth/redis.service";
 import { createCode, sendCode } from "@services/auth/code.service";
 import HttpError from "@src/errors/HttpError";
-import { app } from "@src/app";
+import { app, closeApp } from "@src/app";
 
 jest.mock("@validators/auth");
 jest.mock("@services/auth/signup.service");
 jest.mock("@services/auth/code.service");
 jest.mock("@services/auth/redis.service");
+
+afterAll(async () => {
+    await closeApp();
+
+});
 
 describe("test signup controller", () => {
     const data = {

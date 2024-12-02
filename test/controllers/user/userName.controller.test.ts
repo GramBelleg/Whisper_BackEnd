@@ -1,9 +1,5 @@
 import request from "supertest";
-import { app } from "@src/app";
-import db from "@src/prisma/PrismaClient";
-import { User } from "@prisma/client";
-import { validatePhoneNumber } from "@src/validators/auth";
-import { createRandomUser } from "@src/services/auth/prisma/create.service";
+import { app, closeApp } from "@src/app";
 import HttpError from "@src/errors/HttpError";
 import * as userServices from "@services/user/user.service";
 
@@ -14,6 +10,10 @@ jest.mock("@src/middlewares/auth.middleware", () => {
         req.userId = 1;
         next();
     });
+});
+
+afterAll(async () => {
+    await closeApp();
 });
 
 describe("PUT /userName Route", () => {

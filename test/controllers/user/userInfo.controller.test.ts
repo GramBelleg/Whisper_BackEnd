@@ -1,5 +1,5 @@
 import request from "supertest";
-import { app } from "@src/app";
+import { app, closeApp } from "@src/app";
 import { faker } from "@faker-js/faker";
 import { createRandomUser } from '@src/services/auth/prisma/create.service';
 import * as userServices from "@services/user/user.service";
@@ -11,6 +11,10 @@ jest.mock("@src/middlewares/auth.middleware", () => {
         req.userId = 1;
         next();
     });
+});
+
+afterAll(async () => {
+    await closeApp();
 });
 
 describe("User Info Controller", () => {
