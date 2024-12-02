@@ -77,6 +77,7 @@ export const getDraftParentMessageContent = async (userId: number, chatId: numbe
             draftParentContent: true,
             draftParentMedia: true,
             draftParentExtension: true,
+            draftParentType: true,
         },
     });
     if (!result) return null;
@@ -84,8 +85,9 @@ export const getDraftParentMessageContent = async (userId: number, chatId: numbe
         draftParentContent: content,
         draftParentMedia: media,
         draftParentExtension: extension,
+        draftParentType: type,
     } = result;
-    return { content, media, extension };
+    return { content, media, extension, type };
 };
 
 export const getMessageSummary = async (id: number | null) => {

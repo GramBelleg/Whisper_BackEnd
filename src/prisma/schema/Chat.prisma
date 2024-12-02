@@ -46,6 +46,7 @@ model ChatParticipant {
   draftParentContent    String?
   draftParentMedia      String?
   draftParentExtension  String?
+  draftParentType  String?
   keyId                 Int?
   publicKey             PublicKey?        @relation(fields: [keyId], references: [id])
   parentMessage         Message?          @relation("DraftReplyToMessage", fields: [draftParentMessageId], references: [id])

@@ -41,6 +41,7 @@ export type ReceivedMessage = Omit<
     | "parentContent"
     | "parentMedia"
     | "parentExtension"
+    | "parentType"
 > & {
     parentMessage: ParentMessage;
     forwardedFrom: ForwardedFrom;
