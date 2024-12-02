@@ -6,7 +6,7 @@ export type ParentMessage =
     | (Pick<Message, "id"> & {
           content: string | null;
           media: string | null;
-          type: MessageType;
+          type: MessageType | null;
           senderId: number;
           senderName: string;
           senderProfilePic: string;
@@ -61,6 +61,9 @@ export type SentMessage = Pick<
             | "expiresAfter"
             | "media"
             | "extension"
+            | "size"
+            | "attachmentType"
+            | "attachmentName"
             | "isSecret"
             | "isAnnouncement"
             | "mentions"

@@ -12,6 +12,7 @@ import { MAX_UPLOAD_SIZE } from "@config/constants.config";
 import { Privacy } from "@prisma/client";
 
 const updateBio = async (req: Request, res: Response) => {
+    console.log(req.body);
     let { bio = "" }: { bio: string } = req.body;
     let id: number = req.userId;
     await userServices.updateBio(id, bio);
@@ -81,6 +82,14 @@ const changePic = async (req: Request, res: Response) => {
 
 const userInfo = async (req: Request, res: Response) => {
     const user = await userServices.userInfo(req.userId);
+    res.status(200).json({
+        ...user,
+    });
+};
+const otherUserInfo = async (req: Request, res: Response) => {
+    const userId: number = Number(req.params.userId);
+    if (isNaN(userId)) throw new HttpError("Invalid userId", 400);
+    const user = await userServices.partialUserInfo(userId);
     res.status(200).json({
         ...user,
     });
@@ -208,6 +217,7 @@ const getStoryViews = async (req: Request, res: Response) => {
 
 export {
     userInfo,
+    otherUserInfo,
     updateBio,
     updateName,
     updateEmail,

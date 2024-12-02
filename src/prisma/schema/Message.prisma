@@ -28,14 +28,18 @@ model Message {
   isAnnouncement        Boolean            @default(false)
   isSecret              Boolean            @default(false)
   expiresAfter          Int?
-  type                  MessageType
   sentAt                DateTime           
   mentions              Int[]
   media                 String?
+  attachmentName        String?
+  attachmentType        String?
+  type                  MessageType
   extension             String?
+  size                  Int?
   parentMessageId       Int?
   parentContent         String?
   parentMedia           String?
+  parentType            MessageType?
   parentExtension       String?
   sender                User               @relation(fields: [senderId], references: [id])
   chat                  Chat               @relation(fields: [chatId], references: [id])

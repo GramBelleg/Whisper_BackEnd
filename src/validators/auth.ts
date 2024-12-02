@@ -37,12 +37,12 @@ const validateName = (name: any) => {
 const validateUserName = (userName: any) => {
     const schema: ObjectSchema = Joi.object({
         userName: Joi.string()
-            .min(1)
+            .min(6)
             .max(50)
             .messages({
                 "string.base": "user name must be a string",
                 "string.empty": "user name cannot be empty",
-                "string.min": "user name must be at least 1 character",
+                "string.min": "user name must be at least 6 character",
                 "string.max": "user name must be at most 50 characters",
                 "any.required": "user name is required",
             })

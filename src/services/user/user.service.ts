@@ -4,6 +4,7 @@ import RedisOperation from "@src/@types/redis.operation";
 import { Prisma, Privacy, Status, Story } from "@prisma/client";
 import { verifyCode } from "@services/auth/code.service";
 import HttpError from "@src/errors/HttpError";
+import { stat } from "fs";
 
 export const updateBio = async (id: number, bio: string): Promise<string> => {
     try {
@@ -13,14 +14,13 @@ export const updateBio = async (id: number, bio: string): Promise<string> => {
         });
         return bio;
     } catch (error) {
-        console.error("Error updating bio:", error);
         throw new Error("Unable to update bio");
     }
 };
 
 export const updateName = async (id: number, name: string): Promise<string> => {
     if (!name) {
-        throw new Error("Name is required");
+        throw new HttpError("Name is required", 400);
     }
 
     try {
@@ -30,7 +30,6 @@ export const updateName = async (id: number, name: string): Promise<string> => {
         });
         return name; // Return the updated name
     } catch (error) {
-        console.error("Error updating name:", error);
         throw new Error("Unable to update name");
     }
 };
@@ -54,19 +53,15 @@ export const updateEmail = async (id: number, email: string, code: string): Prom
 
 //TODO: check the structure of the phone number
 export const updatePhone = async (id: number, phoneNumber: string): Promise<string> => {
-    if (!phoneNumber) {
-        throw new Error("Phone is required");
-    }
+    const phone = validatePhoneNumber(phoneNumber);    
     try {
-        const phone = validatePhoneNumber(phoneNumber);
         await db.user.update({
             where: { id },
             data: { phoneNumber: phone },
         });
         return phone; // Return the updated user
     } catch (error) {
-        console.error("Error updating phone:", error);
-        throw new Error("Unable to update phone");
+        throw new HttpError("Unable to update phone", 500);
     }
 };
 
@@ -88,9 +83,23 @@ export const userInfo = async (id: number): Promise<any> => {
             storyPrivacy: true,
             pfpPrivacy: true,
             lastSeenPrivacy: true,
+            hasStory: true,
         },
     });
-    if (!User || !User.email) {
+    if (!User) {
+        throw new Error("User not found");
+    }
+    return User;
+};
+export const partialUserInfo = async (id: number): Promise<any> => {
+    const User = await db.user.findUnique({
+        where: { id },
+        select: {
+            userName: true,
+            profilePic: true,
+        },
+    });
+    if (!User) {
         throw new Error("User not found");
     }
     return User;
@@ -103,7 +112,7 @@ export const changePic = async (id: number, profilePic: string): Promise<string 
             data: { profilePic: profilePic },
         });
         if (!user) throw new HttpError("User Not Found", 404);
-        if (!user.profilePic) throw new HttpError("PFP Not Found", 404);
+        if (user.profilePic == null) throw new HttpError("PFP Not Found", 404);
         return user.profilePic;
     } catch (error) {
         console.error("Error updating profile picture:", error);
@@ -112,18 +121,18 @@ export const changePic = async (id: number, profilePic: string): Promise<string 
 };
 
 export const changeUserName = async (id: number, userName: string): Promise<string> => {
+    if (!userName) {
+        throw new HttpError("Username is required", 400);
+    }
     try {
-        if (!id || !userName) {
-            throw new Error("User ID and username are required");
-        }
-        const createdUser = await db.user.update({
+        const updatedUser = await db.user.update({
             where: { id },
             data: { userName },
         });
         //TODO: check if the userName is the same as the previous one
         return userName;
     } catch (error) {
-        throw new Error("Username is already taken");
+        throw new HttpError("Username is already taken", 409);
     }
 };
 

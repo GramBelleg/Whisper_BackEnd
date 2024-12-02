@@ -60,6 +60,7 @@ const postStory = async (
                 userId: emitStory.userId,
                 content: emitStory.content,
                 media: emitStory.media,
+                type: emitStory.type,
                 date: emitStory.date,
             });
         }

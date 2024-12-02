@@ -4,7 +4,7 @@ type LastMessageSender = Pick<User, "id" | "userName">;
 
 export type LastMessage =
     | null
-    | (Pick<Message, "id" | "content" | "type" | "media"> & {
+    | (Pick<Message, "id" | "content" | "type" | "media" | "read" | "delivered" | "extension"> & {
           time: Date;
           sender: LastMessageSender;
       });
@@ -25,6 +25,7 @@ export type ChatSummary = {
     isMuted: boolean;
     hasStory: boolean;
     picture: string;
+    status: string;
     lastMessage: LastMessage;
     unreadMessageCount: number;
 };

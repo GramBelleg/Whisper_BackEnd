@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import { verifyUserToken, getToken } from "@services/auth/token.service";
-import { clearTokenCookie } from "@services/auth/token.service";
+import { verifyUserToken, getToken, clearTokenCookie } from "@services/auth/token.service";
 
 const userAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {

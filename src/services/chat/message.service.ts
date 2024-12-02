@@ -57,11 +57,17 @@ export const getParentMessageContent = async (messageId: number) => {
             parentContent: true,
             parentMedia: true,
             parentExtension: true,
+            parentType: true,
         },
     });
     if (!result) return null;
-    const { parentContent: content, parentMedia: media, parentExtension: extension } = result;
-    return { content, media, extension };
+    const {
+        parentContent: content,
+        parentMedia: media,
+        parentExtension: extension,
+        parentType: type,
+    } = result;
+    return { content, media, extension, type };
 };
 
 export const getDraftParentMessageContent = async (userId: number, chatId: number) => {
