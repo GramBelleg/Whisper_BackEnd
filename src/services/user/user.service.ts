@@ -46,7 +46,6 @@ export const updateEmail = async (id: number, email: string, code: string): Prom
         });
         return email; // Return the updated user
     } catch (error) {
-        console.error("Error updating email:", error);
         throw new Error("Unable to update email");
     }
 };
