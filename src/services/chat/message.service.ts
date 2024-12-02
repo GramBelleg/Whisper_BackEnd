@@ -200,7 +200,7 @@ const getMessageContent = async (messageId: number | null) => {
     if (!messageId) return null;
     const message = await db.message.findUnique({
         where: { id: messageId },
-        select: { content: true, media: true, extension: true },
+        select: { content: true, media: true, extension: true, type: true },
     });
     return message;
 };
@@ -216,6 +216,7 @@ const enrichMessageWithParentContent = async (message: SentMessage) => {
         parentContent: parentContentAndMedia.content,
         parentMedia: parentContentAndMedia.media,
         parentExtension: parentContentAndMedia.extension,
+        parentType: parentContentAndMedia.type,
     };
 };
 
