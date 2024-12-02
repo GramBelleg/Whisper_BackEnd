@@ -89,6 +89,7 @@ export const setupMessageEvents = (
             if (!result) return;
             sendToClient(result.senderId, clients, "deliverMessage", {
                 messageIds: [messageId],
+                chatId: result.chatId,
             });
         })
     );

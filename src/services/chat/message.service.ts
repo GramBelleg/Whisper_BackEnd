@@ -427,7 +427,7 @@ const updateDeliverMessageStatus = async (userId: number, messageId: number) => 
 const updateDeliverMessage = async (messageId: number) => {
     const result = await db.message.findUnique({
         where: { id: messageId, delivered: false },
-        select: { id: true, senderId: true },
+        select: { id: true, chatId: true, senderId: true },
     });
     if (!result) return;
     await db.message.update({
