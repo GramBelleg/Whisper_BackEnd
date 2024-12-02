@@ -7,7 +7,7 @@
         "test": "dotenv -e .env.test jest",
         "test:watch": "jest --watch",
         "build": "tsc --build",
-        "start": "node -r module-alias/register --env-file=.env.production ./dist/server.js",
+        "start": "node -r module-alias/register ./dist/server.js",
         "start:dev": "nodemon -r tsconfig-paths/register src/server.ts",
         "studio:dev": "npx prisma studio",
         "studio:test": "dotenv -e .env.test npx prisma studio",
@@ -54,10 +54,11 @@
         "socket.io": "^4.8.0",
         "socket.io-client": "^4.8.1",
         "swagger-jsdoc": "^6.2.8",
-        "swagger-ui-express": "^5.0.1"
+        "swagger-ui-express": "^5.0.1",
+        "@faker-js/faker": "^9.2.0"
     },
     "devDependencies": {
-        "@faker-js/faker": "^9.1.0",
+        "@faker-js/faker": "^9.2.0",
         "@testcontainers/postgresql": "^10.13.2",
         "@testcontainers/redis": "^10.13.2",
         "@types/bcrypt": "^5.0.2",
