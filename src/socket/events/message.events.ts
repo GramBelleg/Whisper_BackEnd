@@ -84,11 +84,10 @@ export const setupMessageEvents = (
 
     socket.on(
         "deliverMessage",
-        socketWrapper(async ({ messageId, chatId }: { messageId: number; chatId: number }) => {
-            const result = await editController.handleDeliverMessage(messageId, chatId);
+        socketWrapper(async ({ messageId }: { messageId: number}) => {
+            const result = await editController.handleDeliverMessage(userId, messageId);
             if (!result) return;
             sendToClient(result.senderId, clients, "deliverMessage", {
-                chatId,
                 messageIds: [messageId],
             });
         })
