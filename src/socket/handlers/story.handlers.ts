@@ -139,4 +139,4 @@ const viewStory = async (
     });
 };
 
-export { broadCast, notifyExpiry, postStory, deleteStory, likeStory, viewStory, stroyParticipants };
+export { broadCast, notifyExpiry, postStory, deleteStory, likeStory, viewStory, storyParticipants };
