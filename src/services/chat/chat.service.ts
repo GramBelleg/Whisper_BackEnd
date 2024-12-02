@@ -142,6 +142,7 @@ const getDMContent = async (participant: any, chatId: number) => {
         lastSeen: participant.user.lastSeen,
         isMuted: participant.isMuted,
         participantKeys,
+        status: participant.status,
     };
 };
 
