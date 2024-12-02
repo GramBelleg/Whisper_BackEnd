@@ -334,7 +334,7 @@ export const getMessageStatus = async (messageId: number) => {
 
 const updateDeliverMessagesStatuses = async (userId: number) => {
     const result = await db.messageStatus.findMany({
-        where: { userId, delivered: null },
+        where: { userId, message: { senderId: { not: userId } }, delivered: null },
         select: {
             message: {
                 select: {
@@ -346,7 +346,7 @@ const updateDeliverMessagesStatuses = async (userId: number) => {
         },
     });
     await db.messageStatus.updateMany({
-        where: { userId, delivered: null },
+        where: { userId, message: { senderId: { not: userId } }, delivered: null },
         data: { delivered: new Date().toISOString() },
     });
     return result.map((message) => message.message);
