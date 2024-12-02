@@ -35,6 +35,7 @@
             "@middlewares/*": ["src/middlewares/*"],
             "@DB": ["src/prisma/PrismaClient"],
             "@services/*": ["src/services/*"],
+            "@ES": ["src/elasticsearch/elasticsearchClient"],
             "@config/*": ["src/config/*"],
             "@validators/*": ["src/validators/*"],
             "@routes/*": ["src/routes/*"],

@@ -1,4 +1,5 @@
 import { Router } from "express";
+import asyncHandler from "express-async-handler";
 import login from "@controllers/auth/login.controller";
 import signup from "@controllers/auth/signup.controller";
 import { resendConfirmCode, confirmEmail } from "@controllers/auth/confirmation.controller";
@@ -9,17 +10,14 @@ import { resetPassword, sendResetCode } from "@controllers/auth/reset.password.c
 
 const router: Router = Router();
 
-router.post("/login", login);
-
-router.post("/signup", signup);
-router.post("/resendConfirmCode", resendConfirmCode);
-router.post("/confirmEmail", confirmEmail);
-
-router.post("/sendResetCode", sendResetCode);
-router.post("/resetPassword", resetPassword);
-
-router.post("/google", googleAuth);
-router.post("/facebook", facebookAuth);
-router.post("/github", githubAuth);
+router.post("/login", asyncHandler(login));
+router.post("/signup", asyncHandler(signup));
+router.post("/resendConfirmCode", asyncHandler(resendConfirmCode));
+router.post("/confirmEmail", asyncHandler(confirmEmail));
+router.post("/sendResetCode", asyncHandler(sendResetCode));
+router.post("/resetPassword", asyncHandler(resetPassword));
+router.post("/google", asyncHandler(googleAuth));
+router.post("/facebook", asyncHandler(facebookAuth));
+router.post("/github", asyncHandler(githubAuth));
 
 export default router;
