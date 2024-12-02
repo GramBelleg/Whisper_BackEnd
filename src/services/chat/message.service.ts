@@ -334,7 +334,7 @@ export const getMessageStatus = async (messageId: number) => {
 
 const updateDeliverMessagesStatuses = async (userId: number) => {
     const result = await db.messageStatus.findMany({
-        where: { userId, delivered: null },
+        where: { userId, message: { senderId: { not: userId } }, delivered: null },
         select: {
             message: {
                 select: {
@@ -346,7 +346,7 @@ const updateDeliverMessagesStatuses = async (userId: number) => {
         },
     });
     await db.messageStatus.updateMany({
-        where: { userId, delivered: null },
+        where: { userId, message: { senderId: { not: userId } }, delivered: null },
         data: { delivered: new Date().toISOString() },
     });
     return result.map((message) => message.message);
@@ -409,7 +409,7 @@ const updateDeliverMessages = async (messages: MessageReference[]) => {
 
     await updateDeliveredStatuses(recordsToDeliver);
 
-    return Object.values(groupedRecords);
+    return groupedRecords;
 };
 
 export const deliverAllMessages = async (userId: number) => {
@@ -453,6 +453,7 @@ const updateReadMessagesStatuses = async (
             userId,
             message: {
                 ...(messagesFilter && { id: { in: messages } }),
+                senderId: { not: userId },
                 chatId,
             },
             read: null,
@@ -472,6 +473,7 @@ const updateReadMessagesStatuses = async (
             userId,
             message: {
                 ...(messagesFilter && { id: { in: messages } }),
+                senderId: { not: userId },
                 chatId,
             },
             read: null,
@@ -517,7 +519,7 @@ const updateReadMessages = async (messages: MessageReference[]) => {
 
     await updateReadStatuses(recordsToRead);
 
-    return Object.values(groupedRecords);
+    return groupedRecords;
 };
 
 export const readMessages = async (userId: number, messages: number[], chatId: number) => {
