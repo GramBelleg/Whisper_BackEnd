@@ -1,9 +1,11 @@
-import {deleteExtraRelates} from '@services/user/prisma/delete.service';
-import {createRandomUser} from '@services/auth/prisma/create.service';
-import db from '@DB';
-
+import { deleteExtraRelates } from "@services/user/prisma/delete.service";
+import { createRandomUser } from "@services/auth/prisma/create.service";
+import db from "@DB";
 
 describe("test deleteExtraRelates prisma query", () => {
+    afterAll(async () => {
+        await db.$disconnect();
+    });
     it("should deleteExtraRelates successfully", async () => {
         const user1 = await createRandomUser();
         const user2 = await createRandomUser();
@@ -12,22 +14,22 @@ describe("test deleteExtraRelates prisma query", () => {
                 relatingId: user1.id,
                 relatedById: user2.id,
                 isContact: false,
-                isBlocked: false
-            }
+                isBlocked: false,
+            },
         });
         const relates = await db.relates.findMany({
             where: {
                 isContact: false,
-                isBlocked: false
-            }
+                isBlocked: false,
+            },
         });
         expect(relates.length).toBe(1);
         await deleteExtraRelates();
         const relatesAfterDeletion = await db.relates.findMany({
             where: {
                 isContact: false,
-                isBlocked: false
-            }
+                isBlocked: false,
+            },
         });
         expect(relatesAfterDeletion.length).toBe(0);
     });
@@ -36,16 +38,16 @@ describe("test deleteExtraRelates prisma query", () => {
         const relates = await db.relates.findMany({
             where: {
                 isContact: false,
-                isBlocked: false
-            }
+                isBlocked: false,
+            },
         });
         expect(relates.length).toBe(0);
         await deleteExtraRelates();
         const relatesAfterDeletion = await db.relates.findMany({
             where: {
                 isContact: false,
-                isBlocked: false
-            }
+                isBlocked: false,
+            },
         });
         expect(relatesAfterDeletion.length).toBe(0);
     });
