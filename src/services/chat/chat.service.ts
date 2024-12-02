@@ -5,7 +5,6 @@ import { getDraftedMessage, getMessage } from "./message.service";
 import { MemberSummary } from "@models/chat.models";
 import { getLastMessageSender } from "@services/user/user.service";
 import { buildDraftedMessage } from "@controllers/messages/format.message";
-import { createUserKey } from "./encryption.service";
 
 const getUserChats = async (userId: number, type: ChatType | null) => {
     const whereClause = !type ? { userId } : { userId, chat: { type } };
@@ -208,7 +207,7 @@ const getUserChat = async (userId: number, chatId: number) => {
 };
 
 export const getChat = async (userId: number, chatId: number): Promise<ChatSummary | null> => {
-    const userChat = getUserChat(userId, chatId);
+    const userChat = await getUserChat(userId, chatId);
     if (!userChat) return null;
     return await getChatSummary(userChat, userId);
 };
