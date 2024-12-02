@@ -1,16 +1,37 @@
 import Redis from "ioredis";
 
-const redisSubscriber = new Redis({
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT as unknown as number,
-});
+class RedisSubscriber {
+    private static instance: Redis | null = null;
 
-redisSubscriber.on("connect", () => {
-    console.log("Connected to Redis Subscriber!");
-});
+    private constructor() {
+        // Private constructor prevents instantiation
+    }
 
-redisSubscriber.on("error", (err) => {
-    console.error("Redis Subscriber connection error:", err);
-});
+    public static getInstance(): Redis {
+        if (!RedisSubscriber.instance) {
+            RedisSubscriber.instance = new Redis({
+                host: process.env.REDIS_HOST as string,
+                port: parseInt(process.env.REDIS_PORT as string, 10),
+            });
 
-export default redisSubscriber;
+            RedisSubscriber.instance.on("connect", () => {
+                console.log("Connected to Redis Subscriber!");
+            });
+
+            RedisSubscriber.instance.on("error", (err) => {
+                console.error("Redis Subscriber connection error:", err);
+            });
+        }
+        return RedisSubscriber.instance;
+    }
+
+    public static async quit(): Promise<void> {
+        if (RedisSubscriber.instance) {
+            await RedisSubscriber.instance.quit();
+            RedisSubscriber.instance = null; // Reset instance after quitting
+            console.log("Redis Subscriber connection closed.");
+        }
+    }
+}
+
+export default RedisSubscriber.getInstance();

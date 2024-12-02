@@ -2,7 +2,7 @@ import request from "supertest";
 import { Request, Response, NextFunction } from "express";
 import { faker } from "@faker-js/faker";
 import HttpError from "@src/errors/HttpError";
-import { app } from "@src/app";
+import { app, closeApp } from "@src/app";
 import { findBlockedUsers } from "@services/user/prisma/find.service";
 import { checkUsersExistDB, checkUserExistUsers } from "@services/user/block.service";
 import { updateBlockOfRelates } from "@services/user/prisma/update.service";
@@ -23,6 +23,9 @@ jest.mock("@src/middlewares/auth.middleware", () => {
     };
 });
 
+afterAll(async () => {
+    await closeApp();
+});
 
 
 describe("test get blocked users controller", () => {

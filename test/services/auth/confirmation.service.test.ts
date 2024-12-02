@@ -4,7 +4,6 @@ import {
     setExpiration,
     getExpiration,
 } from "@services/auth/redis.service";
-import { createCode } from "@services/auth/code.service";
 import redis from "@src/redis/redis.client";
 import RedisOperation from "@src/@types/redis.operation";
 import randomstring from "randomstring";

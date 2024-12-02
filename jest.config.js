@@ -4,6 +4,7 @@ module.exports = {
     transform: {
         "^.+.tsx?$": ["ts-jest", {}],
     },
+    detectOpenHandles: true,
     testTimeout: 15000,
     globalTeardown: "./globalTeardown.js",
     moduleNameMapper: {

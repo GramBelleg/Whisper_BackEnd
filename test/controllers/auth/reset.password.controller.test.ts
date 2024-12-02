@@ -12,13 +12,17 @@ import { createCode, sendCode, verifyCode } from "@services/auth/code.service";
 import { createAddToken, createTokenCookie } from "@services/auth/token.service";
 import { createRandomUser } from "@src/services/auth/prisma/create.service";
 import HttpError from "@src/errors/HttpError";
-import { app } from "@src/app";
+import { app, closeApp } from "@src/app";
 
 jest.mock("@validators/auth");
 jest.mock("@services/auth/prisma/update.service");
 jest.mock("@services/auth/login.service");
 jest.mock("@services/auth/code.service");
 jest.mock("@services/auth/token.service");
+
+afterAll(async () => {
+    await closeApp();
+});
 
 
 describe("test send reset code controller", () => {
