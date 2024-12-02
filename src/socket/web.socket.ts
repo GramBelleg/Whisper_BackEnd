@@ -54,7 +54,7 @@ export const initWebSocketServer = (server: HTTPServer) => {
             socket.disconnect(true);
             return;
         }
-        connectionHandler.startConnection(userId, clients, socket);
+        await connectionHandler.startConnection(userId, clients, socket);
 
         setupMessageEvents(socket, userId, clients);
 
@@ -66,8 +66,11 @@ export const initWebSocketServer = (server: HTTPServer) => {
 
         setupStatusEvents(socket, userId, clients);
 
-        socket.on("disconnect", () => {
-            if (userId) connectionHandler.endConnection(userId, clients);
-        });
+        socket.on(
+            "disconnect",
+            socketWrapper(async () => {
+                if (userId) await connectionHandler.endConnection(userId, clients);
+            })
+        );
     });
 };
