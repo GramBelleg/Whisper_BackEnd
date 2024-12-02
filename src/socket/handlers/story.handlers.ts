@@ -74,10 +74,10 @@ const notifyExpiry = async (key: string, clients: Map<number, Socket>): Promise<
         const match = key.match(/\d+/);
         if (!match) return;
         key = key.replace("storyExpired", "storyId");
-        const value = await redisClient.get(key); // Wait for Redis to return the value
+        const value = await redisClient.getInstance().get(key); // Wait for Redis to return the value
         if (!value) return;
         const story: Story = JSON.parse(value);
-        await redisClient.del(key); //delete the key from redis
+        await redisClient.getInstance().del(key); //delete the key from redis
         await archiveStory(story.userId, story.id); //database operation
         const participants = await storyParticipants(story, clients);
         for (const participant of participants) {

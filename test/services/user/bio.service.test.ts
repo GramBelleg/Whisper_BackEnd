@@ -24,7 +24,7 @@ describe("updateBio", () => {
     afterAll(async () => {
         await db.user.delete({ where: { id } });
         await db.$disconnect();
-        await redis.disconnect();
+        await redis.quit();
     });
 
     it("should update the bio and return the new bio", async () => {
