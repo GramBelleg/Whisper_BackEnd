@@ -1,10 +1,9 @@
 import db from "@DB";
 import { Message } from "@prisma/client";
 import { getChatParticipantsIds } from "@services/chat/chat.service";
-import { ReceivedMessage, SentMessage } from "@models/messages.models";
+import { DraftMessage, MessageReference, SentMessage } from "@models/messages.models";
 
-//will be used with a web socket on(read) or on(delivered) for the status info view of the message
-export const getOtherMessageStatus = async (excludeUserId: number, messageId: number) => {
+export const getOtherMessageTime = async (excludeUserId: number, messageId: number) => {
     return await db.messageStatus.findFirst({
         where: { NOT: { userId: excludeUserId }, messageId },
         select: {
@@ -57,8 +56,8 @@ export const getParentMessageContent = async (messageId: number) => {
         select: {
             parentContent: true,
             parentMedia: true,
-            parentType: true,
             parentExtension: true,
+            parentType: true,
         },
     });
     if (!result) return null;
@@ -70,6 +69,27 @@ export const getParentMessageContent = async (messageId: number) => {
     } = result;
     return { content, media, extension, type };
 };
+
+export const getDraftParentMessageContent = async (userId: number, chatId: number) => {
+    const result = await db.chatParticipant.findUnique({
+        where: { chatId_userId: { userId, chatId } },
+        select: {
+            draftParentContent: true,
+            draftParentMedia: true,
+            draftParentExtension: true,
+            draftParentType: true,
+        },
+    });
+    if (!result) return null;
+    const {
+        draftParentContent: content,
+        draftParentMedia: media,
+        draftParentExtension: extension,
+        draftParentType: type,
+    } = result;
+    return { content, media, extension, type };
+};
+
 export const getMessageSummary = async (id: number | null) => {
     if (!id) return null;
     const result = await db.message.findUnique({
@@ -89,7 +109,7 @@ export const getMessageSummary = async (id: number | null) => {
     return result;
 };
 
-export const getUserMessageStatus = async (userId: number, messageId: number) => {
+export const getUserMessageTime = async (userId: number, messageId: number) => {
     return await db.messageStatus.findFirst({
         where: { userId, messageId },
         select: {
@@ -180,7 +200,7 @@ const getMessageContent = async (messageId: number | null) => {
     if (!messageId) return null;
     const message = await db.message.findUnique({
         where: { id: messageId },
-        select: { content: true, media: true, extension: true },
+        select: { content: true, media: true, extension: true, type: true },
     });
     return message;
 };
@@ -196,6 +216,7 @@ const enrichMessageWithParentContent = async (message: SentMessage) => {
         parentContent: parentContentAndMedia.content,
         parentMedia: parentContentAndMedia.media,
         parentExtension: parentContentAndMedia.extension,
+        parentType: parentContentAndMedia.type,
     };
 };
 
@@ -271,4 +292,305 @@ export const deleteMessagesForAll = async (Ids: number[]): Promise<void> => {
             where: { id: { in: existingIds } },
         });
     }
+};
+
+const getDeliveredUsers = async (messageId: number) => {
+    return await db.messageStatus.findMany({
+        where: { messageId, NOT: { delivered: null }, read: null },
+        select: {
+            user: {
+                select: {
+                    id: true,
+                    userName: true,
+                    profilePic: true,
+                },
+            },
+            delivered: true,
+        },
+    });
+};
+
+const getReadUsers = async (messageId: number) => {
+    return await db.messageStatus.findMany({
+        where: { messageId, NOT: { read: null } },
+        select: {
+            user: {
+                select: {
+                    id: true,
+                    userName: true,
+                    profilePic: true,
+                },
+            },
+            read: true,
+        },
+    });
+};
+
+export const getMessageStatus = async (messageId: number) => {
+    const deliveredUsers = await getDeliveredUsers(messageId);
+    const readUsers = await getReadUsers(messageId);
+    return { deliveredUsers, readUsers };
+};
+
+const updateDeliverMessagesStatuses = async (userId: number) => {
+    const result = await db.messageStatus.findMany({
+        where: { userId, delivered: null },
+        select: {
+            message: {
+                select: {
+                    id: true,
+                    senderId: true,
+                    chatId: true,
+                },
+            },
+        },
+    });
+    await db.messageStatus.updateMany({
+        where: { userId, delivered: null },
+        data: { delivered: new Date().toISOString() },
+    });
+    return result.map((message) => message.message);
+};
+
+const getRecordsToDeliver = async (messages: MessageReference[]) => {
+    return await db.message.findMany({
+        where: {
+            delivered: false,
+            OR: messages.map((message) => ({
+                id: message.id,
+                senderId: message.senderId,
+            })),
+        },
+        select: {
+            id: true,
+            senderId: true,
+            chatId: true,
+        },
+    });
+};
+
+const groupMessageRecords = (records: { id: number; senderId: number; chatId: number }[]) => {
+    return records.reduce(
+        (acc, record) => {
+            if (!acc[record.senderId]) {
+                acc[record.senderId] = [];
+            }
+
+            let chatGroup = acc[record.senderId].find((group) => group.chatId === record.chatId);
+
+            if (!chatGroup) {
+                chatGroup = { chatId: record.chatId, messageIds: [] };
+                acc[record.senderId].push(chatGroup);
+            }
+
+            chatGroup.messageIds.push(record.id);
+            return acc;
+        },
+        {} as Record<number, { chatId: number; messageIds: number[] }[]>
+    );
+};
+
+const updateDeliveredStatuses = async (messages: MessageReference[]) => {
+    for (const message of messages) {
+        await db.message.updateMany({
+            where: {
+                delivered: false,
+                id: message.id,
+                senderId: message.senderId,
+            },
+            data: { delivered: true },
+        });
+    }
+};
+
+const updateDeliverMessages = async (messages: MessageReference[]) => {
+    const recordsToDeliver = await getRecordsToDeliver(messages);
+    const groupedRecords = groupMessageRecords(recordsToDeliver);
+
+    await updateDeliveredStatuses(recordsToDeliver);
+
+    return Object.values(groupedRecords);
+};
+
+export const deliverAllMessages = async (userId: number) => {
+    const undeliveredMessages = await updateDeliverMessagesStatuses(userId);
+    return await updateDeliverMessages(undeliveredMessages);
+};
+
+const updateDeliverMessageStatus = async (userId: number, messageId: number) => {
+    await db.messageStatus.update({
+        where: { messageId_userId: { messageId, userId } },
+        data: { delivered: new Date().toISOString() },
+    });
+};
+
+const updateDeliverMessage = async (messageId: number) => {
+    const result = await db.message.findUnique({
+        where: { id: messageId, delivered: false },
+        select: { id: true, senderId: true },
+    });
+    if (!result) return;
+    await db.message.update({
+        where: { id: messageId },
+        data: { delivered: true },
+    });
+    return result;
+};
+
+export const deliverMessage = async (userId: number, messageId: number) => {
+    await updateDeliverMessageStatus(userId, messageId);
+    return await updateDeliverMessage(messageId);
+};
+
+const updateReadMessagesStatuses = async (
+    messagesFilter: boolean,
+    userId: number,
+    messages: number[],
+    chatId: number
+) => {
+    const result = await db.messageStatus.findMany({
+        where: {
+            userId,
+            message: {
+                ...(messagesFilter && { id: { in: messages } }),
+                chatId,
+            },
+            read: null,
+        },
+        select: {
+            message: {
+                select: {
+                    id: true,
+                    senderId: true,
+                    chatId: true,
+                },
+            },
+        },
+    });
+    await db.messageStatus.updateMany({
+        where: {
+            userId,
+            message: {
+                ...(messagesFilter && { id: { in: messages } }),
+                chatId,
+            },
+            read: null,
+        },
+        data: { read: new Date().toISOString() },
+    });
+    return result.map((message) => message.message);
+};
+
+const getRecordsToRead = async (messages: MessageReference[]) => {
+    return await db.message.findMany({
+        where: {
+            read: false,
+            OR: messages.map((message) => ({
+                id: message.id,
+                senderId: message.senderId,
+            })),
+        },
+        select: {
+            id: true,
+            senderId: true,
+            chatId: true,
+        },
+    });
+};
+
+const updateReadStatuses = async (messages: MessageReference[]) => {
+    for (const message of messages) {
+        await db.message.updateMany({
+            where: {
+                read: false,
+                id: message.id,
+                senderId: message.senderId,
+            },
+            data: { read: true },
+        });
+    }
+};
+
+const updateReadMessages = async (messages: MessageReference[]) => {
+    const recordsToRead = await getRecordsToRead(messages);
+    const groupedRecords = groupMessageRecords(recordsToRead);
+
+    await updateReadStatuses(recordsToRead);
+
+    return Object.values(groupedRecords);
+};
+
+export const readMessages = async (userId: number, messages: number[], chatId: number) => {
+    const unreadMessages = await updateReadMessagesStatuses(true, userId, messages, chatId);
+    return await updateReadMessages(unreadMessages);
+};
+
+export const readAllMessages = async (userId: number, chatId: number) => {
+    const unreadMessages = await updateReadMessagesStatuses(false, userId, [], chatId);
+    return await updateReadMessages(unreadMessages);
+};
+
+const enrichDraftWithParentContent = async (message: DraftMessage) => {
+    if (!message.draftParentMessageId) return message;
+
+    const parentContentAndMedia = await getMessageContent(message.draftParentMessageId);
+    if (!parentContentAndMedia) return message;
+
+    return {
+        ...message,
+        draftParentContent: parentContentAndMedia.content,
+        draftParentMedia: parentContentAndMedia.media,
+        draftParentExtension: parentContentAndMedia.extension,
+    };
+};
+
+export const draftMessage = async (userId: number, chatId: number, message: DraftMessage) => {
+    const messageData = await enrichDraftWithParentContent(message);
+
+    await db.chatParticipant.update({
+        where: {
+            chatId_userId: {
+                chatId,
+                userId,
+            },
+        },
+        data: {
+            ...messageData,
+        },
+    });
+};
+
+export const undraftMessage = async (userId: number, chatId: number) => {
+    await db.chatParticipant.update({
+        where: {
+            chatId_userId: {
+                chatId,
+                userId,
+            },
+        },
+        data: {
+            draftContent: "",
+            draftTime: null,
+            draftParentMessageId: null,
+        },
+    });
+};
+
+export const getDraftedMessage = async (
+    userId: number,
+    chatId: number
+): Promise<DraftMessage | null> => {
+    return await db.chatParticipant.findUnique({
+        where: {
+            chatId_userId: {
+                chatId,
+                userId,
+            },
+        },
+        select: {
+            draftContent: true,
+            draftTime: true,
+            draftParentMessageId: true,
+        },
+    });
 };

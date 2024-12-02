@@ -1,12 +1,15 @@
 import request from "supertest";
 import { Request, Response } from "express";
 import HttpError from "@src/errors/HttpError";
-import { app } from "@src/app";
+import { app, closeApp } from "@src/app";
 import { verifyUserToken, getToken, clearTokenCookie } from "@services/auth/token.service";
 import userAuth from '@src/middlewares/auth.middleware';
 
 jest.mock("@services/auth/token.service");
 
+afterAll(async () => {
+    await closeApp();
+});
 
 app.get("/userAuthTest", userAuth, (req: Request, res: Response) => {
     res.status(200).json({

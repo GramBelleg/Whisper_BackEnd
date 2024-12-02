@@ -9,10 +9,17 @@ export type LastMessage =
           sender: LastMessageSender;
       });
 
+export type CreatedChat = {
+    users: number[];
+    senderKey: null | number;
+    type: ChatType;
+};
+
 export type ChatSummary = {
     id: number;
     othersId: number;
     type: ChatType;
+    participantKeys?: (number | null)[];
     name: string;
     lastSeen: Date;
     isMuted: boolean;

@@ -8,6 +8,7 @@ enum Status {
   Online
 }
 
+
 model User {
   id                        Int                  @id @default(autoincrement())
   email                     String               @unique
@@ -25,7 +26,7 @@ model User {
   readReceipts              Boolean              @default(true)
   lastSeenPrivacy           Privacy              @default(Everyone)
   pfpPrivacy                Privacy              @default(Everyone)
-  storyPrivacy                Privacy              @default(Everyone)
+  storyPrivacy              Privacy              @default(Everyone)
   Messages                  Message[]
   chatParticipant           ChatParticipant[]
   groupParticipant          GroupParticipant[]
@@ -35,8 +36,20 @@ model User {
   story                     Story[]
   relating                  Relates[]            @relation("relating")
   relatedBy                 Relates[]            @relation("relatedBy")
-  storyView          storyView[]
-  forwards           Message[]            @relation("ForwardedMessage")
+  storyView                 storyView[]
+  Publickeys                PublicKey[]          
+  forwards                  Message[]            @relation("ForwardedMessage")
+}
+
+model PublicKey {
+  id                Int              @id @default(autoincrement())
+  userId            Int
+  key               String
+  participantUserId Int?
+  chatId            Int?
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  participant       ChatParticipant[]
+  @@index([userId])
 }
 
 model UserToken {
