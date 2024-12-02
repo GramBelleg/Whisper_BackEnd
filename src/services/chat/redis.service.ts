@@ -7,7 +7,7 @@ export const saveExpiringMessage = async (
     if (!expiresAfter) {
         throw new Error("Expiry time not provided");
     }
-    await redisClient.setex(`messageId:${id}`, expiresAfter, "");
+    await redisClient.getInstance().setex(`messageId:${id}`, expiresAfter, "");
 };
 
 export const saveMuteDuration = async(
@@ -15,5 +15,5 @@ export const saveMuteDuration = async(
     chatId: number,
     duration: number
 ): Promise<void> => {
-    await redisClient.setex(`chatId:${chatId}userId:${userId}`, duration, "");
+    await redisClient.getInstance().setex(`chatId:${chatId}userId:${userId}`, duration, "");
 }

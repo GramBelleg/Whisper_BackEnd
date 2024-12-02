@@ -10,8 +10,8 @@ class RedisClient {
     public static getInstance(): Redis {
         if (!RedisClient.instance) {
             RedisClient.instance = new Redis({
-                host: process.env.REDIS_HOST as string,
-                port: parseInt(process.env.REDIS_PORT as string, 10),
+                host: process.env.REDIS_HOST as string || '127.0.0.1',
+                port: parseInt(process.env.REDIS_PORT as string || '6379', 10),
             });
 
             RedisClient.instance.on("connect", () => {
@@ -34,4 +34,4 @@ class RedisClient {
     }
 }
 
-export default RedisClient.getInstance();
+export default RedisClient;

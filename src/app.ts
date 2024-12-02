@@ -60,22 +60,13 @@ const closeApp = async () => {
     deleteExpiredTokensTask.stop();
     deleteExtraRelatesTask.stop();
 
-    // Close Redis client if used
-    if (redisClient) {
+    if (redisClient.getInstance()) {
         await redisClient.quit();
     }
 
-    if (redisSubscriber) {
+    if (redisSubscriber.getInstance()) {
         await redisSubscriber.quit();
     }
-
-    // Close the HTTP server
-    // return new Promise<void>((resolve, reject) => {
-    //     server.close((err) => {
-    //         if (err) reject(err);
-    //         else resolve();
-    //     });
-    // });
 };
 
 export { server, app, closeApp };
