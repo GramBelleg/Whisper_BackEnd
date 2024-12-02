@@ -12,10 +12,9 @@ docker run --rm \
     -v "$JOB_PATH:/app" -w /app \
     --env-file .env.test \
     node:18 /bin/bash -c \
-    "npm run migrate:deploy && npm run test"
+    "npm run migrate:deploy && npm run test; exit"
 
 echo "Tests completed. Cleaning up..."
-docker stop redis
-docker rm redis
-docker network rm test-network
+docker rm -f redis
+docker network rm -f test-network
 

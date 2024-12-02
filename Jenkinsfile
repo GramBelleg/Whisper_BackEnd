@@ -39,7 +39,7 @@ pipeline {
                 echo "******* testing ********"
                 cp /opt/backend/.env.test .env.test
                 chmod +x ./scripts/unitTests.sh
-                ./scripts/unitTests.sh > testsLogs.txt
+                ./scripts/unitTests.sh > testsLogs.txt 2>&1
                 """
             }
         }
