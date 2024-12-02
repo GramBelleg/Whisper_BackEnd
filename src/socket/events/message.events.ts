@@ -54,7 +54,7 @@ export const setupMessageEvents = (
             const pinnedMessage = await editController.handlePinMessage(message.id);
             if (pinnedMessage) {
                 await messageHandler.broadCast(message.chatId, clients, "pinMessage", {
-                    messageId: pinnedMessage,
+                    id: pinnedMessage,
                     chatId: message.chatId,
                 });
             }
@@ -67,7 +67,7 @@ export const setupMessageEvents = (
             const unpinnedMessage = await editController.handleUnpinMessage(message.id);
             if (unpinnedMessage) {
                 await messageHandler.broadCast(message.chatId, clients, "unpinMessage", {
-                    messageId: unpinnedMessage,
+                    id: unpinnedMessage,
                     chatId: message.chatId,
                 });
             }
