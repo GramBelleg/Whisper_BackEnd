@@ -3,9 +3,10 @@ import db from "@DB";
 import { createRandomUser } from "@src/services/auth/prisma/create.service";
 import HttpError from "@src/errors/HttpError";
 
-
-
 describe("test update block of relates prisma query", () => {
+    afterAll(async () => {
+        await db.$disconnect();
+    });
     it("should update relates successfully", async () => {
         const mainUser = await createRandomUser();
         const userIds: number[] = [];
@@ -19,9 +20,9 @@ describe("test update block of relates prisma query", () => {
                     relatingId: mainUser.id,
                     relatedById: userId,
                     isBlocked: false,
-                    isContact: true
+                    isContact: true,
                 };
-            })
+            }),
         });
         await db.relates.createMany({
             data: userIds.slice(3).map((userId) => {
@@ -29,17 +30,17 @@ describe("test update block of relates prisma query", () => {
                     relatingId: mainUser.id,
                     relatedById: userId,
                     isBlocked: true,
-                    isContact: true
+                    isContact: true,
                 };
-            })
+            }),
         });
         const oldRelates = await db.relates.findMany({
             where: {
                 relatingId: mainUser.id,
                 relatedById: {
-                    in: userIds
-                }
-            }
+                    in: userIds,
+                },
+            },
         });
         oldRelates.forEach((relate) => {
             if (relate.relatedById in userIds.slice(0, 3)) {
@@ -57,9 +58,9 @@ describe("test update block of relates prisma query", () => {
             where: {
                 relatingId: mainUser.id,
                 relatedById: {
-                    in: userIds
-                }
-            }
+                    in: userIds,
+                },
+            },
         });
         updatedRelates.forEach((relate) => {
             if (relate.relatedById in userIds.slice(0, 3)) {
@@ -81,15 +82,18 @@ describe("test update block of relates prisma query", () => {
             expect(err).toBeInstanceOf(new HttpError("User relating updating failed", 409));
         }
     });
-})
+});
 
 describe("test update read receipt prisma query", () => {
+    afterAll(async () => {
+        await db.$disconnect();
+    });
     it("should update read receipt successfully", async () => {
         const user = await createRandomUser();
         expect(user.readReceipts).toBe(true);
         await updateReadReceipt(user.id, false);
         const updatedUser = await db.user.findUnique({
-            where: { id: user.id }
+            where: { id: user.id },
         });
         expect(updatedUser?.readReceipts).toBe(false);
     });
@@ -97,7 +101,7 @@ describe("test update read receipt prisma query", () => {
     it("should throw error while updating read receipt", async () => {
         const user = await createRandomUser();
         try {
-            await updateReadReceipt(100*user.id, false);
+            await updateReadReceipt(100 * user.id, false);
         } catch (err: any) {
             expect(err.message).toEqual("Read receipts updating failed");
         }

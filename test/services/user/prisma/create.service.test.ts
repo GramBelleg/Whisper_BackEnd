@@ -3,9 +3,10 @@ import { createRandomUser } from "@src/services/auth/prisma/create.service";
 import db from "@src/prisma/PrismaClient";
 import { User } from "@prisma/client";
 
-
 describe("test create relates prisma query", () => {
-
+    afterAll(async () => {
+        await db.$disconnect();
+    });
 
     it("should create relates successfully", async () => {
         const mainUser = await createRandomUser();
@@ -21,26 +22,26 @@ describe("test create relates prisma query", () => {
                 relatedBy: {
                     some: {
                         relatingId: mainUser.id,
-                        isBlocked: true
-                    }
-                }
+                        isBlocked: true,
+                    },
+                },
             },
             select: {
                 id: true,
-            }
+            },
         });
         const unBlockedUsers = await db.user.findMany({
             where: {
                 relatedBy: {
                     some: {
                         relatingId: mainUser.id,
-                        isBlocked: false
-                    }
-                }
+                        isBlocked: false,
+                    },
+                },
             },
             select: {
                 id: true,
-            }
+            },
         });
         blockedUsers.forEach((user) => {
             expect(userIds.slice(0, 3)).toContain(user.id);
@@ -53,20 +54,20 @@ describe("test create relates prisma query", () => {
     it("should create relates successfully and ignore duplicates", async () => {
         const mainUser = await createRandomUser();
         const relatedUser = await createRandomUser();
-        await createRelates(mainUser.id, [relatedUser.id], true , true);
+        await createRelates(mainUser.id, [relatedUser.id], true, true);
         await createRelates(mainUser.id, [relatedUser.id], true, true);
         const blockedUsers = await db.user.findMany({
             where: {
                 relatedBy: {
                     some: {
                         relatingId: mainUser.id,
-                        isBlocked: true
-                    }
-                }
+                        isBlocked: true,
+                    },
+                },
             },
             select: {
                 id: true,
-            }
+            },
         });
         blockedUsers.forEach((user) => {
             expect(relatedUser.id).toBe(user.id);

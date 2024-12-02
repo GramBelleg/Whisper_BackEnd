@@ -5,7 +5,7 @@ module.exports = {
         "^.+.tsx?$": ["ts-jest", {}],
     },
     testTimeout: 15000,
-
+    globalTeardown: "./globalTeardown.js",
     moduleNameMapper: {
         "^@services/(.*)$": "<rootDir>/src/services/$1",
         "^@controllers/(.*)$": "<rootDir>/src/controllers/$1",
