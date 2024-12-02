@@ -15,7 +15,6 @@ docker run --rm \
     "npm run migrate:deploy && npm run test"
 
 echo "Tests completed. Cleaning up..."
-docker stop redis
-docker rm redis
-docker network rm test-network
+docker rm -f redis
+docker network rm -f test-network
 
