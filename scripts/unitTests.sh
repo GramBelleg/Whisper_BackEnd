@@ -12,7 +12,7 @@ docker run --rm \
     -v "$JOB_PATH:/app" -w /app \
     --env-file .env.test \
     node:18 /bin/bash -c \
-    "npm run migrate:deploy && npm run test; exit"
+    "npm run migrate:deploy && npx prisma generate && npm run test; exit" > testsLogs.txt 2>&1
 
 echo "Tests completed. Cleaning up..."
 docker rm -f redis
