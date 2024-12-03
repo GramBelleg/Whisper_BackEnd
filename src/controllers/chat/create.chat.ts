@@ -9,7 +9,8 @@ export const handleCreateChat = async (userId: number, chat: CreatedChat, users:
 
         if (!chat.users) throw new Error("Missing Chat participants");
         const result = await createChat(users, userId, chat.senderKey, chat.type);
-        if (chat.type == "GROUP") await createGroup(result.chatId, users, chat, userId);
+        if (chat.type == "GROUP")
+            await createGroup(result.chatId, result.participants, chat, userId);
 
         const chats = await Promise.all(
             users.map(async (user) => {
