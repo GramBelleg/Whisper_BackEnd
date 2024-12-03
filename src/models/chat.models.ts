@@ -13,6 +13,8 @@ export type CreatedChat = {
     users: number[];
     senderKey: null | number;
     type: ChatType;
+    name: string;
+    picture: string;
 };
 
 export type ChatSummary = {
@@ -28,12 +30,6 @@ export type ChatSummary = {
     status: string;
     lastMessage: LastMessage;
     unreadMessageCount: number;
-};
-export type newChat = {
-    type: ChatType;
-    name: string;
-    picture: string;
-    participants: number[];
 };
 
 export type MemberSummary = Pick<User, "id" | "userName" | "profilePic" | "lastSeen" | "hasStory">;

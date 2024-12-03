@@ -1,5 +1,5 @@
 import db from "@DB";
-import { ChatSummary, LastMessage, newChat } from "@models/chat.models";
+import { ChatSummary, CreatedChat, LastMessage } from "@models/chat.models";
 import { ChatType } from "@prisma/client";
 import { getDraftedMessage, getMessage } from "./message.service";
 import { MemberSummary } from "@models/chat.models";
@@ -109,7 +109,7 @@ export const createChat = async (
 export const createGroup = async (
     chatId: number,
     participants: number[],
-    newGroup: newChat,
+    newGroup: CreatedChat,
     userId: number
 ) => {
     const chat = await db.group.create({
