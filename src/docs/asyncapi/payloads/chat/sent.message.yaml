@@ -1,0 +1,51 @@
+type: object
+properties:
+  chatId:
+    type: integer
+    description: Identifier of the chat room
+  content:
+    type: string
+    description: The content of the message
+  forwarded:
+    type: boolean
+    nullable: true
+    description: Indicates if the message is forwarded
+  selfDestruct:
+    type: boolean
+    nullable: true
+    description: Indicates if the message is set to self-destruct
+  expiresAfter:
+    type: integer
+    nullable: true
+    description: Time in seconds until the message expires
+  type:
+    type: string
+    description: Type of the message (e.g., text, image)
+  sentAt:
+    type: string
+    format: date-time
+    description: Timestamp(UTC format) when the message was sent
+  media:
+    type: string
+    description: blobName
+    nullable: true
+  extension:
+    type: string
+    description: blobName
+    nullable: true
+  parentMessageId:
+    type: integer
+    nullable: true
+  forwardedFromUserId:
+    type: integer
+    nullable: true
+  mentions:
+    type: array
+    items:
+      type: string
+  isSecret:
+    type: boolean
+    description: Is message in secret chat
+  isAnnouncement:
+    type: boolean
+    description: Is message an announcement

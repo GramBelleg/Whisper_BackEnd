@@ -1,0 +1,30 @@
+asyncapi: "2.0.0"
+info:
+    title: Messaging WebSocket API
+    version: "1.0.0"
+    description: WebSocket API for real-time chat features, including sending, editing, pinning, unpinning, and deleting messages.
+
+servers:
+  chat-server:
+    url: http://localhost:5000
+    protocol: ws
+channels:
+  message:
+    $ref: './channels/messaging.yaml#/message'  
+  editMessage:
+    $ref: './channels/messaging.yaml#/editMessage'  
+  pinMessage:
+    $ref: './channels/messaging.yaml#/pinMessage'  
+  unpinMessage:
+    $ref: './channels/messaging.yaml#/unpinMessage'  
+  deleteMessage:
+    $ref: './channels/messaging.yaml#/deleteMessage'  
+  expireMessage:
+    $ref: './channels/messaging.yaml#/expireMessage'  
+  readMessage:
+    $ref: './channels/messaging.yaml#/readMessage'  
+  readAllMessages:
+    $ref: './channels/messaging.yaml#/readAllMessages'  
+  deliverMessage:
+    $ref: './channels/messaging.yaml#/deliverMessage'  
+

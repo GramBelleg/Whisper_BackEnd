@@ -1,0 +1,78 @@
+type: object
+properties:
+  id:
+    type: integer
+    description: Unique identifier for the message
+  chatId:
+    type: integer
+    description: Identifier of the chat room
+  sender:
+    type: object
+    properties:
+      id:
+        type: integer 
+      userName:
+        type: string 
+      profilePic:
+        type: string 
+  content:
+    type: string
+    description: The content of the message
+  read:
+    type: boolean
+    description: Indicates if the message has been read
+  delivered:
+    type: boolean
+    description: Indicates if the message has been delivered
+  forwarded:
+    type: boolean
+    description: Indicates if the message has been forwarded
+  pinned:
+    type: boolean
+    description: Indicates if the message has been pinned
+  edited:
+    type: boolean
+    description: Indicates if the message has been edited
+  selfDestruct:
+    type: boolean
+    description: Indicates if the message is set to self-destruct
+  expiresAfter:
+    type: integer
+    nullable: true
+    description: Time in seconds until the message expires
+  type:
+    type: string
+    description: Type of the message (e.g., text, image)
+  time:
+    type: string
+    format: date-time
+    description: Timestamp(UTC format) when the message was sent
+  mentions:
+    type: array
+    items:
+      userId:
+        type: integer
+  media:
+    type: string
+  parentMessage:
+    type: object
+    nullable: true
+    description: Parent message data if this message is a reply
+    properties:
+      id:
+        type: integer
+      content:
+        type: string
+        description: The content of the parent message
+      senderName:
+        type: string
+      media:
+        type: string
+      type:
+        type: string
+  isAnnouncement:
+    type: boolean
+    description: Is message an announcement
+  isSecret:
+    type: boolean
+    description: Is message in secret chat
