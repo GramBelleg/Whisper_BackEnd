@@ -45,7 +45,8 @@ app.use(
         saveUninitialized: true,
     })
 );
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/openapi-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/asyncapi-docs", express.static("./src/docs/asyncapi/output"));
 app.use("/api", indexRouter);
 
 initWebSocketServer(server);
@@ -53,7 +54,7 @@ redisSubscribe();
 
 app.use(errorHandler);
 
-const deleteExpiredTokensTask: ScheduledTask = cron.schedule("0 3 * * *", deleteExpiredTokens); // delete expired tokens every day at 3 AM 
+const deleteExpiredTokensTask: ScheduledTask = cron.schedule("0 3 * * *", deleteExpiredTokens); // delete expired tokens every day at 3 AM
 const deleteExtraRelatesTask: ScheduledTask = cron.schedule("0 3 * * *", () => deleteExtraRelates); // delete extra relates every day at 3 AM
 
 const closeApp = async () => {
