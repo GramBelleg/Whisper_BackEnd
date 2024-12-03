@@ -40,7 +40,7 @@ export const setupMessageEvents = (
             );
             if (editedMessage) {
                 await messageHandler.broadCast(message.chatId, clients, "editMessage", {
-                    messageId: editedMessage.id,
+                    id: editedMessage.id,
                     content: editedMessage.content,
                     chatId: message.chatId,
                 });
@@ -84,7 +84,7 @@ export const setupMessageEvents = (
 
     socket.on(
         "deliverMessage",
-        socketWrapper(async ({ messageId }: { messageId: number}) => {
+        socketWrapper(async ({ messageId }: { messageId: number }) => {
             const result = await editController.handleDeliverMessage(userId, messageId);
             if (!result) return;
             sendToClient(result.senderId, clients, "deliverMessage", {
