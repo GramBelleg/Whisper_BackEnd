@@ -172,9 +172,9 @@ expireMessage:
                     id:
                         type: integer
                         description: Identifier of the message
-                    # chatId:
-                    #     type: integer
-                    #     description: Identifier of the chat
+                    chatId:
+                        type: integer
+                        description: Identifier of the chat
 readMessage:
     description: Channel for read messages.
 
@@ -232,8 +232,6 @@ deliverMessage:
                 properties:
                     messageId:
                         type: integer
-                    # chatId:
-                    #     type: integer
 
     publish:
         operationId: getDeliveredMessage
