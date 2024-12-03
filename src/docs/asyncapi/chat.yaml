@@ -1,0 +1,29 @@
+asyncapi: "2.0.0"
+info:
+    title: Chats, Groups and Channels WebSocket API 
+    version: "1.0.0"
+    description: WebSocket API for real-time Chat and Channel Features
+
+servers:
+  chat-server:
+    url: http://localhost:5000
+    protocol: ws
+channels:
+  createChat:
+    $ref: './channels/chat.yaml#/createChat'  
+  leaveChat:
+    $ref: './channels/chat.yaml#/leaveChat'  
+  deleteChat:
+    $ref: './channels/chat.yaml#/deleteChat'  
+  unmuteChat:
+    $ref: './channels/chat.yaml#/unmuteChat'  
+  addAdmin:
+    $ref: './channels/chat.yaml#/addAdmin'  
+  addUser:
+    $ref: './channels/chat.yaml#/addUser'  
+  removeUser:
+    $ref: './channels/chat.yaml#/removeUser'  
+  subscribe:
+    $ref: './channels/chat.yaml#/subscribe'  
+  comment:
+    $ref: './channels/chat.yaml#/comment'  

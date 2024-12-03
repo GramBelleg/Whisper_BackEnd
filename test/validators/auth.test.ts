@@ -60,7 +60,7 @@ describe("test validateUserName", () => {
 
     it("should throw an error if userName has no characters", () => {
         expect(() => authValidator.validateUserName("abc")).toThrow(
-            new HttpError("user name must be at least 1 character", 422)
+            new HttpError("user name must be at least 6 character", 422)
         );
     });
 

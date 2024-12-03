@@ -4,12 +4,15 @@ import { createTokenCookie, createAddToken } from "@services/auth/token.service"
 import { checkEmailExistDB, checkPasswordCorrect } from "@services/auth/login.service";
 import { validateEmail, validatePassword } from "@validators/auth";
 import HttpError from "@src/errors/HttpError";
-import app from "@src/app";
+import { app, closeApp } from "@src/app";
 
 jest.mock("@validators/auth");
 jest.mock("@services/auth/login.service");
 jest.mock("@services/auth/token.service");
 
+afterAll(async () => {
+    await closeApp();
+});
 describe("test login controller", () => {
     const testData = {
         id: 555,
@@ -18,9 +21,7 @@ describe("test login controller", () => {
         name: faker.person.fullName().toLowerCase(),
         password: "123456789",
     };
-    beforeAll(() => {
-        app.listen(5555);
-    });
+
     beforeEach(() => {
         (createTokenCookie as jest.Mock).mockReturnValue(undefined);
         (createAddToken as jest.Mock).mockResolvedValue("token");

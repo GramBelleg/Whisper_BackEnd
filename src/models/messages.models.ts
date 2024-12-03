@@ -1,4 +1,4 @@
-import { Message, MessageType, User } from "@prisma/client";
+import { ChatParticipant, Message, MessageType, User } from "@prisma/client";
 import { SenderInfo } from "./user.models";
 
 export type ParentMessage =
@@ -6,13 +6,22 @@ export type ParentMessage =
     | (Pick<Message, "id"> & {
           content: string | null;
           media: string | null;
-          type: MessageType;
+          type: MessageType | null;
           senderId: number;
           senderName: string;
           senderProfilePic: string;
       });
 
 type ForwardedFrom = null | Pick<User, "id" | "userName" | "profilePic">;
+
+export type DraftMessage = Pick<ChatParticipant, "draftContent" | "draftTime"> &
+    Partial<Pick<ChatParticipant, "draftParentMessageId">>;
+
+export type ReceivedDraftMessage =
+    | null
+    | (Pick<ChatParticipant, "draftContent" | "draftTime"> & {
+          parentMessage: ParentMessage;
+      });
 
 export type ToBeFormattedMessage = Omit<Message, "time" | "mentions"> & {
     parentMessage: ParentMessage;
@@ -27,9 +36,12 @@ export type ReceivedMessage = Omit<
     | "parentMessageId"
     | "mentions"
     | "senderId"
+    | "read"
+    | "delivered"
     | "parentContent"
     | "parentMedia"
     | "parentExtension"
+    | "parentType"
 > & {
     parentMessage: ParentMessage;
     forwardedFrom: ForwardedFrom;
@@ -38,7 +50,10 @@ export type ReceivedMessage = Omit<
     time: Date;
 };
 
-export type SentMessage = Pick<Message, "chatId" | "senderId" | "content" | "sentAt" | "type"> &
+export type SentMessage = Pick<
+    Message,
+    "chatId" | "senderId" | "content" | "sentAt" | "type" | "key"
+> &
     Partial<
         Pick<
             Message,
@@ -58,9 +73,10 @@ export type SentMessage = Pick<Message, "chatId" | "senderId" | "content" | "sen
         >
     >;
 
+export type SenderIdRecord = Record<number, { chatId: number; messageIds: number[] }[]>;
 export type OmitSender<T> = Omit<T, "senderId">;
 
-export type MessageReference = Pick<Message, "senderId" | "chatId"> & { messageId: number };
+export type MessageReference = Pick<Message, "senderId" | "chatId"> & { id: number };
 
 export type EditableMessage = MessageReference & Pick<Message, "content">;
 

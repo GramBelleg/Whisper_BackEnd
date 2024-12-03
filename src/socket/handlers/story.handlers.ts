@@ -1,12 +1,12 @@
 import { Socket } from "socket.io";
-import { archiveStory, getStoryPrivacy } from "@services/story/story.service";
+import { archiveStory, getStoryPrivacy, getStoryUserId } from "@services/story/story.service";
 import { sendToClient } from "@socket/utils/socket.utils";
 import redisClient from "@src/redis/redis.client";
 import { SaveableStory } from "@models/story.models";
 import * as userServices from "@services/user/user.service";
 import { Privacy, Story } from "@prisma/client";
 
-const stroyParticipants = async (story: any, clients: Map<number, Socket>): Promise<number[]> => {
+const storyParticipants = async (story: any, clients: Map<number, Socket>): Promise<number[]> => {
     try {
         let privacy: Privacy;
         if (!story.privacy) privacy = await getStoryPrivacy(story.id);
@@ -31,13 +31,12 @@ const stroyParticipants = async (story: any, clients: Map<number, Socket>): Prom
 };
 
 const broadCast = async (
-    userId: number,
     clients: Map<number, Socket>,
     emitEvent: string,
     emitMessage: any
 ): Promise<void> => {
     try {
-        const participants = await stroyParticipants(emitMessage, clients);
+        const participants = await storyParticipants(emitMessage, clients);
         if (participants) {
             for (const participant of participants) {
                 sendToClient(participant, clients, emitEvent, emitMessage);
@@ -54,13 +53,14 @@ const postStory = async (
     emitStory: Story
 ): Promise<void> => {
     try {
-        const participants = await stroyParticipants(emitStory, clients);
+        const participants = await storyParticipants(emitStory, clients);
         for (const participant of participants) {
             sendToClient(participant, clients, emitEvent, {
                 id: emitStory.id,
                 userId: emitStory.userId,
                 content: emitStory.content,
                 media: emitStory.media,
+                type: emitStory.type,
                 date: emitStory.date,
             });
         }
@@ -74,12 +74,12 @@ const notifyExpiry = async (key: string, clients: Map<number, Socket>): Promise<
         const match = key.match(/\d+/);
         if (!match) return;
         key = key.replace("storyExpired", "storyId");
-        const value = await redisClient.get(key); // Wait for Redis to return the value
+        const value = await redisClient.getInstance().get(key); // Wait for Redis to return the value
         if (!value) return;
         const story: Story = JSON.parse(value);
-        await redisClient.del(key); //delete the key from redis
+        await redisClient.getInstance().del(key); //delete the key from redis
         await archiveStory(story.userId, story.id); //database operation
-        const participants = await stroyParticipants(story, clients);
+        const participants = await storyParticipants(story, clients);
         for (const participant of participants) {
             sendToClient(participant, clients, "storyExpired", { storyId: story.id });
         }
@@ -94,7 +94,7 @@ const deleteStory = async (
     deletedStory: Story
 ): Promise<void> => {
     try {
-        const participants = await stroyParticipants(deletedStory, clients);
+        const participants = await storyParticipants(deletedStory, clients);
         for (const participant of participants) {
             sendToClient(participant, clients, emitEvent, {
                 storyId: deletedStory.id,
@@ -112,16 +112,14 @@ const likeStory = async (
     data: any
 ): Promise<void> => {
     try {
-        const participants = await stroyParticipants({ id: data.storyId }, clients);
-        for (const participant of participants) {
-            sendToClient(participant, clients, emitEvent, {
-                userId: data.userId,
-                storyId: data.storyId,
-                userName: data.userName,
-                profilePic: data.profilePic,
-                liked: data.liked,
-            });
-        }
+        const storyUserId = await getStoryUserId(data.storyId);
+        sendToClient(storyUserId, clients, emitEvent, {
+            userId: data.userId,
+            storyId: data.storyId,
+            userName: data.userName,
+            profilePic: data.profilePic,
+            liked: data.liked,
+        });
     } catch (error: any) {
         throw new Error(`Error in likeStory: ${error.message}`);
     }
@@ -132,15 +130,13 @@ const viewStory = async (
     emitEvent: string,
     data: any
 ): Promise<void> => {
-    const participants = await stroyParticipants({ id: data.storyId }, clients);
-    for (const participant of participants) {
-        sendToClient(participant, clients, emitEvent, {
-            userId: data.userId,
-            storyId: data.storyId,
-            userName: data.userName,
-            profilePic: data.profilePic,
-        });
-    }
+    const storyUserId = await getStoryUserId(data.storyId);
+    sendToClient(storyUserId, clients, emitEvent, {
+        userId: data.userId,
+        storyId: data.storyId,
+        userName: data.userName,
+        profilePic: data.profilePic,
+    });
 };
 
-export { broadCast, notifyExpiry, postStory, deleteStory, likeStory, viewStory };
+export { broadCast, notifyExpiry, postStory, deleteStory, likeStory, viewStory, storyParticipants };

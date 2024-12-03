@@ -239,7 +239,7 @@ const getStoryUsers = async (userId: number): Promise<any> => {
     }
 };
 
-const getStoriesByUserId = async (userId: number, storyUserId: number): Promise<Story[]> => {
+const getStoriesByUserId = async (userId: number, storyUserId: number): Promise<any[]> => {
     try {
         const contacts = await getUserContacts(userId); //IDs of contacts I saved
         const savedByIds = await savedBy(userId); //IDs of users who saved me as contact

@@ -12,7 +12,7 @@ describe("test check email exist in DB service", () => {
         try {
             await checkEmailExistDB(faker.internet.email());
         } catch (error: any) {
-            expect(error.message).toBe("Email is not existed in DB");
+            expect(error.message).toBe("User Email doesn't exist");
         }
     });
 });

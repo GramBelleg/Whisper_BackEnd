@@ -1,14 +1,15 @@
 import request from "supertest";
 import { clearTokenCookie, getToken } from "@services/auth/token.service";
 import { deleteUserToken, deleteAllUserTokens } from "@services/auth/prisma/delete.service";
-import app from "@src/app";
+import { app, closeApp } from "@src/app";
 
 jest.mock("@services/auth/prisma/delete.service");
 jest.mock("@services/auth/token.service");
 
-beforeAll(() => {
-    app.listen(5557);
+afterAll(async () => {
+    await closeApp();
 });
+
 describe("test logout from one device controller", () => {
     afterEach(() => {
         jest.clearAllMocks();

@@ -2,6 +2,8 @@ import { Socket } from "socket.io";
 import * as userServices from "@services/user/user.service";
 import { Privacy, Status } from "@prisma/client";
 import { sendToClient } from "@socket/utils/socket.utils";
+import { deliverAllUserMessages } from "./message.handlers";
+
 export const getAllowedUsers = async (userId: number, clients: Map<number, Socket>) => {
     //includes the user himslef is that right?
     const privacy = await userServices.getLastSeenPrivacy(userId);
@@ -28,6 +30,7 @@ export const startConnection = async (
     console.log(`User ${userId} connected`);
     clients.set(userId, socket);
     await broadCast(userId, clients, Status.Online);
+    await deliverAllUserMessages(userId, clients);
 };
 
 export const endConnection = async (

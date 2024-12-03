@@ -1,7 +1,7 @@
 import db from "@DB";
 import HttpError from "@src/errors/HttpError";
 
-const updateRelates = async (userId: number, users: number[], blocked: boolean) => {
+const updateBlockOfRelates = async (userId: number, users: number[], blocked: boolean) => {
     try {
         await db.relates.updateMany({
             where: {
@@ -31,4 +31,4 @@ const updateReadReceipt = async (userId: number, readReceipts: boolean) => {
 }
 
 
-export { updateRelates, updateReadReceipt };
+export { updateBlockOfRelates, updateReadReceipt };

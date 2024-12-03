@@ -8,7 +8,7 @@ export const setupPfpEvents = (socket: Socket, userId: number, clients: Map<numb
         socketWrapper(async (user: { profilePic: string }) => {
             if (!user) throw new Error("No Profile picture given");
             const profilePic = await changePic(userId, user.profilePic);
-            if (profilePic) {
+            if (profilePic != null) {
                 await pfpHandler.broadCast(userId, clients, "pfp", { userId, profilePic });
             }
         })

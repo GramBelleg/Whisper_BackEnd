@@ -14,6 +14,7 @@ enum MessageType {
 
 model Message {
   id                    Int                @id @default(autoincrement())
+  key                   String?            //SHOULD NOT BE OPTIONAL, BUT KEEPING IT FOR NOW UNTIL FRONT AND CROSS HAVE IT READY
   chatId                Int
   senderId              Int
   content               String
@@ -38,12 +39,14 @@ model Message {
   parentMessageId       Int?
   parentContent         String?
   parentMedia           String?
+  parentType            MessageType?
   parentExtension       String?
   sender                User               @relation(fields: [senderId], references: [id])
   chat                  Chat               @relation(fields: [chatId], references: [id])
   voiceMessage          VoiceMessage?
   parentMessage         Message?           @relation("ReplyToMessage", fields: [parentMessageId], references: [id])
   replies               Message[]          @relation("ReplyToMessage")
+  draftReplies          ChatParticipant[]  @relation("DraftReplyToMessage")
   forwardedFrom         User?              @relation("ForwardedMessage", fields: [forwardedFromUserId], references: [id])
   messageStatus         MessageStatus[]
 }

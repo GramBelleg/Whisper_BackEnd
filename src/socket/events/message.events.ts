@@ -5,6 +5,7 @@ import * as sendController from "@controllers/messages/send.message";
 import * as editController from "@controllers/messages/edit.message";
 import * as deleteController from "@controllers/messages/delete.message";
 import * as messageHandler from "@socket/handlers/message.handlers";
+import { sendToClient } from "@socket/utils/socket.utils";
 
 export const setupMessageEvents = (
     socket: Socket,
@@ -34,12 +35,12 @@ export const setupMessageEvents = (
         "editMessage",
         socketWrapper(async (message: types.OmitSender<types.EditableMessage>) => {
             const editedMessage = await editController.handleEditContent(
-                message.messageId,
+                message.id,
                 message.content
             );
             if (editedMessage) {
                 await messageHandler.broadCast(message.chatId, clients, "editMessage", {
-                    messageId: editedMessage.id,
+                    id: editedMessage.id,
                     content: editedMessage.content,
                     chatId: message.chatId,
                 });
@@ -50,10 +51,10 @@ export const setupMessageEvents = (
     socket.on(
         "pinMessage",
         socketWrapper(async (message: types.MessageReference) => {
-            const pinnedMessage = await editController.handlePinMessage(message.messageId);
+            const pinnedMessage = await editController.handlePinMessage(message.id);
             if (pinnedMessage) {
                 await messageHandler.broadCast(message.chatId, clients, "pinMessage", {
-                    messageId: pinnedMessage,
+                    id: pinnedMessage,
                     chatId: message.chatId,
                 });
             }
@@ -63,10 +64,10 @@ export const setupMessageEvents = (
     socket.on(
         "unpinMessage",
         socketWrapper(async (message: types.MessageReference) => {
-            const unpinnedMessage = await editController.handleUnpinMessage(message.messageId);
+            const unpinnedMessage = await editController.handleUnpinMessage(message.id);
             if (unpinnedMessage) {
                 await messageHandler.broadCast(message.chatId, clients, "unpinMessage", {
-                    messageId: unpinnedMessage,
+                    id: unpinnedMessage,
                     chatId: message.chatId,
                 });
             }
@@ -78,6 +79,38 @@ export const setupMessageEvents = (
         socketWrapper(async ({ messages, chatId }: { messages: number[]; chatId: number }) => {
             await deleteController.deleteMessagesForAllUsers(messages, chatId);
             await messageHandler.broadCast(chatId, clients, "deleteMessage", { messages, chatId });
+        })
+    );
+
+    socket.on(
+        "deliverMessage",
+        socketWrapper(async ({ messageId }: { messageId: number }) => {
+            const result = await editController.handleDeliverMessage(userId, messageId);
+            if (!result) return;
+            sendToClient(result.senderId, clients, "deliverMessage", {
+                messageIds: [messageId],
+                chatId: result.chatId,
+            });
+        })
+    );
+
+    socket.on(
+        "readAllMessages",
+        socketWrapper(async (chatId: number) => {
+            const directTo = await editController.handleReadAllMessages(userId, chatId);
+            if (directTo) {
+                messageHandler.sendReadAndDeliveredGroups(clients, directTo, "readMessage");
+            }
+        })
+    );
+
+    socket.on(
+        "readMessage",
+        socketWrapper(async ({ messages, chatId }: { messages: number[]; chatId: number }) => {
+            const directTo = await editController.handleReadMessages(userId, messages, chatId);
+            if (directTo) {
+                messageHandler.sendReadAndDeliveredGroups(clients, directTo, "readMessage");
+            }
         })
     );
 };

@@ -4,7 +4,7 @@ import HttpError from "@src/errors/HttpError";
 const validateBlockData = (users: number[], blocked: boolean) => {
     const schema: ObjectSchema = Joi.object({
         users: Joi.array()
-            .items(Joi.number().required())
+            .items(Joi.number())
             .min(1)
             .messages({
                 "any.required": "Users are required",
@@ -28,7 +28,7 @@ const validateBlockData = (users: number[], blocked: boolean) => {
 
 const validateReadReceipt = (readReceipts: boolean) => {
     const schema: ObjectSchema = Joi.object({
-        readReceipts: Joi.boolean().required().messages({
+        readReceipts: Joi.boolean().strict().required().messages({
             "any.required": "Read receipts is required",
             "boolean.base": "Read receipts must be a boolean",
         }),

@@ -8,6 +8,7 @@ enum Status {
   Online
 }
 
+
 model User {
   id                        Int                  @id @default(autoincrement())
   email                     String               @unique
@@ -25,7 +26,7 @@ model User {
   readReceipts              Boolean              @default(true)
   lastSeenPrivacy           Privacy              @default(Everyone)
   pfpPrivacy                Privacy              @default(Everyone)
-  storyPrivacy                Privacy              @default(Everyone)
+  storyPrivacy              Privacy              @default(Everyone)
   Messages                  Message[]
   chatParticipant           ChatParticipant[]
   channelParticipant        ChannelParticipant[]
@@ -34,8 +35,20 @@ model User {
   story                     Story[]
   relating                  Relates[]            @relation("relating")
   relatedBy                 Relates[]            @relation("relatedBy")
-  storyView          storyView[]
-  forwards           Message[]            @relation("ForwardedMessage")
+  storyView                 storyView[]
+  Publickeys                PublicKey[]          
+  forwards                  Message[]            @relation("ForwardedMessage")
+}
+
+model PublicKey {
+  id                Int              @id @default(autoincrement())
+  userId            Int
+  key               String
+  participantUserId Int?
+  chatId            Int?
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  participant       ChatParticipant[]
+  @@index([userId])
 }
 
 model UserToken {
@@ -80,8 +93,8 @@ model Relates {
   relatedById Int
   isBlocked   Boolean  @default(false)
   isContact   Boolean  @default(false)
-  relating    User    @relation("relating", fields: [relatingId], references: [id])
-  relatedBy   User    @relation("relatedBy", fields: [relatedById], references: [id])
+  relating    User    @relation("relating", fields: [relatingId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  relatedBy   User    @relation("relatedBy", fields: [relatedById], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@id([relatingId, relatedById])
 }

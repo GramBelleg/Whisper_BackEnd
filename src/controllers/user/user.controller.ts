@@ -12,6 +12,7 @@ import { MAX_UPLOAD_SIZE } from "@config/constants.config";
 import { Privacy } from "@prisma/client";
 
 const updateBio = async (req: Request, res: Response) => {
+    console.log(req.body);
     let { bio = "" }: { bio: string } = req.body;
     let id: number = req.userId;
     await userServices.updateBio(id, bio);
@@ -116,7 +117,8 @@ const changeReadReceipt = async (req: Request, res: Response) => {
 const changeAutoDownloadSize = async (req: Request, res: Response) => {
     const size = req.body.size;
     const userId = req.userId;
-    if (!size) throw new HttpError("Automatic Download Size not specified", 404);
+    if (size == undefined || size == null)
+        throw new HttpError("Automatic Download Size not specified", 404);
     if (size > MAX_UPLOAD_SIZE) throw new HttpError("Invalid file size specified", 400);
     await userServices.changeAutoDownloadSize(userId, size);
     res.status(200).json({
