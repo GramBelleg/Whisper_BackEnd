@@ -1,47 +1,66 @@
 type: object
 properties:
-  id:
-    type: integer
-    description: Chat identifier
-  name:
-    type: string
-    description: The name of the chat
-  type:
-    type: string
-    enum: [DM, GROUP, CHANNEL]
-    description: The type of entity being created (e.g., chat, group, channel).
-  picture:
-    type: string
-    description: URL of the chat picture
-  hasStory:
-    type: boolean
-    description: Is the chat muted
-  isMuted:
-    type: boolean
-    description: Is the chat muted
-  unreadMessageCount:
-    type: integer
-    nullable: true
-    description: The count of unread messages in the chat
-  lastMessage:
-    type: object
-    properties:
-      id:
+    id:
         type: integer
-        description: Identifier of the last message
-      content:
+        description: Chat identifier
+    othersId:
+        type: integer
+        description: Chat identifier
+    name:
         type: string
-        description: Content of the last message
-      type:
+        description: The name of the chat
+    type:
         type: string
-        description: Type of the last message (e.g., text, image)
-      sentAt:
+        enum: [DM, GROUP, CHANNEL]
+        description: The type of entity being created (e.g., chat, group, channel).
+    picture:
         type: string
-        format: date-time
-        description: Timestamp when the last message was sent
-      read:
+        description: URL of the chat picture
+    hasStory:
         type: boolean
-        description: Indicates if the last message has been read
-      delivered:
+        description: Is the chat muted
+    isMuted:
         type: boolean
-        description: Indicates if the last message has been delivered
+        description: Is the chat muted
+    participantKeys:
+        type: array
+        items:
+            type: integer
+    status:
+        type: string
+        description: Is the chat muted
+    unreadMessageCount:
+        type: integer
+        nullable: true
+        description: The count of unread messages in the chat
+    lastMessage:
+        type: object
+        properties:
+            id:
+                type: integer
+                description: Identifier of the last message
+            content:
+                type: string
+                description: Content of the last message
+            type:
+                type: string
+                description: Type of the last message (e.g., text, image)
+            time:
+                type: string
+                format: date-time
+                description: Timestamp when the last message was sent
+            read:
+                type: boolean
+                description: Indicates if the last message has been read
+            delivered:
+                type: boolean
+                description: Indicates if the last message has been delivered
+            extension:
+                type: string
+            sender:
+                type: object
+                properties:
+                    id:
+                        type: integer
+                    userName:
+                        type: string

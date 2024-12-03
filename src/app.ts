@@ -4,8 +4,6 @@ import http from "http";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import indexRouter from "@routes/index.routes";
-import swaggerSpec from "./docs/swagger";
-import swaggerUi from "swagger-ui-express";
 import session from "express-session";
 import cron, { ScheduledTask } from "node-cron";
 import errorHandler from "@middlewares/error.handler";
@@ -45,8 +43,6 @@ app.use(
         saveUninitialized: true,
     })
 );
-app.use("/openapi-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use("/asyncapi-docs", express.static("./src/docs/asyncapi/output"));
 app.use("/api", indexRouter);
 
 initWebSocketServer(server);
