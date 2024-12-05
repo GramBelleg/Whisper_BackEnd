@@ -1,0 +1,25 @@
+asyncapi: "2.0.0"
+info:
+    title: User WebSocket API
+    version: "1.0.0"
+    description: WebSocket API for user features.
+
+servers:
+  chat-server:
+    url: http://localhost:5000
+    protocol: ws
+channels:
+  status:
+    $ref: './channels/user.yaml#/status'
+  pfp:
+    $ref: './channels/user.yaml#/pfp'  
+  story:
+    $ref: './channels/user.yaml#/story'  
+  likeStory:
+    $ref: './channels/user.yaml#/likeStory'  
+  viewStory:
+    $ref: './channels/user.yaml#/viewStory'  
+  deleteStory:
+    $ref: './channels/user.yaml#/deleteStory'
+
+  

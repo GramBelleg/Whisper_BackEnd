@@ -43,6 +43,7 @@ export const buildMessageWithCustomObjects = async (
             parentContent,
             parentMedia,
             parentExtension,
+            parentType,
             ...rest
         } = msg;
         return { ...rest };
@@ -62,7 +63,6 @@ const formatParentMessage = async (parentMessage: any, parentMessageContent: any
     return {
         id: parentMessage.id,
         ...senderInfo,
-        type: parentMessage.type,
         ...parentMessageContent,
     };
 };

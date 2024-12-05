@@ -241,36 +241,32 @@ const getStoryUsers = async (userId: number): Promise<any> => {
 
 const getStoriesByUserId = async (userId: number, storyUserId: number): Promise<any[]> => {
     try {
-        const contacts = await getUserContacts(userId);
-        const savedByIds = await savedBy(userId);
-        const mutualContacts = contacts.filter((id) => savedByIds.includes(id));
-
-        const stories = await db.$queryRawUnsafe(`
-            SELECT 
-                s.*,
-                CASE WHEN sv_view."userId" IS NOT NULL THEN true ELSE false END AS viewed,
-                COALESCE(sv_view.liked, false) AS liked,
-                COUNT(sv_total."userId") AS views,
-                SUM(CASE WHEN sv_total.liked = true THEN 1 ELSE 0 END) AS likes
-            FROM "story" s
-            LEFT JOIN "storyView" sv_view
-                ON s.id = sv_view."storyId" AND sv_view."userId" = ${userId}
-            LEFT JOIN "storyView" sv_total
-                ON s.id = sv_total."storyId"
-            WHERE 
-                s."userId" = ${storyUserId} 
-                AND s."isArchived" = false
-                AND (
-                    s.privacy = 'Everyone' OR
-                    (s.privacy = 'Contacts' AND s."userId" IN (${mutualContacts.join(", ")})) OR
-                    s."userId" = ${storyUserId}
-                )
-            GROUP BY s.id, sv_view."userId", sv_view.liked;
-        `);
-
-        return stories as any[];
+        const contacts = await getUserContacts(userId); //IDs of contacts I saved
+        const savedByIds = await savedBy(userId); //IDs of users who saved me as contact
+        const mutualContacts = contacts.filter((id) => savedByIds.includes(id)); //IDs of mutual contacts
+        const stories: Story[] = await db.story.findMany({
+            where: {
+                userId: storyUserId,
+                isArchived: false,
+                OR: [
+                    {
+                        privacy: "Everyone",
+                    },
+                    {
+                        privacy: "Contacts",
+                        userId: {
+                            in: mutualContacts,
+                        },
+                    },
+                    {
+                        userId: storyUserId,
+                    },
+                ],
+            },
+        });
+        return stories;
     } catch (error: any) {
-        throw new Error(`Error in getStoriesByUserId: ${error.message}`);
+        throw new Error(`Error in getStories: ${error.message}`);
     }
 };
 

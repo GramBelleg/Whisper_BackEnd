@@ -10,8 +10,8 @@ class RedisSubscriber {
     public static getInstance(): Redis {
         if (!RedisSubscriber.instance) {
             RedisSubscriber.instance = new Redis({
-                host: process.env.REDIS_HOST as string || '127.0.0.1',
-                port: parseInt(process.env.REDIS_PORT as string || '6379', 10),
+                host: process.env.REDIS_HOST as string,
+                port: parseInt((process.env.REDIS_PORT as string) || "6379", 10),
             });
 
             RedisSubscriber.instance.on("connect", () => {

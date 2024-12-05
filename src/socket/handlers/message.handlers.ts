@@ -4,6 +4,7 @@ import { sendToClient } from "@socket/utils/socket.utils";
 import { deleteMessagesForAllUsers } from "@controllers/messages/delete.message";
 import { getChatParticipantsIds } from "@services/chat/chat.service";
 import { handleDeliverAllMessages } from "@controllers/messages/edit.message";
+import { SenderIdRecord } from "@models/messages.models";
 
 export const broadCast = async (
     chatId: number,
@@ -50,14 +51,11 @@ export const userBroadCast = async (
 
 export const sendReadAndDeliveredGroups = (
     clients: Map<number, Socket>,
-    directTo: {
-        chatId: number;
-        messageIds: number[];
-    }[][],
+    directTo: SenderIdRecord,
     emitEvent: string
 ) => {
     for (const key in directTo) {
-        const senderId = parseInt(key);
+        const senderId = Number(key);
         const groups = directTo[senderId];
         for (const group of groups) {
             sendToClient(senderId, clients, emitEvent, group);
@@ -97,7 +95,7 @@ export const notifyExpiry = async (key: string, clients: Map<number, Socket>): P
         if (!chatId) return;
         await deleteMessagesForAllUsers([id], chatId);
 
-        broadCast(chatId, clients, "expireMessage", id);
+        broadCast(chatId, clients, "expireMessage", { id, chatId });
     } catch (error: any) {
         throw new Error(`Error in notifyExpiry: ${error.message}`);
     }

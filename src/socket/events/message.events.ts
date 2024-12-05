@@ -40,7 +40,7 @@ export const setupMessageEvents = (
             );
             if (editedMessage) {
                 await messageHandler.broadCast(message.chatId, clients, "editMessage", {
-                    messageId: editedMessage.id,
+                    id: editedMessage.id,
                     content: editedMessage.content,
                     chatId: message.chatId,
                 });
@@ -54,7 +54,7 @@ export const setupMessageEvents = (
             const pinnedMessage = await editController.handlePinMessage(message.id);
             if (pinnedMessage) {
                 await messageHandler.broadCast(message.chatId, clients, "pinMessage", {
-                    messageId: pinnedMessage,
+                    id: pinnedMessage,
                     chatId: message.chatId,
                 });
             }
@@ -67,7 +67,7 @@ export const setupMessageEvents = (
             const unpinnedMessage = await editController.handleUnpinMessage(message.id);
             if (unpinnedMessage) {
                 await messageHandler.broadCast(message.chatId, clients, "unpinMessage", {
-                    messageId: unpinnedMessage,
+                    id: unpinnedMessage,
                     chatId: message.chatId,
                 });
             }
@@ -84,12 +84,12 @@ export const setupMessageEvents = (
 
     socket.on(
         "deliverMessage",
-        socketWrapper(async ({ messageId, chatId }: { messageId: number; chatId: number }) => {
-            const result = await editController.handleDeliverMessage(messageId, chatId);
+        socketWrapper(async ({ messageId }: { messageId: number }) => {
+            const result = await editController.handleDeliverMessage(userId, messageId);
             if (!result) return;
             sendToClient(result.senderId, clients, "deliverMessage", {
-                chatId,
                 messageIds: [messageId],
+                chatId: result.chatId,
             });
         })
     );
