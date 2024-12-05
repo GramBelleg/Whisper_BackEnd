@@ -59,7 +59,7 @@ model ChatParticipant {
 }
 
 model GroupParticipant {
-  id          Int     @id 
+  id          Int     @id @unique
   isAdmin     Boolean @default(false)
   canDownload Boolean @default(true)
   canDelete   Boolean @default(true)

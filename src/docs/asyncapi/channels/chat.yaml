@@ -1,280 +1,292 @@
 createChat:
-  description: Channel for creating chat.
+    description: Channel for creating chat.
 
-  # Channel for sending new messages
-  subscribe:
-    summary: Create a chat
-    operationId: createChat
-    message:
-      contentType: application/json
-      payload:
-        $ref: '../payloads/chat/create.chat.yaml'  # Reference to the sent message payload
+    # Channel for sending new messages
+    subscribe:
+        summary: Create a chat
+        operationId: createChat
+        message:
+            contentType: application/json
+            payload:
+                $ref: "../payloads/chat/create.chat.yaml" # Reference to the sent message payload
 
-  # Channel for receiving chat messages
-  publish:
-    summary: Join Chat
-    operationId: joinChat
-    message:
-      contentType: application/json
-      payload:
-        $ref: '../payloads/chat/join.chat.yaml'  # Reference to the received message payload
-        
+    # Channel for receiving chat messages
+    publish:
+        summary: Join Chat
+        operationId: joinChat
+        message:
+            contentType: application/json
+            payload:
+                $ref: "../payloads/chat/join.chat.yaml" # Reference to the received message payload
+
 leaveChat:
-  description: Channel for leaving Group/Channel.
+    description: Channel for leaving Group/Channel.
 
-  subscribe:
-    summary: leave Group/Channel
-    operationId: leaveGroup
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          chatId:
-            type: integer
-            description: identifier for group/channel
+    subscribe:
+        summary: leave Group/Channel
+        operationId: leaveGroup
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    chatId:
+                        type: integer
+                        description: identifier for group/channel
 
-  publish:
-    summary: Get notified that someone left the group
-    operationId: notifiedLeaveGroup
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          userName:
-            type: integer
-            description: name of the user who left
-          chatId:
-            type: string
-            description: identifier of the group/channel
+    publish:
+        summary: Get notified that someone left the group
+        operationId: notifiedLeaveGroup
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    userName:
+                        type: integer
+                        description: name of the user who left
+                    chatId:
+                        type: string
+                        description: identifier of the group/channel
 
 deleteChat:
-  description: Channel for deleting Group/Channel.
+    description: Channel for deleting Group/Channel.
 
-  subscribe:
-    summary: delete Group
-    operationId: deleteGroup
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          chatId:
-            type: integer
-            description: identifier for group/channel
+    subscribe:
+        summary: delete Group
+        operationId: deleteGroup
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    chatId:
+                        type: integer
+                        description: identifier for group/channel
 
-  publish:
-    summary: Get notified that group got deleted
-    operationId: notifiedDeleteGroup
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          chatId:
-            type: string
-            description: identifier of the group/channel
+    publish:
+        summary: Get notified that group got deleted
+        operationId: notifiedDeleteGroup
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    chatId:
+                        type: string
+                        description: identifier of the group/channel
 
 addAdmin:
-  description: Channel for adding Admins to Group/Channel.
+    description: Channel for adding Admins to Group/Channel.
 
-  subscribe:
-    summary: Add admin
-    operationId: addAdmin
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          userId:
-            type: integer
-            description: identifier for user
-          chatId:
-            type: integer
-            description: identifier for group/channel
+    subscribe:
+        summary: Add admin
+        operationId: addAdmin
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    userId:
+                        type: integer
+                        description: identifier for user
+                    chatId:
+                        type: integer
+                        description: identifier for group/channel
 
-  publish:
-    summary: Get notified that someone became admin
-    operationId: notifieyAddAdmin
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          userId:
-            type: integer
-            description: name of the user who became admin
-          chatId:
-            type: string
-            description: identifier for group/channel
+    publish:
+        summary: Get notified that someone became admin
+        operationId: notifieyAddAdmin
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    userId:
+                        type: integer
+                        description: name of the user who became admin
+                    chatId:
+                        type: string
+                        description: identifier for group/channel
 addUser:
-  description: Channel for adding Users to Group/Channel.
+    description: Channel for adding Users to Group/Channel.
 
-  subscribe:
-    summary: Add User to group/channel
-    operationId: addUser
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          userId:
-            type: integer
-            description: identifier for user
-          chatId:
-            type: integer
-            description: identifier for group/channel
+    subscribe:
+        summary: Add User to group/channel
+        operationId: addUser
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    userId:
+                        type: integer
+                        description: identifier for user
+                    chatId:
+                        type: integer
+                        description: identifier for group/channel
 
-  publish:
-    summary: Join Chat
-    operationId: notifiyUserAdded
-    message:
-      contentType: application/json
-      payload:
-        $ref: '../payloads/chat/join.chat.yaml'
+    publish:
+        summary: Join Chat
+        operationId: notifiyUserAdded
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    user:
+                        type: object
+                        properties:
+                            id:
+                                type: integer
+                            userName:
+                                type: string
+                            profilePic:
+                                type: string
+                    chatId:
+                        type: integer
+                        description: identifier for group/channel
 
 removeUser:
-  description: Channel for Kicking Users from Group/Channel.
+    description: Channel for Kicking Users from Group/Channel.
 
-  subscribe:
-    summary: Kick User from group/channel
-    operationId: kickUser
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          userId:
-            type: integer
-            description: identifier for user
-          userName:
-            type: string
-          chatId:
-            type: integer
-            description: identifier for group/channel
-            
-  publish:
-    summary: Get notified that someone left the group
-    operationId: notifyKickedUser
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          userId:
-            type: integer
-            description: identifier of the user who left
-          userName:
-            type: integer
-            description: name of the user who left
-          removerUserName:
-            type: integer
-            description: name of the user who removed them
-          chatId:
-            type: string
-            description: identifier of the group/channel
+    subscribe:
+        summary: Kick User from group/channel
+        operationId: kickUser
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    userId:
+                        type: integer
+                        description: identifier for user
+                    userName:
+                        type: string
+                    chatId:
+                        type: integer
+                        description: identifier for group/channel
+
+    publish:
+        summary: Get notified that someone left the group
+        operationId: notifyKickedUser
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    userId:
+                        type: integer
+                        description: identifier of the user who left
+                    userName:
+                        type: integer
+                        description: name of the user who left
+                    removerUserName:
+                        type: integer
+                        description: name of the user who removed them
+                    chatId:
+                        type: string
+                        description: identifier of the group/channel
 unmuteChat:
-  description: Channel for receiving unmutedChat.
+    description: Channel for receiving unmutedChat.
 
-  publish:
-    operationId: unmuteChat
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          chatId:
-            type: integer
+    publish:
+        operationId: unmuteChat
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    chatId:
+                        type: integer
 subscribe:
-  description: Channel for subscribing to channel.
+    description: Channel for subscribing to channel.
 
-  # Channel for sending new messages
-  subscribe:
-    summary: subscribe to channel
-    operationId: subscribe
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          chatId:
-            type: integer
-            description: Identifier of the chat room
+    # Channel for sending new messages
+    subscribe:
+        summary: subscribe to channel
+        operationId: subscribe
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    chatId:
+                        type: integer
+                        description: Identifier of the chat room
 
-  # Channel for receiving chat messages
-  publish:
-    summary: user subscribed to channel
-    operationId: joinChannel
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          chatId:
-            type: integer
-            description: Identifier of the chat room
-          userId:
-            type: integer
-            description: Identifier of the user
-          userName:
-            type: string
-            description: Name of the user
-          profilePic:
-            type: string
-            description: Profile picture of the user
+    # Channel for receiving chat messages
+    publish:
+        summary: user subscribed to channel
+        operationId: joinChannel
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    chatId:
+                        type: integer
+                        description: Identifier of the chat room
+                    userId:
+                        type: integer
+                        description: Identifier of the user
+                    userName:
+                        type: string
+                        description: Name of the user
+                    profilePic:
+                        type: string
+                        description: Profile picture of the user
 comment:
-  description: Channel for commenting in a channel.
+    description: Channel for commenting in a channel.
 
-  # Channel for sending new messages
-  subscribe:
-    operationId: comment
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          messageId:
-            type: integer
-            description: Identifier of the message
-          chatId:
-            type: integer
-            description: Identifier of the chat room
-          content:
-            type: string
+    # Channel for sending new messages
+    subscribe:
+        operationId: comment
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    messageId:
+                        type: integer
+                        description: Identifier of the message
+                    chatId:
+                        type: integer
+                        description: Identifier of the chat room
+                    content:
+                        type: string
 
-  # Channel for receiving chat messages
-  publish:
-    operationId: receiveComment
-    message:
-      contentType: application/json
-      payload:
-        type: object
-        properties:
-          commentId:
-            type: integer
-            description: Identifier of the comment
-          messageId:
-            type: integer
-            description: Identifier of the message
-          chatId:
-            type: integer
-            description: Identifier of the chat room
-          sender:
-            type: object
-            properties:
-              id:
-                type: integer
-                description: Identifier of the user
-              userName:
-                type: string
-                description: Name of the user
-              profilePic:
-                type: string
-                description: Profile picture of the user
-          time:
-            type: string
-            format: date-time
-          content:
-            type: string
-          
+    # Channel for receiving chat messages
+    publish:
+        operationId: receiveComment
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    commentId:
+                        type: integer
+                        description: Identifier of the comment
+                    messageId:
+                        type: integer
+                        description: Identifier of the message
+                    chatId:
+                        type: integer
+                        description: Identifier of the chat room
+                    sender:
+                        type: object
+                        properties:
+                            id:
+                                type: integer
+                                description: Identifier of the user
+                            userName:
+                                type: string
+                                description: Name of the user
+                            profilePic:
+                                type: string
+                                description: Profile picture of the user
+                    time:
+                        type: string
+                        format: date-time
+                    content:
+                        type: string

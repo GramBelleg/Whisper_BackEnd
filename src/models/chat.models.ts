@@ -19,17 +19,19 @@ export type CreatedChat = {
 
 export type ChatSummary = {
     id: number;
-    othersId: number;
+    othersId?: number;
     type: ChatType;
     participantKeys?: (number | null)[];
     name: string;
-    lastSeen: Date;
+    lastSeen?: Date;
     isMuted: boolean;
-    hasStory: boolean;
-    picture: string;
-    status: string;
+    hasStory?: boolean;
+    picture: string | null;
+    status?: string;
     lastMessage: LastMessage;
     unreadMessageCount: number;
 };
+
+export type chatUser = { userId: number; chatId: number };
 
 export type MemberSummary = Pick<User, "id" | "userName" | "profilePic" | "lastSeen" | "hasStory">;
