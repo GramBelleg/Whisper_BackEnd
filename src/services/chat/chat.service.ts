@@ -6,8 +6,15 @@ import { MemberSummary } from "@models/chat.models";
 import { getLastMessageSender } from "@services/user/user.service";
 import { buildDraftedMessage } from "@controllers/messages/format.message";
 
-const getUserChats = async (userId: number, type: ChatType | null) => {
-    const whereClause = !type ? { userId } : { userId, chat: { type } };
+const getUserChats = async (userId: number, type: ChatType | null, noKey: number | boolean) => {
+    let whereClause: Record<string, any>;
+    if (noKey) {
+        whereClause = { userId, chat: { type: "DM" }, publicKey: null };
+    } else if (!type) {
+        whereClause = { userId };
+    } else {
+        whereClause = { userId, chat: { type } };
+    }
     return await db.chatParticipant.findMany({
         where: whereClause,
         select: {
@@ -215,9 +222,10 @@ export const getChat = async (userId: number, chatId: number): Promise<ChatSumma
 
 export const getChatsSummaries = async (
     userId: number,
-    type: ChatType | null
+    type: ChatType | null,
+    noKey: number | boolean
 ): Promise<ChatSummary[]> => {
-    const userChats = await getUserChats(userId, type);
+    const userChats = await getUserChats(userId, type, noKey);
     const chatSummaries: ChatSummary[] = [];
 
     for (const userChat of userChats) {
@@ -297,3 +305,4 @@ export const setNewLastMessage = async (chatId: number): Promise<void> => {
         }
     });
 };
+
