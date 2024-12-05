@@ -38,7 +38,6 @@ model ChatParticipant {
   isArchived            Boolean           @default(false)
   unreadMessageCount    Int               @default(0)
   lastMessageId         Int?             
-  isContact             Boolean           @default(false)
   isMuted               Boolean           @default(false)
   draftContent          String            @default("")
   draftTime             DateTime?

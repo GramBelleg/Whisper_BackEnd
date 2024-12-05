@@ -119,9 +119,15 @@ addUser:
             payload:
                 type: object
                 properties:
-                    userId:
-                        type: integer
-                        description: identifier for user
+                    user:
+                        type: object
+                        properties:
+                            id:
+                                type: integer
+                            userName:
+                                type: string
+                            profilePic:
+                                type: string
                     chatId:
                         type: integer
                         description: identifier for group/channel

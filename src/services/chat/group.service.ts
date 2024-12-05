@@ -1,7 +1,20 @@
 import db from "@DB";
-import { chatUser, CreatedChat } from "@models/chat.models";
-
-export const addAdmin = async (admin: chatUser) => {
+import { chatUserSummary, CreatedChat } from "@models/chat.models";
+export const addUser = async (userId: number, chatId: number) => {
+    try {
+        await db.chatParticipant.create({
+            data: {
+                userId,
+                chatId,
+                groupParticipant: { create: {} },
+            },
+        });
+    } catch (err: any) {
+        if (err.code == "P2002") err.message = "Chat Participant already exists";
+        throw err;
+    }
+};
+export const addAdmin = async (admin: chatUserSummary) => {
     await db.chatParticipant.update({
         where: {
             chatId_userId: { chatId: admin.chatId, userId: admin.userId },
@@ -17,7 +30,7 @@ export const addAdmin = async (admin: chatUser) => {
         },
     });
 };
-export const isAdmin = async (admin: chatUser) => {
+export const isAdmin = async (admin: chatUserSummary) => {
     const user = await db.chatParticipant.findUnique({
         where: {
             chatId_userId: { chatId: admin.chatId, userId: admin.userId },

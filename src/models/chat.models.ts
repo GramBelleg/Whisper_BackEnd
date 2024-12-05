@@ -32,6 +32,9 @@ export type ChatSummary = {
     unreadMessageCount: number;
 };
 
-export type chatUser = { userId: number; chatId: number };
-
+export type chatUserSummary = { userId: number; chatId: number };
+export type chatUser = {
+    user: { id: number; userName: string; profilePic: string };
+    chatId: number;
+};
 export type MemberSummary = Pick<User, "id" | "userName" | "profilePic" | "lastSeen" | "hasStory">;
