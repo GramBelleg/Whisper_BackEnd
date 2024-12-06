@@ -50,10 +50,7 @@ export type ReceivedMessage = Omit<
     time: Date;
 };
 
-export type SentMessage = Pick<
-    Message,
-    "chatId" | "senderId" | "content" | "sentAt" | "type" | "key"
-> &
+export type SentMessage = Pick<Message, "chatId" | "senderId" | "content" | "sentAt" | "type"> &
     Partial<
         Pick<
             Message,
@@ -70,6 +67,7 @@ export type SentMessage = Pick<
             | "mentions"
             | "parentMessageId"
             | "forwardedFromUserId"
+            | "key"
         >
     >;
 

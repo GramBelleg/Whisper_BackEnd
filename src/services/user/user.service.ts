@@ -275,8 +275,21 @@ export const savedBy = async (userId: number): Promise<number[]> => {
 
 export const addContact = async (relatingId: number, relatedById: number) => {
     try {
-        await db.relates.create({
-            data: { relatingId, relatedById, isContact: true },
+        await db.relates.upsert({
+            where: {
+                relatingId_relatedById: {
+                    relatingId,
+                    relatedById,
+                },
+            },
+            update: {
+                isContact: true,
+            },
+            create: {
+                relatingId,
+                relatedById,
+                isContact: true,
+            },
         });
     } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
@@ -325,4 +338,51 @@ export const getSenderInfo = async (id: number) => {
             profilePic: true,
         },
     });
+};
+
+export const updateAddPermission = async (id: number, addPermission: boolean) => {
+    await db.user.update({
+        where: {
+            id,
+        },
+        data: {
+            addPermission,
+        },
+    });
+};
+export const getAddPermission = async (id: number) => {
+    const user = await db.user.findUnique({
+        where: {
+            id,
+        },
+        select: {
+            addPermission: true,
+        },
+    });
+    if (!user) throw new Error("User Not Found");
+    return user.addPermission;
+};
+
+export const getContacts = async (id: number) => {
+    const contacts = await db.relates.findMany({
+        where: {
+            relatingId: id,
+            isContact: true,
+            isBlocked: false,
+        },
+        select: {
+            relatedBy: {
+                select: {
+                    id: true,
+                    userName: true,
+                    profilePic: true,
+                },
+            },
+        },
+    });
+    return contacts.map((contact) => ({
+        id: contact.relatedBy.id,
+        userName: contact.relatedBy.userName,
+        profilePic: contact.relatedBy.profilePic,
+    }));
 };

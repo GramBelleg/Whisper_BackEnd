@@ -1,10 +1,12 @@
 import db from "@DB";
-import { ChatSummary, LastMessage } from "@models/chat.models";
+import { ChatSummary, CreatedChat, LastMessage } from "@models/chat.models";
 import { ChatType } from "@prisma/client";
 import { getDraftedMessage, getMessage } from "./message.service";
 import { MemberSummary } from "@models/chat.models";
 import { getLastMessageSender } from "@services/user/user.service";
 import { buildDraftedMessage } from "@controllers/messages/format.message";
+import * as groupService from "@services/chat/group.service";
+import HttpError from "@src/errors/HttpError";
 
 const getUserChats = async (userId: number, type: ChatType | null) => {
     const whereClause = !type ? { userId } : { userId, chat: { type } };
@@ -70,9 +72,13 @@ const createChatParticipants = async (
         chatId,
         keyId: currentUserId === userId ? senderKey : null,
     }));
-    await db.chatParticipant.createMany({
-        data: participantsData,
-    });
+    const chatParticipantIds = await db.$queryRawUnsafe<{ id: number; userId: number }[]>(`
+        INSERT INTO "ChatParticipant" ("chatId", "userId")
+        VALUES ${participantsData.map((p) => `(${p.chatId}, ${p.userId})`).join(", ")}
+        RETURNING "id", "userId";
+    `);
+
+    return chatParticipantIds;
 };
 
 export const createChat = async (
@@ -89,8 +95,8 @@ export const createChat = async (
             id: true,
         },
     });
-    await createChatParticipants(users, userId, senderKey, chat.id);
-    return chat;
+    const participants = await createChatParticipants(users, userId, senderKey, chat.id);
+    return { chatId: chat.id, participants };
 };
 
 export const getOtherUserId = async (excludedUserId: number, chatId: number) => {
@@ -140,7 +146,6 @@ const getDMContent = async (participant: any, chatId: number) => {
         picture: participant.user.profilePic,
         hasStory: participant.user.hasStory,
         lastSeen: participant.user.lastSeen,
-        isMuted: participant.isMuted,
         participantKeys,
         status: participant.status,
     };
@@ -149,6 +154,9 @@ const getDMContent = async (participant: any, chatId: number) => {
 const getTypeDependantContent = async (type: ChatType, participant: any, chatId: number) => {
     if (type === "DM") {
         return getDMContent(participant, chatId);
+    }
+    if (type === "GROUP") {
+        return groupService.getGroupContent(chatId);
     }
 };
 
@@ -185,6 +193,7 @@ export const getChatSummary = async (
         id: userChat.chatId,
         ...typeDependantContent,
         type: userChat.chat.type,
+        isMuted: userChat.isMuted,
         lastMessage,
         draftMessage,
         unreadMessageCount: userChat.unreadMessageCount,
@@ -197,6 +206,7 @@ const getUserChat = async (userId: number, chatId: number) => {
         where: { chatId, userId },
         select: {
             chatId: true,
+            isMuted: true,
             unreadMessageCount: true,
             chat: {
                 select: {
@@ -296,4 +306,41 @@ export const setNewLastMessage = async (chatId: number): Promise<void> => {
             });
         }
     });
+};
+
+export const setChatPrivacy = async (id: number, isPrivate: boolean) => {
+    try {
+        await db.chat.update({
+            where: {
+                id,
+            },
+            data: {
+                group: {
+                    update: {
+                        data: {
+                            isPrivate,
+                        },
+                    },
+                },
+            },
+        });
+    } catch (err: any) {
+        if (err.code === "P2025") {
+            throw new HttpError("Group Not Found", 404);
+        }
+        throw err;
+    }
+};
+
+export const getChatType = async (id: number) => {
+    const chat = await db.chat.findUnique({
+        where: {
+            id,
+        },
+        select: {
+            type: true,
+        },
+    });
+    if (!chat) throw new Error("Chat doesn't Exist");
+    return chat.type;
 };
