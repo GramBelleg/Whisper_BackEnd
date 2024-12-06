@@ -4,7 +4,6 @@ import RedisOperation from "@src/@types/redis.operation";
 import { Prisma, Privacy, Status, Story } from "@prisma/client";
 import { verifyCode } from "@services/auth/code.service";
 import HttpError from "@src/errors/HttpError";
-import { stat } from "fs";
 
 export const updateBio = async (id: number, bio: string): Promise<string> => {
     try {
@@ -321,3 +320,18 @@ export const getSenderInfo = async (id: number) => {
         },
     });
 };
+
+export const isBlocked = async (relatingId: number, relatedById: number) => {
+    const result = await db.relates.findFirst({
+        where: { 
+            OR: [
+                { relatingId: relatingId, relatedById: relatedById },
+                { relatingId: relatedById, relatedById: relatingId }
+            ],
+            AND: { isBlocked: true }
+        },
+        select: { isBlocked: true },
+    });
+    if (!result) return false;
+    return result.isBlocked;
+}

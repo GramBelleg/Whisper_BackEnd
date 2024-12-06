@@ -12,7 +12,7 @@ import { setupStatusEvents } from "./events/status.events";
 import { setupChatEvents } from "./events/chat.events";
 
 type HandlerFunction = (key: string, clients: Map<number, Socket>) => any;
-const clients: Map<number, Socket> = new Map();
+export const clients: Map<number, Socket> = new Map();
 
 const handlers: Record<string, HandlerFunction> = {
     messageId: messageHandler.notifyExpiry,
