@@ -1,7 +1,47 @@
 import db from "@DB";
 import { ChatUserSummary, CreatedChat } from "@models/chat.models";
+
+export const setPermissions = async (userId: number, chatId: number, permissions: any) => {
+    const participant = await db.chatParticipant.update({
+        where: {
+            chatId_userId: { chatId, userId },
+        },
+        data: {
+            groupParticipant: {
+                update: {
+                    data: {
+                        canDelete: permissions.canDelete,
+                        canDownload: permissions.canDownload,
+                        canEdit: permissions.canDelete,
+                        canPost: permissions.canPost,
+                    },
+                },
+            },
+        },
+    });
+    if (!participant) throw new Error("Participant doesn't exist");
+};
+
+export const getPermissions = async (userId: number, chatId: number) => {
+    const participant = await db.chatParticipant.findUnique({
+        where: {
+            chatId_userId: { chatId, userId },
+        },
+        select: {
+            groupParticipant: {
+                select: {
+                    canDelete: true,
+                    canDownload: true,
+                    canEdit: true,
+                    canPost: true,
+                },
+            },
+        },
+    });
+    if (!participant) throw new Error("Participant doesn't exist");
+    return participant.groupParticipant;
+};
 export const removeUser = async (userId: number, chatId: number) => {
-    console.log(chatId, userId);
     try {
         await db.chatParticipant.delete({
             where: {
@@ -12,6 +52,7 @@ export const removeUser = async (userId: number, chatId: number) => {
         if (err.code === "P2025") {
             err.message = "ChatParticipant not found.";
         }
+        throw err;
     }
 };
 export const addUser = async (userId: number, chatId: number) => {
