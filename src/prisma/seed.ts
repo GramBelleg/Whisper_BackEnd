@@ -74,7 +74,7 @@ async function createChatMessages(chats: Array<{ chat: Chat; participants: User[
             for (const participant of chat.participants) {
                 // Skip the sender
 
-                await db.messageStatus.create({
+                const messageStatus = await db.messageStatus.create({
                     data: {
                         messageId: message.id, // Use the message ID
                         userId: participant.id, // Ensure the participant's userId is used
@@ -84,12 +84,12 @@ async function createChatMessages(chats: Array<{ chat: Chat; participants: User[
                         deleted: faker.datatype.boolean(),
                     },
                 });
-
+                const lastMessageId = messageStatus.id;
                 // Update the chat with the created message
                 await db.chatParticipant.update({
                     where: { chatId_userId: { chatId: chat.chat.id, userId: participant.id } },
                     data: {
-                        lastMessageId: message.id,
+                        lastMessageId,
                     },
                 });
             }
