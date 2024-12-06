@@ -1,5 +1,19 @@
 import db from "@DB";
-import { chatUserSummary, CreatedChat } from "@models/chat.models";
+import { ChatUserSummary, CreatedChat } from "@models/chat.models";
+export const removeUser = async (userId: number, chatId: number) => {
+    console.log(chatId, userId);
+    try {
+        await db.chatParticipant.delete({
+            where: {
+                chatId_userId: { chatId, userId },
+            },
+        });
+    } catch (err: any) {
+        if (err.code === "P2025") {
+            err.message = "ChatParticipant not found.";
+        }
+    }
+};
 export const addUser = async (userId: number, chatId: number) => {
     try {
         await db.chatParticipant.create({
@@ -14,7 +28,7 @@ export const addUser = async (userId: number, chatId: number) => {
         throw err;
     }
 };
-export const addAdmin = async (admin: chatUserSummary) => {
+export const addAdmin = async (admin: ChatUserSummary) => {
     await db.chatParticipant.update({
         where: {
             chatId_userId: { chatId: admin.chatId, userId: admin.userId },
@@ -30,7 +44,7 @@ export const addAdmin = async (admin: chatUserSummary) => {
         },
     });
 };
-export const isAdmin = async (admin: chatUserSummary) => {
+export const isAdmin = async (admin: ChatUserSummary) => {
     const user = await db.chatParticipant.findUnique({
         where: {
             chatId_userId: { chatId: admin.chatId, userId: admin.userId },

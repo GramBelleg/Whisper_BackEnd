@@ -64,7 +64,7 @@ model GroupParticipant {
   canDelete   Boolean @default(true)
   canPost     Boolean @default(true)
   canEdit     Boolean @default(true)
-  chatParticipant          ChatParticipant @relation(fields:[id],references: [id])
+  chatParticipant          ChatParticipant @relation(fields:[id],references: [id],onDelete: Cascade)
 }
 
 model ChannelParticipant {

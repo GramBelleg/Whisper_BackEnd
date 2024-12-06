@@ -1,8 +1,9 @@
-import { chatUser, chatUserSummary } from "@models/chat.models";
+import { ChatUser, ChatUserSummary } from "@models/chat.models";
+import { UserType } from "@models/user.models";
 import { getChat, getChatParticipantsIds } from "@services/chat/chat.service";
 import * as groupService from "@services/chat/group.service";
 
-export const addAdmin = async (userId: number, admin: chatUserSummary) => {
+export const addAdmin = async (userId: number, admin: ChatUserSummary) => {
     const isAdmin = await groupService.isAdmin({ userId, chatId: admin.chatId });
     if (!isAdmin) throw Error("You're not an admin");
 
@@ -10,12 +11,22 @@ export const addAdmin = async (userId: number, admin: chatUserSummary) => {
 
     return getChatParticipantsIds(admin.chatId);
 };
-export const addUser = async (userId: number, chatUser: chatUser) => {
-    const isAdmin = await groupService.isAdmin({ userId, chatId: chatUser.chatId });
+export const addUser = async (userId: number, ChatUser: ChatUser) => {
+    const isAdmin = await groupService.isAdmin({ userId, chatId: ChatUser.chatId });
     if (!isAdmin) throw Error("You're not an admin");
 
-    await groupService.addUser(chatUser.user.id, chatUser.chatId);
-    const participants = await getChatParticipantsIds(chatUser.chatId);
-    const userChat = await getChat(chatUser.user.id, chatUser.chatId);
+    await groupService.addUser(ChatUser.user.id, ChatUser.chatId);
+    const participants = await getChatParticipantsIds(ChatUser.chatId);
+    const userChat = await getChat(ChatUser.user.id, ChatUser.chatId);
     return { participants, userChat };
+};
+export const removeUser = async (userId: number, user: UserType, chatId: number) => {
+    const isAdmin = await groupService.isAdmin({ userId, chatId });
+    if (!isAdmin) throw Error("You're not an admin");
+
+    const participants = await getChatParticipantsIds(chatId);
+
+    await groupService.removeUser(user.id, chatId);
+
+    return participants;
 };
