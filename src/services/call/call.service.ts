@@ -4,7 +4,7 @@ import { getChatParticipantsIds } from "@services/chat/chat.service";
 import { isBlocked } from "@services/user/user.service";
 import { chatType } from "@services/chat/chat.service";
 import HttpError from "@src/errors/HttpError";
-import { call } from "@socket/handlers/call.handlers";
+import { callSocket } from "@socket/web.socket";
 
 
 const RtcTokenBuilder = require("@agora/src/RtcTokenBuilder2").RtcTokenBuilder;
@@ -20,17 +20,25 @@ const tokenExpirationInSecond = 3600; // 1 hour
 const privilegeExpirationInSecond = 3600; // 1 hour
  
 
-export const callToken = (userId: number, channelName: number): string => {
-    const tokenWithUid = RtcTokenBuilder.buildTokenWithUid(appId, appCertificate, channelName, userId, role, tokenExpirationInSecond, privilegeExpirationInSecond);
+export const callToken = (userId: number, channelName: string): string => {
+    const chatIdNum = Number(channelName);
+    if(isNaN(chatIdNum)) {
+        throw new HttpError("Invalid chatId", 400);
+    }
+    const tokenWithUid = RtcTokenBuilder.buildTokenWithUid(appId, appCertificate, chatIdNum, userId, role, tokenExpirationInSecond, privilegeExpirationInSecond);
     return tokenWithUid;
 };
 
-export const makeCall = async (chatId: number, userId: number) => {
-    const type = await chatType(chatId);
+export const makeCall = async (chatId: string, userId: number) => {
+    const chatIdNum = Number(chatId);
+    if(isNaN(chatIdNum)) {
+        throw new HttpError("Invalid chatId", 400);
+    }
+    const type = await chatType(chatIdNum);
     if(type === "" || type === "CHANNEL") {
         throw new HttpError("Can't make a call", 400);
     }
-    let participants = await getChatParticipantsIds(chatId);
+    let participants = await getChatParticipantsIds(chatIdNum);
     participants = participants.filter((participant) => participant !== userId);
     if(type === "DM") {
       const checkBlocked = await isBlocked(userId ,participants[0]);
@@ -38,7 +46,7 @@ export const makeCall = async (chatId: number, userId: number) => {
           throw new HttpError("Can't make a call Due to Block", 400);
       }
     }
-    call(participants, chatId);
+    callSocket(participants, chatId);
     const token = callToken(userId, chatId);
     return token;
 };

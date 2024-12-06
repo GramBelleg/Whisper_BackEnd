@@ -1,9 +1,8 @@
 import { Socket } from "socket.io";
 import { sendToClient } from "@socket/utils/socket.utils";
-import { clients } from "@socket/web.socket"
-
 
 export const call = async (
+    clients: Map<number, Socket>,
     participants: number[],
     chatId: any
 ): Promise<void> => {

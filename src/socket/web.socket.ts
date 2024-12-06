@@ -4,6 +4,7 @@ import { validateCookie } from "@validators/socket";
 import * as messageHandler from "./handlers/message.handlers";
 import * as connectionHandler from "./handlers/connection.handlers";
 import * as storyHandler from "./handlers/story.handlers";
+import * as callHandler from "./handlers/call.handlers";
 import { setupMessageEvents } from "./events/message.events";
 import { setupStoryEvents } from "./events/story.events";
 import { socketWrapper } from "./handlers/error.handler";
@@ -12,7 +13,7 @@ import { setupStatusEvents } from "./events/status.events";
 import { setupChatEvents } from "./events/chat.events";
 
 type HandlerFunction = (key: string, clients: Map<number, Socket>) => any;
-export const clients: Map<number, Socket> = new Map();
+const clients: Map<number, Socket> = new Map();
 
 const handlers: Record<string, HandlerFunction> = {
     messageId: messageHandler.notifyExpiry,
@@ -29,6 +30,10 @@ export const notifyExpiry = (key: string) => {
     } else {
         console.warn(`No handler found for key: ${key}`);
     }
+};
+
+export const callSocket = (participants: number[],chatId: any) => {
+    callHandler.call(clients, participants, chatId);
 };
 
 export const initWebSocketServer = (server: HTTPServer) => {
