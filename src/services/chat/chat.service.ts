@@ -6,6 +6,7 @@ import { MemberSummary } from "@models/chat.models";
 import { getLastMessageSender } from "@services/user/user.service";
 import { buildDraftedMessage } from "@controllers/messages/format.message";
 import * as groupService from "@services/chat/group.service";
+import HttpError from "@src/errors/HttpError";
 
 const getUserChats = async (userId: number, type: ChatType | null) => {
     const whereClause = !type ? { userId } : { userId, chat: { type } };
@@ -305,4 +306,28 @@ export const setNewLastMessage = async (chatId: number): Promise<void> => {
             });
         }
     });
+};
+
+export const setChatPrivacy = async (id: number, isPrivate: boolean) => {
+    try {
+        await db.chat.update({
+            where: {
+                id,
+            },
+            data: {
+                group: {
+                    update: {
+                        data: {
+                            isPrivate,
+                        },
+                    },
+                },
+            },
+        });
+    } catch (err: any) {
+        if (err.code === "P2025") {
+            throw new HttpError("Group Not Found", 404);
+        }
+        throw err;
+    }
 };

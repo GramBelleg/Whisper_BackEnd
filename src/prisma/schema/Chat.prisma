@@ -18,13 +18,13 @@ model Group {
   name    String
   picture String?
   maxSize Int    @default(100)
-  privacy String @default("Private")
+  isPrivate Boolean @default(true)
   chat    Chat   @relation(fields: [chatId], references: [id])
 }
 
 model Channel {
   chatId     Int    @id
-  privacy    String
+  isPrivate    Boolean @default(false)
   inviteLink String
   chat       Chat   @relation(fields: [chatId], references: [id])
 
