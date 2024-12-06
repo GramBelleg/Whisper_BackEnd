@@ -52,7 +52,7 @@ export const updateEmail = async (id: number, email: string, code: string): Prom
 
 //TODO: check the structure of the phone number
 export const updatePhone = async (id: number, phoneNumber: string): Promise<string> => {
-    const phone = validatePhoneNumber(phoneNumber);    
+    const phone = validatePhoneNumber(phoneNumber);
     try {
         await db.user.update({
             where: { id },
@@ -96,6 +96,11 @@ export const partialUserInfo = async (id: number): Promise<any> => {
         select: {
             userName: true,
             profilePic: true,
+            phoneNumber: true,
+            bio: true,
+            lastSeen: true,
+            status: true,
+            hasStory: true,
         },
     });
     if (!User) {
