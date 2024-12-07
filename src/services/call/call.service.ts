@@ -46,12 +46,13 @@ export const makeCall = async (userId: number, chatId: string) => {
           throw new HttpError("Can't make a call Due to Block", 400);
       }
     }
-    let tokens:string[] = []; 
+    let tokens:string[] = [];
+    const channelName: string = `chat-${chatId}`;
     for (let i = 0; i < participants.length; i++) {
-        const token = callToken(participants[i], chatId);
+        const token = callToken(participants[i], channelName);
         tokens.push(token);
     }
-    callSocket(participants, tokens, chatId);
-    const token = callToken(userId, chatId);
+    callSocket(participants, tokens, channelName);
+    const token = callToken(userId, channelName);
     return token;
 };

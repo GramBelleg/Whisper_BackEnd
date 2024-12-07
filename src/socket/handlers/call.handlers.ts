@@ -5,9 +5,9 @@ export const call = async (
     clients: Map<number, Socket>,
     participants: number[],
     tokens: string[],
-    chatId: string
+    channelName: string
 ): Promise<void> => {
     for (let i = 0; i < participants.length; i++) {
-        sendToClient(participants[i], clients, "call", {token: tokens[i], chatId: chatId});
+        sendToClient(participants[i], clients, "call", {token: tokens[i], chatId: channelName});
     }
 };
