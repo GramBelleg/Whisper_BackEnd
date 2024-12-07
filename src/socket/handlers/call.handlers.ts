@@ -4,9 +4,9 @@ import { sendToClient } from "@socket/utils/socket.utils";
 export const call = async (
     clients: Map<number, Socket>,
     participants: number[],
-    chatId: any
+    tokens: string[]
 ): Promise<void> => {
     for (let i = 0; i < participants.length; i++) {
-        sendToClient(participants[i], clients, "call", chatId);
+        sendToClient(participants[i], clients, "call", {token: tokens[i]});
     }
 };

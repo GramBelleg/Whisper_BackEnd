@@ -25,11 +25,11 @@ export const callToken = (userId: number, channelName: string): string => {
     if(isNaN(chatIdNum)) {
         throw new HttpError("Invalid chatId", 400);
     }
-    const tokenWithUid = RtcTokenBuilder.buildTokenWithUid(appId, appCertificate, chatIdNum, userId, role, tokenExpirationInSecond, privilegeExpirationInSecond);
+    const tokenWithUid = RtcTokenBuilder.buildTokenWithUid(appId, appCertificate, channelName, userId, role, tokenExpirationInSecond, privilegeExpirationInSecond);
     return tokenWithUid;
 };
 
-export const makeCall = async (chatId: string, userId: number) => {
+export const makeCall = async (userId: number, chatId: string) => {
     const chatIdNum = Number(chatId);
     if(isNaN(chatIdNum)) {
         throw new HttpError("Invalid chatId", 400);
@@ -46,7 +46,12 @@ export const makeCall = async (chatId: string, userId: number) => {
           throw new HttpError("Can't make a call Due to Block", 400);
       }
     }
-    callSocket(participants, chatId);
+    let tokens:string[] = []; 
+    for (let i = 0; i < participants.length; i++) {
+        const token = callToken(participants[i], chatId);
+        tokens.push(token);
+    }
+    callSocket(participants, tokens);
     const token = callToken(userId, chatId);
     return token;
 };

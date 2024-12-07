@@ -16,9 +16,9 @@ export const generateToken = async (req: Request, res: Response) => {
 export const makeCall = async (req: Request, res: Response) => {
     const chatId = req.params.chatId;
     const userId = req.userId;
-    const token = await callServices.makeCall(chatId, userId);
+    const token = await callServices.makeCall(userId, chatId);
     res.status(200).json({
         status: "success",
-        data: token,
+        token: token,
     });
 }

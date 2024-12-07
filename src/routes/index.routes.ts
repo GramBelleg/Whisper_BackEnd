@@ -7,7 +7,7 @@ import mediaRouter from "@routes/media.routes";
 import messagesRouter from "@routes/message.routes";
 import stickersRouter from "@routes/sticker.routes";
 import encryptionRouter from "@routes/encryption.routes";
-import callsRouter from "@routes/calls.routes";
+import callsRouter from "@routes/call.routes";
 const router: Router = Router();
 
 router.use("/auth", authenticationRouter);
