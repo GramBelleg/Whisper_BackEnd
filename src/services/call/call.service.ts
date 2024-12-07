@@ -51,7 +51,7 @@ export const makeCall = async (userId: number, chatId: string) => {
         const token = callToken(participants[i], chatId);
         tokens.push(token);
     }
-    callSocket(participants, tokens);
+    callSocket(participants, tokens, chatId);
     const token = callToken(userId, chatId);
     return token;
 };
