@@ -2,9 +2,15 @@ import { ChatUser, ChatUserSummary } from "@models/chat.models";
 import { UserType } from "@models/user.models";
 import { getChat, getChatParticipantsIds } from "@services/chat/chat.service";
 import * as groupService from "@services/chat/group.service";
+import { getAddPermission } from "@services/user/user.service";
 import HttpError from "@src/errors/HttpError";
 import { Request, Response } from "express";
 
+const canUserBeAdded = async (chatUser: ChatUser, adderId: number) => {
+    const addPermission = await getAddPermission(chatUser.user.id);
+    const isAdmin = await groupService.isAdmin({ userId: adderId, chatId: chatUser.chatId });
+    return (isAdmin && !addPermission) || addPermission;
+};
 export const addAdmin = async (userId: number, admin: ChatUserSummary) => {
     const isAdmin = await groupService.isAdmin({ userId, chatId: admin.chatId });
     if (!isAdmin) throw Error("You're not an admin");
@@ -13,13 +19,14 @@ export const addAdmin = async (userId: number, admin: ChatUserSummary) => {
 
     return getChatParticipantsIds(admin.chatId);
 };
-export const addUser = async (userId: number, ChatUser: ChatUser) => {
-    const isAdmin = await groupService.isAdmin({ userId, chatId: ChatUser.chatId });
-    if (!isAdmin) throw Error("You're not an admin");
+export const addUser = async (userId: number, chatUser: ChatUser) => {
+    const userCanBeAdded = await canUserBeAdded(chatUser, userId);
+    if (!userCanBeAdded) throw Error("You Don't have permission to add this user");
 
-    await groupService.addUser(ChatUser.user.id, ChatUser.chatId);
-    const participants = await getChatParticipantsIds(ChatUser.chatId);
-    const userChat = await getChat(ChatUser.user.id, ChatUser.chatId);
+    await groupService.addUser(chatUser.user.id, chatUser.chatId);
+
+    const participants = await getChatParticipantsIds(chatUser.chatId);
+    const userChat = await getChat(chatUser.user.id, chatUser.chatId);
     return { participants, userChat };
 };
 export const removeUser = async (userId: number, user: UserType, chatId: number) => {
