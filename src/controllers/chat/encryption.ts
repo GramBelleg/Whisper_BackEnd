@@ -5,6 +5,7 @@ import {
     getOtherUserKey,
     associateParticipantKey,
 } from "@services/chat/encryption.service";
+import { validateChatAndUser } from "@validators/chat";
 
 export const handleCreateKey = async (req: Request, res: Response) => {
     const userId = req.userId;
@@ -31,6 +32,7 @@ export const handleGetKey = async (req: Request, res: Response) => {
 export const handleAssociateParticipantKey = async (req: Request, res: Response) => {
     const userId = req.userId;
     const chatId = Number(req.params.chatId);
+    validateChatAndUser(userId, chatId, res);
     const keyId_str = req.query.keyId;
     const keyId = Number(keyId_str);
     if (!keyId_str || isNaN(keyId)) {
@@ -44,6 +46,7 @@ export const handleAssociateParticipantKey = async (req: Request, res: Response)
 export const handleGetOtherUserKey = async (req: Request, res: Response) => {
     const userId = req.userId;
     const chatId = Number(req.params.chatId);
+    validateChatAndUser(userId, chatId, res);
     const key = await getOtherUserKey(userId, chatId);
     if (key === "") {
         res.status(404).json({ message: "Key not found" });

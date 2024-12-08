@@ -48,6 +48,20 @@ export const unmuteChat = async (chatId: number, userId: number): Promise<void> 
     });
 };
 
+export const chatExists = async (chatId: number): Promise<boolean> => {
+    const result = await db.chat.findFirst({
+        where: { id: chatId },
+    });
+    return result ? true : false;
+};
+
+export const isUserAMember = async (userId: number, chatId: number): Promise<boolean> => {
+    const result = await db.chatParticipant.findFirst({
+        where: { chatId, userId },
+    });
+    return result ? true : false;
+};
+
 export const getChatMembers = async (chatId: number): Promise<MemberSummary[]> => {
     const chatParticipants = await db.chatParticipant.findMany({
         where: { chatId },
@@ -66,7 +80,7 @@ export const getChatMembers = async (chatId: number): Promise<MemberSummary[]> =
     return chatParticipants.map((participant) => participant.user);
 };
 
-const createChatParticipants = async (
+export const createChatParticipants = async (
     users: number[],
     currentUserId: number,
     senderKey: null | number,
@@ -238,14 +252,14 @@ export const getChatsSummaries = async (
     return chatSummaries;
 };
 
-export const getChatId = async (messageId: number): Promise<number | undefined> => {
+export const getChatId = async (messageId: number): Promise<number | null> => {
     const result = await db.message.findUnique({
         where: { id: messageId },
         select: { chatId: true },
     });
     if (result) {
         return result.chatId;
-    }
+    } else return null;
 };
 
 export const getChatParticipantsIds = async (chatId: number): Promise<number[]> => {
@@ -277,15 +291,17 @@ export const getLastMessage = async (
 };
 
 export const setLastMessage = async (chatId: number, messageId: number): Promise<void> => {
-    const messageStatus = await db.messageStatus.findFirst({
+    const messageStatuses = await db.messageStatus.findMany({
         where: { messageId },
-        select: { id: true },
+        select: { id: true, userId: true },
     });
-    if (!messageStatus) return;
-    await db.chatParticipant.updateMany({
-        where: { chatId },
-        data: { lastMessageId: messageStatus.id },
-    });
+    if (!messageStatuses) return;
+    for (const status of messageStatuses) {
+        await db.chatParticipant.update({
+            where: { chatId_userId: { chatId, userId: status.userId } },
+            data: { lastMessageId: status.id },
+        });
+    }
 };
 
 export const setNewLastMessage = async (chatId: number): Promise<void> => {
@@ -305,4 +321,3 @@ export const setNewLastMessage = async (chatId: number): Promise<void> => {
         }
     });
 };
-
