@@ -13,21 +13,28 @@ export type CreatedChat = {
     users: number[];
     senderKey: null | number;
     type: ChatType;
+    name: string;
+    picture: string;
 };
 
 export type ChatSummary = {
     id: number;
-    othersId: number;
+    othersId?: number;
     type: ChatType;
     participantKeys?: (number | null)[];
     name: string;
-    lastSeen: Date;
+    lastSeen?: Date;
     isMuted: boolean;
-    hasStory: boolean;
-    picture: string;
-    status: string;
+    hasStory?: boolean;
+    picture: string | null;
+    status?: string;
     lastMessage: LastMessage;
     unreadMessageCount: number;
 };
 
+export type ChatUserSummary = { userId: number; chatId: number };
+export type ChatUser = {
+    user: { id: number; userName: string; profilePic?: string };
+    chatId: number;
+};
 export type MemberSummary = Pick<User, "id" | "userName" | "profilePic" | "lastSeen" | "hasStory">;

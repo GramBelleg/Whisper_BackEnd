@@ -45,4 +45,5 @@ router.get("/sotryArchive", asyncHandler(userController.getStoryArchive));
 router.get("/story", asyncHandler(userController.getStoryUsers));
 router.get("/story/:userId", asyncHandler(userController.getUserStories));
 router.get("/story/getViews/:storyId", asyncHandler(userController.getStoryViews));
+router.post("/addPermission", asyncHandler(userController.updateAddPermission));
 export default router;

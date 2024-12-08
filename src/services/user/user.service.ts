@@ -326,3 +326,26 @@ export const getSenderInfo = async (id: number) => {
         },
     });
 };
+
+export const updateAddPermission = async (id: number, addPermission: boolean) => {
+    await db.user.update({
+        where: {
+            id,
+        },
+        data: {
+            addPermission,
+        },
+    });
+};
+export const getAddPermission = async (id: number) => {
+    const user = await db.user.findUnique({
+        where: {
+            id,
+        },
+        select: {
+            addPermission: true,
+        },
+    });
+    if (!user) throw new Error("User Not Found");
+    return user.addPermission;
+};

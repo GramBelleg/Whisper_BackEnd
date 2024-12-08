@@ -1,16 +1,14 @@
 import { Socket } from "socket.io";
 import { sendToClient } from "@socket/utils/socket.utils";
 
-export const userBroadCast = async (
-    participants: number[],
+export const broadCast = async (
+    userId: number,
     clients: Map<number, Socket>,
     emitEvent: string,
-    emitMessage: any[]
+    emitMessage: any
 ): Promise<void> => {
     try {
-        for (let i = 0; i < participants.length; i++) {
-            sendToClient(participants[i], clients, emitEvent, emitMessage[i]);
-        }
+        sendToClient(userId, clients, emitEvent, emitMessage);
     } catch (error: any) {
         throw new Error(`Error in broadCast: ${error.message}`);
     }
