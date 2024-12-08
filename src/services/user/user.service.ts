@@ -52,7 +52,7 @@ export const updateEmail = async (id: number, email: string, code: string): Prom
 
 //TODO: check the structure of the phone number
 export const updatePhone = async (id: number, phoneNumber: string): Promise<string> => {
-    const phone = validatePhoneNumber(phoneNumber);    
+    const phone = validatePhoneNumber(phoneNumber);
     try {
         await db.user.update({
             where: { id },
@@ -318,6 +318,17 @@ export const getSenderInfo = async (id: number) => {
             id: true,
             userName: true,
             profilePic: true,
+        },
+    });
+};
+
+export const updateAddPermission = async (id: number, addPermission: boolean) => {
+    await db.user.update({
+        where: {
+            id,
+        },
+        data: {
+            addPermission,
         },
     });
 };
