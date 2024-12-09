@@ -1,8 +1,10 @@
 import { saveMessage } from "@services/chat/message.service";
 import { getChatType, setLastMessage } from "@services/chat/chat.service";
+import { getChatType, setLastMessage } from "@services/chat/chat.service";
 import { saveExpiringMessage } from "@services/chat/redis.service";
 import { ReceivedMessage, SentMessage } from "@models/messages.models";
 import { buildReceivedMessage } from "../messages/format.message";
+import { getPermissions } from "@services/chat/group.service";
 import { getPermissions } from "@services/chat/group.service";
 
 const handleSaveMessage = async (userId: number, message: SentMessage) => {
@@ -15,6 +17,8 @@ export const handleSend = async (
     message: SentMessage
 ): Promise<ReceivedMessage[] | null> => {
     try {
+        const chatType = await getChatType(message.chatId);
+        if (chatType == "GROUP") await handleGroupPermissions(message);
         const savedMessage = await handleSaveMessage(userId, message);
         if (message.selfDestruct || message.expiresAfter) {
             await saveExpiringMessage(savedMessage.id, savedMessage.expiresAfter);
