@@ -49,8 +49,7 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
             const user = await displayedUser(userId);
             for (let i = 0; i < participants.length; i++) {
                 await chatHandler.broadCast(participants[i], clients, "removeUser", {
-                    userId,
-                    userName: remove.user.userName,
+                    user,
                     removerUserName: user.userName,
                     chatId: remove.chatId,
                 });
