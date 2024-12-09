@@ -6,6 +6,8 @@ import * as editController from "@controllers/messages/edit.message";
 import * as deleteController from "@controllers/messages/delete.message";
 import * as messageHandler from "@socket/handlers/message.handlers";
 import { sendToClient } from "@socket/utils/socket.utils";
+import * as groupHandler from "@socket/handlers/group.handlers";
+import { handleChatPermissions } from "@socket/handlers/chat.handlers";
 
 export const setupMessageEvents = (
     socket: Socket,
@@ -15,6 +17,7 @@ export const setupMessageEvents = (
     socket.on(
         "message",
         socketWrapper(async (message: types.OmitSender<types.SentMessage>) => {
+            await handleChatPermissions(userId, message.chatId, groupHandler.handlePostPermissions);
             const savedMessage = await sendController.handleSend(userId, {
                 ...message,
                 senderId: userId,
@@ -34,6 +37,7 @@ export const setupMessageEvents = (
     socket.on(
         "editMessage",
         socketWrapper(async (message: types.OmitSender<types.EditableMessage>) => {
+            await handleChatPermissions(userId, message.chatId, groupHandler.handleEditPermissions);
             const editedMessage = await editController.handleEditContent(
                 message.id,
                 message.content
@@ -77,6 +81,7 @@ export const setupMessageEvents = (
     socket.on(
         "deleteMessage",
         socketWrapper(async ({ messages, chatId }: { messages: number[]; chatId: number }) => {
+            await handleChatPermissions(userId, chatId, groupHandler.handleDeletePermissions);
             await deleteController.deleteMessagesForAllUsers(messages, chatId);
             await messageHandler.broadCast(chatId, clients, "deleteMessage", { messages, chatId });
         })

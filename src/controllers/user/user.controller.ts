@@ -216,7 +216,27 @@ const getStoryViews = async (req: Request, res: Response) => {
     });
 };
 
+const updateAddPermission = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    if (!userId) throw new HttpError("Unauthorized User", 401);
+    const addPermission = req.body.addPermission;
+    if (addPermission == undefined) throw new HttpError("addPermission missing", 404);
+    await userServices.updateAddPermission(userId, addPermission);
+    res.status(200).json({
+        success: true,
+        message: "Add To Group Permission Updated Successfully",
+    });
+};
+
+const getContacts = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    if (!userId) throw new HttpError("Unauthorized User", 401);
+    const users = await userServices.getContacts(userId);
+    res.status(200).json({ users });
+};
 export {
+    getContacts,
+    updateAddPermission,
     userInfo,
     otherUserInfo,
     updateBio,
