@@ -21,10 +21,6 @@ const privilegeExpirationInSecond = 3600; // 1 hour
  
 
 export const callToken = (userId: number, channelName: string): string => {
-    const chatIdNum = Number(channelName);
-    if(isNaN(chatIdNum)) {
-        throw new HttpError("Invalid chatId", 400);
-    }
     const tokenWithUid = RtcTokenBuilder.buildTokenWithUid(appId, appCertificate, channelName, userId, role, tokenExpirationInSecond, privilegeExpirationInSecond);
     return tokenWithUid;
 };
