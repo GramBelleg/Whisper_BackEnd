@@ -171,8 +171,6 @@ removeUser:
                                 type: integer
                             userName:
                                 type: string
-                    removerUserName:
-                        type: string
                     chatId:
                         type: integer
                         description: identifier for group/channel
