@@ -4,6 +4,7 @@ import { validateCookie } from "@validators/socket";
 import * as messageHandler from "./handlers/message.handlers";
 import * as connectionHandler from "./handlers/connection.handlers";
 import * as storyHandler from "./handlers/story.handlers";
+import * as callHandler from "./handlers/call.handlers";
 import { setupMessageEvents } from "./events/message.events";
 import { setupStoryEvents } from "./events/story.events";
 import { socketWrapper } from "./handlers/error.handler";
@@ -29,6 +30,10 @@ export const notifyExpiry = (key: string) => {
     } else {
         console.warn(`No handler found for key: ${key}`);
     }
+};
+
+export const callSocket = (participants: number[],tokens: string[], channelName: string) => {
+    callHandler.call(clients, participants, tokens, channelName);
 };
 
 export const initWebSocketServer = (server: HTTPServer) => {

@@ -9,63 +9,65 @@ enum MessageType {
   DOC
   CALL
   EVENT
+  OUTGOING_CALL
+  INCOMING_CALL
 }
 
-
 model Message {
-  id                    Int                @id @default(autoincrement())
-  key                   String?            //SHOULD NOT BE OPTIONAL, BUT KEEPING IT FOR NOW UNTIL FRONT AND CROSS HAVE IT READY
-  chatId                Int
-  senderId              Int
-  content               String
-  forwardedFromUserId   Int?
-  read                  Boolean            @default(false)
-  delivered             Boolean            @default(false)
-  forwarded             Boolean            @default(false)
-  pinned                Boolean            @default(false)
-  edited                Boolean            @default(false)
-  selfDestruct          Boolean            @default(false)
-  isAnnouncement        Boolean            @default(false)
-  isSecret              Boolean            @default(false)
-  expiresAfter          Int?
-  sentAt                DateTime           
-  mentions              Int[]
-  media                 String?
-  attachmentName        String?
-  attachmentType        String?
-  type                  MessageType
-  extension             String?
-  size                  Int?
-  parentMessageId       Int?
-  parentContent         String?
-  parentMedia           String?
-  parentType            MessageType?
-  parentExtension       String?
-  sender                User               @relation(fields: [senderId], references: [id])
-  chat                  Chat               @relation(fields: [chatId], references: [id])
-  voiceMessage          VoiceMessage?
-  parentMessage         Message?           @relation("ReplyToMessage", fields: [parentMessageId], references: [id])
-  replies               Message[]          @relation("ReplyToMessage")
-  draftReplies          ChatParticipant[]  @relation("DraftReplyToMessage")
-  forwardedFrom         User?              @relation("ForwardedMessage", fields: [forwardedFromUserId], references: [id])
-  messageStatus         MessageStatus[]
+  id                  Int               @id @default(autoincrement())
+  key                 String? //SHOULD NOT BE OPTIONAL, BUT KEEPING IT FOR NOW UNTIL FRONT AND CROSS HAVE IT READY
+  chatId              Int
+  senderId            Int
+  content             String
+  forwardedFromUserId Int?
+  read                Boolean           @default(false)
+  delivered           Boolean           @default(false)
+  forwarded           Boolean           @default(false)
+  pinned              Boolean           @default(false)
+  edited              Boolean           @default(false)
+  selfDestruct        Boolean           @default(false)
+  isAnnouncement      Boolean           @default(false)
+  isSecret            Boolean           @default(false)
+  expiresAfter        Int?
+  sentAt              DateTime
+  mentions            Int[]
+  media               String?
+  attachmentName      String?
+  attachmentType      String?
+  type                MessageType
+  extension           String?
+  size                Int?
+  parentMessageId     Int?
+  parentContent       String?
+  parentMedia         String?
+  parentType          MessageType?
+  parentExtension     String?
+  sender              User              @relation(fields: [senderId], references: [id])
+  chat                Chat              @relation(fields: [chatId], references: [id])
+  voiceMessage        VoiceMessage?
+  parentMessage       Message?          @relation("ReplyToMessage", fields: [parentMessageId], references: [id])
+  replies             Message[]         @relation("ReplyToMessage")
+  draftReplies        ChatParticipant[] @relation("DraftReplyToMessage")
+  forwardedFrom       User?             @relation("ForwardedMessage", fields: [forwardedFromUserId], references: [id])
+  messageStatus       MessageStatus[]
 }
 
 model MessageStatus {
-  id              Int                @id @default(autoincrement())
-  messageId       Int    
+  id              Int               @id @default(autoincrement())
+  messageId       Int
   userId          Int
-  read            DateTime?       
-  delivered       DateTime?      
-  time            DateTime            
-  deleted         Boolean             @default(false)
-  lastMessageChat ChatParticipant[]   @relation("LastMessageForChatParticipant") 
-  message         Message             @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  user            User                @relation(fields: [userId], references: [id])
-  @@unique([messageId,userId])
+  read            DateTime?
+  delivered       DateTime?
+  time            DateTime
+  deleted         Boolean           @default(false)
+  lastMessageChat ChatParticipant[] @relation("LastMessageForChatParticipant")
+  message         Message           @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user            User              @relation(fields: [userId], references: [id])
+
+  @@unique([messageId, userId])
 }
 
 model VoiceMessage {
-  MessageId       Int                 @id
-  Message         Message             @relation(fields: [MessageId], references: [id])
+  MessageId Int     @id
+  Message   Message @relation(fields: [MessageId], references: [id])
 }

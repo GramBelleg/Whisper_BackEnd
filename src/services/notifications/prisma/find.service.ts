@@ -14,15 +14,6 @@ export const findDeviceTokens = async (userIds: number[]) => {
     return deviceToken;
 };
 
-export const findChatType = async (chatId: number) => {
-    const chatType = await db.chat.findUnique({
-        where: { id: chatId },
-        select: {
-            type: true,
-        },
-    });
-    return chatType;
-}
 
 export const findUnmutedDMUsers = async (userIds: number[], chatId: number) => {
     const users = await db.chatParticipant.findMany({

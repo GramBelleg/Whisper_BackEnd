@@ -5,6 +5,7 @@ import { getDraftedMessage, getMessage } from "./message.service";
 import { MemberSummary } from "@models/chat.models";
 import { getLastMessageSender } from "@services/user/user.service";
 import { buildDraftedMessage } from "@controllers/messages/format.message";
+import { string } from "joi";
 
 const getUserChats = async (userId: number, type: ChatType | null, noKey: number | boolean) => {
     let whereClause: Record<string, any>;
@@ -306,3 +307,11 @@ export const setNewLastMessage = async (chatId: number): Promise<void> => {
     });
 };
 
+export const chatType = async (chatId: number): Promise<string> => {
+    const chat = await db.chat.findUnique({
+        where: { id: chatId },
+        select: { type: true },
+    });
+    if (!chat) return "";
+    return chat.type; 
+}
