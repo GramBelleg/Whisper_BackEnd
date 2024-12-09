@@ -40,18 +40,22 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
     );
     socket.on(
         "removeUser",
-        socketWrapper(
-            async (remove: { user: UserType; removerUserName: string; chatId: number }) => {
-                const participants = await groupController.removeUser(
+        socketWrapper(async (remove: { user: UserType; chatId: number }) => {
+            const participants = await groupController.removeUser(
+                userId,
+                remove.user,
+                remove.chatId
+            );
+            const user = await displayedUser(userId);
+            for (let i = 0; i < participants.length; i++) {
+                await chatHandler.broadCast(participants[i], clients, "removeUser", {
                     userId,
-                    remove.user,
-                    remove.chatId
-                );
-                for (let i = 0; i < participants.length; i++) {
-                    await chatHandler.broadCast(participants[i], clients, "removeUser", remove);
-                }
+                    userName: remove.user.userName,
+                    removerUserName: user.userName,
+                    chatId: remove.chatId,
+                });
             }
-        )
+        })
     );
     socket.on(
         "leaveChat",
