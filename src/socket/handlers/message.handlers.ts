@@ -5,6 +5,7 @@ import { deleteMessagesForAllUsers } from "@controllers/messages/delete.message"
 import { getChatParticipantsIds } from "@services/chat/chat.service";
 import { handleDeliverAllMessages } from "@controllers/messages/edit.message";
 import { SenderIdRecord } from "@models/messages.models";
+import { pushMessageNotification } from "@services/notifications/notification.service";
 
 export const broadCast = async (
     chatId: number,
@@ -40,6 +41,7 @@ export const userBroadCast = async (
         sendToClient(userId, clients, emitEvent, emitMessage[0]);
 
         if (receivers) {
+            pushMessageNotification(receivers, chatId, emitMessage[1]);
             for (const receiver of receivers) {
                 sendToClient(receiver, clients, emitEvent, emitMessage[1]);
             }

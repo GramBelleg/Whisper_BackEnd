@@ -6,6 +6,7 @@ import * as editController from "@controllers/messages/edit.message";
 import * as deleteController from "@controllers/messages/delete.message";
 import * as messageHandler from "@socket/handlers/message.handlers";
 import { sendToClient } from "@socket/utils/socket.utils";
+import { clearMessageNotification } from "@services/notifications/notification.service";
 
 export const setupMessageEvents = (
     socket: Socket,
@@ -99,6 +100,11 @@ export const setupMessageEvents = (
         socketWrapper(async (chatId: number) => {
             const directTo = await editController.handleReadAllMessages(userId, chatId);
             if (directTo) {
+                for (const senderId in directTo) {
+                    for (const group of directTo[senderId]) {
+                        await clearMessageNotification(userId, group.messageIds);
+                    }
+                }
                 messageHandler.sendReadAndDeliveredGroups(clients, directTo, "readMessage");
             }
         })
@@ -109,6 +115,11 @@ export const setupMessageEvents = (
         socketWrapper(async ({ messages, chatId }: { messages: number[]; chatId: number }) => {
             const directTo = await editController.handleReadMessages(userId, messages, chatId);
             if (directTo) {
+                for (const senderId in directTo) {
+                    for (const group of directTo[senderId]) {
+                        await clearMessageNotification(userId, group.messageIds);
+                    }
+                }
                 messageHandler.sendReadAndDeliveredGroups(clients, directTo, "readMessage");
             }
         })
