@@ -1,5 +1,6 @@
 import { createChat, getChat } from "@services/chat/chat.service";
 import { createGroup } from "@services/chat/group.service";
+import { createGroup } from "@services/chat/group.service";
 import { ChatSummary, CreatedChat } from "@models/chat.models";
 import { MAX_GROUP_SIZE } from "@config/constants.config";
 import { ChatType } from "@prisma/client";
@@ -20,6 +21,7 @@ export const handleCreateChat = async (userId: number, chat: CreatedChat, users:
 
         const chats = await Promise.all(
             users.map(async (user) => {
+                return (await getChat(user, result.chatId)) as ChatSummary;
                 return (await getChat(user, result.chatId)) as ChatSummary;
             })
         );
