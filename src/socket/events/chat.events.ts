@@ -3,10 +3,12 @@ import { socketWrapper } from "@socket/handlers/error.handler";
 import * as types from "@models/chat.models";
 import * as createChatController from "@controllers/chat/create.chat";
 import * as groupController from "@controllers/chat/group.chat";
+import * as channelController from "@controllers/chat/group.chat";
 import * as chatHandler from "@socket/handlers/chat.handlers";
-import { E } from "@faker-js/faker/dist/airline-BLb3y-7w";
 import { UserType } from "@models/user.models";
 import { displayedUser } from "@services/user/user.service";
+import { getChatType } from "@services/chat/chat.service";
+import { ChatType } from "@prisma/client";
 
 export const setupChatEvents = (socket: Socket, userId: number, clients: Map<number, Socket>) => {
     socket.on(
@@ -22,7 +24,15 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
     socket.on(
         "addAdmin",
         socketWrapper(async (admin: types.ChatUserSummary) => {
-            const participants = await groupController.addAdmin(userId, admin);
+            let participants;
+            const chatType = await getChatType(admin.chatId);
+
+            if (chatType == ChatType.GROUP)
+                participants = await groupController.addAdmin(userId, admin);
+            else if (chatType == ChatType.CHANNEL)
+                participants = await channelController.addAdmin(userId, admin);
+
+            if (!participants) throw new Error("Error when adding Admin");
             for (let i = 0; i < participants.length; i++)
                 await chatHandler.broadCast(participants[i], clients, "addAdmin", admin);
         })
