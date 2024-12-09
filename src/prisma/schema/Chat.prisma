@@ -34,7 +34,6 @@ model Channel {
 
 model ChatParticipant {
   id                    Int               @id @default(autoincrement())
-  id                    Int               @id @default(autoincrement())
   userId                Int
   chatId                Int
   isArchived            Boolean           @default(false)
@@ -62,13 +61,10 @@ model ChatParticipant {
 
 model GroupParticipant {
   id          Int     @id @unique
-  id          Int     @id @unique
-  isAdmin     Boolean @default(false)
   canDownload Boolean @default(true)
   canDelete   Boolean @default(true)
   canPost     Boolean @default(true)
   canEdit     Boolean @default(true)
-  chatParticipant          ChatParticipant @relation(fields:[id],references: [id],onDelete: Cascade)
   chatParticipant          ChatParticipant @relation(fields:[id],references: [id],onDelete: Cascade)
 }
 
