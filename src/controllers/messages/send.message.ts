@@ -10,22 +10,11 @@ const handleSaveMessage = async (userId: number, message: SentMessage) => {
     await setLastMessage(message.chatId, savedMessage.id);
     return savedMessage;
 };
-<<<<<<< HEAD
-=======
-const handleGroupPermissions = async (message: SentMessage) => {
-    const permissions = await getPermissions(message.senderId, message.chatId);
-
-    if (!permissions) throw new Error("Couldn't get User Permissions");
-    if (!permissions.canPost) throw new Error("You don't have post permission");
-};
->>>>>>> main
 export const handleSend = async (
     userId: number,
     message: SentMessage
 ): Promise<ReceivedMessage[] | null> => {
     try {
-        const chatType = await getChatType(message.chatId);
-        if (chatType == "GROUP") await handleGroupPermissions(message);
         const savedMessage = await handleSaveMessage(userId, message);
         if (message.selfDestruct || message.expiresAfter) {
             await saveExpiringMessage(savedMessage.id, savedMessage.expiresAfter);

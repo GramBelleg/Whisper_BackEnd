@@ -23,15 +23,12 @@ export const addAdmin = async (userId: number, admin: ChatUserSummary) => {
 export const addUser = async (userId: number, chatUser: ChatUser) => {
     const userCanBeAdded = await canUserBeAdded(chatUser, userId);
     if (!userCanBeAdded) throw new Error("You Don't have permission to add this user");
-<<<<<<< HEAD
 
     const participants = await getChatParticipantsIds(chatUser.chatId);
 
     const maxSize = await groupService.getSizeLimit(chatUser.chatId);
     if (participants.length == maxSize || participants.length == MAX_GROUP_SIZE)
         throw new Error("Can't Add User, Group size limit reached");
-=======
->>>>>>> main
 
     await groupService.addUser(chatUser.user.id, chatUser.chatId);
 
