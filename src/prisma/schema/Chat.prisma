@@ -27,7 +27,7 @@ model Channel {
   name    String
   picture String?
   isPrivate    Boolean @default(false)
-  inviteLink String
+  inviteLink String @default("")
   chat       Chat   @relation(fields: [chatId], references: [id],onDelete: Cascade)
 
 }
@@ -61,6 +61,7 @@ model ChatParticipant {
 
 model GroupParticipant {
   id          Int     @id @unique
+  isAdmin     Boolean  @default(false)
   canDownload Boolean @default(true)
   canDelete   Boolean @default(true)
   canPost     Boolean @default(true)
