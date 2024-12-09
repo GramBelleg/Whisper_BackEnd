@@ -12,6 +12,13 @@ const canUserBeAdded = async (chatUser: ChatUser, adderId: number) => {
     const isAdmin = await groupService.isAdmin({ userId: adderId, chatId: chatUser.chatId });
     return (isAdmin && !addPermission) || addPermission;
 };
+export const leave = async (userId: number, chatId: number) => {
+    const participants = getChatParticipantsIds(chatId);
+
+    await groupService.removeUser(userId, chatId);
+
+    return participants;
+};
 export const addAdmin = async (userId: number, admin: ChatUserSummary) => {
     const isAdmin = await groupService.isAdmin({ userId, chatId: admin.chatId });
     if (!isAdmin) throw new Error("You're not an admin");

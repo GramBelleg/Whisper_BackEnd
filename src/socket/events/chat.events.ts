@@ -6,6 +6,7 @@ import * as groupController from "@controllers/chat/group.chat";
 import * as chatHandler from "@socket/handlers/chat.handlers";
 import { E } from "@faker-js/faker/dist/airline-BLb3y-7w";
 import { UserType } from "@models/user.models";
+import { displayedUser } from "@services/user/user.service";
 
 export const setupChatEvents = (socket: Socket, userId: number, clients: Map<number, Socket>) => {
     socket.on(
@@ -51,5 +52,18 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
                 }
             }
         )
+    );
+    socket.on(
+        "leaveChat",
+        socketWrapper(async (leave: { chatId: number }) => {
+            const participants = await groupController.leave(userId, leave.chatId);
+            const user = await displayedUser(userId);
+            for (let i = 0; i < participants.length; i++) {
+                await chatHandler.broadCast(participants[i], clients, "leaveChat", {
+                    userName: user.userName,
+                    chatId: leave.chatId,
+                });
+            }
+        })
     );
 };
