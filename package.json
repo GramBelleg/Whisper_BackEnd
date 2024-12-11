@@ -4,7 +4,7 @@
     "description": "",
     "main": "app.js",
     "scripts": {
-        "test": "dotenv -e .env.test jest",
+        "test": "dotenv -e .env.test -- jest",
         "test:watch": "jest --watch",
         "build": "tsc --build",
         "start": "node -r module-alias/register ./dist/server.js",

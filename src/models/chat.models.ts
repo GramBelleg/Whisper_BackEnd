@@ -24,7 +24,6 @@ export type ChatSummary = {
     participantKeys?: (number | null)[];
     name: string;
     lastSeen?: Date;
-    isMuted: boolean;
     hasStory?: boolean;
     picture: string | null;
     status?: string;

@@ -1,4 +1,3 @@
-/** @type {import('ts-jest').JestConfigWithTsJest} **/
 module.exports = {
     testEnvironment: "node",
     transform: {
@@ -6,6 +5,8 @@ module.exports = {
     },
     detectOpenHandles: true,
     testTimeout: 15000,
+    collectCoverage: true,
+    coverageDirectory: "coverage",
     moduleNameMapper: {
         "^@services/(.*)$": "<rootDir>/src/services/$1",
         "^@controllers/(.*)$": "<rootDir>/src/controllers/$1",
