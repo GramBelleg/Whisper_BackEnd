@@ -24,12 +24,12 @@ export type ChatSummary = {
     participantKeys?: (number | null)[];
     name: string;
     lastSeen?: Date;
-    isMuted: boolean;
     hasStory?: boolean;
     picture: string | null;
     status?: string;
     lastMessage: LastMessage;
     unreadMessageCount: number;
+    isMuted: number;
 };
 
 export type ChatUserSummary = { userId: number; chatId: number };
