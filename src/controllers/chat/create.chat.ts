@@ -1,8 +1,9 @@
 import { createChat, getChat } from "@services/chat/chat.service";
-import { createChannel, createGroup } from "@services/chat/group.service";
+import { createGroup } from "@services/chat/group.service";
 import { ChatSummary, CreatedChat } from "@models/chat.models";
 import { MAX_GROUP_SIZE } from "@config/constants.config";
 import { ChatType } from "@prisma/client";
+import { createChannel } from "@services/chat/channel.service";
 
 const isValidSize = (size: number, type: string) => {
     return (

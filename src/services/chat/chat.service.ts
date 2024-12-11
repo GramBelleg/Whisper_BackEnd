@@ -6,6 +6,7 @@ import { MemberSummary } from "@models/chat.models";
 import { getLastMessageSender } from "@services/user/user.service";
 import { buildDraftedMessage } from "@controllers/messages/format.message";
 import * as groupService from "@services/chat/group.service";
+import * as channelService from "@services/chat/channel.service";
 import HttpError from "@src/errors/HttpError";
 
 const getUserChats = async (userId: number, type: ChatType | null) => {
@@ -184,6 +185,9 @@ const getTypeDependantContent = async (type: ChatType, participant: any, chatId:
     }
     if (type === "GROUP") {
         return groupService.getGroupContent(chatId);
+    }
+    if (type === "CHANNEL") {
+        return channelService.getChannelContent(chatId);
     }
 };
 
