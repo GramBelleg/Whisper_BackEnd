@@ -4,7 +4,6 @@ import * as types from "@models/chat.models";
 import * as createChatController from "@controllers/chat/create.chat";
 import * as groupController from "@controllers/chat/group.chat";
 import * as chatHandler from "@socket/handlers/chat.handlers";
-import { E } from "@faker-js/faker/dist/airline-BLb3y-7w";
 import { UserType } from "@models/user.models";
 import { displayedUser } from "@services/user/user.service";
 
