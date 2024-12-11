@@ -178,47 +178,6 @@ export const getGroupContent = async (chatId: number) => {
         throw err;
     }
 };
-
-export const createChannel = async (
-    chatId: number,
-    participants: { id: number; userId: number }[],
-    channel: CreatedChat,
-    userId: number
-) => {
-    try {
-        const chat = await db.channel.create({
-            data: {
-                chatId,
-                picture: channel.picture,
-                name: channel.name,
-            },
-        });
-        await createChannelParticipants(participants, userId);
-        return chat;
-    } catch (err: any) {
-        if (err.code === "P2002") {
-            throw new Error("Channel with the specified chatId already exists.");
-        }
-        throw err;
-    }
-};
-const createChannelParticipants = async (
-    participants: { id: number; userId: number }[],
-    userId: number
-) => {
-    try {
-        const channelParticipantsData = participants.map((participant) => ({
-            id: participant.id,
-            isAdmin: participant.userId === userId,
-        }));
-
-        await db.channelParticipant.createMany({
-            data: channelParticipantsData,
-        });
-    } catch (err: any) {
-        throw err;
-    }
-};
 export const createGroup = async (
     chatId: number,
     participants: { id: number; userId: number }[],
