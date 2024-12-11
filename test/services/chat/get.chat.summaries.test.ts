@@ -30,6 +30,24 @@ describe("getChatSummaries", () => {
                 expect.objectContaining({ id: chat2.id, type: "DM" }),
             ])
         );
+
+        const summaries2 = await chatService.getChatsSummaries(user1.id, "DM", true);
+        expect(summaries2).toHaveLength(2);
+        expect(summaries2).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ id: chat1.id, type: "DM" }),
+                expect.objectContaining({ id: chat2.id, type: "DM" }),
+            ])
+        );
+
+        const summaries3 = await chatService.getChatsSummaries(user1.id, "DM", false);
+        expect(summaries3).toHaveLength(2);
+        expect(summaries3).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ id: chat1.id, type: "DM" }),
+                expect.objectContaining({ id: chat2.id, type: "DM" }),
+            ])
+        );
     });
 
     it("should fetch chat summary for a user", async () => {
@@ -45,5 +63,14 @@ describe("getChatSummaries", () => {
         expect(summary).toHaveProperty("id", chat.id);
         expect(summary).toHaveProperty("type", "DM");
     });
-    
+
+    it("should return null if there is no such chat or user", async () => {
+        const summary = await chatService.getChatSummary(
+            { chatId: 999, unreadMessageCount: 0, chat: { type: "DM" } },
+            999
+        );
+
+        expect(summary).toBeNull();
+    });
+
 });

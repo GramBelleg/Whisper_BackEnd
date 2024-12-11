@@ -55,5 +55,18 @@ describe("setLastMessage", () => {
 
         expect(participant1?.lastMessageId).toBe(messageStatus1.id);
         expect(participant2?.lastMessageId).toBe(messageStatus2.id);
+
+        const lastMessage = await chatService.getLastMessage(user1.id, chat.id);
+        expect(lastMessage?.id).toBe(message.id);
+        expect(lastMessage?.id).toBe(message.id);
+    });
+
+    it("should return undefined if no message exists", async () => {
+        const invalidChatId = 9999;
+        const invalidMessageId = 9999;
+
+        const result = await chatService.setLastMessage(invalidChatId, invalidMessageId);
+
+        expect(result).toBeUndefined();
     });
 });

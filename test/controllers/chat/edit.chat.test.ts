@@ -77,4 +77,21 @@ describe("Chat Mute and Unmute Handlers", () => {
         expect(response.status).toBe(403);
         expect(response.body.Message).toBeUndefined();
     });
+    
+    it("should return 403 if the user is unauthorized to mute/unmute the chat", async () => {
+        const user1 = await createRandomUser();
+        const user2 = await createRandomUser();
+        const user3 = await createRandomUser();
+        const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
+
+        jest.spyOn(authMiddleware, "default").mockImplementation(async (req, _res, next) => {
+            req.userId = user3.id;
+            next();
+        });
+
+        const response = await request(app).post(`/api/chats/${chat.id}/unmuteChat`).send();
+
+        expect(response.status).toBe(403);
+        expect(response.body.Message).toBeUndefined();
+    });
 });

@@ -126,8 +126,7 @@ export const getOtherUserId = async (excludedUserId: number, chatId: number) => 
             },
         },
     });
-    if (!otherUserId) return null;
-    return otherUserId.participants[0].userId;
+    return otherUserId?.participants[0].userId;
 };
 //TODO: Set condition on lastSeen and profilePic based on privacy
 const getOtherChatParticipants = async (chatId: number, excludeUserId: number) => {
@@ -168,9 +167,7 @@ const getDMContent = async (participant: any, chatId: number) => {
 };
 
 const getTypeDependantContent = async (type: ChatType, participant: any, chatId: number) => {
-    if (type === "DM") {
-        return getDMContent(participant, chatId);
-    }
+    return getDMContent(participant, chatId);
 };
 
 export const formatDraftedMessage = async (userId: number, chatId: number) => {
@@ -201,7 +198,6 @@ export const getChatSummary = async (
         participant,
         userChat.chatId
     );
-    if (!typeDependantContent) return null;
     const chatSummary = {
         id: userChat.chatId,
         ...typeDependantContent,
@@ -281,11 +277,9 @@ export const getLastMessage = async (
     if (chatParticipant && chatParticipant.lastMessageId) {
         const messageId = chatParticipant.lastMessageId;
         const result = await getMessage(messageId);
-        if (!result) return null;
-        const lastMessage = { ...result.message, time: result.time };
-        const lastMessageSender = await getLastMessageSender(messageId);
-        if (!lastMessageSender) return null;
-        return { ...lastMessage, ...lastMessageSender };
+        const lastMessage = { ...result!.message, time: result!.time };
+        const lastMessageSender = await getLastMessageSender(lastMessage.id);
+        return { ...lastMessage, ...lastMessageSender! };
     }
     return null;
 };
@@ -295,7 +289,6 @@ export const setLastMessage = async (chatId: number, messageId: number): Promise
         where: { messageId },
         select: { id: true, userId: true },
     });
-    if (!messageStatuses) return;
     for (const status of messageStatuses) {
         await db.chatParticipant.update({
             where: { chatId_userId: { chatId, userId: status.userId } },

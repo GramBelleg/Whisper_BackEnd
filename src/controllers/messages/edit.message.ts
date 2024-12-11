@@ -11,8 +11,9 @@ import {
 } from "@services/chat/message.service";
 
 export const handleGetMessageStatus = async (req: Request, res: Response) => {
+    const userId = req.userId;
     const messageId = Number(req.params.messageId);
-    const messageStatus = await getMessageStatus(messageId);
+    const messageStatus = await getMessageStatus(userId, messageId);
     if (!messageStatus) {
         res.status(404).json({ message: "Message not found" });
         return;
