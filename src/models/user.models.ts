@@ -15,3 +15,9 @@ export type DuplicateUserInfo = {
 };
 
 export type SenderInfo = Pick<User, "id" | "userName" | "profilePic">;
+
+export type UserType = {
+    id: number;
+    userName?: string;
+    profilePic?: string;
+};

@@ -229,10 +229,7 @@ const getStoryUsers = async (userId: number): Promise<any> => {
                 },
                 distinct: ["id"], // Ensure users are unique by their `id`
             });
-            return {
-                //stories,
-                users,
-            };
+            return users;
         } catch (error: any) {
             throw new Error(`Error in getStories: ${error.message}`);
         }

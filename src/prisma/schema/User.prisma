@@ -17,6 +17,7 @@ model User {
   password                  String               @db.VarChar(256)
   phoneNumber               String?              @unique
   loggedInDevices           Int                  @default(0)
+  addPermission             Boolean              @default(true)
   profilePic                String?
   lastSeen                  DateTime             @default(now())
   hasStory                  Boolean              @default(false)
@@ -29,8 +30,6 @@ model User {
   storyPrivacy              Privacy              @default(Everyone)
   Messages                  Message[]
   chatParticipant           ChatParticipant[]
-  groupParticipant          GroupParticipant[]
-  channelParticipant        ChannelParticipant[]
   tokens                    UserToken[]
   messageStatus             MessageStatus[]
   story                     Story[]

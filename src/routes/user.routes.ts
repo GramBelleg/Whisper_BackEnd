@@ -38,11 +38,15 @@ router.put("/lastSeen/privacy", asyncHandler(userController.changeLastSeenPrivac
 router.put("/pfp/privacy", asyncHandler(userController.changePfpPrivacy));
 router.put("/story/:storyId/privacy", asyncHandler(storyController.changeStoryPrivacy));
 router.put("/story/privacy", asyncHandler(userController.changeStoryPrivacy));
-router.post("/contact", asyncHandler(userController.addContact));
+router
+    .route("/contact")
+    .post(asyncHandler(userController.addContact))
+    .get(asyncHandler(userController.getContacts));
 router.get("/logoutOne", asyncHandler(logoutOne));
 router.get("/logoutAll", asyncHandler(logoutAll));
 router.get("/sotryArchive", asyncHandler(userController.getStoryArchive));
 router.get("/story", asyncHandler(userController.getStoryUsers));
 router.get("/story/:userId", asyncHandler(userController.getUserStories));
 router.get("/story/getViews/:storyId", asyncHandler(userController.getStoryViews));
+router.post("/addPermission", asyncHandler(userController.updateAddPermission));
 export default router;

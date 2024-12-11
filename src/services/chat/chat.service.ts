@@ -1,10 +1,13 @@
 import db from "@DB";
-import { ChatSummary, LastMessage } from "@models/chat.models";
+import { ChatSummary, CreatedChat, LastMessage } from "@models/chat.models";
 import { ChatType } from "@prisma/client";
 import { getDraftedMessage, getMessage } from "./message.service";
 import { MemberSummary } from "@models/chat.models";
 import { getLastMessageSender } from "@services/user/user.service";
 import { buildDraftedMessage } from "@controllers/messages/format.message";
+import * as groupService from "@services/chat/group.service";
+import * as channelService from "@services/chat/channel.service";
+import HttpError from "@src/errors/HttpError";
 
 const getUserChats = async (userId: number, type: ChatType | null, noKey: number | boolean) => {
     let whereClause: Record<string, any>;
@@ -113,6 +116,7 @@ export const isUserAllowedToAccessMessage = async (userId: number, messageId: nu
 };
 
 export const getChatMembers = async (chatId: number): Promise<MemberSummary[]> => {
+    //add privacy to last seen and hasStory
     const chatParticipants = await db.chatParticipant.findMany({
         where: { chatId },
         select: {
@@ -129,6 +133,32 @@ export const getChatMembers = async (chatId: number): Promise<MemberSummary[]> =
     });
     return chatParticipants.map((participant) => participant.user);
 };
+export const getGroupMembers = async (chatId: number): Promise<MemberSummary[]> => {
+    //add privacy to last seen and hasStory
+    const chatParticipants = await db.chatParticipant.findMany({
+        where: { chatId },
+        select: {
+            user: {
+                select: {
+                    id: true,
+                    userName: true,
+                    profilePic: true,
+                    lastSeen: true,
+                    hasStory: true,
+                },
+            },
+            groupParticipant: {
+                select: {
+                    isAdmin: true,
+                },
+            },
+        },
+    });
+    return chatParticipants.map((participant) => ({
+        ...participant.user,
+        isAdmin: participant.groupParticipant?.isAdmin,
+    }));
+};
 
 export const createChatParticipants = async (
     users: number[],
@@ -141,9 +171,13 @@ export const createChatParticipants = async (
         chatId,
         keyId: currentUserId === userId ? senderKey : null,
     }));
-    await db.chatParticipant.createMany({
-        data: participantsData,
-    });
+    const chatParticipantIds = await db.$queryRawUnsafe<{ id: number; userId: number }[]>(`
+        INSERT INTO "ChatParticipant" ("chatId", "userId")
+        VALUES ${participantsData.map((p) => `(${p.chatId}, ${p.userId})`).join(", ")}
+        RETURNING "id", "userId";
+    `);
+
+    return chatParticipantIds;
 };
 
 export const createChat = async (
@@ -160,8 +194,8 @@ export const createChat = async (
             id: true,
         },
     });
-    await createChatParticipants(users, userId, senderKey, chat.id);
-    return chat;
+    const participants = await createChatParticipants(users, userId, senderKey, chat.id);
+    return { chatId: chat.id, participants };
 };
 
 export const getOtherUserId = async (excludedUserId: number, chatId: number) => {
@@ -210,14 +244,19 @@ const getDMContent = async (participant: any, chatId: number) => {
         picture: participant.user.profilePic,
         hasStory: participant.user.hasStory,
         lastSeen: participant.user.lastSeen,
-        isMuted: participant.isMuted,
         participantKeys,
         status: participant.status,
     };
 };
 
 const getTypeDependantContent = async (type: ChatType, participant: any, chatId: number) => {
-    return getDMContent(participant, chatId);
+    if (type === "DM") {
+        return getDMContent(participant, chatId);
+    } else if (type === "GROUP") {
+        return groupService.getGroupContent(chatId);
+    } else {
+        return channelService.getChannelContent(chatId);
+    }
 };
 
 export const formatDraftedMessage = async (userId: number, chatId: number) => {
@@ -264,6 +303,7 @@ const getUserChat = async (userId: number, chatId: number) => {
         where: { chatId, userId },
         select: {
             chatId: true,
+            isMuted: true,
             unreadMessageCount: true,
             chat: {
                 select: {
@@ -363,4 +403,41 @@ export const setNewLastMessage = async (chatId: number): Promise<void> => {
             });
         }
     });
+};
+
+export const setChatPrivacy = async (id: number, isPrivate: boolean) => {
+    try {
+        await db.chat.update({
+            where: {
+                id,
+            },
+            data: {
+                group: {
+                    update: {
+                        data: {
+                            isPrivate,
+                        },
+                    },
+                },
+            },
+        });
+    } catch (err: any) {
+        if (err.code === "P2025") {
+            throw new HttpError("Group Not Found", 404);
+        }
+        throw err;
+    }
+};
+
+export const getChatType = async (id: number) => {
+    const chat = await db.chat.findUnique({
+        where: {
+            id,
+        },
+        select: {
+            type: true,
+        },
+    });
+    if (!chat) throw new Error("Chat doesn't Exist");
+    return chat.type;
 };

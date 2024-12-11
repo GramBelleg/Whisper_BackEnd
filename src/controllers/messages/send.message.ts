@@ -3,13 +3,14 @@ import { setLastMessage } from "@services/chat/chat.service";
 import { saveExpiringMessage } from "@services/chat/redis.service";
 import { ReceivedMessage, SentMessage } from "@models/messages.models";
 import { buildReceivedMessage } from "../messages/format.message";
-import { validateChatAndUser, validateMessageAndUser } from "@validators/chat";
+import { validateChatAndUser } from "@validators/chat";
 
 const handleSaveMessage = async (userId: number, message: SentMessage) => {
     const savedMessage = await saveMessage(userId, message);
     await setLastMessage(message.chatId, savedMessage.id);
     return savedMessage;
 };
+
 
 export const handleSend = async (
     userId: number,
