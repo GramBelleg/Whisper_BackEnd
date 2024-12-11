@@ -27,7 +27,7 @@ async function createUsers(numUsers: number) {
             email: "whispertest@mailsac.com",
             userName: faker.internet.username().toLowerCase(),
             name: faker.person.fullName().toLowerCase(),
-            password: "Whi$per45",
+            password: bcrypt.hashSync("Whi$per45", 10),
             bio: faker.lorem.sentence(),
             phoneNumber: faker.phone.number({ style: "international" }),
         },
