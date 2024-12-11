@@ -91,6 +91,8 @@ export const pushVoiceNofication = async (participants: number[], tokens: string
                     channelName,
                 }
             };
+            if(userDeviceTokens.length === 0)
+                continue;
             await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
                 tokens: userDeviceTokens as string[],
                 notification: payload.notification,
