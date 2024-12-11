@@ -1,5 +1,5 @@
 import db from "@DB";
-import { ChatUserSummary, CreatedChat } from "@models/chat.models";
+import { ChatUserSummary, CreatedChat, MemberSummary } from "@models/chat.models";
 
 export const getSizeLimit = async (chatId: number) => {
     try {
@@ -158,6 +158,33 @@ export const isAdmin = async (admin: ChatUserSummary) => {
     } catch (err: any) {
         throw err;
     }
+};
+
+export const getGroupMembers = async (chatId: number): Promise<MemberSummary[]> => {
+    //add privacy to last seen and hasStory
+    const chatParticipants = await db.chatParticipant.findMany({
+        where: { chatId },
+        select: {
+            user: {
+                select: {
+                    id: true,
+                    userName: true,
+                    profilePic: true,
+                    lastSeen: true,
+                    hasStory: true,
+                },
+            },
+            groupParticipant: {
+                select: {
+                    isAdmin: true,
+                },
+            },
+        },
+    });
+    return chatParticipants.map((participant) => ({
+        ...participant.user,
+        isAdmin: participant.groupParticipant?.isAdmin,
+    }));
 };
 
 export const getGroupContent = async (chatId: number) => {

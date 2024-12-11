@@ -22,6 +22,7 @@ const getUserChats = async (userId: number, type: ChatType | null, noKey: number
         where: whereClause,
         select: {
             chatId: true,
+            isMuted: true,
             unreadMessageCount: true,
             chat: {
                 select: {
@@ -133,32 +134,6 @@ export const getChatMembers = async (chatId: number): Promise<MemberSummary[]> =
     });
     return chatParticipants.map((participant) => participant.user);
 };
-export const getGroupMembers = async (chatId: number): Promise<MemberSummary[]> => {
-    //add privacy to last seen and hasStory
-    const chatParticipants = await db.chatParticipant.findMany({
-        where: { chatId },
-        select: {
-            user: {
-                select: {
-                    id: true,
-                    userName: true,
-                    profilePic: true,
-                    lastSeen: true,
-                    hasStory: true,
-                },
-            },
-            groupParticipant: {
-                select: {
-                    isAdmin: true,
-                },
-            },
-        },
-    });
-    return chatParticipants.map((participant) => ({
-        ...participant.user,
-        isAdmin: participant.groupParticipant?.isAdmin,
-    }));
-};
 
 export const createChatParticipants = async (
     users: number[],
@@ -222,7 +197,6 @@ const getOtherChatParticipants = async (chatId: number, excludeUserId: number) =
             },
         },
         select: {
-            isMuted: true,
             user: {
                 select: {
                     id: true,
@@ -289,6 +263,7 @@ export const getChatSummary = async (
     );
     const chatSummary = {
         id: userChat.chatId,
+        isMuted: userChat.isMuted,
         ...typeDependantContent,
         type: userChat.chat.type,
         lastMessage,

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { validateChatAndUser } from "@validators/chat";
-import { getChatMembers, getChatType, getGroupMembers } from "@services/chat/chat.service";
+import { getChatMembers, getChatType } from "@services/chat/chat.service";
+import { getGroupMembers } from "@services/chat/group.service";
 import { ChatType } from "@prisma/client";
 
 export const handleGetChatMembers = async (req: Request, res: Response) => {

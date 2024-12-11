@@ -29,6 +29,7 @@ export type ChatSummary = {
     status?: string;
     lastMessage: LastMessage;
     unreadMessageCount: number;
+    isMuted: number;
 };
 
 export type ChatUserSummary = { userId: number; chatId: number };
