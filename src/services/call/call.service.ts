@@ -36,6 +36,9 @@ export const makeCall = async (userId: number, chatId: string) => {
         throw new HttpError("Can't make a call", 400);
     }
     let participants = await getChatParticipantsIds(chatIdNum);
+    if(participants.indexOf(userId) === -1){
+        throw new HttpError("User is not a participant of this chat", 400);
+    }
     participants = participants.filter((participant) => participant !== userId);
     if (type === "DM") {
         const checkBlocked = await isBlocked(userId, participants[0]);
