@@ -9,7 +9,7 @@ const passwords: string[] = ["abcdefgh", "12345678", "aaaabbbb", "1111111", "222
 // Utility function to create random users
 async function createUsers(numUsers: number) {
     const users: User[] = [];
-    for (let i = 0; i < numUsers; i++) {
+    for (let i = 0; i < numUsers - 1; i++) {
         const user: User = await db.user.create({
             data: {
                 email: faker.internet.email().toLowerCase(),
@@ -21,6 +21,26 @@ async function createUsers(numUsers: number) {
             },
         });
         users.push(user);
+    }
+    const user: User = await db.user.create({
+        data: {
+            email: "whispertest@mailsac.com",
+            userName: faker.internet.username().toLowerCase(),
+            name: faker.person.fullName().toLowerCase(),
+            password: "Whi$per45",
+            bio: faker.lorem.sentence(),
+            phoneNumber: faker.phone.number({ style: "international" }),
+        },
+    });
+    users.push(user);
+    for (let i = 1; i < 4; i++) {
+        await db.relates.create({
+            data: {
+                relatingId: user.id,
+                relatedById: users[i].id,
+                isBlocked: true,
+            },
+        });
     }
     return users;
 }
@@ -113,7 +133,7 @@ const createStories = async (users: User[], numStories: number) => {
 };
 // Main function to implement the seeding
 async function main() {
-    const numUsers = 5;
+    const numUsers = 6;
     const numChats = 3;
     const numStories = 3;
     //Create Users
