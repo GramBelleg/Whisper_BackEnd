@@ -1,5 +1,5 @@
 import db from "@DB";
-import { ChatUserSummary } from "@models/chat.models";
+import { ChatUserSummary, CreatedChat } from "@models/chat.models";
 export const isAdmin = async (admin: ChatUserSummary) => {
     try {
         const user = await db.chatParticipant.findUnique({
@@ -43,8 +43,6 @@ export const addAdmin = async (admin: ChatUserSummary) => {
         throw err;
     }
 };
-import db from "@DB";
-import { CreatedChat } from "@models/chat.models";
 export const getChannelContent = async (chatId: number) => {
     try {
         const channel = await db.channel.findUnique({
