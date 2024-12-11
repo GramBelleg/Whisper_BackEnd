@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">38.09% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>8/21</span>
+                <span class='fraction'>21/21</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">36.84% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>7/19</span>
+                <span class='fraction'>19/19</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -92,67 +92,61 @@
 <a name='L27'></a><a href='#L27'>27</a>
 <a name='L28'></a><a href='#L28'>28</a>
 <a name='L29'></a><a href='#L29'>29</a>
-<a name='L30'></a><a href='#L30'>30</a>
-<a name='L31'></a><a href='#L31'>31</a>
-<a name='L32'></a><a href='#L32'>32</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-yes">16x</span>
+<a name='L30'></a><a href='#L30'>30</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { saveMessage } from "@services/chat/message.service";
 import { setLastMessage } from "@services/chat/chat.service";
 import { saveExpiringMessage } from "@services/chat/redis.service";
 import { ReceivedMessage, SentMessage } from "@models/messages.models";
 import { buildReceivedMessage } from "../messages/format.message";
+import { validateChatAndUser, validateMessageAndUser } from "@validators/chat";
 &nbsp;
-const handleSaveMessage = <span class="fstat-no" title="function not covered" >async (u</span>serId: number, message: SentMessage) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
-    const savedMessage = <span class="cstat-no" title="statement not covered" >await saveMessage(userId, message);</span>
-<span class="cstat-no" title="statement not covered" >    await setLastMessage(message.chatId, savedMessage.id);</span>
-<span class="cstat-no" title="statement not covered" >    return savedMessage;</span>
+const handleSaveMessage = async (userId: number, message: SentMessage) =&gt; {
+    const savedMessage = await saveMessage(userId, message);
+    await setLastMessage(message.chatId, savedMessage.id);
+    return savedMessage;
 };
 &nbsp;
-&nbsp;
-export const handleSend = <span class="fstat-no" title="function not covered" >async (</span>
+export const handleSend = async (
     userId: number,
     message: SentMessage
-): Promise&lt;ReceivedMessage[] | null&gt; =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-        const savedMessage = <span class="cstat-no" title="statement not covered" >await handleSaveMessage(userId, message);</span>
-<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (message.selfDestruct || message.expiresAfter) {</span>
-<span class="cstat-no" title="statement not covered" >            await saveExpiringMessage(savedMessage.id, savedMessage.expiresAfter);</span>
-        }
-        const result = <span class="cstat-no" title="statement not covered" >await buildReceivedMessage(userId, savedMessage);</span>
-<span class="cstat-no" title="statement not covered" >        return result;</span>
-    } catch (error) {
-<span class="cstat-no" title="statement not covered" >        console.error(error);</span>
-<span class="cstat-no" title="statement not covered" >        return null;</span>
+): Promise&lt;ReceivedMessage[] | null&gt; =&gt; {
+    if (!(await validateChatAndUser(userId, message.chatId, null))) {
+        throw new Error("User can't access this chat");
     }
+    const savedMessage = await handleSaveMessage(userId, message);
+    if (message.selfDestruct || message.expiresAfter) {
+        await saveExpiringMessage(savedMessage.id, savedMessage.expiresAfter);
+    }
+    const result = await buildReceivedMessage(userId, savedMessage);
+    return result;
 };
 &nbsp;
 export default handleSend;
@@ -163,7 +157,7 @@ export default handleSend;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-12-11T00:33:26.557Z
+                at 2024-12-11T22:21:04.430Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

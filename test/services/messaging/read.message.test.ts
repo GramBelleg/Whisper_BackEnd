@@ -1,5 +1,5 @@
 import { createRandomUser } from "@services/auth/prisma/create.service";
-import { createChat } from "@services/chat/chat.service";
+import { createChat, filterAllowedMessagestoRead } from "@services/chat/chat.service";
 import { Message, MessageStatus, User } from "@prisma/client";
 import db from "@DB";
 import {
@@ -130,5 +130,9 @@ describe("readMessage", () => {
         expect(result).toEqual([
             { id: message.id, chatId: message.chatId, senderId: message.senderId },
         ]);
+    });
+    it("should filter allowed messages to read", async () => {
+        const filter = await filterAllowedMessagestoRead(user2.id, [message.id], chat.id);
+        expect(filter).toEqual([message.id]);
     });
 });

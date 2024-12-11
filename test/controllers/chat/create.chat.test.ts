@@ -51,9 +51,10 @@ describe("handleCreateChat", () => {
         });
     });
 
-    it("should return null if creating a chat fails", async () => {
+    it("should throw an error if creating a chat fails", async () => {
         const user1 = await createRandomUser();
-        const users = [user1.id];
+        const user2 = await createRandomUser();
+        const users = [user1.id, user2.id];
 
         (createChat as jest.Mock).mockRejectedValue(new Error("Database Error"));
 
@@ -63,9 +64,24 @@ describe("handleCreateChat", () => {
             type: "DM",
         };
 
-        const result = await handleCreateChat(user1.id, chatPayload, users);
+        await expect(handleCreateChat(user1.id, chatPayload, users)).rejects.toThrow();
+    });
 
-        expect(result).toBeNull();
+    it("should throw an error if creating a chat fails due to more than 2 users", async () => {
+        const user1 = await createRandomUser();
+        const user2 = await createRandomUser();
+        const user3 = await createRandomUser();
+        const users = [user1.id, user2.id, user3.id];
+
+        (createChat as jest.Mock).mockRejectedValue(new Error("Database Error"));
+
+        const chatPayload: CreatedChat = {
+            users,
+            senderKey: 12345,
+            type: "DM",
+        };
+
+        await expect(handleCreateChat(user1.id, chatPayload, users)).rejects.toThrow();
     });
 
     it("should throw an error if the user is not in the users list", async () => {
@@ -80,7 +96,7 @@ describe("handleCreateChat", () => {
             type: "DM",
         };
 
-        await expect(handleCreateChat(user1.id, chatPayload, users)).resolves.toBeNull();
+        await expect(handleCreateChat(user1.id, chatPayload, users)).rejects.toThrow();
     });
 
     it("should throw an error if the users list contains duplicates", async () => {
@@ -94,6 +110,6 @@ describe("handleCreateChat", () => {
             type: "DM",
         };
 
-        await expect(handleCreateChat(user1.id, chatPayload, users)).resolves.toBeNull();
+        await expect(handleCreateChat(user1.id, chatPayload, users)).rejects.toThrow();
     });
 });

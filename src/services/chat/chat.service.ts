@@ -62,6 +62,56 @@ export const isUserAMember = async (userId: number, chatId: number): Promise<boo
     return result ? true : false;
 };
 
+export const messageExists = async (messageId: number): Promise<boolean> => {
+    const result = await db.message.findFirst({
+        where: { id: messageId },
+    });
+    return result ? true : false;
+};
+
+export const filterAllowedMessagestoRead = async (
+    userId: number,
+    messageIds: number[],
+    chatId: number
+) => {
+    const results = await db.message.findMany({
+        where: {
+            id: { in: messageIds },
+            NOT: { senderId: userId },
+            chat: { id: chatId, participants: { some: { userId } } },
+        },
+        select: { id: true },
+    });
+    return results.map((result) => result.id);
+};
+
+export const filterAllowedMessagestoDelete = async (
+    userId: number,
+    messageIds: number[],
+    chatId: number
+) => {
+    const results = await db.message.findMany({
+        where: { id: { in: messageIds }, chat: { id: chatId, participants: { some: { userId } } } },
+        select: { id: true },
+    });
+    return results.map((result) => result.id);
+};
+
+export const userIsSender = async (userId: number, messageId: number): Promise<boolean> => {
+    const result = await db.message.findFirst({
+        where: { id: messageId },
+        select: { senderId: true },
+    });
+    return result!.senderId === userId ? true : false;
+};
+
+export const isUserAllowedToAccessMessage = async (userId: number, messageId: number) => {
+    const result = await db.chat.findFirst({
+        where: { messages: { some: { id: messageId } }, participants: { some: { userId } } },
+    });
+    return result ? true : false;
+};
+
 export const getChatMembers = async (chatId: number): Promise<MemberSummary[]> => {
     const chatParticipants = await db.chatParticipant.findMany({
         where: { chatId },

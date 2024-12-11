@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">28.57% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>8/28</span>
+                <span class='fraction'>35/35</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">90% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/7</span>
+                <span class='fraction'>9/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>6/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">22.72% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>5/22</span>
+                <span class='fraction'>26/26</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -94,67 +94,79 @@
 <a name='L29'></a><a href='#L29'>29</a>
 <a name='L30'></a><a href='#L30'>30</a>
 <a name='L31'></a><a href='#L31'>31</a>
-<a name='L32'></a><a href='#L32'>32</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Request, Response } from "express";
 import { draftMessage, getDraftedMessage, undraftMessage } from "@services/chat/message.service";
 import { DraftMessage } from "@models/messages.models";
 import { buildDraftedMessage } from "./format.message";
+import { validateChatAndUser } from "@validators/chat";
 &nbsp;
-export const handleDraftMessage = <span class="fstat-no" title="function not covered" >async (r</span>eq: Request, res: Response) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
-    const userId = <span class="cstat-no" title="statement not covered" >req.userId;</span>
-    const chatId = <span class="cstat-no" title="statement not covered" >Number(req.params.chatId);</span>
-    const message: DraftMessage = <span class="cstat-no" title="statement not covered" >req.body;</span>
-<span class="cstat-no" title="statement not covered" >    await draftMessage(userId, chatId, message);</span>
-<span class="cstat-no" title="statement not covered" >    res.status(200).json("Drafted message successfully");</span>
+export const handleDraftMessage = async (req: Request, res: Response) =&gt; {
+    const userId = req.userId;
+    const chatId = Number(req.params.chatId);
+    if (!(await validateChatAndUser(userId, chatId, res))) return;
+    const message: DraftMessage = req.body;
+    await draftMessage(userId, chatId, message);
+    res.status(200).json("Drafted message successfully");
 };
 &nbsp;
-export const handleGetDraftedMessage = <span class="fstat-no" title="function not covered" >async (r</span>eq: Request, res: Response) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
-    const userId = <span class="cstat-no" title="statement not covered" >req.userId;</span>
-    const chatId = <span class="cstat-no" title="statement not covered" >Number(req.params.chatId);</span>
-    const result = <span class="cstat-no" title="statement not covered" >await getDraftedMessage(userId, chatId);</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!result || result?.draftContent === "") {</span>
-<span class="cstat-no" title="statement not covered" >        res.status(404).json({ message: "No drafted message found" });</span>
-<span class="cstat-no" title="statement not covered" >        return;</span>
+export const handleGetDraftedMessage = async (req: Request, res: Response) =&gt; {
+    const userId = req.userId;
+    const chatId = Number(req.params.chatId);
+    if (!(await validateChatAndUser(userId, chatId, res))) return;
+    const result = await getDraftedMessage(userId, chatId);
+    if (!result || result<span class="branch-0 cbranch-no" title="branch not covered" >?.d</span>raftContent === "") {
+        res.status(404).json({ message: "No drafted message found" });
+        return;
     }
-    const draftedMessage = <span class="cstat-no" title="statement not covered" >await buildDraftedMessage(userId, chatId, result);</span>
-<span class="cstat-no" title="statement not covered" >    res.status(200).json(draftedMessage);</span>
+    const draftedMessage = await buildDraftedMessage(userId, chatId, result);
+    res.status(200).json(draftedMessage);
 };
 &nbsp;
-export const handleUndraftMessage = <span class="fstat-no" title="function not covered" >async (r</span>eq: Request, res: Response) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
-    const userId = <span class="cstat-no" title="statement not covered" >req.userId;</span>
-    const chatId = <span class="cstat-no" title="statement not covered" >Number(req.params.chatId);</span>
-<span class="cstat-no" title="statement not covered" >    await undraftMessage(userId, chatId);</span>
-<span class="cstat-no" title="statement not covered" >    res.status(200).json("Undrafted message successfully");</span>
+export const handleUndraftMessage = async (req: Request, res: Response) =&gt; {
+    const userId = req.userId;
+    const chatId = Number(req.params.chatId);
+    if (!(await validateChatAndUser(userId, chatId, res))) return;
+    await undraftMessage(userId, chatId);
+    res.status(200).json("Undrafted message successfully");
 };
 &nbsp;</pre></td></tr></table></pre>
 
@@ -163,7 +175,7 @@ export const handleUndraftMessage = <span class="fstat-no" title="function not c
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-12-11T00:33:26.557Z
+                at 2024-12-11T22:21:04.430Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

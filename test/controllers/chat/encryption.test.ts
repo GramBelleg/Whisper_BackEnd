@@ -59,7 +59,7 @@ describe("Key Management Handlers", () => {
         expect(response.body).toHaveProperty("message", "Invalid keyId");
     });
 
-    it("should return 404 if a key does not exist", async () => {
+    it("should return 403 if a user doesn't own this key", async () => {
         const user = await createRandomUser();
 
         jest.spyOn(authMiddleware, "default").mockImplementation(async (req, _res, next) => {
@@ -69,9 +69,10 @@ describe("Key Management Handlers", () => {
 
         const response = await request(app).get(`/api/encrypt/?keyId=9999`).send();
 
-        expect(response.status).toBe(404);
-        expect(response.body).toHaveProperty("message", "Key not found");
+        expect(response.status).toBe(403);
+        expect(response.body).toHaveProperty("message", "User does not own this key");
     });
+
 
     it("should associate a participant key with a chat", async () => {
         const user1 = await createRandomUser();
@@ -155,5 +156,61 @@ describe("Key Management Handlers", () => {
 
         expect(response.status).toBe(404);
         expect(response.body).toHaveProperty("message", "Key not found");
+    });
+    it("should return 403 if user is not in the chat when associating a key", async () => {
+        const user1 = await createRandomUser();
+        const user2 = await createRandomUser();
+        const chat = await createChat([user2.id], user2.id, null, "DM");
+        const key = "test-encryption-key";
+        const keyId = await createUserKey(user1.id, key);
+
+        jest.spyOn(authMiddleware, "default").mockImplementation(async (req, _res, next) => {
+            req.userId = user1.id;
+            next();
+        });
+
+        const response = await request(app).put(`/api/encrypt/${chat.id}?keyId=${keyId}`).send();
+
+        expect(response.status).toBe(403);
+    });
+    it("should return 404 if chat does not exist when associating a key", async () => {
+        const user = await createRandomUser();
+        const key = "test-encryption-key";
+        const keyId = await createUserKey(user.id, key);
+
+        jest.spyOn(authMiddleware, "default").mockImplementation(async (req, _res, next) => {
+            req.userId = user.id;
+            next();
+        });
+
+        const response = await request(app).put(`/api/encrypt/9999?keyId=${keyId}`).send();
+
+        expect(response.status).toBe(404);
+    });
+    it("should return 403 if user is not in the chat when retrieving another participant's key", async () => {
+        const user1 = await createRandomUser();
+        const user2 = await createRandomUser();
+        const chat = await createChat([user2.id], user2.id, null, "DM");
+
+        jest.spyOn(authMiddleware, "default").mockImplementation(async (req, _res, next) => {
+            req.userId = user1.id;
+            next();
+        });
+
+        const response = await request(app).get(`/api/encrypt/${chat.id}`).send();
+
+        expect(response.status).toBe(403);
+    });
+    it("should return 404 if chat does not exist when retrieving another participant's key", async () => {
+        const user = await createRandomUser();
+
+        jest.spyOn(authMiddleware, "default").mockImplementation(async (req, _res, next) => {
+            req.userId = user.id;
+            next();
+        });
+
+        const response = await request(app).get(`/api/encrypt/9999`).send();
+
+        expect(response.status).toBe(404);
     });
 });

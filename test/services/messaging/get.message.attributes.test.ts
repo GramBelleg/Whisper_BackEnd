@@ -1,5 +1,9 @@
 import { createRandomUser } from "@services/auth/prisma/create.service";
-import { createChat } from "@services/chat/chat.service";
+import {
+    createChat,
+    isUserAllowedToAccessMessage,
+    messageExists,
+} from "@services/chat/chat.service";
 import { User } from "@prisma/client";
 import { Message } from "@prisma/client";
 import db from "@DB";
@@ -92,5 +96,21 @@ describe("getMessageAttributes", () => {
     it("should return null if messageId is null", async () => {
         const status = await getMessageContent(null);
         expect(status).toBeNull();
+    });
+    it("should return if message exists true", async () => {
+        const result = await messageExists(message.id);
+        expect(result).toBe(true);
+    });
+    it("should return if message exists false", async () => {
+        const result = await messageExists(99999);
+        expect(result).toBe(false);
+    });
+    it("should return true if user allowed to access message", async () => {
+        const result = await isUserAllowedToAccessMessage(user1.id, message.id);
+        expect(result).toBe(true);
+    });
+    it("should return false if user not allowed to access message", async () => {
+        const result = await isUserAllowedToAccessMessage(999999, message.id);
+        expect(result).toBe(false);
     });
 });
