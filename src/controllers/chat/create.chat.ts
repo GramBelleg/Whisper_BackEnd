@@ -5,7 +5,11 @@ import { MAX_GROUP_SIZE } from "@config/constants.config";
 import { ChatType } from "@prisma/client";
 
 const isValidSize = (size: number, type: string) => {
-    return (size <= MAX_GROUP_SIZE && type == ChatType.GROUP) || (size == 2 && type == ChatType.DM);
+    return (
+        (size <= MAX_GROUP_SIZE && type == ChatType.GROUP) ||
+        (size == 2 && type == ChatType.DM) ||
+        (size >= 1 && type == ChatType.CHANNEL)
+    );
 };
 export const handleCreateChat = async (userId: number, chat: CreatedChat, users: number[]) => {
     try {
