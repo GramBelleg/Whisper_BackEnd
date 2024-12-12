@@ -1,4 +1,3 @@
-import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import { verifyUserToken, getToken, clearTokenCookie } from "@services/auth/token.service";
 

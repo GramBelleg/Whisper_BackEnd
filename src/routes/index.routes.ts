@@ -8,8 +8,10 @@ import messagesRouter from "@routes/message.routes";
 import stickersRouter from "@routes/sticker.routes";
 import encryptionRouter from "@routes/encryption.routes";
 import groupRouter from "@routes/group.routes";
+import apiAuth from "@middlewares/api.middleware";
 const router: Router = Router();
 
+// router.use(apiAuth);
 router.use("/auth", authenticationRouter);
 router.use(userAuth);
 router.use("/user", userRouter);
