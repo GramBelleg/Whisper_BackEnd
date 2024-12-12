@@ -386,30 +386,6 @@ export const setNewLastMessage = async (chatId: number): Promise<void> => {
     });
 };
 
-export const setChatPrivacy = async (id: number, isPrivate: boolean) => {
-    try {
-        await db.chat.update({
-            where: {
-                id,
-            },
-            data: {
-                group: {
-                    update: {
-                        data: {
-                            isPrivate,
-                        },
-                    },
-                },
-            },
-        });
-    } catch (err: any) {
-        if (err.code === "P2025") {
-            throw new HttpError("Group Not Found", 404);
-        }
-        throw err;
-    }
-};
-
 export const getChatType = async (id: number) => {
     const chat = await db.chat.findUnique({
         where: {

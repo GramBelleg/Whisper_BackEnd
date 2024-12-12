@@ -1,5 +1,6 @@
 import db from "@DB";
 import { ChatUserSummary, CreatedChat, MemberSummary } from "@models/chat.models";
+import HttpError from "@src/errors/HttpError";
 
 export const getSizeLimit = async (chatId: number) => {
     try {
@@ -26,6 +27,30 @@ export const updateSizeLimit = async (chatId: number, maxSize: number) => {
     } catch (err: any) {
         if (err.code === "P2025") {
             throw new Error("Group not found for the specified chatId.");
+        }
+        throw err;
+    }
+};
+
+export const setGroupPrivacy = async (id: number, isPrivate: boolean) => {
+    try {
+        await db.chat.update({
+            where: {
+                id,
+            },
+            data: {
+                group: {
+                    update: {
+                        data: {
+                            isPrivate,
+                        },
+                    },
+                },
+            },
+        });
+    } catch (err: any) {
+        if (err.code === "P2025") {
+            throw new HttpError("Group Not Found", 404);
         }
         throw err;
     }

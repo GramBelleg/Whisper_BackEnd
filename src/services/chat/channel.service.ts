@@ -1,5 +1,94 @@
 import db from "@DB";
 import { ChatUserSummary, CreatedChat } from "@models/chat.models";
+import HttpError from "@src/errors/HttpError";
+
+export const setChannelPrivacy = async (id: number, isPrivate: boolean) => {
+    try {
+        await db.chat.update({
+            where: {
+                id,
+            },
+            data: {
+                channel: {
+                    update: {
+                        data: {
+                            isPrivate,
+                        },
+                    },
+                },
+            },
+        });
+    } catch (err: any) {
+        if (err.code === "P2025") {
+            throw new HttpError("Channel Not Found", 404);
+        }
+        throw err;
+    }
+};
+export const setPermissions = async (userId: number, chatId: number, permissions: any) => {
+    try {
+        const participant = await db.chatParticipant.update({
+            where: {
+                chatId_userId: { chatId, userId },
+            },
+            data: {
+                channelParticipant: {
+                    update: {
+                        data: {
+                            canDownload: permissions.canDownload,
+                            canComment: permissions.canComment,
+                        },
+                    },
+                },
+            },
+        });
+        if (!participant) throw new Error("Participant doesn't exist");
+    } catch (err: any) {
+        if (err.code === "P2025") {
+            throw new Error("Participant or channel participant not found.");
+        }
+        throw err;
+    }
+};
+
+export const addUser = async (userId: number, chatId: number) => {
+    try {
+        await db.chatParticipant.create({
+            data: {
+                userId,
+                chatId,
+                channelParticipant: { create: {} },
+            },
+        });
+    } catch (err: any) {
+        if (err.code === "P2002") {
+            throw new Error("Chat Participant already exists.");
+        }
+        throw err;
+    }
+};
+
+export const getPermissions = async (userId: number, chatId: number) => {
+    try {
+        const participant = await db.chatParticipant.findUnique({
+            where: {
+                chatId_userId: { chatId, userId },
+            },
+            select: {
+                channelParticipant: {
+                    select: {
+                        canDownload: true,
+                        canComment: true,
+                    },
+                },
+            },
+        });
+        if (!participant) throw new Error("Participant doesn't exist");
+        return participant.channelParticipant;
+    } catch (err: any) {
+        throw err;
+    }
+};
 export const isAdmin = async (admin: ChatUserSummary) => {
     try {
         const user = await db.chatParticipant.findUnique({

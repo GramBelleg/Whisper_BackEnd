@@ -16,7 +16,16 @@ export const broadCast = async (
     }
 };
 
-export const handleChatPermissions = async (userId: number, chatId: number, handler: any) => {
+export const handleChatPermissions = async (
+    userId: number,
+    chatId: number,
+    groupHandler: any,
+    channelHandler: any
+) => {
     const chatType = await getChatType(chatId);
-    if (chatType == ChatType.GROUP || chatType == ChatType.CHANNEL) await handler(userId, chatId);
+    if (chatType == ChatType.GROUP && groupHandler) {
+        await groupHandler(userId, chatId);
+    } else if (chatType == ChatType.CHANNEL && channelHandler) {
+        await channelHandler(userId, chatId);
+    }
 };

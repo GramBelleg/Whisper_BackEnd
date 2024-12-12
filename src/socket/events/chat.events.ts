@@ -3,7 +3,7 @@ import { socketWrapper } from "@socket/handlers/error.handler";
 import * as types from "@models/chat.models";
 import * as createChatController from "@controllers/chat/create.chat";
 import * as groupController from "@controllers/chat/group.chat";
-import * as channelController from "@controllers/chat/group.chat";
+import * as channelController from "@controllers/chat/channel";
 import * as chatHandler from "@socket/handlers/chat.handlers";
 import { UserType } from "@models/user.models";
 import { displayedUser } from "@services/user/user.service";
@@ -39,12 +39,28 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
     );
     socket.on(
         "addUser",
-        socketWrapper(async (ChatUser: types.ChatUser) => {
-            const { participants, userChat } = await groupController.addUser(userId, ChatUser);
+        socketWrapper(async (chatUser: types.ChatUser) => {
+            let participants, userChat;
+            const chatType = await getChatType(chatUser.chatId);
+
+            if (chatType == ChatType.GROUP) {
+                const data = await groupController.addUser(userId, chatUser);
+                participants = data.participants;
+                userChat = data.userChat;
+            } else if (chatType == ChatType.CHANNEL) {
+                const data = await channelController.addUser(userId, chatUser);
+                participants = data.participants;
+                userChat = data.userChat;
+            }
+
+            if (!participants) throw new Error("No participants found");
+
             for (let i = 0; i < participants.length; i++) {
-                if (participants[i] != ChatUser.user.id)
-                    await chatHandler.broadCast(participants[i], clients, "addUser", ChatUser);
-                else await chatHandler.broadCast(participants[i], clients, "createChat", userChat);
+                if (participants[i] !== chatUser.user.id) {
+                    await chatHandler.broadCast(participants[i], clients, "addUser", chatUser);
+                } else {
+                    await chatHandler.broadCast(participants[i], clients, "createChat", userChat);
+                }
             }
         })
     );

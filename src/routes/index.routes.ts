@@ -18,6 +18,7 @@ router.use("/user", userRouter);
 router.use("/media", mediaRouter);
 router.use("/chats", chatsRouter);
 router.use("/groups", groupRouter);
+router.use("/channels", groupRouter);
 router.use("/messages", messagesRouter);
 router.use("/stickers", stickersRouter);
 router.use("/encrypt", encryptionRouter);
