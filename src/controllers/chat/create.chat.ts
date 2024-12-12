@@ -22,13 +22,13 @@ export const handleCreateChat = async (userId: number, chat: CreatedChat, users:
     if (!isValidSize(users.length, chat.type)) throw new Error("Can't Create Chat invalid size");
     const result = await createChat(users, userId, chat.senderKey, chat.type);
     if (chat.type == ChatType.GROUP)
-        await createGroup(result.chatId, result.participants, chat, userId);
+        await createGroup(result.id, result.participants, chat, userId);
     else if (chat.type == ChatType.CHANNEL)
-        await createChannel(result.chatId, result.participants, chat, userId);
-    
+        await createChannel(result.id, result.participants, chat, userId);
+
     const chats = await Promise.all(
         users.map(async (user) => {
-            return (await getChat(user, result.chatId)) as ChatSummary;
+            return (await getChat(user, result.id)) as ChatSummary;
         })
     );
     return chats;

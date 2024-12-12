@@ -211,6 +211,7 @@ export const createGroup = async (
     group: CreatedChat,
     userId: number
 ) => {
+    if (!group.name) throw new Error("Missing group name");
     try {
         const chat = await db.group.create({
             data: {

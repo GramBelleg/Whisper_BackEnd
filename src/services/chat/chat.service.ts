@@ -170,7 +170,7 @@ export const createChat = async (
         },
     });
     const participants = await createChatParticipants(users, userId, senderKey, chat.id);
-    return { chatId: chat.id, participants };
+    return { id: chat.id, participants };
 };
 
 export const getOtherUserId = async (excludedUserId: number, chatId: number) => {

@@ -24,6 +24,7 @@ export const createChannel = async (
     channel: CreatedChat,
     userId: number
 ) => {
+    if (!channel.name) throw new Error("Channel name is missing");
     try {
         const chat = await db.channel.create({
             data: {

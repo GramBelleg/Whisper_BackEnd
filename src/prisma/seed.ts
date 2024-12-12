@@ -70,6 +70,70 @@ async function createChats(numChats: number, users: any[]) {
 
         chats.push({ chat, participants });
     }
+    {
+        const chat: Chat = await db.chat.create({
+            data: {
+                type: ChatType.GROUP,
+            },
+        });
+
+        await db.group.create({
+            data: {
+                chatId: chat.id,
+                picture: null,
+                name: "bahebak",
+            },
+        });
+        for (const user of users) {
+            const p = await db.chatParticipant.create({
+                data: {
+                    chatId: chat.id,
+                    userId: user.id,
+                },
+            });
+            let isAdmin = false;
+            if (user.id == users[0].id) isAdmin = true;
+            const g = await db.groupParticipant.create({
+                data: {
+                    id: p.id,
+                    isAdmin,
+                },
+            });
+        }
+        const participants: User[] = users;
+        chats.push({ chat, participants });
+    }
+    const chat: Chat = await db.chat.create({
+        data: {
+            type: ChatType.CHANNEL,
+        },
+    });
+
+    await db.channel.create({
+        data: {
+            chatId: chat.id,
+            picture: null,
+            name: "awy",
+        },
+    });
+    for (const user of users) {
+        const p = await db.chatParticipant.create({
+            data: {
+                chatId: chat.id,
+                userId: user.id,
+            },
+        });
+        let isAdmin = false;
+        if (user.id == users[0].id) isAdmin = true;
+        const g = await db.channelParticipant.create({
+            data: {
+                id: p.id,
+                isAdmin,
+            },
+        });
+    }
+    const participants: User[] = users;
+    chats.push({ chat, participants });
     return chats;
 }
 
