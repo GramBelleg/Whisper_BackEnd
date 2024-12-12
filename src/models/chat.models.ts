@@ -13,8 +13,8 @@ export type CreatedChat = {
     users: number[];
     senderKey: null | number;
     type: ChatType;
-    name: string;
-    picture: string;
+    name?: string;
+    picture?: string;
 };
 
 export type ChatSummary = {
@@ -30,6 +30,7 @@ export type ChatSummary = {
     lastMessage: LastMessage;
     unreadMessageCount: number;
     isMuted: number;
+    isAdmin?: boolean;
 };
 
 export type ChatUserSummary = { userId: number; chatId: number };

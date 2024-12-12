@@ -43,7 +43,7 @@ export const addAdmin = async (admin: ChatUserSummary) => {
         throw err;
     }
 };
-export const getChannelContent = async (chatId: number) => {
+export const getChannelContent = async (chatId: number, userId: number) => {
     try {
         const channel = await db.channel.findUnique({
             where: { chatId },
@@ -52,11 +52,21 @@ export const getChannelContent = async (chatId: number) => {
                 picture: true,
             },
         });
+        const participant = await db.chatParticipant.findUnique({
+            where: { chatId_userId: { chatId, userId } },
+            select: {
+                channelParticipant: {
+                    select: {
+                        isAdmin: true,
+                    },
+                },
+            },
+        });
         if (!channel) throw new Error("Group not found.");
-        return channel;
+        return { ...channel, isAdmin: participant?.channelParticipant?.isAdmin };
     } catch (err: any) {
         if (err.code === "P2025") {
-            throw new Error("Group not found for the specified chatId.");
+            throw new Error("Channel not found for the specified chatId.");
         }
         throw err;
     }
@@ -68,6 +78,7 @@ export const createChannel = async (
     userId: number
 ) => {
     try {
+        if (!channel.name) throw new Error("Group name is missing");
         const chat = await db.channel.create({
             data: {
                 chatId,

@@ -187,7 +187,7 @@ export const getGroupMembers = async (chatId: number): Promise<MemberSummary[]> 
     }));
 };
 
-export const getGroupContent = async (chatId: number) => {
+export const getGroupContent = async (chatId: number, userId: number) => {
     try {
         const group = await db.group.findUnique({
             where: { chatId },
@@ -196,8 +196,18 @@ export const getGroupContent = async (chatId: number) => {
                 picture: true,
             },
         });
+        const participant = await db.chatParticipant.findUnique({
+            where: { chatId_userId: { chatId, userId } },
+            select: {
+                groupParticipant: {
+                    select: {
+                        isAdmin: true,
+                    },
+                },
+            },
+        });
         if (!group) throw new Error("Group not found.");
-        return group;
+        return { ...group, isAdmin: participant?.groupParticipant?.isAdmin };
     } catch (err: any) {
         if (err.code === "P2025") {
             throw new Error("Group not found for the specified chatId.");
@@ -212,6 +222,7 @@ export const createGroup = async (
     userId: number
 ) => {
     try {
+        if (!group.name) throw new Error("Group name is missing");
         const chat = await db.group.create({
             data: {
                 chatId,

@@ -170,7 +170,7 @@ export const createChat = async (
         },
     });
     const participants = await createChatParticipants(users, userId, senderKey, chat.id);
-    return { chatId: chat.id, participants };
+    return { id: chat.id, participants };
 };
 
 export const getOtherUserId = async (excludedUserId: number, chatId: number) => {
@@ -223,13 +223,18 @@ const getDMContent = async (participant: any, chatId: number) => {
     };
 };
 
-const getTypeDependantContent = async (type: ChatType, participant: any, chatId: number) => {
+const getTypeDependantContent = async (
+    type: ChatType,
+    participant: any,
+    chatId: number,
+    userId: number
+) => {
     if (type === "DM") {
         return getDMContent(participant, chatId);
     } else if (type === "GROUP") {
-        return groupService.getGroupContent(chatId);
+        return groupService.getGroupContent(chatId, userId);
     } else {
-        return channelService.getChannelContent(chatId);
+        return channelService.getChannelContent(chatId, userId);
     }
 };
 
@@ -259,7 +264,8 @@ export const getChatSummary = async (
     const typeDependantContent = await getTypeDependantContent(
         userChat.chat.type,
         participant,
-        userChat.chatId
+        userChat.chatId,
+        userId
     );
     const chatSummary = {
         id: userChat.chatId,

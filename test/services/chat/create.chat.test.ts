@@ -26,6 +26,7 @@ describe("createChat", () => {
         expect(savedChat).toMatchObject({ id: chat.id, type: chatType });
     });
 
+    //it should throw an error
     it("should create a group chat with no participants initially", async () => {
         const user1 = await createRandomUser();
         const userIds: number[] = [];
