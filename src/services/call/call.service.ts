@@ -6,6 +6,7 @@ import { chatType } from "@services/chat/chat.service";
 import HttpError from "@src/errors/HttpError";
 import { callSocket } from "@socket/web.socket";
 import { pushVoiceNofication } from "@services/notifications/notification.service";
+import { getSenderInfo } from "@services/user/user.service";
 
 
 const RtcTokenBuilder = require("@agora/src/RtcTokenBuilder2").RtcTokenBuilder;
@@ -52,8 +53,10 @@ export const makeCall = async (userId: number, chatId: string) => {
         const token = callToken(participants[i], channelName);
         tokens.push(token);
     }
-    callSocket(participants, tokens, channelName);
-    pushVoiceNofication(participants, tokens, channelName);
+    const user = await getSenderInfo(userId); 
+    const notification = {...user,  chatId: chatId ,channelName: channelName};
+    callSocket(participants, tokens, notification);
+    pushVoiceNofication(participants, tokens, notification);
     const token = callToken(userId, channelName);
     return token;
 };

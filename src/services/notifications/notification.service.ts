@@ -75,7 +75,7 @@ export const clearMessageNotification = async (userId: number, messageIds: numbe
     }
 }
 
-export const pushVoiceNofication = async (participants: number[], tokens: string[], channelName: string): Promise<void> => {
+export const pushVoiceNofication = async (participants: number[], tokens: string[], notification: any): Promise<void> => {
     try {
         const deviceTokens = await findDeviceTokens(participants);
         for (let i = 0; i < participants.length; i++) {
@@ -92,7 +92,7 @@ export const pushVoiceNofication = async (participants: number[], tokens: string
                 data: {
                     type: 'voice_call',
                     token: tokens[i],
-                    channelName,
+                    ...notification
                 }
             };
             if (userDeviceTokens.length === 0) continue;

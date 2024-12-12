@@ -32,8 +32,8 @@ export const notifyExpiry = (key: string) => {
     }
 };
 
-export const callSocket = (participants: number[],tokens: string[], channelName: string) => {
-    callHandler.call(clients, participants, tokens, channelName);
+export const callSocket = (participants: number[],tokens: string[], notification: any) => {
+    callHandler.call(clients, participants, tokens, notification);
 };
 
 export const initWebSocketServer = (server: HTTPServer) => {
