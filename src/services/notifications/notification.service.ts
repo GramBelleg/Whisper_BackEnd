@@ -26,7 +26,13 @@ export const pushMessageNotification = async (
         }
         if (unmutedUsers.length === 0) return;
         const deviceTokens = await findDeviceTokens(unmutedUsers);
-
+        const deviceTokenList = [] as string[];
+        deviceTokens.forEach((deviceToken) => {
+            if (deviceToken.deviceToken) {
+                deviceTokenList.push(deviceToken.deviceToken);
+            }
+        });
+        if (deviceTokenList.length === 0) return;
         const payload = {
             notification: {
                 title,
@@ -38,12 +44,6 @@ export const pushMessageNotification = async (
             }
         };
 
-        const deviceTokenList = deviceTokens.map((deviceToken) => {
-            if (deviceToken.deviceToken) {
-                return deviceToken.deviceToken;
-            }
-        }) as string[];
-        if (deviceTokenList.length === 0) return;
         await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
             tokens: deviceTokenList,
             notification: payload.notification,
@@ -57,6 +57,13 @@ export const pushMessageNotification = async (
 export const clearMessageNotification = async (userId: number, messageIds: number[]): Promise<void> => {
     try {
         const deviceTokens = await findDeviceTokens([userId]);
+        const deviceTokenList = [] as string[];
+        deviceTokens.forEach((deviceToken) => {
+            if (deviceToken.deviceToken) {
+                deviceTokenList.push(deviceToken.deviceToken);
+            }
+        });
+        if (deviceTokenList.length === 0) return;
         for (const messageId of messageIds) {
             const payload = {
                 data: {
@@ -64,7 +71,6 @@ export const clearMessageNotification = async (userId: number, messageIds: numbe
                     messageId: messageId.toString(),
                 }
             };
-            const deviceTokenList = deviceTokens.map((deviceToken) => deviceToken.token);
             await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
                 tokens: deviceTokenList,
                 data: payload.data,
@@ -79,11 +85,13 @@ export const pushVoiceNofication = async (participants: number[], tokens: string
     try {
         const deviceTokens = await findDeviceTokens(participants);
         for (let i = 0; i < participants.length; i++) {
-            const userDeviceTokens = deviceTokens.map((deviceToken) => {
+            const userDeviceTokens = [] as string[];
+            deviceTokens.forEach((deviceToken) => {
                 if (deviceToken.userId === participants[i] && deviceToken.deviceToken) {
-                    return deviceToken.deviceToken;
+                    userDeviceTokens.push(deviceToken.deviceToken);
                 }
-            }) as string[];
+            });
+            if (userDeviceTokens.length === 0) continue;
             const payload = {
                 notification: {
                     title: 'Voice Call',
