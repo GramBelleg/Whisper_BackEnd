@@ -38,8 +38,12 @@ export const pushMessageNotification = async (
             }
         };
 
-        const deviceTokenList = deviceTokens.map((deviceToken) => deviceToken.token);
-
+        const deviceTokenList = deviceTokens.map((deviceToken) => {
+            if (deviceToken.deviceToken) {
+                return deviceToken.deviceToken;
+            }
+        }) as string[];
+        if (deviceTokenList.length === 0) return;
         await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
             tokens: deviceTokenList,
             notification: payload.notification,
@@ -76,10 +80,10 @@ export const pushVoiceNofication = async (participants: number[], tokens: string
         const deviceTokens = await findDeviceTokens(participants);
         for (let i = 0; i < participants.length; i++) {
             const userDeviceTokens = deviceTokens.map((deviceToken) => {
-                if (deviceToken.userId === participants[i]) {
-                    return deviceToken.token;
+                if (deviceToken.userId === participants[i] && deviceToken.deviceToken) {
+                    return deviceToken.deviceToken;
                 }
-            });
+            }) as string[];
             const payload = {
                 notification: {
                     title: 'Voice Call',
@@ -91,10 +95,9 @@ export const pushVoiceNofication = async (participants: number[], tokens: string
                     channelName,
                 }
             };
-            if(userDeviceTokens.length === 0)
-                continue;
+            if (userDeviceTokens.length === 0) continue;
             await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
-                tokens: userDeviceTokens as string[],
+                tokens: userDeviceTokens,
                 notification: payload.notification,
                 data: payload.data,
             });
