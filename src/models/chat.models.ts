@@ -33,12 +33,6 @@ export type ChatSummary = {
     unreadMessageCount: number;
 };
 
-export type ChatSettings = {
-    id: number,
-    selfDestruct?: number | null,
-    isBlocked?: boolean,
-}
-
 export type ChatUserSummary = { userId: number; chatId: number };
 
 export type ChatUser = {

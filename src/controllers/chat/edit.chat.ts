@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { getChat, muteChat, unmuteChat, updateSelfDestruct } from "@services/chat/chat.service";
+import { isDMChat, muteChat, unmuteChat, updateSelfDestruct } from "@services/chat/chat.service";
 import { saveMuteDuration } from "@services/chat/redis.service";
 import { validateChatAndUser } from "@validators/chat";
-import { ChatSettings } from "@models/chat.models";
+import { updateChatSettings } from "@socket/web.socket";
 
 export const handleMuteChat = async (req: Request, res: Response) => {
     const userId = req.userId;
@@ -23,13 +23,16 @@ export const handleUnmuteChat = async (req: Request, res: Response) => {
     res.status(200).json({ message: `Chat ${chatId} unmuted successfully` });
 };
 
-export const handleChatSettings = async (userId: number, chatSettings: ChatSettings) => {
-    if (!(await validateChatAndUser(userId, chatSettings.id, null))) {
-        throw new Error("User does not belong to chat");
+export const handleSelfDestruct = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const chatId = Number(req.params.chatId);
+    if (!(await validateChatAndUser(userId, chatId, res))) return;
+    if (!(await isDMChat(chatId))) {
+        res.status(400).json({ message: "This feature is only available for DM chats" });
+        return;
     }
-    if (chatSettings.selfDestruct !== undefined) {
-        await updateSelfDestruct(chatSettings.id, chatSettings.selfDestruct);
-    }
-    //TODO: Add more settings like group settings or isBlocked
-    return await getChat(userId, chatSettings.id);
+    const duration = req.body.duration;
+    await updateSelfDestruct(chatId, duration);
+    await updateChatSettings(chatId);
+    res.status(200).json({ message: `Chat ${chatId} self destruct time updated successfully` });
 };

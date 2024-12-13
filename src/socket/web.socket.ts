@@ -9,7 +9,7 @@ import { setupStoryEvents } from "./events/story.events";
 import { socketWrapper } from "./handlers/error.handler";
 import { setupPfpEvents } from "./events/pfp.events";
 import { setupStatusEvents } from "./events/status.events";
-import { setupChatEvents } from "./events/chat.events";
+import { sendChatSummary, setupChatEvents } from "./events/chat.events";
 
 type HandlerFunction = (key: string, clients: Map<number, Socket>) => any;
 const clients: Map<number, Socket> = new Map();
@@ -29,6 +29,10 @@ export const notifyExpiry = (key: string) => {
     } else {
         console.warn(`No handler found for key: ${key}`);
     }
+};
+
+export const updateChatSettings = async (chatId: number) => {
+    await sendChatSummary(chatId, clients);
 };
 
 export const initWebSocketServer = (server: HTTPServer) => {

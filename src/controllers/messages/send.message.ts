@@ -13,7 +13,6 @@ const handleSaveMessage = async (userId: number, message: SentMessage) => {
     return savedMessage;
 };
 
-
 export const handleSend = async (
     userId: number,
     message: SentMessage

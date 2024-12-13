@@ -3,12 +3,12 @@ import { sendToClient } from "@socket/utils/socket.utils";
 import { getChatType } from "@services/chat/chat.service";
 import { ChatType } from "@prisma/client";
 
-export const broadCast = async (
+export const broadCast = (
     userId: number,
     clients: Map<number, Socket>,
     emitEvent: string,
     emitMessage: any
-): Promise<void> => {
+) => {
     try {
         sendToClient(userId, clients, emitEvent, emitMessage);
     } catch (error: any) {

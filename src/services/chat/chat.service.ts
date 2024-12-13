@@ -395,7 +395,7 @@ export const getSelfDestruct = async (chatId: number) => {
         where: { id: chatId },
         select: { selfDestruct: true },
     });
-    return chat!.selfDestruct;
+    return chat?.selfDestruct;
 };
 
 export const setLastMessage = async (chatId: number, messageId: number): Promise<void> => {

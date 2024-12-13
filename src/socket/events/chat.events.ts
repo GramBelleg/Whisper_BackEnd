@@ -2,12 +2,19 @@ import { Socket } from "socket.io";
 import { socketWrapper } from "@socket/handlers/error.handler";
 import * as types from "@models/chat.models";
 import * as createChatController from "@controllers/chat/create.chat";
-import * as editChatController from "@controllers/chat/edit.chat";
 import * as groupController from "@controllers/chat/group.chat";
 import * as chatHandler from "@socket/handlers/chat.handlers";
 import { UserType } from "@models/user.models";
 import { displayedUser } from "@services/user/user.service";
 import { getChat, getChatParticipantsIds } from "@services/chat/chat.service";
+
+export const sendChatSummary = async (chatId: number, clients: Map<number, Socket>) => {
+    const participants: number[] = await getChatParticipantsIds(chatId);
+    for (const participant of participants) {
+        const chatSummary = await getChat(participant, chatId);
+        chatHandler.broadCast(participant, clients, "updateChat", chatSummary);
+    }
+};
 
 export const setupChatEvents = (socket: Socket, userId: number, clients: Map<number, Socket>) => {
     socket.on(
@@ -16,7 +23,7 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
             const savedChat = await createChatController.handleCreateChat(userId, chat, chat.users);
             if (savedChat) {
                 for (let i = 0; i < chat.users.length; i++)
-                    await chatHandler.broadCast(chat.users[i], clients, "createChat", savedChat[i]);
+                    chatHandler.broadCast(chat.users[i], clients, "createChat", savedChat[i]);
             }
         })
     );
@@ -25,7 +32,7 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
         socketWrapper(async (admin: types.ChatUserSummary) => {
             const participants = await groupController.addAdmin(userId, admin);
             for (let i = 0; i < participants.length; i++)
-                await chatHandler.broadCast(participants[i], clients, "addAdmin", admin);
+                chatHandler.broadCast(participants[i], clients, "addAdmin", admin);
         })
     );
     socket.on(
@@ -34,8 +41,8 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
             const { participants, userChat } = await groupController.addUser(userId, ChatUser);
             for (let i = 0; i < participants.length; i++) {
                 if (participants[i] != ChatUser.user.id)
-                    await chatHandler.broadCast(participants[i], clients, "addUser", ChatUser);
-                else await chatHandler.broadCast(participants[i], clients, "createChat", userChat);
+                    chatHandler.broadCast(participants[i], clients, "addUser", ChatUser);
+                else chatHandler.broadCast(participants[i], clients, "createChat", userChat);
             }
         })
     );
@@ -49,7 +56,7 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
             );
             const user = await displayedUser(userId);
             for (let i = 0; i < participants.length; i++) {
-                await chatHandler.broadCast(participants[i], clients, "removeUser", {
+                chatHandler.broadCast(participants[i], clients, "removeUser", {
                     user,
                     removerUserName: user.userName,
                     chatId: remove.chatId,
@@ -63,24 +70,10 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
             const participants = await groupController.leave(userId, leave.chatId);
             const user = await displayedUser(userId);
             for (let i = 0; i < participants.length; i++) {
-                await chatHandler.broadCast(participants[i], clients, "leaveChat", {
+                chatHandler.broadCast(participants[i], clients, "leaveChat", {
                     userName: user.userName,
                     chatId: leave.chatId,
                 });
-            }
-        })
-    );
-
-    socket.on(
-        "updateChat",
-        socketWrapper(async (chatSettings: types.ChatSettings) => {
-            const participants: number[] = await getChatParticipantsIds(chatSettings.id);
-            for (let i = 0; i < participants.length; i++) {
-                const chatSummary = await editChatController.handleChatSettings(
-                    participants[i],
-                    chatSettings
-                );
-                await chatHandler.broadCast(participants[i], clients, "updateChat", chatSummary);
             }
         })
     );
