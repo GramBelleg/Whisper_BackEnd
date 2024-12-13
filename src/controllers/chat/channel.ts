@@ -22,7 +22,7 @@ export const invite = async (req: Request, res: Response) => {
     if (!socket) throw new HttpError("Failed to retrieve user socket", 400);
 
     const user = displayedUser(userId);
-    socket.emit("addUser", { user, chatId });
+    socket.emit("subscribe", { user, chatId });
 
     res.status(200).json({ chatId });
 };

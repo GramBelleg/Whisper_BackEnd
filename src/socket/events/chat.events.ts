@@ -106,4 +106,15 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
             }
         })
     );
+    socket.on(
+        "subscribe",
+        socketWrapper(async (chatUser: types.ChatUserSummary) => {
+            const participants = await groupController.deleteGroup(userId, deleted.chatId);
+            for (let i = 0; i < participants.length; i++) {
+                await chatHandler.broadCast(participants[i], clients, "deleteChat", {
+                    chatId: deleted.chatId,
+                });
+            }
+        })
+    );
 };
