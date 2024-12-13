@@ -222,6 +222,7 @@ export const enrichMessageWithParentContent = async (message: SentMessage) => {
     };
 };
 
+
 export const saveMessage = async (userId: number, message: SentMessage): Promise<Message> => {
     const messageData = await enrichMessageWithParentContent(message);
 

@@ -8,6 +8,7 @@ model Chat {
   id            Int               @id @default(autoincrement())
   type          ChatType
   messages      Message[]
+  selfDestruct  Int?
   participants  ChatParticipant[]
   group         Group?
   channel       Channel?
@@ -75,5 +76,4 @@ model ChannelParticipant {
   canDownload Boolean @default(true)
   canComment  Boolean @default(true)
   chatParticipant ChatParticipant    @relation(fields: [id], references: [id],onDelete: Cascade)
-
 }

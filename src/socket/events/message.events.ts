@@ -119,4 +119,17 @@ export const setupMessageEvents = (
             }
         })
     );
+
+    socket.on(
+        "selfDestruct",
+        socketWrapper(
+            async ({ chatId, selfDestruct }: { chatId: number; selfDestruct: number | null }) => {
+                await editController.handleSelfDestruct(userId, chatId, selfDestruct);
+                await messageHandler.broadCast(chatId, clients, "selfDestruct", {
+                    chatId,
+                    selfDestruct,
+                });
+            }
+        )
+    );
 };

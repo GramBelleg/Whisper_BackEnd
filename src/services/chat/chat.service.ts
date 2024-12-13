@@ -72,6 +72,20 @@ export const messageExists = async (messageId: number): Promise<boolean> => {
     return result ? true : false;
 };
 
+export const isDMChat = async (chatId: number): Promise<boolean> => {
+    const result = await db.chat.findFirst({
+        where: { id: chatId, type: "DM" },
+    });
+    return result ? true : false;
+};
+
+export const updateSelfDestruct = async (chatId: number, selfDestruct: number | null) => {
+    await db.chat.update({
+        where: { id: chatId },
+        data: { selfDestruct },
+    });
+};
+
 export const filterAllowedMessagestoRead = async (
     userId: number,
     messageIds: number[],
@@ -372,6 +386,14 @@ export const getLastMessage = async (
         return { ...lastMessage, ...lastMessageSender! };
     }
     return null;
+};
+
+export const getSelfDestruct = async (chatId: number) => {
+    const chat = await db.chat.findUnique({
+        where: { id: chatId },
+        select: { selfDestruct: true },
+    });
+    return chat!.selfDestruct;
 };
 
 export const setLastMessage = async (chatId: number, messageId: number): Promise<void> => {

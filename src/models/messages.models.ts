@@ -55,7 +55,6 @@ export type SentMessage = Pick<Message, "chatId" | "senderId" | "content" | "sen
         Pick<
             Message,
             | "forwarded"
-            | "selfDestruct"
             | "expiresAfter"
             | "media"
             | "extension"

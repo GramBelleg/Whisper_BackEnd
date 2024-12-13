@@ -14,7 +14,7 @@ enum MessageType {
 
 model Message {
   id                    Int                @id @default(autoincrement())
-  key                   String?            //SHOULD NOT BE OPTIONAL, BUT KEEPING IT FOR NOW UNTIL FRONT AND CROSS HAVE IT READY
+  key                   String?            
   chatId                Int
   senderId              Int
   content               String
@@ -24,7 +24,6 @@ model Message {
   forwarded             Boolean            @default(false)
   pinned                Boolean            @default(false)
   edited                Boolean            @default(false)
-  selfDestruct          Boolean            @default(false)
   isAnnouncement        Boolean            @default(false)
   isSecret              Boolean            @default(false)
   expiresAfter          Int?

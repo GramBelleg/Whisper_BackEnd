@@ -14,7 +14,11 @@ import {
     validateMessageAndUser,
     validateUserisSender,
 } from "@validators/chat";
-import { filterAllowedMessagestoRead } from "@services/chat/chat.service";
+import {
+    filterAllowedMessagestoRead,
+    updateSelfDestruct,
+    isDMChat,
+} from "@services/chat/chat.service";
 
 export const handleGetMessageStatus = async (req: Request, res: Response) => {
     const userId = req.userId;
@@ -79,6 +83,20 @@ export const handleReadAllMessages = async (userId: number, chatId: number) => {
         throw new Error("User does not belong to chat");
     }
     return await readAllMessages(userId, chatId);
+};
+
+export const handleSelfDestruct = async (
+    userId: number,
+    chatId: number,
+    selfDestruct: number | null
+) => {
+    if (!(await isDMChat(chatId))) {
+        throw new Error("Chat is not a DM chat");
+    }
+    if (!(await validateChatAndUser(userId, chatId, null))) {
+        throw new Error("User does not belong to chat");
+    }
+    await updateSelfDestruct(chatId, selfDestruct);
 };
 
 export default handleEditContent;
