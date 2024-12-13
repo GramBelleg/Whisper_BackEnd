@@ -1,4 +1,5 @@
 import db from "@DB";
+import jwt from "jsonwebtoken";
 import { ChatUserSummary, CreatedChat } from "@models/chat.models";
 import HttpError from "@src/errors/HttpError";
 
@@ -160,6 +161,11 @@ export const getChannelContent = async (chatId: number, userId: number) => {
         throw err;
     }
 };
+const createInviteLink = (chatId: number) => {
+    const token = jwt.sign({ chatId }, process.env.JWT_SECRET as string);
+    const inviteLink = `${process.env.ROOT}/api/channels/invite?token=${token}`;
+    return inviteLink;
+};
 export const createChannel = async (
     chatId: number,
     participants: { id: number; userId: number }[],
@@ -167,7 +173,7 @@ export const createChannel = async (
     userId: number
 ) => {
     try {
-        if (!channel.name) throw new Error("Group name is missing");
+        if (!channel.name) throw new Error("Channel name is missing");
         const chat = await db.channel.create({
             data: {
                 chatId,
@@ -175,11 +181,23 @@ export const createChannel = async (
                 name: channel.name,
             },
         });
+        const inviteLink = createInviteLink(chatId);
+        await db.channel.update({
+            where: {
+                chatId: chat.chatId,
+            },
+            data: {
+                inviteLink,
+            },
+        });
         await createChannelParticipants(participants, userId);
         return chat;
     } catch (err: any) {
         if (err.code === "P2002") {
             throw new Error("Channel with the specified chatId already exists.");
+        }
+        if (err.code === "P2025") {
+            throw new Error("Channel not found for the specified chatId.");
         }
         throw err;
     }

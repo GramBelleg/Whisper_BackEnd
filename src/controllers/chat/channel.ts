@@ -1,9 +1,31 @@
 import { ChatUser, ChatUserSummary } from "@models/chat.models";
 import * as channelService from "@services/chat/channel.service";
 import { getChat, getChatParticipantsIds } from "@services/chat/chat.service";
-import { getAddPermission } from "@services/user/user.service";
+import { displayedUser, getAddPermission } from "@services/user/user.service";
+import { getSocket } from "@socket/web.socket";
 import HttpError from "@src/errors/HttpError";
 import { Request, Response } from "express";
+import jwt from "jsonwebtoken";
+
+export const invite = async (req: Request, res: Response) => {
+    const token = req.query.token;
+    const userId = req.userId;
+    if (!userId) throw new HttpError("Unauthorized user", 401);
+    if (!token || typeof token != "string") throw new HttpError("Invalid invite link", 404);
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string, {
+        ignoreExpiration: true,
+    }) as Record<string, any>;
+    const chatId = decoded.chatId;
+
+    const socket = getSocket(userId);
+    if (!socket) throw new HttpError("Failed to retrieve user socket", 400);
+
+    const user = displayedUser(userId);
+    socket.emit("addUser", { user, chatId });
+
+    res.status(200).json({ chatId });
+};
 
 export const getPermissions = async (req: Request, res: Response) => {
     const userId = Number(req.params.userId);

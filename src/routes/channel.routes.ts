@@ -8,4 +8,6 @@ router
     .route("/:chatId/:userId/permissions")
     .get(asyncHandler(channelController.getPermissions))
     .post(asyncHandler(channelController.setPermissions));
+
+router.route("/invite").get(asyncHandler(channelController.invite));
 export default router;
