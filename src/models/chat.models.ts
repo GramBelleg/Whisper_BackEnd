@@ -28,10 +28,19 @@ export type ChatSummary = {
     picture: string | null;
     status?: string;
     lastMessage: LastMessage;
+    selfDestruct: number | null;
+    // isBlocked: boolean;
     unreadMessageCount: number;
 };
 
+export type ChatSettings = {
+    id: number,
+    selfDestruct?: number | null,
+    isBlocked?: boolean,
+}
+
 export type ChatUserSummary = { userId: number; chatId: number };
+
 export type ChatUser = {
     user: { id: number; userName: string; profilePic?: string };
     chatId: number;

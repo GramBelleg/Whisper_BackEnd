@@ -85,18 +85,4 @@ export const handleReadAllMessages = async (userId: number, chatId: number) => {
     return await readAllMessages(userId, chatId);
 };
 
-export const handleSelfDestruct = async (
-    userId: number,
-    chatId: number,
-    selfDestruct: number | null
-) => {
-    if (!(await isDMChat(chatId))) {
-        throw new Error("Chat is not a DM chat");
-    }
-    if (!(await validateChatAndUser(userId, chatId, null))) {
-        throw new Error("User does not belong to chat");
-    }
-    await updateSelfDestruct(chatId, selfDestruct);
-};
-
 export default handleEditContent;

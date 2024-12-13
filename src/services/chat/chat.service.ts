@@ -305,6 +305,7 @@ export const getChatSummary = async (
         id: userChat.chatId,
         ...typeDependantContent,
         type: userChat.chat.type,
+        selfDestruct: userChat.chat.selfDestruct,
         lastMessage,
         draftMessage,
         unreadMessageCount: userChat.unreadMessageCount,
@@ -322,6 +323,7 @@ const getUserChat = async (userId: number, chatId: number) => {
             chat: {
                 select: {
                     type: true,
+                    selfDestruct: true,
                 },
             },
         },

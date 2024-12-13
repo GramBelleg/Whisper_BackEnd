@@ -2,10 +2,12 @@ import { Socket } from "socket.io";
 import { socketWrapper } from "@socket/handlers/error.handler";
 import * as types from "@models/chat.models";
 import * as createChatController from "@controllers/chat/create.chat";
+import * as editChatController from "@controllers/chat/edit.chat";
 import * as groupController from "@controllers/chat/group.chat";
 import * as chatHandler from "@socket/handlers/chat.handlers";
 import { UserType } from "@models/user.models";
 import { displayedUser } from "@services/user/user.service";
+import { getChat, getChatParticipantsIds } from "@services/chat/chat.service";
 
 export const setupChatEvents = (socket: Socket, userId: number, clients: Map<number, Socket>) => {
     socket.on(
@@ -65,6 +67,20 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
                     userName: user.userName,
                     chatId: leave.chatId,
                 });
+            }
+        })
+    );
+
+    socket.on(
+        "updateChat",
+        socketWrapper(async (chatSettings: types.ChatSettings) => {
+            const participants: number[] = await getChatParticipantsIds(chatSettings.id);
+            for (let i = 0; i < participants.length; i++) {
+                const chatSummary = await editChatController.handleChatSettings(
+                    participants[i],
+                    chatSettings
+                );
+                await chatHandler.broadCast(participants[i], clients, "updateChat", chatSummary);
             }
         })
     );

@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { muteChat, unmuteChat } from "@services/chat/chat.service";
+import { getChat, muteChat, unmuteChat, updateSelfDestruct } from "@services/chat/chat.service";
 import { saveMuteDuration } from "@services/chat/redis.service";
 import { validateChatAndUser } from "@validators/chat";
+import { ChatSettings } from "@models/chat.models";
 
 export const handleMuteChat = async (req: Request, res: Response) => {
     const userId = req.userId;
@@ -20,4 +21,15 @@ export const handleUnmuteChat = async (req: Request, res: Response) => {
 
     await unmuteChat(chatId, userId);
     res.status(200).json({ message: `Chat ${chatId} unmuted successfully` });
+};
+
+export const handleChatSettings = async (userId: number, chatSettings: ChatSettings) => {
+    if (!(await validateChatAndUser(userId, chatSettings.id, null))) {
+        throw new Error("User does not belong to chat");
+    }
+    if (chatSettings.selfDestruct !== undefined) {
+        await updateSelfDestruct(chatSettings.id, chatSettings.selfDestruct);
+    }
+    //TODO: Add more settings like group settings or isBlocked
+    return await getChat(userId, chatSettings.id);
 };
