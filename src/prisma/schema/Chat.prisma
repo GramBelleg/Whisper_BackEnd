@@ -51,8 +51,8 @@ model ChatParticipant {
   publicKey             PublicKey?        @relation(fields: [keyId], references: [id])
   parentMessage         Message?          @relation("DraftReplyToMessage", fields: [draftParentMessageId], references: [id])
   lastMessage           MessageStatus?    @relation("LastMessageForChatParticipant", fields: [lastMessageId], references: [id])
-  chat                  Chat              @relation(fields: [chatId], references: [id])
-  user                  User              @relation(fields: [userId], references: [id])
+  chat                  Chat              @relation(fields: [chatId], references: [id],onDelete: Cascade)
+  user                  User              @relation(fields: [userId], references: [id],onDelete: Cascade)
   groupParticipant      GroupParticipant?
   channelParticipant      ChannelParticipant?
 

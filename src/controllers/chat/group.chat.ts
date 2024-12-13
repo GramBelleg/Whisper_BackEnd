@@ -7,12 +7,23 @@ import { getAddPermission } from "@services/user/user.service";
 import HttpError from "@src/errors/HttpError";
 import { Request, Response } from "express";
 
+export const deleteGroup = async (userId: number, chatId: number) => {
+    const isAdmin = await groupService.isAdmin({ userId, chatId });
+    if (!isAdmin) throw new Error("You're not an admin");
+
+    const participants = getChatParticipantsIds(chatId);
+
+    await groupService.deleteGroup(chatId);
+
+    return participants;
+};
+
 const canUserBeAdded = async (chatUser: ChatUser, adderId: number) => {
     const addPermission = await getAddPermission(chatUser.user.id);
     const isAdmin = await groupService.isAdmin({ userId: adderId, chatId: chatUser.chatId });
     return (isAdmin && !addPermission) || addPermission;
 };
-export const leave = async (userId: number, chatId: number) => {
+export const leaveGroup = async (userId: number, chatId: number) => {
     const participants = getChatParticipantsIds(chatId);
 
     await groupService.removeUser(userId, chatId);

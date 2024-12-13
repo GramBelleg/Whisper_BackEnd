@@ -2,6 +2,21 @@ import db from "@DB";
 import { ChatUserSummary, CreatedChat, MemberSummary } from "@models/chat.models";
 import HttpError from "@src/errors/HttpError";
 
+export const deleteGroup = async (chatId: number) => {
+    try {
+        await db.chat.delete({
+            where: {
+                id: chatId,
+            },
+        });
+    } catch (err: any) {
+        if (err.code === "P2025") {
+            throw new Error("Group not found for the specified chatId.");
+        }
+        throw err;
+    }
+};
+
 export const getSizeLimit = async (chatId: number) => {
     try {
         const group = await db.group.findUnique({
@@ -246,6 +261,7 @@ export const createGroup = async (
     group: CreatedChat,
     userId: number
 ) => {
+    if (!group.name) throw new Error("Missing group name");
     try {
         if (!group.name) throw new Error("Group name is missing");
         const chat = await db.group.create({

@@ -85,12 +85,23 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
     socket.on(
         "leaveChat",
         socketWrapper(async (leave: { chatId: number }) => {
-            const participants = await groupController.leave(userId, leave.chatId);
+            const participants = await groupController.leaveGroup(userId, leave.chatId);
             const user = await displayedUser(userId);
             for (let i = 0; i < participants.length; i++) {
                 await chatHandler.broadCast(participants[i], clients, "leaveChat", {
                     userName: user.userName,
                     chatId: leave.chatId,
+                });
+            }
+        })
+    );
+    socket.on(
+        "deleteChat",
+        socketWrapper(async (deleted: { chatId: number }) => {
+            const participants = await groupController.deleteGroup(userId, deleted.chatId);
+            for (let i = 0; i < participants.length; i++) {
+                await chatHandler.broadCast(participants[i], clients, "deleteChat", {
+                    chatId: deleted.chatId,
                 });
             }
         })
