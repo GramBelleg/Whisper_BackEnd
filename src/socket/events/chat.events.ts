@@ -9,6 +9,7 @@ import { UserType } from "@models/user.models";
 import { displayedUser } from "@services/user/user.service";
 import { getChatType } from "@services/chat/chat.service";
 import { ChatType } from "@prisma/client";
+import { channel } from "diagnostics_channel";
 
 export const setupChatEvents = (socket: Socket, userId: number, clients: Map<number, Socket>) => {
     socket.on(
@@ -67,15 +68,21 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
     socket.on(
         "removeUser",
         socketWrapper(async (remove: { user: UserType; chatId: number }) => {
-            const participants = await groupController.removeUser(
-                userId,
-                remove.user,
-                remove.chatId
-            );
+            let participants;
+            const chatType = await getChatType(remove.chatId);
+            if (chatType == ChatType.GROUP)
+                participants = await groupController.removeUser(userId, remove.user, remove.chatId);
+            else if (chatType == ChatType.CHANNEL)
+                participants = await channelController.removeUser(
+                    userId,
+                    remove.user,
+                    remove.chatId
+                );
+            if (!participants) throw new Error("No participants found");
             const user = await displayedUser(userId);
             for (let i = 0; i < participants.length; i++) {
                 await chatHandler.broadCast(participants[i], clients, "removeUser", {
-                    user,
+                    user: remove.user,
                     removerUserName: user.userName,
                     chatId: remove.chatId,
                 });
@@ -108,12 +115,17 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
     );
     socket.on(
         "subscribe",
-        socketWrapper(async (chatUser: types.ChatUserSummary) => {
-            const participants = await groupController.deleteGroup(userId, deleted.chatId);
+        socketWrapper(async (chatUser: types.ChatUser) => {
+            const { participants, userChat } = await channelController.joinChannel(
+                userId,
+                chatUser.chatId
+            );
             for (let i = 0; i < participants.length; i++) {
-                await chatHandler.broadCast(participants[i], clients, "deleteChat", {
-                    chatId: deleted.chatId,
-                });
+                if (participants[i] !== chatUser.user.id) {
+                    await chatHandler.broadCast(participants[i], clients, "addUser", chatUser);
+                } else {
+                    await chatHandler.broadCast(participants[i], clients, "createChat", userChat);
+                }
             }
         })
     );

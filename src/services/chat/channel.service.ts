@@ -3,6 +3,29 @@ import jwt from "jsonwebtoken";
 import { ChatUserSummary, CreatedChat } from "@models/chat.models";
 import HttpError from "@src/errors/HttpError";
 
+export const getAdmins = async (chatId: number) => {
+    try {
+        const users = await db.chatParticipant.findMany({
+            where: {
+                chatId,
+                channelParticipant: {
+                    isAdmin: true,
+                },
+            },
+            select: {
+                userId: true,
+            },
+        });
+        const userIds = users.map((user) => user.userId);
+        return userIds;
+    } catch (err: any) {
+        if (err.code === "P2025") {
+            throw new HttpError("Channel Not Found", 404);
+        }
+        throw err;
+    }
+};
+
 export const setChannelPrivacy = async (id: number, isPrivate: boolean) => {
     try {
         await db.chat.update({

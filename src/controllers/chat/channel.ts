@@ -1,12 +1,24 @@
 import { ChatUser, ChatUserSummary } from "@models/chat.models";
 import * as channelService from "@services/chat/channel.service";
+import * as groupService from "@services/chat/group.service";
 import { getChat, getChatParticipantsIds } from "@services/chat/chat.service";
 import { displayedUser, getAddPermission } from "@services/user/user.service";
-import { getSocket } from "@socket/web.socket";
+import { getClients } from "@socket/web.socket";
 import HttpError from "@src/errors/HttpError";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import * as chatHandler from "@socket/handlers/chat.handlers";
+import { UserType } from "@models/user.models";
 
+export const joinChannel = async (userId: number, chatId: number) => {
+    const participants = await channelService.getAdmins(chatId);
+
+    await channelService.addUser(userId, chatId);
+
+    const userChat = await getChat(userId, chatId);
+    participants.push(userId);
+    return { participants, userChat };
+};
 export const invite = async (req: Request, res: Response) => {
     const token = req.query.token;
     const userId = req.userId;
@@ -18,11 +30,20 @@ export const invite = async (req: Request, res: Response) => {
     }) as Record<string, any>;
     const chatId = decoded.chatId;
 
-    const socket = getSocket(userId);
-    if (!socket) throw new HttpError("Failed to retrieve user socket", 400);
+    const clients = getClients();
+    if (!clients) throw new HttpError("Failed to retrieve clients", 400);
 
-    const user = displayedUser(userId);
-    socket.emit("subscribe", { user, chatId });
+    const user = await displayedUser(userId);
+    const { participants, userChat } = await joinChannel(userId, chatId);
+    console.log(participants);
+    console.log(userChat);
+    for (let i = 0; i < participants.length; i++) {
+        if (participants[i] !== userId) {
+            await chatHandler.broadCast(participants[i], clients, "addUser", { user, chatId });
+        } else {
+            await chatHandler.broadCast(participants[i], clients, "createChat", userChat);
+        }
+    }
 
     res.status(200).json({ chatId });
 };
@@ -67,7 +88,7 @@ export const addAdmin = async (userId: number, admin: ChatUserSummary) => {
 
     await channelService.addAdmin(admin);
 
-    return getChatParticipantsIds(admin.chatId);
+    return channelService.getAdmins(admin.chatId);
 };
 const canUserBeAdded = async (chatUser: ChatUser, adderId: number) => {
     const addPermission = await getAddPermission(chatUser.user.id);
@@ -78,7 +99,7 @@ export const addUser = async (userId: number, chatUser: ChatUser) => {
     const userCanBeAdded = await canUserBeAdded(chatUser, userId);
     if (!userCanBeAdded) throw new Error("You Don't have permission to add this user");
 
-    const participants = await getChatParticipantsIds(chatUser.chatId);
+    const participants = await channelService.getAdmins(chatUser.chatId);
 
     await channelService.addUser(chatUser.user.id, chatUser.chatId);
 
@@ -86,4 +107,15 @@ export const addUser = async (userId: number, chatUser: ChatUser) => {
     participants.push(chatUser.user.id);
 
     return { participants, userChat };
+};
+
+export const removeUser = async (userId: number, user: UserType, chatId: number) => {
+    const isAdmin = await channelService.isAdmin({ userId, chatId });
+    if (!isAdmin) throw new Error("You're not an admin");
+
+    const participants = await getChatParticipantsIds(chatId);
+
+    await groupService.removeUser(user.id, chatId);
+
+    return participants;
 };

@@ -14,8 +14,8 @@ import { setupChatEvents } from "./events/chat.events";
 type HandlerFunction = (key: string, clients: Map<number, Socket>) => any;
 const clients: Map<number, Socket> = new Map();
 
-export const getSocket = (userId: number) => {
-    return clients.get(userId);
+export const getClients = () => {
+    return clients;
 };
 
 const handlers: Record<string, HandlerFunction> = {
