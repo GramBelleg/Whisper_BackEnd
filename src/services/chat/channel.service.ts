@@ -1,7 +1,34 @@
 import db from "@DB";
 import jwt from "jsonwebtoken";
-import { ChatUserSummary, CreatedChat } from "@models/chat.models";
+import { ChatUserSummary, CreatedChat, MemberSummary } from "@models/chat.models";
 import HttpError from "@src/errors/HttpError";
+
+export const getChannelMembers = async (chatId: number): Promise<MemberSummary[]> => {
+    //add privacy to last seen and hasStory
+    const chatParticipants = await db.chatParticipant.findMany({
+        where: { chatId },
+        select: {
+            user: {
+                select: {
+                    id: true,
+                    userName: true,
+                    profilePic: true,
+                    lastSeen: true,
+                    hasStory: true,
+                },
+            },
+            channelParticipant: {
+                select: {
+                    isAdmin: true,
+                },
+            },
+        },
+    });
+    return chatParticipants.map((participant) => ({
+        ...participant.user,
+        isAdmin: participant.channelParticipant?.isAdmin,
+    }));
+};
 
 export const getAdmins = async (chatId: number) => {
     try {
