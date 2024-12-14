@@ -38,6 +38,8 @@ model User {
   storyView                 storyView[]
   Publickeys                PublicKey[]          
   forwards                  Message[]            @relation("ForwardedMessage")
+  comments                  Comment[]
+  commentStatus             CommentStatus[]
 }
 
 model PublicKey {

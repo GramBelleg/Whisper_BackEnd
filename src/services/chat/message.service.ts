@@ -1,7 +1,39 @@
 import db from "@DB";
 import { Message } from "@prisma/client";
 import { getChatParticipantsIds } from "@services/chat/chat.service";
-import { DraftMessage, MessageReference, SentMessage } from "@models/messages.models";
+import {
+    DraftMessage,
+    MessageReference,
+    SavedComment,
+    SentComment,
+    SentMessage,
+} from "@models/messages.models";
+
+export const saveCommentStatus = async (
+    comment: SavedComment,
+    userId: number,
+    participantIds: number[]
+) => {
+    await db.messageStatus.createMany({
+        data: participantIds.map((participantId) => ({
+            userId: participantId,
+            messageId: comment.id,
+            time: participantId == userId ? comment.sentAt : new Date().toISOString(),
+        })),
+    });
+};
+export const saveComment = async (comment: SentComment, userId: number) => {
+    const savedComment: SavedComment = await db.comment.create({
+        data: {
+            senderId: userId,
+            messageId: comment.messageId,
+            content: comment.content,
+            parentCommentId: comment.parentCommentId,
+            sentAt: comment.sentAt,
+        },
+    });
+    return savedComment;
+};
 
 export const getOtherMessageTime = async (excludeUserId: number, messageId: number) => {
     return await db.messageStatus.findFirst({

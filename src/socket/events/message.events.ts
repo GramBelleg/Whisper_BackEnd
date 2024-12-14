@@ -130,4 +130,21 @@ export const setupMessageEvents = (
             }
         })
     );
+
+    socket.on(
+        "comment",
+        socketWrapper(async (comment: types.SentComment) => {
+            await channelHandler.handleCommentPermissions(userId, comment.chatId);
+            const sentComments = await sendController.saveComment(comment, userId);
+            if (sentComments) {
+                await messageHandler.userBroadCast(
+                    userId,
+                    comment.chatId,
+                    clients,
+                    "message",
+                    sentComments
+                );
+            }
+        })
+    );
 };
