@@ -9,6 +9,49 @@ import * as groupService from "@services/chat/group.service";
 import * as channelService from "@services/chat/channel.service";
 import HttpError from "@src/errors/HttpError";
 
+export const getAddableUsers = async (userId: number, chatId: number) => {
+    const users = [];
+    const chats = await db.chatParticipant.findMany({
+        where: {
+            userId,
+            chat: { type: "DM" },
+        },
+        select: {
+            chatId: true,
+        },
+    });
+    for (const chat of chats) {
+        users.push(
+            await db.chatParticipant.findMany({
+                where: {
+                    chatId: chat.chatId,
+                    userId: {
+                        not: userId,
+                    },
+                },
+                select: {
+                    user: {
+                        select: {
+                            id: true,
+                            userName: true,
+                            profilePic: true,
+                        },
+                    },
+                },
+            })
+        );
+    }
+    const filteredUsers = [];
+    for (const user of users) {
+        const participant = await db.chatParticipant.findUnique({
+            where: {
+                chatId_userId: { chatId, userId: user[0].user.id },
+            },
+        });
+        if (!participant) filteredUsers.push(user[0].user);
+    }
+    return filteredUsers;
+};
 const getUserChats = async (userId: number, type: ChatType | null, noKey: number | boolean) => {
     let whereClause: Record<string, any>;
     if (noKey) {
