@@ -1,0 +1,19 @@
+enum CallEndStatus {
+    MISSED
+    CANCELLED
+    JOINED
+}
+
+model Call {
+    id        Int       @id @default(autoincrement())
+    startedAt DateTime  @default(now())
+    joinedAt  DateTime?
+    endedAt   DateTime?
+    endStatus String?
+    messageId Int       @unique
+    chatId    Int
+    userId    Int
+    chat      Chat      @relation(fields: [chatId], references: [id])
+    message   Message   @relation(fields: [messageId], references: [id])
+    user      User      @relation(fields: [userId], references: [id])
+}

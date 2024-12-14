@@ -11,6 +11,7 @@ import { socketWrapper } from "./handlers/error.handler";
 import { setupPfpEvents } from "./events/pfp.events";
 import { setupStatusEvents } from "./events/status.events";
 import { setupChatEvents } from "./events/chat.events";
+import { Message } from "@prisma/client";
 
 type HandlerFunction = (key: string, clients: Map<number, Socket>) => any;
 const clients: Map<number, Socket> = new Map();
@@ -32,9 +33,13 @@ export const notifyExpiry = (key: string) => {
     }
 };
 
-export const callSocket = (participants: number[],tokens: string[], notification: any) => {
-    callHandler.call(clients, participants, tokens, notification);
+export const callSocket = (participants: number[],tokens: string[], notification: any, message: Message) => {
+    callHandler.startCall(clients, participants, tokens, notification, message);
 };
+
+export const callLog = (participants: number[], message: Message) => {
+    callHandler.callLog(clients, participants, message);
+}
 
 export const initWebSocketServer = (server: HTTPServer) => {
     const io = new IOServer(server, {

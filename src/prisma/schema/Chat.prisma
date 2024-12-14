@@ -5,12 +5,13 @@ enum ChatType {
 }
 
 model Chat {
-  id            Int               @id @default(autoincrement())
-  type          ChatType
-  messages      Message[]
-  participants  ChatParticipant[]
-  group         Group?
-  channel       Channel?
+  id           Int               @id @default(autoincrement())
+  type         ChatType
+  messages     Message[]
+  participants ChatParticipant[]
+  group        Group?
+  channel      Channel?
+  call         Call[]
 }
 
 model Group {
@@ -33,26 +34,26 @@ model Channel {
 }
 
 model ChatParticipant {
-  userId                Int
-  chatId                Int
-  isArchived            Boolean           @default(false)
-  unreadMessageCount    Int               @default(0)
-  lastMessageId         Int?             
-  isContact             Boolean           @default(false)
-  isMuted               Boolean           @default(false)
-  draftContent          String            @default("")
-  draftTime             DateTime?
-  draftParentMessageId  Int?
-  draftParentContent    String?
-  draftParentMedia      String?
-  draftParentExtension  String?
-  draftParentType  String?
-  keyId                 Int?
-  publicKey             PublicKey?        @relation(fields: [keyId], references: [id])
-  parentMessage         Message?          @relation("DraftReplyToMessage", fields: [draftParentMessageId], references: [id])
-  lastMessage           MessageStatus?    @relation("LastMessageForChatParticipant", fields: [lastMessageId], references: [id])
-  chat                  Chat              @relation(fields: [chatId], references: [id])
-  user                  User              @relation(fields: [userId], references: [id])
+  userId               Int
+  chatId               Int
+  isArchived           Boolean        @default(false)
+  unreadMessageCount   Int            @default(0)
+  lastMessageId        Int?
+  isContact            Boolean        @default(false)
+  isMuted              Boolean        @default(false)
+  draftContent         String         @default("")
+  draftTime            DateTime?
+  draftParentMessageId Int?
+  draftParentContent   String?
+  draftParentMedia     String?
+  draftParentExtension String?
+  draftParentType      String?
+  keyId                Int?
+  publicKey            PublicKey?     @relation(fields: [keyId], references: [id])
+  parentMessage        Message?       @relation("DraftReplyToMessage", fields: [draftParentMessageId], references: [id])
+  lastMessage          MessageStatus? @relation("LastMessageForChatParticipant", fields: [lastMessageId], references: [id])
+  chat                 Chat           @relation(fields: [chatId], references: [id])
+  user                 User           @relation(fields: [userId], references: [id])
 
   @@unique([chatId, userId])
 }

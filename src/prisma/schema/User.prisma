@@ -39,6 +39,7 @@ model User {
   storyView          storyView[]
   Publickeys         PublicKey[]
   forwards           Message[]            @relation("ForwardedMessage")
+  calls              Call[]
 }
 
 model PublicKey {

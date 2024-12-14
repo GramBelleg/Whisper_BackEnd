@@ -9,8 +9,6 @@ enum MessageType {
   DOC
   CALL
   EVENT
-  OUTGOING_CALL
-  INCOMING_CALL
 }
 
 model Message {
@@ -50,6 +48,7 @@ model Message {
   draftReplies        ChatParticipant[] @relation("DraftReplyToMessage")
   forwardedFrom       User?             @relation("ForwardedMessage", fields: [forwardedFromUserId], references: [id])
   messageStatus       MessageStatus[]
+  call                Call?
 }
 
 model MessageStatus {

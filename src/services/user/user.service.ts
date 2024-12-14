@@ -317,6 +317,7 @@ export const getSenderInfo = async (id: number) => {
             id: true,
             userName: true,
             profilePic: true,
+            name: true,
         },
     });
 };

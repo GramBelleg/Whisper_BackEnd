@@ -596,3 +596,15 @@ export const getDraftedMessage = async (
         },
     });
 };
+
+export const createVoiceCallMessage = async (userId: number, chatId: number, content: string) => {
+    return await db.message.create({
+        data: {
+            chatId,
+            senderId: userId,
+            content,
+            type: "CALL",
+            sentAt: new Date().toISOString(),
+        },
+    });
+};
