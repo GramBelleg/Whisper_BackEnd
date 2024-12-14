@@ -8,6 +8,7 @@ import { buildDraftedMessage } from "@controllers/messages/format.message";
 import * as groupService from "@services/chat/group.service";
 import * as channelService from "@services/chat/channel.service";
 import HttpError from "@src/errors/HttpError";
+import { areUsersBlocked } from "@services/user/prisma/find.service";
 
 const getUserChats = async (userId: number, type: ChatType | null, noKey: number | boolean) => {
     let whereClause: Record<string, any>;
@@ -301,6 +302,14 @@ export const getChatSummary = async (
         participant,
         userChat.chatId
     );
+    let isBlocked = false;
+    if (await areUsersBlocked(userId, participant.user.id)) {
+        isBlocked = true;
+    }
+    let makeBlocked = false;
+    if (await areUsersBlocked(participant.user.id, userId)) {
+        makeBlocked = true;
+    }
     const chatSummary = {
         id: userChat.chatId,
         ...typeDependantContent,
@@ -309,6 +318,8 @@ export const getChatSummary = async (
         lastMessage,
         draftMessage,
         unreadMessageCount: userChat.unreadMessageCount,
+        isBlocked,
+        makeBlocked,
     };
     return chatSummary;
 };

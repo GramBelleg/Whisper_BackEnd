@@ -19,6 +19,17 @@ const findBlockedUsers = async (userId: number) => {
     });
 }
 
+const areUsersBlocked = async (userId1: number, userId2: number) => {
+    const blockedRelations = await db.relates.findMany({
+        where: {
+            relatingId: userId2,
+            relatedById: userId1,
+            isBlocked: true
+        }
+    })
+    return blockedRelations.length > 0;
+}
+
 const findUsersByIds = async (userIds: number[]) => {
     return await db.user.findMany({
         where: {
@@ -30,5 +41,29 @@ const findUsersByIds = async (userIds: number[]) => {
     });
 }
 
+const findChatByUsers = async (users: number[], userId: number) => {
+    return await db.chat.findMany({
+        where: {
+            type: "DM",
+            AND: {
+                participants: {
+                    some: {
+                        userId
+                    }
+                },
+                OR: users.map((user) => ({
+                    participants: {
+                        some: {
+                            userId: user
+                        }
+                    }
+                }))
+            },
+        },
+        select: {
+            id: true,
+        }
+    })
+}
 
-export { findBlockedUsers, findUsersByIds };
+export { findBlockedUsers, findUsersByIds, findChatByUsers, areUsersBlocked };

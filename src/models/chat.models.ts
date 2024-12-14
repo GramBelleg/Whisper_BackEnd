@@ -29,7 +29,8 @@ export type ChatSummary = {
     status?: string;
     lastMessage: LastMessage;
     selfDestruct: number | null;
-    // isBlocked: boolean;
+    isBlocked: boolean;
+    makeBlocked: boolean;
     unreadMessageCount: number;
 };
 
