@@ -10,6 +10,25 @@ import jwt from "jsonwebtoken";
 import * as chatHandler from "@socket/handlers/chat.handlers";
 import { UserType } from "@models/user.models";
 
+export const deleteChannel = async (userId: number, chatId: number) => {
+    const isAdmin = await channelService.isAdmin({ userId, chatId });
+    if (!isAdmin) throw new Error("You're not an admin");
+
+    const participants = getChatParticipantsIds(chatId);
+
+    await groupService.deleteGroup(chatId);
+
+    return participants;
+};
+
+export const leaveChannel = async (userId: number, chatId: number) => {
+    const participants = channelService.getAdmins(chatId);
+
+    await groupService.removeUser(userId, chatId);
+
+    return participants;
+};
+
 export const joinChannel = async (userId: number, chatId: number) => {
     const participants = await channelService.getAdmins(chatId);
 
