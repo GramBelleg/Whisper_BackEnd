@@ -9,6 +9,7 @@ import stickersRouter from "@routes/sticker.routes";
 import encryptionRouter from "@routes/encryption.routes";
 import groupRouter from "@routes/group.routes";
 import channelRouter from "@routes/channel.routes";
+import commentRouter from "@routes/comment.routes";
 import apiAuth from "@middlewares/api.middleware";
 const router: Router = Router();
 
@@ -19,6 +20,7 @@ router.use("/user", userRouter);
 router.use("/media", mediaRouter);
 router.use("/chats", chatsRouter);
 router.use("/groups", groupRouter);
+router.use("/comments", commentRouter);
 router.use("/channels", channelRouter);
 router.use("/messages", messagesRouter);
 router.use("/stickers", stickersRouter);

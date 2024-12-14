@@ -3,5 +3,6 @@ import { Router } from "express";
 import asyncHandler from "express-async-handler";
 const router: Router = Router();
 
-router.route("/:messageId/comments").get(asyncHandler(handleGetComments));
-router.route("/:messageId/comments/:commentId").get(asyncHandler(handleGetReplies));
+router.route("/:messageId").get(asyncHandler(handleGetComments));
+router.route("/:commentId/replies").get(asyncHandler(handleGetReplies));
+export default router;

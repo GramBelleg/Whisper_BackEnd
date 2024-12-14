@@ -14,16 +14,17 @@ import { validateChatAndUser, validateMessageAndUser } from "@validators/chat";
 export const handleGetReplies = async (req: Request, res: Response) => {
     const userId = req.userId;
     const commentId = Number(req.params.commentId);
+    console.log(commentId);
     const result = await getReplies(userId, commentId);
 
-    res.status(200).json(result);
+    res.status(200).json({ comments: result });
 };
 export const handleGetComments = async (req: Request, res: Response) => {
     const userId = req.userId;
     const messageId = Number(req.params.messageId);
     const result = await getComments(userId, messageId);
 
-    res.status(200).json(result);
+    res.status(200).json({ comments: result });
 };
 
 const getPerUserMessage = async (userId: number, message: Message) => {
