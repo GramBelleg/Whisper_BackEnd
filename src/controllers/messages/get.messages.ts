@@ -1,9 +1,22 @@
 import { Request, Response } from "express";
-import { getSingleMessage, getMessages, getPinnedMessages } from "@services/chat/message.service";
+import {
+    getSingleMessage,
+    getMessages,
+    getPinnedMessages,
+    getComments,
+} from "@services/chat/message.service";
 import { buildReceivedMessage } from "./format.message";
 import { getLastMessage } from "@services/chat/chat.service";
 import { Message } from "@prisma/client";
 import { validateChatAndUser, validateMessageAndUser } from "@validators/chat";
+
+export const handleGetComments = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const messageId = Number(req.params.messageId);
+    const result = await getComments(userId, messageId);
+
+    res.status(200).json(result);
+};
 
 const getPerUserMessage = async (userId: number, message: Message) => {
     const senderIdx = userId === message.senderId ? 0 : 1;

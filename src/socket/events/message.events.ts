@@ -141,7 +141,7 @@ export const setupMessageEvents = (
                     userId,
                     comment.chatId,
                     clients,
-                    "message",
+                    "comment",
                     sentComments
                 );
             }

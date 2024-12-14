@@ -3,6 +3,7 @@ import asyncHandler from "express-async-handler";
 import { deleteMessagesForCurrentUser } from "@controllers/messages/delete.message";
 import {
     handleGetAllMessages,
+    handleGetComments,
     handleGetLastMessage,
     handleGetMessage,
 } from "@controllers/messages/get.messages";
@@ -25,5 +26,6 @@ router
     .post(asyncHandler(handleDraftMessage))
     .get(asyncHandler(handleGetDraftedMessage));
 router.route("/:chatId/undraftMessage").put(asyncHandler(handleUndraftMessage));
+router.route("/:messageId/comments").get(asyncHandler(handleGetComments));
 
 export default router;

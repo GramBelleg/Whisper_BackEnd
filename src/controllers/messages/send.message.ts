@@ -7,13 +7,16 @@ import { validateChatAndUser } from "@validators/chat";
 
 export const saveComment = async (comment: SentComment, senderId: number) => {
     const savedComment = await messageService.saveComment(comment, senderId);
+
     const participantsIds: number[] = await getChatParticipantsIds(comment.chatId);
-    const savedStatus = await messageService.saveCommentStatus(
-        savedComment,
-        senderId,
-        participantsIds
-    );
-    return [];
+
+    const time = await messageService.saveCommentStatus(savedComment, senderId, participantsIds);
+
+    const { sentAt, ...commentWithoutTime } = savedComment;
+    const userComment = { ...commentWithoutTime, time: sentAt };
+    const otherComment = { ...commentWithoutTime, time };
+
+    return [userComment, otherComment];
 };
 
 const handleSaveMessage = async (userId: number, message: SentMessage) => {
