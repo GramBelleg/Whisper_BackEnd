@@ -4,12 +4,20 @@ import {
     getMessages,
     getPinnedMessages,
     getComments,
+    getReplies,
 } from "@services/chat/message.service";
 import { buildReceivedMessage } from "./format.message";
 import { getLastMessage } from "@services/chat/chat.service";
 import { Message } from "@prisma/client";
 import { validateChatAndUser, validateMessageAndUser } from "@validators/chat";
 
+export const handleGetReplies = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const commentId = Number(req.params.commentId);
+    const result = await getReplies(userId, commentId);
+
+    res.status(200).json(result);
+};
 export const handleGetComments = async (req: Request, res: Response) => {
     const userId = req.userId;
     const messageId = Number(req.params.messageId);

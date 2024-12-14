@@ -9,83 +9,92 @@ import {
     SentMessage,
 } from "@models/messages.models";
 
-function buildNestedStructure(flatComments: any) {
-    const commentMap = new Map();
-
-    // Create a map for each comment by its ID
-    flatComments.forEach((comment: any) => {
-        comment.children = []; // Initialize children array
-        commentMap.set(comment.id, comment);
+export const deleteComments = async (userId: number, ids: number[]) => {
+    const parentComments = await db.comment.findMany({
+        where: { id: { in: ids } },
+        select: { parentCommentId: true },
     });
 
-    const nestedComments: any[] = [];
+    const parentCommentIds: number[] = parentComments
+        .map((parentComment) => parentComment?.parentCommentId)
+        .filter((id): id is number => id !== undefined);
 
-    // Build the nested structure
-    flatComments.forEach((comment: any) => {
-        if (comment.parentCommentId) {
-            // If the comment has a parent, attach it to the parent's `children`
-            const parent = commentMap.get(comment.parentCommentId);
-            if (parent) {
-                parent.children.push(comment);
-            }
-        } else {
-            // If the comment has no parent, it's a root comment
-            nestedComments.push(comment);
-        }
+    await db.comment.updateMany({
+        where: { id: { in: parentCommentIds } },
+        data: {
+            replyCount: {
+                decrement: 1,
+            },
+        },
     });
+    await db.comment.deleteMany({
+        where: {
+            id: { in: ids },
+        },
+    });
+};
 
-    return nestedComments;
-}
-
+export const getReplies = async (userId: number, commentId: number) => {
+    const comments = await db.commentStatus.findMany({
+        where: {
+            userId,
+            comment: {
+                parentCommentId: commentId,
+            },
+        },
+        select: {
+            time: true,
+            comment: {
+                select: {
+                    id: true,
+                    senderId: true,
+                    messageId: true,
+                    parentCommentId: true,
+                    content: true,
+                    replyCount: true,
+                },
+            },
+        },
+        orderBy: {
+            time: "asc",
+        },
+    });
+    return comments.map((comment) => ({
+        ...comment.comment,
+        time: comment.time,
+    }));
+};
 export const getComments = async (userId: number, messageId: number) => {
-    const flatComments = await db.$queryRawUnsafe(
-        `
-        WITH RECURSIVE Thread AS (
-            SELECT 
-                c.id, 
-                c.content, 
-                c."parentCommentId", 
-                cs.time, 
-                json_build_object(
-                    'id', u.id,
-                    'userName', u."userName",
-                    'profilePic', u."profilePic"
-                ) AS sender
-            FROM "Comment" c
-            LEFT JOIN "CommentStatus" cs
-                ON c.id = cs."commentId" 
-               AND cs."userId" = $2
-            INNER JOIN "User" u
-                ON c."senderId" = u.id
-            WHERE c."messageId" = $1 AND c."parentCommentId" IS NULL
-            UNION ALL
-            SELECT 
-                c.id, 
-                c.content, 
-                c."parentCommentId", 
-                cs.time, 
-                json_build_object(
-                    'id', u.id,
-                    'userName', u."userName",
-                    'profilePic', u."profilePic"
-                ) AS sender
-            FROM "Comment" c
-            LEFT JOIN "CommentStatus" cs
-                ON c.id = cs."commentId" 
-               AND cs."userId" = $2
-            INNER JOIN "User" u
-                ON c."senderId" = u.id
-            INNER JOIN Thread t 
-                ON c."parentCommentId" = t.id
-        )
-        SELECT * FROM Thread ORDER BY "time";
-        `,
-        messageId,
-        userId
-    );
-
-    const nestedComments = buildNestedStructure(flatComments);
-    return nestedComments;
+    const comments = await db.commentStatus.findMany({
+        where: {
+            userId,
+            comment: {
+                messageId,
+                parentCommentId: null,
+            },
+            deleted: false,
+        },
+        select: {
+            time: true,
+            comment: {
+                select: {
+                    id: true,
+                    senderId: true,
+                    messageId: true,
+                    parentCommentId: true,
+                    content: true,
+                    replyCount: true,
+                },
+            },
+        },
+        orderBy: {
+            time: "asc",
+        },
+    });
+    return comments.map((comment) => ({
+        ...comment.comment,
+        time: comment.time,
+    }));
 };
 export const saveCommentStatus = async (
     comment: SavedComment,
@@ -103,6 +112,18 @@ export const saveCommentStatus = async (
     return time;
 };
 export const saveComment = async (comment: SentComment, userId: number) => {
+    let hasParent = false;
+    if (comment.parentCommentId) {
+        hasParent = true;
+        await db.comment.update({
+            where: {
+                id: comment.parentCommentId,
+            },
+            data: {
+                replyCount: { increment: 1 },
+            },
+        });
+    }
     const savedComment: SavedComment = await db.comment.create({
         data: {
             senderId: userId,

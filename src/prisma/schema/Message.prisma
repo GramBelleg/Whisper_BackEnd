@@ -15,6 +15,7 @@ model CommentStatus{
   commentId Int
   userId Int
   time DateTime
+  deleted Boolean  @default(false)
   user User @relation(fields: [userId],references: [id])
   comment Comment @relation(fields: [commentId],references: [id],onDelete: Cascade)
   @@unique([commentId,userId])
@@ -26,8 +27,9 @@ model Comment{
   messageId Int 
   parentCommentId  Int?
   content String
-  sentAt DateTime   
-  message Message @relation(fields:[id],references: [id])
+  sentAt DateTime
+  replyCount Int @default(0)
+  message Message @relation(fields:[id],references: [id],onDelete: Cascade)
   parentComment Comment? @relation("replies",fields:[parentCommentId],references: [id],onDelete: Cascade)
   replies       Comment[] @relation("replies")
   sender        User  @relation(fields: [senderId],references: [id])

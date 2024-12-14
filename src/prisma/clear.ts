@@ -3,6 +3,9 @@ import db from "./PrismaClient";
 
 async function main() {
     // Clear the database by truncating all tables
+
+    await db.comment.deleteMany({});
+
     await db.messageStatus.deleteMany({});
 
     await db.message.deleteMany({});
