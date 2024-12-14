@@ -1,7 +1,119 @@
 import db from "@DB";
 import { Message } from "@prisma/client";
 import { getChatParticipantsIds } from "@services/chat/chat.service";
-import { DraftMessage, MessageReference, SentMessage } from "@models/messages.models";
+import {
+    DraftMessage,
+    MessageReference,
+    SavedComment,
+    SentComment,
+    SentMessage,
+} from "@models/messages.models";
+
+function buildNestedStructure(flatComments: any) {
+    const commentMap = new Map();
+
+    // Create a map for each comment by its ID
+    flatComments.forEach((comment: any) => {
+        comment.children = []; // Initialize children array
+        commentMap.set(comment.id, comment);
+    });
+
+    const nestedComments: any[] = [];
+
+    // Build the nested structure
+    flatComments.forEach((comment: any) => {
+        if (comment.parentCommentId) {
+            // If the comment has a parent, attach it to the parent's `children`
+            const parent = commentMap.get(comment.parentCommentId);
+            if (parent) {
+                parent.children.push(comment);
+            }
+        } else {
+            // If the comment has no parent, it's a root comment
+            nestedComments.push(comment);
+        }
+    });
+
+    return nestedComments;
+}
+
+export const getComments = async (userId: number, messageId: number) => {
+    const flatComments = await db.$queryRawUnsafe(
+        `
+        WITH RECURSIVE Thread AS (
+            SELECT 
+                c.id, 
+                c.content, 
+                c."parentCommentId", 
+                cs.time, 
+                json_build_object(
+                    'id', u.id,
+                    'userName', u."userName",
+                    'profilePic', u."profilePic"
+                ) AS sender
+            FROM "Comment" c
+            LEFT JOIN "CommentStatus" cs
+                ON c.id = cs."commentId" 
+               AND cs."userId" = $2
+            INNER JOIN "User" u
+                ON c."senderId" = u.id
+            WHERE c."messageId" = $1 AND c."parentCommentId" IS NULL
+            UNION ALL
+            SELECT 
+                c.id, 
+                c.content, 
+                c."parentCommentId", 
+                cs.time, 
+                json_build_object(
+                    'id', u.id,
+                    'userName', u."userName",
+                    'profilePic', u."profilePic"
+                ) AS sender
+            FROM "Comment" c
+            LEFT JOIN "CommentStatus" cs
+                ON c.id = cs."commentId" 
+               AND cs."userId" = $2
+            INNER JOIN "User" u
+                ON c."senderId" = u.id
+            INNER JOIN Thread t 
+                ON c."parentCommentId" = t.id
+        )
+        SELECT * FROM Thread ORDER BY "time";
+        `,
+        messageId,
+        userId
+    );
+
+    const nestedComments = buildNestedStructure(flatComments);
+    return nestedComments;
+};
+export const saveCommentStatus = async (
+    comment: SavedComment,
+    userId: number,
+    participantIds: number[]
+) => {
+    const time = new Date().toISOString();
+    await db.commentStatus.createMany({
+        data: participantIds.map((participantId) => ({
+            userId: participantId,
+            commentId: comment.id,
+            time: participantId == userId ? comment.sentAt : time,
+        })),
+    });
+    return time;
+};
+export const saveComment = async (comment: SentComment, userId: number) => {
+    const savedComment: SavedComment = await db.comment.create({
+        data: {
+            senderId: userId,
+            messageId: comment.messageId,
+            content: comment.content,
+            parentCommentId: comment.parentCommentId,
+            sentAt: comment.sentAt,
+        },
+    });
+    return savedComment;
+};
 
 export const getOtherMessageTime = async (excludeUserId: number, messageId: number) => {
     return await db.messageStatus.findFirst({

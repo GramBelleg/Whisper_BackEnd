@@ -92,7 +92,15 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
     socket.on(
         "leaveChat",
         socketWrapper(async (leave: { chatId: number }) => {
-            const participants = await groupController.leaveGroup(userId, leave.chatId);
+            let participants;
+            const chatType = await getChatType(leave.chatId);
+            console.log(chatType);
+            if (chatType == ChatType.GROUP)
+                participants = await groupController.leaveGroup(userId, leave.chatId);
+            else if (chatType == ChatType.CHANNEL)
+                participants = await channelController.leaveChannel(userId, leave.chatId);
+            if (!participants) throw new Error("No participants found");
+
             const user = await displayedUser(userId);
             for (let i = 0; i < participants.length; i++) {
                 await chatHandler.broadCast(participants[i], clients, "leaveChat", {
@@ -105,7 +113,14 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
     socket.on(
         "deleteChat",
         socketWrapper(async (deleted: { chatId: number }) => {
-            const participants = await groupController.deleteGroup(userId, deleted.chatId);
+            let participants;
+            const chatType = await getChatType(deleted.chatId);
+            if (chatType == ChatType.GROUP)
+                participants = await groupController.deleteGroup(userId, deleted.chatId);
+            else if (chatType == ChatType.CHANNEL)
+                participants = await channelController.deleteChannel(userId, deleted.chatId);
+            if (!participants) throw new Error("No participants found");
+
             for (let i = 0; i < participants.length; i++) {
                 await chatHandler.broadCast(participants[i], clients, "deleteChat", {
                     chatId: deleted.chatId,

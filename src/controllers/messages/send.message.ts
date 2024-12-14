@@ -1,16 +1,29 @@
-import { saveMessage } from "@services/chat/message.service";
-import { setLastMessage } from "@services/chat/chat.service";
+import * as messageService from "@services/chat/message.service";
+import { getChatParticipantsIds, setLastMessage } from "@services/chat/chat.service";
 import { saveExpiringMessage } from "@services/chat/redis.service";
-import { ReceivedMessage, SentMessage } from "@models/messages.models";
+import { ReceivedMessage, SentComment, SentMessage } from "@models/messages.models";
 import { buildReceivedMessage } from "../messages/format.message";
 import { validateChatAndUser } from "@validators/chat";
 
+export const saveComment = async (comment: SentComment, senderId: number) => {
+    const savedComment = await messageService.saveComment(comment, senderId);
+
+    const participantsIds: number[] = await getChatParticipantsIds(comment.chatId);
+
+    const time = await messageService.saveCommentStatus(savedComment, senderId, participantsIds);
+
+    const { sentAt, ...commentWithoutTime } = savedComment;
+    const userComment = { ...commentWithoutTime, time: sentAt };
+    const otherComment = { ...commentWithoutTime, time };
+
+    return [userComment, otherComment];
+};
+
 const handleSaveMessage = async (userId: number, message: SentMessage) => {
-    const savedMessage = await saveMessage(userId, message);
+    const savedMessage = await messageService.saveMessage(userId, message);
     await setLastMessage(message.chatId, savedMessage.id);
     return savedMessage;
 };
-
 
 export const handleSend = async (
     userId: number,

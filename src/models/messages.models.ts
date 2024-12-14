@@ -1,5 +1,6 @@
 import { ChatParticipant, Message, MessageType, User } from "@prisma/client";
 import { SenderInfo } from "./user.models";
+import { DateTime } from "luxon";
 
 export type ParentMessage =
     | null
@@ -77,5 +78,14 @@ export type OmitSender<T> = Omit<T, "senderId">;
 export type MessageReference = Pick<Message, "senderId" | "chatId"> & { id: number };
 
 export type EditableMessage = MessageReference & Pick<Message, "content">;
+
+export type SentComment = {
+    messageId: number;
+    parentCommentId: number | null;
+    content: string;
+    chatId: number;
+    sentAt: Date;
+};
+export type SavedComment = Omit<SentComment, "chatId"> & { id: number };
 
 export {};
