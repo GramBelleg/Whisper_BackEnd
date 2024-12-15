@@ -127,7 +127,7 @@ export const saveComment = async (comment: SentComment, userId: number) => {
             sentAt: comment.sentAt,
         },
     });
-    return savedComment;
+    return { ...savedComment, userName: comment.userName };
 };
 
 export const getOtherMessageTime = async (excludeUserId: number, messageId: number) => {

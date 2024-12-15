@@ -85,7 +85,8 @@ export type SentComment = {
     content: string;
     chatId: number;
     sentAt: Date;
+    userName?: string;
 };
-export type SavedComment = Omit<SentComment, "chatId"> & { id: number };
+export type SavedComment = Omit<SentComment, "chatId"> & { id: number; senderId: number };
 
 export {};

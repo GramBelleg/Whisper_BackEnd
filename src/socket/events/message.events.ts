@@ -9,6 +9,7 @@ import { sendToClient } from "@socket/utils/socket.utils";
 import * as groupHandler from "@socket/handlers/group.handlers";
 import * as channelHandler from "@socket/handlers/channel.handlers";
 import { handleChatPermissions } from "@socket/handlers/chat.handlers";
+import { displayedUser } from "@services/user/user.service";
 
 export const setupMessageEvents = (
     socket: Socket,
@@ -135,7 +136,11 @@ export const setupMessageEvents = (
         "comment",
         socketWrapper(async (comment: types.SentComment) => {
             await channelHandler.handleCommentPermissions(userId, comment.chatId);
-            const sentComments = await sendController.saveComment(comment, userId);
+            const user = await displayedUser(userId);
+            const sentComments = await sendController.saveComment(
+                { ...comment, userName: user.userName },
+                userId
+            );
             if (sentComments) {
                 await messageHandler.userBroadCast(
                     userId,
