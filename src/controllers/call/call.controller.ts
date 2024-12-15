@@ -27,7 +27,7 @@ export const makeCall = async (req: Request, res: Response) => {
 export const joinCall = async (req: Request, res: Response) => {
     const chatId = req.params.chatId;
     const userId = req.userId;
-    const joinedAt = await callServices.joinCall(userId, chatId);
+    const joinedAt = await callServices.joinCall(chatId);
     res.status(200).json({
         status: "success",
         joinedAt: joinedAt,
@@ -39,7 +39,7 @@ export const leaveCall = async (req: Request, res: Response) => {
     const userId = req.userId;
     const endStatus = req.query.endStatus;
     const callId = Number(req.query.callId);
-    const stats = await callServices.leaveCall(userId, chatId, endStatus, callId);
+    const stats = await callServices.leaveCall(chatId, endStatus);
     res.status(200).json({
         status: "success",
         ...stats,

@@ -77,7 +77,7 @@ export const makeCall = async (userId: number, chatId: string) => {
 };
 
 
-export const joinCall = async (chatId: string, messageId: number) => {
+export const joinCall = async (chatId: string) => {
     const lastCall = await findCall(chatId);
     if(!lastCall.joinedAt){
         const call = await updateJoinTime(lastCall.id);
