@@ -78,7 +78,12 @@ export const getComments = async (userId: number, messageId: number) => {
             comment: {
                 select: {
                     id: true,
-                    senderId: true,
+                    sender: {
+                        select: {
+                            id: true,
+                            userName: true,
+                        },
+                    },
                     messageId: true,
                     parentCommentId: true,
                     content: true,
@@ -91,6 +96,8 @@ export const getComments = async (userId: number, messageId: number) => {
     });
     return comments.map((comment) => ({
         ...comment.comment,
+        senderId: comment.comment.sender.id,
+        userName: comment.comment.sender.userName,
         time: comment.time,
     }));
 };
