@@ -170,12 +170,16 @@ async function createChatMessages(chats: Array<{ chat: Chat; participants: User[
                 });
                 const lastMessageId = messageStatus.id;
                 // Update the chat with the created message
-                await db.chatParticipant.update({
-                    where: { chatId_userId: { chatId: chat.chat.id, userId: participant.id } },
-                    data: {
-                        lastMessageId,
-                    },
-                });
+                try {
+                    await db.chatParticipant.update({
+                        where: { chatId_userId: { chatId: chat.chat.id, userId: participant.id } },
+                        data: {
+                            lastMessageId,
+                        },
+                    });
+                } catch (err: any) {
+                    console.error(err);
+                }
             }
         }
     }

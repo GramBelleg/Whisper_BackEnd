@@ -681,35 +681,43 @@ export const enrichDraftWithParentContent = async (message: DraftMessage) => {
 };
 
 export const draftMessage = async (userId: number, chatId: number, message: DraftMessage) => {
-    const messageData = await enrichDraftWithParentContent(message);
+    try {
+        const messageData = await enrichDraftWithParentContent(message);
 
-    await db.chatParticipant.update({
-        where: {
-            chatId_userId: {
-                chatId,
-                userId,
+        await db.chatParticipant.update({
+            where: {
+                chatId_userId: {
+                    chatId,
+                    userId,
+                },
             },
-        },
-        data: {
-            ...messageData,
-        },
-    });
+            data: {
+                ...messageData,
+            },
+        });
+    } catch (err: any) {
+        console.error(err);
+    }
 };
 
 export const undraftMessage = async (userId: number, chatId: number) => {
-    await db.chatParticipant.update({
-        where: {
-            chatId_userId: {
-                chatId,
-                userId,
+    try {
+        await db.chatParticipant.update({
+            where: {
+                chatId_userId: {
+                    chatId,
+                    userId,
+                },
             },
-        },
-        data: {
-            draftContent: "",
-            draftTime: null,
-            draftParentMessageId: null,
-        },
-    });
+            data: {
+                draftContent: "",
+                draftTime: null,
+                draftParentMessageId: null,
+            },
+        });
+    } catch (err: any) {
+        console.error(err);
+    }
 };
 
 export const getDraftedMessage = async (

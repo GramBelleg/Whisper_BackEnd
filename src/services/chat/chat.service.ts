@@ -82,17 +82,25 @@ const getUserChats = async (userId: number, type: ChatType | null, noKey: number
 };
 
 export const muteChat = async (chatId: number, userId: number): Promise<void> => {
-    await db.chatParticipant.update({
-        where: { chatId_userId: { chatId, userId } },
-        data: { isMuted: true },
-    });
+    try {
+        await db.chatParticipant.update({
+            where: { chatId_userId: { chatId, userId } },
+            data: { isMuted: true },
+        });
+    } catch (err: any) {
+        console.error(err);
+    }
 };
 
 export const unmuteChat = async (chatId: number, userId: number): Promise<void> => {
-    await db.chatParticipant.update({
-        where: { chatId_userId: { chatId, userId } },
-        data: { isMuted: false },
-    });
+    try {
+        await db.chatParticipant.update({
+            where: { chatId_userId: { chatId, userId } },
+            data: { isMuted: false },
+        });
+    } catch (err: any) {
+        console.error(err);
+    }
 };
 
 export const chatExists = async (chatId: number): Promise<boolean> => {
@@ -404,10 +412,14 @@ export const setLastMessage = async (chatId: number, messageId: number): Promise
         select: { id: true, userId: true },
     });
     for (const status of messageStatuses) {
-        await db.chatParticipant.update({
-            where: { chatId_userId: { chatId, userId: status.userId } },
-            data: { lastMessageId: status.id },
-        });
+        try {
+            await db.chatParticipant.update({
+                where: { chatId_userId: { chatId, userId: status.userId } },
+                data: { lastMessageId: status.id },
+            });
+        } catch (err: any) {
+            console.error(err);
+        }
     }
 };
 
@@ -421,10 +433,14 @@ export const setNewLastMessage = async (chatId: number): Promise<void> => {
             orderBy: { time: "desc" },
         });
         if (messageStatus) {
-            await db.chatParticipant.update({
-                where: { chatId_userId: { chatId, userId: participantId } },
-                data: { lastMessageId: messageStatus.id },
-            });
+            try {
+                await db.chatParticipant.update({
+                    where: { chatId_userId: { chatId, userId: participantId } },
+                    data: { lastMessageId: messageStatus.id },
+                });
+            } catch (err: any) {
+                console.error(err);
+            }
         }
     });
 };
