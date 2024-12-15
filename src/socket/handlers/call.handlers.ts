@@ -21,6 +21,17 @@ export const callLog = async (
     message: Message
 ): Promise<void> => {
     for (let i = 0; i < participants.length; i++) {
-        sendToClient(participants[i], clients, "message", message);
+        sendToClient(participants[i], clients, "editMessage", message);
+    }
+}
+
+
+export const cancelCall = async (
+    clients: Map<number, Socket>,
+    participants: number[],
+    message: Message
+): Promise<void> => {
+    for (let i = 0; i < participants.length; i++) {
+        sendToClient(participants[i], clients, "callCanceled", message);
     }
 }

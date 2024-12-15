@@ -4,11 +4,11 @@ import { getChatParticipantsIds } from "@services/chat/chat.service";
 import { isBlocked } from "@services/user/user.service";
 import { chatType } from "@services/chat/chat.service";
 import HttpError from "@src/errors/HttpError";
-import { callSocket, callLog } from "@socket/web.socket";
+import { callSocket, callLog, cancelCall } from "@socket/web.socket";
 import { pushVoiceNofication } from "@services/notifications/notification.service";
 import { getSenderInfo } from "@services/user/user.service";
 import { Message } from "@prisma/client";
-import { createVoiceCallMessage } from "@services/chat/message.service";
+import { createVoiceCallMessage, editMessage} from "@services/chat/message.service";
 import { Duration } from "luxon";
 
 const RtcTokenBuilder = require("@agora/src/RtcTokenBuilder2").RtcTokenBuilder;
@@ -65,7 +65,6 @@ export const makeCall = async (userId: number, chatId: string) => {
     const call: Call = await db.call.create({
         data: {
             chatId: chatIdNum,
-            userId: userId,
             messageId: message.id,
             startedAt: new Date(),
         },
@@ -78,76 +77,70 @@ export const makeCall = async (userId: number, chatId: string) => {
 };
 
 
-export const joinCall = async (userId: number, chatId: string) => {
+export const joinCall = async (chatId: string, messageId: number) => {
+    const lastCall = await findCall(chatId);
+    if(!lastCall.joinedAt){
+        const call = await updateJoinTime(lastCall.id);
+    }
+    return lastCall.id;
+};
+
+export const leaveCall = async (chatId: string, endStatus: any) => {
+    const lastCall = await findCall(chatId);
+    const leave = await updateEndTime(lastCall.id, endStatus);
+    if (!leave) {
+        throw new HttpError("Call not found", 404);
+    }
+    const participants = await getChatParticipantsIds(lastCall.chatId);
+    if(endStatus === "JOINED")
+    {
+        const duration = Duration.fromObject({ seconds: Math.floor((leave.endedAt!.getTime() - leave.joinedAt!.getTime())) }).toFormat("hh:mm:ss");
+        const editedMessage = await editMessage(lastCall.messageId, "Call Ended " + duration);
+        callLog(participants, editMessage);
+        return {duration: duration};
+    }
+    const editedMessage = await editMessage(lastCall.messageId, "Call Ended");
+    if(endStatus === "CANCELED")
+        cancelCall(participants, {chatId: chatId});
+    callLog(participants, editMessage);
+    return {duration: null};
+};
+
+const findCall = async (chatId: string) => {
     const chatIdNum = Number(chatId);
-    if (isNaN(chatIdNum)) {
-        throw new HttpError("Invalid chatId", 400);
+    const call = await db.call.findFirst({
+        where: {
+            chatId: chatIdNum,
+            endedAt: null,
+        },
+    });
+    if(!call){
+        throw new HttpError("Call not found", 404);
     }
-    const type = await chatType(chatIdNum);
-    if (type === "" || type === "CHANNEL") {
-        throw new HttpError("Can't make a call", 400);
-    }
-    let participants = await getChatParticipantsIds(chatIdNum);
-    if(participants.indexOf(userId) === -1){
-        throw new HttpError("User is not a participant of this chat", 400);
-    }
-    participants = participants.filter((participant) => participant !== userId);
-    if (type === "DM") {
-        const checkBlocked = await isBlocked(userId, participants[0]);
-        if (checkBlocked) {
-            throw new HttpError("Can't make a call Due to Block", 400);
-        }
-    }
-    const user = await getSenderInfo(userId);
-    const Message: Message = await createVoiceCallMessage(userId, Number(chatId), `${user?.name} joined the call`);
-    const call: Call = await db.call.create({
+    return call;
+};
+
+const updateJoinTime = async (id: number) => {
+    const call = await db.call.update({
+        where:{
+            id: id
+        },
         data: {
-            chatId: Number(chatId),
-            userId: userId,
-            messageId: Message.id,
             joinedAt: new Date(),
         },
     });
-    callLog(participants, Message);
-    return call.id;
+    return call;
 };
 
-export const leaveCall = async (userId: number, chatId: string, endStatus: any, callId: number) => {
-    const chatIdNum = Number(chatId);
-    if (isNaN(chatIdNum)) {
-        throw new HttpError("Invalid chatId", 400);
-    }
-    const type = await chatType(chatIdNum);
-    if (type === "" || type === "CHANNEL") {
-        throw new HttpError("Can't make a call", 400);
-    }
-    let participants = await getChatParticipantsIds(chatIdNum);
-    if(participants.indexOf(userId) === -1){
-        throw new HttpError("User is not a participant of this chat", 400);
-    }
-    participants = participants.filter((participant) => participant !== userId);
-    if (type === "DM") {
-        const checkBlocked = await isBlocked(userId, participants[0]);
-        if (checkBlocked) {
-            throw new HttpError("Can't make a call Due to Block", 400);
-        }
-    }
-    const user = await getSenderInfo(userId);
-    const Message: Message = await createVoiceCallMessage(userId, Number(chatId), `${user?.name} ended the call`);
-    const call: Call = await db.call.update({
+const updateEndTime = async (id: number, endStatus: any) => {
+    const call = await db.call.update({
         where:{
-            id: callId
+            id: id
         },
         data: {
-            chatId: Number(chatId),
-            userId: userId,
-            messageId: Message.id,
             endedAt: new Date(),
-            endStatus: endStatus
+            endStatus: endStatus,
         },
     });
-    callLog(participants, Message);
-    if(endStatus === "JOINED")
-        return {endedAt: call.endedAt, duration: Duration.fromObject({milliseconds: call.endedAt!.getTime() - call.joinedAt!.getTime()}).toFormat("hh:mm:ss")};
-    return {endedAt: call.endedAt}; 
+    return call;
 };

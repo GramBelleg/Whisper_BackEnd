@@ -37,8 +37,12 @@ export const callSocket = (participants: number[],tokens: string[], notification
     callHandler.startCall(clients, participants, tokens, notification, message);
 };
 
-export const callLog = (participants: number[], message: Message) => {
+export const callLog = (participants: number[], message: any) => {
     callHandler.callLog(clients, participants, message);
+}
+
+export const cancelCall = (participants: number[], message: any) => {
+    callHandler.cancelCall(clients, participants, message);
 }
 
 export const initWebSocketServer = (server: HTTPServer) => {

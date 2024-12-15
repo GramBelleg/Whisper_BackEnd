@@ -12,8 +12,8 @@ model Call {
     endStatus String?
     messageId Int       @unique
     chatId    Int
-    userId    Int
+    //userId    Int
     chat      Chat      @relation(fields: [chatId], references: [id])
     message   Message   @relation(fields: [messageId], references: [id])
-    user      User      @relation(fields: [userId], references: [id])
+    //user      User      @relation(fields: [userId], references: [id])
 }
