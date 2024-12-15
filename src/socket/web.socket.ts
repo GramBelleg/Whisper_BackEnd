@@ -33,8 +33,8 @@ export const notifyExpiry = (key: string) => {
     }
 };
 
-export const callSocket = (participants: number[],tokens: string[], notification: any, message: Message) => {
-    callHandler.startCall(clients, participants, tokens, notification, message);
+export const callSocket = (participants: number[],tokens: string[], notification: any, message: Message, userId: number) => {
+    callHandler.startCall(clients, participants, tokens, notification, message, userId);
 };
 
 export const callLog = (participants: number[], message: any) => {

@@ -8,13 +8,15 @@ export const startCall = async (
     participants: number[],
     tokens: string[],
     notification: any,
-    message: Message
+    message: Message,
+    userId: number
     
 ): Promise<void> => {
     const builtMessage = await buildReceivedMessage(message.senderId, message);
+    sendToClient(message.senderId, clients, "message", builtMessage[0]);
     for (let i = 0; i < participants.length; i++) {
         sendToClient(participants[i], clients, "call", {token: tokens[i], ...notification});
-        sendToClient(participants[i], clients, "message", builtMessage);
+        sendToClient(participants[i], clients, "message", builtMessage[1]);
     }
 };
 
@@ -23,6 +25,7 @@ export const callLog = async (
     participants: number[],
     message: Message
 ): Promise<void> => {
+    const builtMessage = await buildReceivedMessage(message.senderId, message);
     for (let i = 0; i < participants.length; i++) {
         sendToClient(participants[i], clients, "editMessage", message);
     }

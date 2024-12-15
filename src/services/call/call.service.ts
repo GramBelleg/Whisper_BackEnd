@@ -71,7 +71,7 @@ export const makeCall = async (userId: number, chatId: string) => {
         },
     });
     const notification = {...user,  chatId: chatId ,channelName: channelName};
-    callSocket(participants, tokens, notification, message);
+    callSocket(participants, tokens, notification, message, userId);
     pushVoiceNofication(participants, tokens, notification);
     const token = callToken(userId, channelName);
     return token;
