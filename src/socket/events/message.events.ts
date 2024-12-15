@@ -150,7 +150,7 @@ export const setupMessageEvents = (
 
     socket.on(
         "deleteComment",
-        socketWrapper(async (comments: { ids: number[]; chatId: number }) => {
+        socketWrapper(async (comments: { ids: number[]; chatId: number; messageId: number }) => {
             await deleteController.deleteComments(comments.ids, userId);
             await messageHandler.broadCast(comments.chatId, clients, "deleteComment", comments);
         })

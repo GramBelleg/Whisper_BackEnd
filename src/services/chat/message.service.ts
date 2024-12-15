@@ -10,17 +10,17 @@ import {
 } from "@models/messages.models";
 
 export const deleteComments = async (userId: number, ids: number[]) => {
-    const parentComments = await db.comment.findMany({
+    const messages = await db.comment.findMany({
         where: { id: { in: ids } },
-        select: { parentCommentId: true },
+        select: { messageId: true },
     });
 
-    const parentCommentIds: number[] = parentComments
-        .map((parentComment) => parentComment?.parentCommentId)
+    const messageIds: number[] = messages
+        .map((message) => message?.messageId)
         .filter((id): id is number => id !== undefined);
 
-    await db.comment.updateMany({
-        where: { id: { in: parentCommentIds } },
+    await db.message.updateMany({
+        where: { id: { in: messageIds } },
         data: {
             replyCount: {
                 decrement: 1,
@@ -82,7 +82,6 @@ export const getComments = async (userId: number, messageId: number) => {
                     messageId: true,
                     parentCommentId: true,
                     content: true,
-                    replyCount: true,
                 },
             },
         },
@@ -111,18 +110,14 @@ export const saveCommentStatus = async (
     return time;
 };
 export const saveComment = async (comment: SentComment, userId: number) => {
-    let hasParent = false;
-    if (comment.parentCommentId) {
-        hasParent = true;
-        await db.comment.update({
-            where: {
-                id: comment.parentCommentId,
-            },
-            data: {
-                replyCount: { increment: 1 },
-            },
-        });
-    }
+    await db.message.update({
+        where: {
+            id: comment.messageId,
+        },
+        data: {
+            replyCount: { increment: 1 },
+        },
+    });
     const savedComment: SavedComment = await db.comment.create({
         data: {
             senderId: userId,

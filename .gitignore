@@ -8,4 +8,4 @@ Dockerfile
 docker-compose.yml
 package-lock.json
 backend.log
-coverage/
+coverage
