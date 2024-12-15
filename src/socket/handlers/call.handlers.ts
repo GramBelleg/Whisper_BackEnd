@@ -23,7 +23,7 @@ export const startCall = async (
 export const callLog = async (
     clients: Map<number, Socket>,
     participants: number[],
-    message: Message
+    message: any
 ): Promise<void> => {
     const builtMessage = await buildReceivedMessage(message.senderId, message);
     for (let i = 0; i < participants.length; i++) {

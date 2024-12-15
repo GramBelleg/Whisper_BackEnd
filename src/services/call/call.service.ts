@@ -105,13 +105,13 @@ export const leaveCall = async (chatId: string, endStatus: any) => {
     {
         const duration = callDuration(lastCall);
         const editedMessage = await editMessage(lastCall.messageId, "Call Ended " + duration);
-        callLog(participants, editedMessage);
+        callLog(participants, {id: editedMessage.id, content: editedMessage.content, chatId: editedMessage.chatId});
         return {duration: duration};
     }
     const editedMessage = await editMessage(lastCall.messageId, "Call Ended");
     if(endStatus === "CANCELED")
         cancelCall(participants, {chatId: chatId});
-    callLog(participants, editMessage);
+    callLog(participants, {id: editedMessage.id, content: editedMessage.content, chatId: editedMessage.chatId});
     return {duration: null};
 };
 
