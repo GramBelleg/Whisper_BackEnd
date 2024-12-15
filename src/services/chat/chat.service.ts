@@ -197,12 +197,19 @@ export const createChatParticipants = async (
         chatId,
         keyId: currentUserId === userId ? senderKey : null,
     }));
-    const chatParticipantIds = await db.$queryRawUnsafe<{ id: number; userId: number }[]>(`
-        INSERT INTO "ChatParticipant" ("chatId", "userId")
-        VALUES ${participantsData.map((p) => `(${p.chatId}, ${p.userId})`).join(", ")}
-        RETURNING "id", "userId";
-    `);
+    await db.chatParticipant.createMany({
+        data: participantsData,
+    });
 
+    const chatParticipantIds = await db.chatParticipant.findMany({
+        where: {
+            chatId,
+        },
+        select: {
+            id: true,
+            userId: true,
+        },
+    });
     return chatParticipantIds;
 };
 

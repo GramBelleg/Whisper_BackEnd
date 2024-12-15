@@ -36,7 +36,7 @@ describe("Chat Mute and Unmute Handlers", () => {
             next();
         });
 
-        const duration = 3600;
+        const duration = 1;
         const response = await request(app)
             .post(`/api/chats/${chat.id}/muteChat`)
             .send({ duration });
@@ -77,7 +77,7 @@ describe("Chat Mute and Unmute Handlers", () => {
         expect(response.status).toBe(403);
         expect(response.body.Message).toBeUndefined();
     });
-    
+
     it("should return 403 if the user is unauthorized to mute/unmute the chat", async () => {
         const user1 = await createRandomUser();
         const user2 = await createRandomUser();

@@ -12,7 +12,6 @@ import { MAX_UPLOAD_SIZE } from "@config/constants.config";
 import { Privacy } from "@prisma/client";
 
 const updateBio = async (req: Request, res: Response) => {
-    console.log(req.body);
     let { bio = "" }: { bio: string } = req.body;
     let id: number = req.userId;
     await userServices.updateBio(id, bio);

@@ -70,7 +70,6 @@ export const getComments = async (userId: number, messageId: number) => {
             userId,
             comment: {
                 messageId,
-                parentCommentId: null,
             },
             deleted: false,
         },

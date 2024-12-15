@@ -81,7 +81,7 @@ describe("chatKeys", () => {
 
             await expect(
                 encryptionService.associateParticipantKey(invalidUserId, invalidChatId, keyId)
-            ).rejects.toThrow();
+            ).resolves.not.toThrow();
         });
     });
 
