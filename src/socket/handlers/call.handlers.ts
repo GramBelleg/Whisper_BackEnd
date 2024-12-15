@@ -1,6 +1,7 @@
 import { Socket } from "socket.io";
 import { sendToClient } from "@socket/utils/socket.utils";
 import { Message } from "@prisma/client";
+import { buildReceivedMessage } from "@controllers/messages/format.message";
 
 export const startCall = async (
     clients: Map<number, Socket>,
@@ -8,10 +9,12 @@ export const startCall = async (
     tokens: string[],
     notification: any,
     message: Message
+    
 ): Promise<void> => {
+    const builtMessage = await buildReceivedMessage(message.senderId, message);
     for (let i = 0; i < participants.length; i++) {
         sendToClient(participants[i], clients, "call", {token: tokens[i], ...notification});
-        //sendToClient(participants[i], clients, "message", message);
+        sendToClient(participants[i], clients, "message", builtMessage);
     }
 };
 
