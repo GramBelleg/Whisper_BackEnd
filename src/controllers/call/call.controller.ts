@@ -1,7 +1,5 @@
 import * as callServices from "@services/call/call.service";
 import { Request, Response } from "express";
-import HttpError from "@src/errors/HttpError";
-import { stat } from "fs";
 
 
 export const generateToken = async (req: Request, res: Response) => {

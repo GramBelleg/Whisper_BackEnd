@@ -11,7 +11,7 @@ export const startCall = async (
 ): Promise<void> => {
     for (let i = 0; i < participants.length; i++) {
         sendToClient(participants[i], clients, "call", {token: tokens[i], ...notification});
-        sendToClient(participants[i], clients, "message", message);
+        //sendToClient(participants[i], clients, "message", message);
     }
 };
 

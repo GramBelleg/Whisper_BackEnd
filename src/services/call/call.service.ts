@@ -9,7 +9,8 @@ import { pushVoiceNofication } from "@services/notifications/notification.servic
 import { getSenderInfo } from "@services/user/user.service";
 import { Message } from "@prisma/client";
 import { createVoiceCallMessage, editMessage} from "@services/chat/message.service";
-import { Duration } from "luxon";
+import { handleSaveMessage } from "@controllers/messages/send.message";
+import { SentMessage } from "@models/messages.models";
 
 const RtcTokenBuilder = require("@agora/src/RtcTokenBuilder2").RtcTokenBuilder;
 const RtcRole = require("@agora/src/RtcTokenBuilder2").Role;
@@ -61,7 +62,7 @@ export const makeCall = async (userId: number, chatId: string) => {
     const user = await getSenderInfo(userId);
     const content = `Call from ${user?.name}`;
 
-    const message: Message = await createVoiceCallMessage(userId, chatIdNum, content);
+    const message = await createVoiceCallMessage(userId, chatIdNum, content);
     const call: Call = await db.call.create({
         data: {
             chatId: chatIdNum,
@@ -85,6 +86,14 @@ export const joinCall = async (chatId: string) => {
     return lastCall.id;
 };
 
+const callDuration = (call: Call) => {
+    const join = new Date(call.joinedAt!);
+    const end = new Date(call.endedAt!);
+    const diff = Math.abs(end.getTime() - join.getTime());
+    const seconds = Math.floor(diff / 1000);
+    return seconds;
+}
+
 export const leaveCall = async (chatId: string, endStatus: any) => {
     const lastCall = await findCall(chatId);
     const leave = await updateEndTime(lastCall.id, endStatus);
@@ -94,9 +103,9 @@ export const leaveCall = async (chatId: string, endStatus: any) => {
     const participants = await getChatParticipantsIds(lastCall.chatId);
     if(endStatus === "JOINED")
     {
-        const duration = Duration.fromObject({ seconds: Math.floor((leave.endedAt!.getTime() - leave.joinedAt!.getTime())) }).toFormat("hh:mm:ss");
+        const duration = callDuration(lastCall);
         const editedMessage = await editMessage(lastCall.messageId, "Call Ended " + duration);
-        callLog(participants, editMessage);
+        callLog(participants, editedMessage);
         return {duration: duration};
     }
     const editedMessage = await editMessage(lastCall.messageId, "Call Ended");

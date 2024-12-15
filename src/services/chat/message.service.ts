@@ -2,6 +2,7 @@ import db from "@DB";
 import { Message } from "@prisma/client";
 import { getChatParticipantsIds } from "@services/chat/chat.service";
 import { DraftMessage, MessageReference, SentMessage } from "@models/messages.models";
+import { handleSaveMessage } from "@controllers/messages/send.message";
 
 export const getOtherMessageTime = async (excludeUserId: number, messageId: number) => {
     return await db.messageStatus.findFirst({
@@ -598,13 +599,22 @@ export const getDraftedMessage = async (
 };
 
 export const createVoiceCallMessage = async (userId: number, chatId: number, content: string) => {
-    return await db.message.create({
-        data: {
-            chatId,
-            senderId: userId,
-            content,
-            type: "CALL",
-            sentAt: new Date().toISOString(),
-        },
-    });
+    // return await db.message.create({
+    //     data: {
+    //         chatId,
+    //         senderId: userId,
+    //         content,
+    //         type: "CALL",
+    //         sentAt: new Date().toISOString(),
+    //     },
+    // });
+    const message: SentMessage = {
+        key: null,
+        chatId: chatId,
+        content: content,
+        senderId: userId,
+        type: "CALL",
+        sentAt: new Date(),
+    }
+    return await handleSaveMessage(userId, message);
 };
