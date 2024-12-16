@@ -122,4 +122,8 @@ export const setSizeLimit = async (req: Request, res: Response) => {
 
     const isAdmin = await groupService.isAdmin({ userId: adminId, chatId });
     if (!isAdmin) throw new HttpError("You're not an admin", 401);
+
+    await groupService.updateSizeLimit(chatId, maxSize);
+
+    res.status(200).json({ message: "successfully updated group size limit" });
 };
