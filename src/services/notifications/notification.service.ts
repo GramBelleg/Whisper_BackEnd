@@ -30,7 +30,8 @@ export const pushMessageNotification = async (
             unmutedUsers = groupUnmutedUsers;
         } else {
             unmutedUsers = await findUnmutedChannelUsers(receivers, chatId);
-            title = message.sender.userName;
+            if (message.sender) title = message.sender.userName;
+            else if (message.userName) title = message.userName;
         }
         if (unmutedUsers.length === 0) return;
         const deviceTokens = await findDeviceTokens(unmutedUsers);
