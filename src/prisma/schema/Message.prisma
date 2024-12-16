@@ -11,6 +11,30 @@ enum MessageType {
   EVENT
 }
 
+model CommentStatus{
+  commentId Int
+  userId Int
+  time DateTime
+  deleted Boolean  @default(false)
+  user User @relation(fields: [userId],references: [id])
+  comment Comment @relation(fields: [commentId],references: [id],onDelete: Cascade)
+  @@unique([commentId,userId])
+}
+
+model Comment{
+  id Int @id @default(autoincrement())
+  senderId Int 
+  messageId Int 
+  parentCommentId  Int?
+  content String
+  sentAt DateTime
+  replyCount Int @default(0)
+  message Message @relation(fields:[id],references: [id],onDelete: Cascade)
+  parentComment Comment? @relation("replies",fields:[parentCommentId],references: [id],onDelete: Cascade)
+  replies       Comment[] @relation("replies")
+  sender        User  @relation(fields: [senderId],references: [id])
+  comment CommentStatus[]
+}
 
 model Message {
   id                    Int                @id @default(autoincrement())
@@ -39,6 +63,7 @@ model Message {
   parentMessageId       Int?
   parentContent         String?
   parentMedia           String?
+  replyCount            Int                @default(0)
   parentType            MessageType?
   parentExtension       String?
   sender                User               @relation(fields: [senderId], references: [id])
@@ -49,23 +74,26 @@ model Message {
   draftReplies          ChatParticipant[]  @relation("DraftReplyToMessage")
   forwardedFrom         User?              @relation("ForwardedMessage", fields: [forwardedFromUserId], references: [id])
   messageStatus         MessageStatus[]
+  comments              Comment[]
+  call                Call?
 }
 
 model MessageStatus {
-  id              Int                @id @default(autoincrement())
-  messageId       Int    
+  id              Int               @id @default(autoincrement())
+  messageId       Int
   userId          Int
-  read            DateTime?       
-  delivered       DateTime?      
-  time            DateTime            
-  deleted         Boolean             @default(false)
-  lastMessageChat ChatParticipant[]   @relation("LastMessageForChatParticipant") 
-  message         Message             @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  user            User                @relation(fields: [userId], references: [id])
-  @@unique([messageId,userId])
+  read            DateTime?
+  delivered       DateTime?
+  time            DateTime
+  deleted         Boolean           @default(false)
+  lastMessageChat ChatParticipant[] @relation("LastMessageForChatParticipant")
+  message         Message           @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user            User              @relation(fields: [userId], references: [id])
+
+  @@unique([messageId, userId])
 }
 
 model VoiceMessage {
-  MessageId       Int                 @id
-  Message         Message             @relation(fields: [MessageId], references: [id])
+  MessageId Int     @id
+  Message   Message @relation(fields: [MessageId], references: [id])
 }

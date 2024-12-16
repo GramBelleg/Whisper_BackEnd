@@ -2,7 +2,6 @@ import { Socket } from "socket.io";
 import { archiveStory, getStoryPrivacy, getStoryUserId } from "@services/story/story.service";
 import { sendToClient } from "@socket/utils/socket.utils";
 import redisClient from "@src/redis/redis.client";
-import { SaveableStory } from "@models/story.models";
 import * as userServices from "@services/user/user.service";
 import { Privacy, Story } from "@prisma/client";
 

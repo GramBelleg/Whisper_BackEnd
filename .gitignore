@@ -4,3 +4,4 @@ dist/
 tsconfig.tsbuildinfo
 package-lock.json
 backend.log
+coverage

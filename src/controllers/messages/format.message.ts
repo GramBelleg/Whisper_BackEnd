@@ -34,7 +34,6 @@ export const buildMessageWithCustomObjects = async (
 ): Promise<ReceivedMessage[]> => {
     const senderMessage = await addTimeHandler(getUserMessageTime, userId, message.id, message);
     const receiverMessage = await addTimeHandler(getOtherMessageTime, userId, message.id, message);
-
     const messages: ReceivedMessage[] = [senderMessage, receiverMessage].map((msg) => {
         const {
             forwardedFromUserId,
@@ -52,7 +51,7 @@ export const buildMessageWithCustomObjects = async (
     return messages;
 };
 
-const formatParentMessage = async (parentMessage: any, parentMessageContent: any | null) => {
+export const formatParentMessage = async (parentMessage: any, parentMessageContent: any | null) => {
     if (!parentMessage) return null;
     if (!parentMessageContent) throw new Error("Parent message content not found");
     const senderInfo = {
@@ -67,13 +66,17 @@ const formatParentMessage = async (parentMessage: any, parentMessageContent: any
     };
 };
 
-const buildParentMessage = async (messageId: number, parentId: number | null) => {
+export const buildParentMessage = async (messageId: number, parentId: number | null) => {
     const parentSummary = await getMessageSummary(parentId);
     const parentMessageContent = await getParentMessageContent(messageId);
     return await formatParentMessage(parentSummary, parentMessageContent);
 };
 
-const buildDraftParentMessage = async (userId: number, chatId: number, parentId: number | null) => {
+export const buildDraftParentMessage = async (
+    userId: number,
+    chatId: number,
+    parentId: number | null
+) => {
     const parentSummary = await getMessageSummary(parentId);
     const parentMessageContent = await getDraftParentMessageContent(userId, chatId);
     return await formatParentMessage(parentSummary, parentMessageContent);
@@ -85,7 +88,6 @@ export const buildReceivedMessage = async (
 ): Promise<ReceivedMessage[]> => {
     const formattedParent = await buildParentMessage(message.id, message.parentMessageId);
     const sender = await getSenderInfo(message.senderId);
-    if (!sender) throw new Error("Sender not found");
 
     const mentions = await getMentions(message.id);
 
@@ -97,10 +99,11 @@ export const buildReceivedMessage = async (
     const result: ToBeFormattedMessage = {
         ...message,
         parentMessage: formattedParent,
-        sender,
+        sender: sender!,
         mentions,
         forwardedFrom,
     };
+
     return buildMessageWithCustomObjects(userId, result);
 };
 

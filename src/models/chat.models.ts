@@ -1,4 +1,4 @@
-import { ChatType, Message, User } from "@prisma/client";
+import { ChatType, Message, Status, User } from "@prisma/client";
 
 type LastMessageSender = Pick<User, "id" | "userName">;
 
@@ -13,21 +13,39 @@ export type CreatedChat = {
     users: number[];
     senderKey: null | number;
     type: ChatType;
+    name?: string;
+    picture?: string;
 };
 
 export type ChatSummary = {
     id: number;
-    othersId: number;
+    othersId?: number;
     type: ChatType;
     participantKeys?: (number | null)[];
     name: string;
-    lastSeen: Date;
-    isMuted: boolean;
-    hasStory: boolean;
-    picture: string;
-    status: string;
+    lastSeen?: Date;
+    hasStory?: boolean;
+    picture: string | null;
+    status?: string;
     lastMessage: LastMessage;
     unreadMessageCount: number;
+    isMuted: number;
+    isAdmin?: boolean;
 };
 
-export type MemberSummary = Pick<User, "id" | "userName" | "profilePic" | "lastSeen" | "hasStory">;
+export type ChatUserSummary = { userId: number; chatId: number };
+export type ChatUser = {
+    user: {
+        id: number;
+        userName: string;
+        profilePic?: string | null;
+        lastSeen?: Date;
+        status?: Status;
+        hasStory?: boolean;
+    };
+    chatId: number;
+};
+export type MemberSummary = Pick<
+    User,
+    "id" | "userName" | "profilePic" | "lastSeen" | "hasStory"
+> & { isAdmin?: boolean };
