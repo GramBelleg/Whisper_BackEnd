@@ -17,7 +17,7 @@
         // "experimentalDecorators": true,                   /* Enable experimental support for legacy experimental decorators. */
         // "emitDecoratorMetadata": true,                    /* Emit design-type metadata for decorated declarations in source files. */
         // "jsxFactory": "",                                 /* Specify the JSX factory function used when targeting React JSX emit, e.g. 'React.createElement' or 'h'. */
-        // "jsxFragmentFactory": "",                         /* Specify the JSX Fragment reference used for fragments when targeting React JSX emit e.g. 'React.Fragment' or 'Fragment'. */
+        // "jsxFragmentFactory": "",                         /* Specify the JSX Fragment reference used for fragments when targeting React JSX emit e.g. 'React.Fragment'. */
         // "jsxImportSource": "",                            /* Specify module specifier used to import the JSX factory functions when using 'jsx: react-jsx*'. */
         // "reactNamespace": "",                             /* Specify the object invoked for 'createElement'. This only applies when targeting 'react' JSX emit. */
         // "noLib": true,                                    /* Disable including any library files, including the default lib.d.ts. */
@@ -26,7 +26,7 @@
 
         /* Modules */
         "module": "commonjs" /* Specify what module code is generated. */,
-        "rootDir": "./src" /* Specify the root folder within your source files. Folder which contains typescript files*/,
+        "rootDir": "." /* Specify the root folder within your source files. */,
         // "moduleResolution": "node10",                     /* Specify how TypeScript looks up a file from a given module specifier. */
         "baseUrl": "./" /* Specify the base directory to resolve non-relative module names. */,
         "paths": {
@@ -41,7 +41,8 @@
             "@routes/*": ["src/routes/*"],
             "@socket/*": ["src/socket/*"],
             "@models/*": ["src/models/*"],
-            "@src/*": ["src/*"]
+            "@src/*": ["src/*"],
+            "@agora/*": ["src/agora/*"],
         },
         // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
         "typeRoots": [
@@ -123,5 +124,5 @@
         // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
         "skipLibCheck": true /* Skip type checking all .d.ts files. */
     },
-    "include": ["src/**/*"]
+    "include": ["src/**/*", "test/**/*"]
 }

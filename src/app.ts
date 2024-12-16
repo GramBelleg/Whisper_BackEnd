@@ -4,8 +4,6 @@ import http from "http";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import indexRouter from "@routes/index.routes";
-import swaggerSpec from "./docs/swagger";
-import swaggerUi from "swagger-ui-express";
 import session from "express-session";
 import cron, { ScheduledTask } from "node-cron";
 import errorHandler from "@middlewares/error.handler";
@@ -45,7 +43,6 @@ app.use(
         saveUninitialized: true,
     })
 );
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api", indexRouter);
 
 initWebSocketServer(server);
@@ -53,7 +50,7 @@ redisSubscribe();
 
 app.use(errorHandler);
 
-const deleteExpiredTokensTask: ScheduledTask = cron.schedule("0 3 * * *", deleteExpiredTokens); // delete expired tokens every day at 3 AM 
+const deleteExpiredTokensTask: ScheduledTask = cron.schedule("0 3 * * *", deleteExpiredTokens); // delete expired tokens every day at 3 AM
 const deleteExtraRelatesTask: ScheduledTask = cron.schedule("0 3 * * *", () => deleteExtraRelates); // delete extra relates every day at 3 AM
 
 const closeApp = async () => {

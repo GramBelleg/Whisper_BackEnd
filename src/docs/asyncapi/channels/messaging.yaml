@@ -1,0 +1,249 @@
+message:
+    description: Channel for messaging.
+
+    # Channel for sending new messages
+    subscribe:
+        summary: Send chat messages
+        operationId: sendMessage
+        message:
+            contentType: application/json
+            payload:
+                $ref: "../payloads/chat/sent.message.yaml" # Reference to the sent message payload
+
+    # Channel for receiving chat messages
+    publish:
+        summary: Receive chat messages
+        operationId: receiveMessage
+        message:
+            contentType: application/json
+            payload:
+                $ref: "../payloads/chat/received.message.yaml" # Reference to the received message payload
+
+editMessage:
+    description: Channel for editing messages.
+
+    subscribe:
+        summary: Send an edited message
+        operationId: sendEditedMessage
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    id:
+                        type: integer
+                        description: Identifier of the message
+                    chatId:
+                        type: integer
+                        description: Identifier of the message
+                    content:
+                        type: string
+                        description: new content of the message
+
+    publish:
+        summary: Receive edited chat messages
+        operationId: receiveEditedMessage
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    id:
+                        type: integer
+                        description: Identifier of the message
+                    chatId:
+                        type: integer
+                        description: Identifier of the message
+                    content:
+                        type: string
+                        description: new content of the message
+
+pinMessage:
+    description: Channel for editing messages.
+
+    subscribe:
+        summary: Send a pinned message
+        operationId: sendPinnedMessage
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    id:
+                        type: integer
+                        description: Identifier of the message
+                    chatId:
+                        type: integer
+                        description: Identifier of the message
+
+    publish:
+        summary: Receive pinned chat messages
+        operationId: receivePinnedMessage
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    id:
+                        type: integer
+                        description: Identifier of the message
+                    chatId:
+                        type: integer
+                        description: Identifier of the message
+
+unpinMessage:
+    description: Channel for unpinning messages.
+
+    subscribe:
+        summary: Send unpinned message
+        operationId: sendUnPinnedMessage
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    id:
+                        type: integer
+                        description: Identifier of the message
+                    chatId:
+                        type: integer
+                        description: Identifier of the message
+
+    publish:
+        summary: Receive unpinned messages
+        operationId: receiveUnPinnedMessage
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    messageId:
+                        type: integer
+                        description: Identifier of the message
+                    chatId:
+                        type: integer
+                        description: Identifier of the message
+
+deleteMessage:
+    description: Channel for delete messages.
+
+    subscribe:
+        summary: delete messages
+        operationId: deletedMessage
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    messages:
+                        type: array
+                        items:
+                            type: integer
+                            description: Identifier of the message
+                    chatId:
+                        type: integer
+
+    publish:
+        summary: Receive deleted messages
+        operationId: receiveDeletedMessage
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    messages:
+                        type: array
+                        items:
+                            type: integer
+                            description: Identifier of the message
+                    chatId:
+                        type: integer
+
+expireMessage:
+    description: Channel for expiring messages.
+
+    publish:
+        operationId: receiveExpiredMessage
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    id:
+                        type: integer
+                        description: Identifier of the message
+                    chatId:
+                        type: integer
+                        description: Identifier of the chat
+readMessage:
+    description: Channel for read messages.
+
+    subscribe:
+        operationId: readMessage
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    messages:
+                        type: array
+                        items:
+                            type: integer
+                            description: Identifier of the message
+                    chatId:
+                        type: integer
+
+    publish:
+        operationId: getReadMessage
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    messageIds:
+                        type: array
+                        items:
+                            type: integer
+                            description: Identifier of the message
+                    chatId:
+                        type: integer
+
+readAllMessages:
+    description: Channel for read messages.
+
+    subscribe:
+        operationId: readAllMessages
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    chatId:
+                        type: integer
+deliverMessage:
+    description: Channel for delivered messages.
+
+    subscribe:
+        operationId: deliverMessage
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    messageId:
+                        type: integer
+
+    publish:
+        operationId: getDeliveredMessage
+        message:
+            contentType: application/json
+            payload:
+                type: object
+                properties:
+                    messageIds:
+                        type: array
+                        items:
+                            type: integer
+                            description: Identifier of the message
+                    chatId:
+                        type: integer

@@ -25,7 +25,7 @@ const getUserData = async (token: string): Promise<Record<string, any> | undefin
         const wantedData = { userName: data.name, email: data.email };
         return wantedData;
     } catch (err: any) {
-        console.log(err.message);
+        console.log(err.message); //TODO: throw error again
         return undefined;
     }
 };
