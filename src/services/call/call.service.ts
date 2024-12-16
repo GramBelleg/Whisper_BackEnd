@@ -11,6 +11,7 @@ import { Message } from "@prisma/client";
 import { createVoiceCallMessage, editMessage } from "@services/chat/message.service";
 import { handleSaveMessage } from "@controllers/messages/send.message";
 import { SentMessage } from "@models/messages.models";
+import axios from "axios";
 
 const RtcTokenBuilder = require("@agora/src/RtcTokenBuilder2").RtcTokenBuilder;
 const RtcRole = require("@agora/src/RtcTokenBuilder2").Role;
@@ -39,6 +40,7 @@ export const callToken = (userId: number, channelName: string): string => {
 
 export const makeCall = async (userId: number, chatId: string) => {
     const chatIdNum = Number(chatId);
+
     if (isNaN(chatIdNum)) {
         throw new HttpError("Invalid chatId", 400);
     }
@@ -75,8 +77,12 @@ export const makeCall = async (userId: number, chatId: string) => {
         },
     });
     const notification = { ...user, chatId: chatId, channelName: channelName };
-    callSocket(participants, tokens, notification, message, userId);
-    pushVoiceNofication(participants, tokens, notification);
+    let someoneJoined = await channelHasUser(channelName);
+    if (!someoneJoined) {
+        console.log("sent socket and notification");
+        callSocket(participants, tokens, notification, message, userId);
+        pushVoiceNofication(participants, tokens, notification);
+    }
     const token = callToken(userId, channelName);
     return token;
 };
@@ -87,6 +93,48 @@ export const joinCall = async (chatId: string) => {
         const call = await updateJoinTime(lastCall.id);
     }
     return lastCall.id;
+};
+
+const channelHasUser = async (channelName: string) => {
+    const channelInfo = await agoraChannelInfo(channelName);
+
+    if (channelInfo) {
+        return channelInfo.user_count > 0;
+    }
+
+    return false;
+};
+
+const agoraChannelInfo = async (channelName: string) => {
+    const options = {
+        method: "GET",
+        url: "https://api.agora.io/dev/v1/channel/7e7c547af0cc4c089b3472dff17acce5",
+        headers: {
+            Authorization:
+                "Basic OTkxYTk0Y2UzNjc4NDQyYTk5ZTBiZTI3NDY4YjQwMzA6YjZiYjM2NzBkNjAzNDI3Yzg0ZDk0Y2JlNTBiZDRkYjI=",
+            "content-type": "application/json",
+        },
+    };
+
+    try {
+        const { data } = await axios.request(options);
+
+        // Assuming data.channels is an array of channels
+        const channelInfo = data.data.channels.find(
+            (channel: { channel_name: string }) => channel.channel_name === channelName
+        );
+
+        if (channelInfo) {
+            console.log("Channel Info:", channelInfo);
+            return channelInfo; // Return the specific channel information
+        } else {
+            console.log("Channel not found");
+            return null; // Handle case where channel is not found
+        }
+    } catch (error) {
+        console.error("Error fetching channel info:", error);
+        throw error; // Rethrow error for further handling
+    }
 };
 
 const callDuration = (call: Call): string => {
