@@ -1,14 +1,14 @@
-import {Call} from "@prisma/client";
+import { Call } from "@prisma/client";
 import db from "@src/prisma/PrismaClient";
 import { getChatParticipantsIds } from "@services/chat/chat.service";
 import { isBlocked } from "@services/user/user.service";
-import { chatType } from "@services/chat/chat.service";
+import { getChatType } from "@services/chat/chat.service";
 import HttpError from "@src/errors/HttpError";
 import { callSocket, callLog, cancelCall } from "@socket/web.socket";
 import { pushVoiceNofication } from "@services/notifications/notification.service";
 import { getSenderInfo } from "@services/user/user.service";
 import { Message } from "@prisma/client";
-import { createVoiceCallMessage, editMessage} from "@services/chat/message.service";
+import { createVoiceCallMessage, editMessage } from "@services/chat/message.service";
 import { handleSaveMessage } from "@controllers/messages/send.message";
 import { SentMessage } from "@models/messages.models";
 
@@ -24,26 +24,30 @@ const tokenExpirationInSecond = 3600; // 1 hour
 // The validity time of all permissions in seconds
 const privilegeExpirationInSecond = 3600; // 1 hour
 
-
 export const callToken = (userId: number, channelName: string): string => {
-    const tokenWithUid = RtcTokenBuilder.buildTokenWithUid(appId, appCertificate, channelName, userId, role, tokenExpirationInSecond, privilegeExpirationInSecond);
+    const tokenWithUid = RtcTokenBuilder.buildTokenWithUid(
+        appId,
+        appCertificate,
+        channelName,
+        userId,
+        role,
+        tokenExpirationInSecond,
+        privilegeExpirationInSecond
+    );
     return tokenWithUid;
 };
-
-
-
 
 export const makeCall = async (userId: number, chatId: string) => {
     const chatIdNum = Number(chatId);
     if (isNaN(chatIdNum)) {
         throw new HttpError("Invalid chatId", 400);
     }
-    const type = await chatType(chatIdNum);
-    if (type === "" || type === "CHANNEL") {
+    const type = await getChatType(chatIdNum);
+    if (type === "CHANNEL") {
         throw new HttpError("Can't make a call", 400);
     }
     let participants = await getChatParticipantsIds(chatIdNum);
-    if(participants.indexOf(userId) === -1){
+    if (participants.indexOf(userId) === -1) {
         throw new HttpError("User is not a participant of this chat", 400);
     }
     participants = participants.filter((participant) => participant !== userId);
@@ -70,17 +74,16 @@ export const makeCall = async (userId: number, chatId: string) => {
             startedAt: new Date(),
         },
     });
-    const notification = {...user,  chatId: chatId ,channelName: channelName};
+    const notification = { ...user, chatId: chatId, channelName: channelName };
     callSocket(participants, tokens, notification, message, userId);
     pushVoiceNofication(participants, tokens, notification);
     const token = callToken(userId, channelName);
     return token;
 };
 
-
 export const joinCall = async (chatId: string) => {
     const lastCall = await findCall(chatId);
-    if(!lastCall.joinedAt){
+    if (!lastCall.joinedAt) {
         const call = await updateJoinTime(lastCall.id);
     }
     return lastCall.id;
@@ -94,7 +97,7 @@ const callDuration = (call: Call): string => {
     console.log(end);
 
     const diff = Math.abs(end.getTime() - join.getTime());
-    
+
     console.log(diff);
 
     const totalSeconds = Math.floor(diff / 1000);
@@ -104,8 +107,8 @@ const callDuration = (call: Call): string => {
     const seconds = totalSeconds % 60;
     console.log(seconds);
     // Zero-pad minutes and seconds
-    const formattedMinutes = minutes.toString().padStart(2, '0');
-    const formattedSeconds = seconds.toString().padStart(2, '0');
+    const formattedMinutes = minutes.toString().padStart(2, "0");
+    const formattedSeconds = seconds.toString().padStart(2, "0");
 
     return `${formattedMinutes}m , ${formattedSeconds}s`;
 };
@@ -118,8 +121,7 @@ export const leaveCall = async (chatId: string, endStatus: any) => {
         throw new HttpError("Call not found", 404);
     }
     const participants = await getChatParticipantsIds(lastCall.chatId);
-    if(endStatus === "JOINED")
-    {
+    if (endStatus === "JOINED") {
         const duration = callDuration(lastCall);
         const editedMessage = await editMessage(lastCall.messageId, "Duration " + duration);
         callLog(participants, {
@@ -127,23 +129,23 @@ export const leaveCall = async (chatId: string, endStatus: any) => {
             content: editedMessage.content,
             chatId: lastCall.chatId,
         });
-        return {duration: duration};
+        return { duration: duration };
     }
     let content = "Call Ended";
-    
-    if(endStatus === "CANCELED") {
+
+    if (endStatus === "CANCELED") {
         content = "Call Canceled";
-        cancelCall(participants, {chatId: lastCall.chatId});
+        cancelCall(participants, { chatId: lastCall.chatId });
     }
 
-    const editedMessage = await editMessage(lastCall.messageId,content);
+    const editedMessage = await editMessage(lastCall.messageId, content);
 
     callLog(participants, {
         id: editedMessage.id,
         content: editedMessage.content,
         chatId: lastCall.chatId,
     });
-    return {duration: null};
+    return { duration: null };
 };
 
 const findCall = async (chatId: string) => {
@@ -156,7 +158,7 @@ const findCall = async (chatId: string) => {
             id: "desc",
         },
     });
-    if(!call){
+    if (!call) {
         throw new HttpError("Call not found", 404);
     }
     return call;
@@ -164,8 +166,8 @@ const findCall = async (chatId: string) => {
 
 const updateJoinTime = async (id: number) => {
     const call = await db.call.update({
-        where:{
-            id: id
+        where: {
+            id: id,
         },
         data: {
             joinedAt: new Date(),
@@ -176,8 +178,8 @@ const updateJoinTime = async (id: number) => {
 
 const updateEndTime = async (id: number, endStatus: any) => {
     const call = await db.call.update({
-        where:{
-            id: id
+        where: {
+            id: id,
         },
         data: {
             endedAt: new Date(),

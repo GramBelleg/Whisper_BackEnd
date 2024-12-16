@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">20% </span>
+                <span class="strong">21.42% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>5/25</span>
+                <span class='fraction'>6/28</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">17.39% </span>
+                <span class="strong">19.23% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>4/23</span>
+                <span class='fraction'>5/26</span>
             </div>
         
             
@@ -135,20 +135,16 @@
 <a name='L70'></a><a href='#L70'>70</a>
 <a name='L71'></a><a href='#L71'>71</a>
 <a name='L72'></a><a href='#L72'>72</a>
-<a name='L73'></a><a href='#L73'>73</a>
-<a name='L74'></a><a href='#L74'>74</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
+<a name='L73'></a><a href='#L73'>73</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-yes">24x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -186,6 +182,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -198,6 +195,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -214,21 +212,18 @@ import { socketWrapper } from "@socket/handlers/error.handler";
 import * as storyTypes from "@models/story.models";
 import * as storyController from "@controllers/story/story.controller";
 import * as storyHandler from "@socket/handlers/story.handlers";
+import { displayedUser } from "@services/user/user.service";
 &nbsp;
-//note the connectedUserId is the id of the user who is sending on the socket
+//note the userId is the id of the user who is sending on the socket
 &nbsp;
-export const setupStoryEvents = <span class="fstat-no" title="function not covered" >(</span>
-    socket: Socket,
-    connectedUserId: number,
-    clients: Map&lt;number, Socket&gt;
-) =&gt; {
+export const setupStoryEvents = <span class="fstat-no" title="function not covered" >(s</span>ocket: Socket, userId: number, clients: Map&lt;number, Socket&gt;) =&gt; {
 <span class="cstat-no" title="statement not covered" >    socket.on(</span>
         "story",
         socketWrapper(<span class="fstat-no" title="function not covered" >async (s</span>tory: storyTypes.body) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
 <span class="cstat-no" title="statement not covered" >            try {</span>
                 const createdStory = <span class="cstat-no" title="statement not covered" >await storyController.setStory({</span>
                     ...story,
-                    userId: connectedUserId,
+                    userId: userId,
                 });
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                <span class="missing-if-branch" title="if path not taken" >I</span>if (createdStory) {</span>
@@ -243,7 +238,7 @@ export const setupStoryEvents = <span class="fstat-no" title="function not cover
 <span class="cstat-no" title="statement not covered" >    socket.on(</span>
         "deleteStory",
         socketWrapper(<span class="fstat-no" title="function not covered" >async (s</span>tory: { storyId: number }) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
-            const deletedStory = <span class="cstat-no" title="statement not covered" >await storyController.deleteStory(connectedUserId, story.storyId);</span>
+            const deletedStory = <span class="cstat-no" title="statement not covered" >await storyController.deleteStory(userId, story.storyId);</span>
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (deletedStory) <span class="cstat-no" title="statement not covered" >await storyHandler.deleteStory(clients, "deleteStory", deletedStory);</span></span>
         })
     );
@@ -257,12 +252,13 @@ export const setupStoryEvents = <span class="fstat-no" title="function not cover
                 profilePic: string;
                 liked: boolean;
             }) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
-<span class="cstat-no" title="statement not covered" >                await storyController.likeStory(connectedUserId, data.storyId, data.liked);</span>
+<span class="cstat-no" title="statement not covered" >                await storyController.likeStory(userId, data.storyId, data.liked);</span>
+                const user = <span class="cstat-no" title="statement not covered" >await displayedUser(userId);</span>
 <span class="cstat-no" title="statement not covered" >                await storyHandler.likeStory(clients, "likeStory", {</span>
-                    userId: connectedUserId,
+                    userId,
                     storyId: data.storyId,
-                    userName: data.userName,
-                    profilePic: data.profilePic,
+                    userName: user.userName,
+                    profilePic: user.profilePic,
                     liked: data.liked,
                 });
             }
@@ -272,12 +268,13 @@ export const setupStoryEvents = <span class="fstat-no" title="function not cover
 <span class="cstat-no" title="statement not covered" >    socket.on(</span>
         "viewStory",
         socketWrapper(<span class="fstat-no" title="function not covered" >async (d</span>ata: { storyId: number; userName: string; profilePic: string }) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
-<span class="cstat-no" title="statement not covered" >            await storyController.viewStory(connectedUserId, data.storyId);</span>
+<span class="cstat-no" title="statement not covered" >            await storyController.viewStory(userId, data.storyId);</span>
+            const user = <span class="cstat-no" title="statement not covered" >await displayedUser(userId);</span>
 <span class="cstat-no" title="statement not covered" >            await storyHandler.viewStory(clients, "viewStory", {</span>
-                userId: connectedUserId,
+                userId,
                 storyId: data.storyId,
-                userName: data.userName,
-                profilePic: data.profilePic,
+                userName: user.userName,
+                profilePic: user.profilePic,
             });
         })
     );
@@ -289,7 +286,7 @@ export const setupStoryEvents = <span class="fstat-no" title="function not cover
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-12-09T18:42:37.239Z
+                at 2024-12-16T15:15:13.658Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

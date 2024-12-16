@@ -19,7 +19,7 @@ export const saveComment = async (comment: SentComment, senderId: number) => {
     return [userComment, otherComment];
 };
 
-const handleSaveMessage = async (userId: number, message: SentMessage) => {
+export const handleSaveMessage = async (userId: number, message: SentMessage) => {
     const savedMessage = await messageService.saveMessage(userId, message);
     await setLastMessage(message.chatId, savedMessage.id);
     return savedMessage;

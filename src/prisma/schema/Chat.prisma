@@ -11,6 +11,7 @@ model Chat {
   participants  ChatParticipant[]
   group         Group?
   channel       Channel?
+  call         Call[]
 }
 
 model Group {

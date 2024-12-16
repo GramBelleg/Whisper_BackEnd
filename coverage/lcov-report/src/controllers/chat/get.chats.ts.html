@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">15% </span>
+                <span class="strong">81.48% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>3/20</span>
+                <span class='fraction'>22/27</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>2/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">13.33% </span>
+                <span class="strong">80% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>2/15</span>
+                <span class='fraction'>16/20</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -90,60 +90,69 @@
 <a name='L25'></a><a href='#L25'>25</a>
 <a name='L26'></a><a href='#L26'>26</a>
 <a name='L27'></a><a href='#L27'>27</a>
-<a name='L28'></a><a href='#L28'>28</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">24x</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Request, Response } from "express";
-import { getChatsSummaries } from "@services/chat/chat.service";
+import * as chatService from "@services/chat/chat.service";
 &nbsp;
-&nbsp;
-export const handleGetAllChats = <span class="fstat-no" title="function not covered" >async (r</span>eq: Request, res: Response) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+export const getAddableUsers = <span class="fstat-no" title="function not covered" >async (r</span>eq: Request, res: Response) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
     const userId = <span class="cstat-no" title="statement not covered" >req.userId;</span>
+    const chatId = <span class="cstat-no" title="statement not covered" >Number(req.params.chatId);</span>
+    const users = <span class="cstat-no" title="statement not covered" >await chatService.getAddableUsers(userId, chatId);</span>
+<span class="cstat-no" title="statement not covered" >    res.status(200).json({ users });</span>
+};
+export const handleGetAllChats = async (req: Request, res: Response) =&gt; {
+    const userId = req.userId;
 &nbsp;
-    let usersOnly = <span class="cstat-no" title="statement not covered" >false;</span>
-<span class="cstat-no" title="statement not covered" >    if (req.query.usersOnly === undefined) <span class="cstat-no" title="statement not covered" >usersOnly = false;</span></span>
-    else <span class="cstat-no" title="statement not covered" >usersOnly = Boolean(req.query.usersOnly);</span>
+    let usersOnly = false;
+    if (req.query.usersOnly === undefined) usersOnly = false;
+    else usersOnly = Boolean(req.query.usersOnly);
 &nbsp;
-    let noKey: number | boolean = <span class="cstat-no" title="statement not covered" >false;</span>
-<span class="cstat-no" title="statement not covered" >    if (req.query.noKey === undefined) <span class="cstat-no" title="statement not covered" >noKey = false;</span></span>
-    else <span class="cstat-no" title="statement not covered" >noKey = parseInt(req.query.noKey as string);</span>
+    let noKey: number | boolean = false;
+    if (req.query.noKey === undefined) noKey = false;
+    else noKey = parseInt(req.query.noKey as string);
 &nbsp;
     //TODO: implement unblockedOnly
-    let unblockedOnly = <span class="cstat-no" title="statement not covered" >false;</span>
-<span class="cstat-no" title="statement not covered" >    if (req.query.unblockedOnly === undefined) <span class="cstat-no" title="statement not covered" >unblockedOnly = true;</span></span>
-    else <span class="cstat-no" title="statement not covered" >unblockedOnly = Boolean(req.query.unblockedOnly);</span>
+    let unblockedOnly = false;
+    if (req.query.unblockedOnly === undefined) unblockedOnly = true;
+    else unblockedOnly = Boolean(req.query.unblockedOnly);
 &nbsp;
     let chats;
-    const usersOnlyType = <span class="cstat-no" title="statement not covered" >usersOnly ? "DM" : null;</span>
-<span class="cstat-no" title="statement not covered" >    chats = await getChatsSummaries(userId, usersOnlyType, noKey);</span>
-<span class="cstat-no" title="statement not covered" >    res.status(200).json(chats);</span>
+    const usersOnlyType = usersOnly ? "DM" : null;
+    chats = await chatService.getChatsSummaries(userId, usersOnlyType, noKey);
+    res.status(200).json(chats);
 };
-&nbsp;
-&nbsp;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -151,7 +160,7 @@ export const handleGetAllChats = <span class="fstat-no" title="function not cove
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-12-09T18:42:37.239Z
+                at 2024-12-16T15:15:13.658Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

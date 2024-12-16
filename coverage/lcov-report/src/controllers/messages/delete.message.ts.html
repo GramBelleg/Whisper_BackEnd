@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">36.84% </span>
+                <span class="strong">92.85% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>7/19</span>
+                <span class='fraction'>26/28</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">66.66% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>4/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">95.23% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>5/15</span>
+                <span class='fraction'>20/21</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -86,49 +86,73 @@
 <a name='L21'></a><a href='#L21'>21</a>
 <a name='L22'></a><a href='#L22'>22</a>
 <a name='L23'></a><a href='#L23'>23</a>
-<a name='L24'></a><a href='#L24'>24</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-yes">24x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Request, Response } from "express";
-import { deleteMessagesForUser, deleteMessagesForAll } from "@services/chat/message.service";
-import { setNewLastMessage } from "@services/chat/chat.service";
+import * as messageService from "@services/chat/message.service";
+import { filterAllowedMessagestoDelete, setNewLastMessage } from "@services/chat/chat.service";
+import { validateChatAndUser } from "@validators/chat";
 &nbsp;
-export const deleteMessagesForCurrentUser = <span class="fstat-no" title="function not covered" >async (r</span>eq: Request, res: Response) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
-    const userId = <span class="cstat-no" title="statement not covered" >req.userId;</span>
-    const Ids = <span class="cstat-no" title="statement not covered" >JSON.parse(req.query.Ids as string).map(Number);</span>
-    const chatId = <span class="cstat-no" title="statement not covered" >Number(req.params.chatId);</span>
-<span class="cstat-no" title="statement not covered" >    await deleteMessagesForUser(userId, Ids);</span>
-<span class="cstat-no" title="statement not covered" >    await setNewLastMessage(chatId);</span>
-<span class="cstat-no" title="statement not covered" >    res.status(200).json({ Message: "Messages deleted successfully" });</span>
+export const deleteComments = <span class="fstat-no" title="function not covered" >async (i</span>ds: number[], userId: number) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+<span class="cstat-no" title="statement not covered" >    await messageService.deleteComments(userId, ids);</span>
+};
+export const deleteMessagesForCurrentUser = async (req: Request, res: Response) =&gt; {
+    const userId = req.userId;
+    let Ids: number[];
+    try {
+        Ids = JSON.parse(req.query.Ids as string).map(Number);
+    } catch (error) {
+        res.status(400).json({ Message: "Invalid Ids query parameter" });
+        return;
+    }
+    const chatId = Number(req.params.chatId);
+    if (!(await validateChatAndUser(userId, chatId, res))) return;
+    const messageIds = await filterAllowedMessagestoDelete(userId, Ids, chatId);
+    await messageService.deleteMessagesForUser(userId, messageIds);
+    await setNewLastMessage(chatId);
+    res.status(200).json({ Message: "Messages deleted successfully" });
 };
 &nbsp;
-export const deleteMessagesForAllUsers = <span class="fstat-no" title="function not covered" >async (I</span>ds: number[], chatId: number) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >        await deleteMessagesForAll(Ids);</span>
-<span class="cstat-no" title="statement not covered" >        await setNewLastMessage(chatId);</span>
-    } catch (error) {
-<span class="cstat-no" title="statement not covered" >        console.error("Error deleting message:", error);</span>
-    }
+export const deleteMessagesForAllUsers = async (Ids: number[], chatId: number) =&gt; {
+    await messageService.deleteMessagesForAll(Ids);
+    await setNewLastMessage(chatId);
 };
 &nbsp;
 export default deleteMessagesForAllUsers;
@@ -139,7 +163,7 @@ export default deleteMessagesForAllUsers;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-12-09T18:42:37.239Z
+                at 2024-12-16T15:15:13.658Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

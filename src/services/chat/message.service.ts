@@ -8,6 +8,7 @@ import {
     SentComment,
     SentMessage,
 } from "@models/messages.models";
+import { handleSaveMessage } from "@controllers/messages/send.message";
 
 export const deleteComments = async (userId: number, ids: number[]) => {
     const messages = await db.comment.findMany({
