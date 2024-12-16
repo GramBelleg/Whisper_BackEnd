@@ -104,6 +104,7 @@
     },
     "_moduleAliases": {
         "@controllers": "./dist/controllers",
+        "@agora": "./dist/agora",
         "@middlewares": "./dist/middlewares",
         "@DB": "./dist/prisma/PrismaClient",
         "@services": "./dist/services",
