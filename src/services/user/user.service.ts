@@ -116,6 +116,8 @@ export const displayedUser = async (id: number) => {
             userName: true,
             profilePic: true,
             hasStory: true,
+            lastSeen: true,
+            status: true,
         },
     });
     if (!user) {

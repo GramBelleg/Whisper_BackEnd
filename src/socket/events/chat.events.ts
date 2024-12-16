@@ -55,6 +55,7 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
             }
 
             if (!participants) throw new Error("No participants found");
+            chatUser.user = await displayedUser(chatUser.user.id);
 
             for (let i = 0; i < participants.length; i++) {
                 if (participants[i] !== chatUser.user.id) {
@@ -135,6 +136,7 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
                 userId,
                 chatUser.chatId
             );
+            chatUser.user = await displayedUser(chatUser.user.id);
             for (let i = 0; i < participants.length; i++) {
                 if (participants[i] !== chatUser.user.id) {
                     await chatHandler.broadCast(participants[i], clients, "addUser", chatUser);

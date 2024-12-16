@@ -233,6 +233,11 @@ export const getGroupMembers = async (chatId: number): Promise<MemberSummary[]> 
                 },
             },
         },
+        orderBy: {
+            groupParticipant: {
+                isAdmin: "desc",
+            },
+        },
     });
     return chatParticipants.map((participant) => ({
         ...participant.user,

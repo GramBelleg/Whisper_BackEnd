@@ -1,4 +1,4 @@
-import { ChatType, Message, User } from "@prisma/client";
+import { ChatType, Message, Status, User } from "@prisma/client";
 
 type LastMessageSender = Pick<User, "id" | "userName">;
 
@@ -35,7 +35,14 @@ export type ChatSummary = {
 
 export type ChatUserSummary = { userId: number; chatId: number };
 export type ChatUser = {
-    user: { id: number; userName: string; profilePic?: string };
+    user: {
+        id: number;
+        userName: string;
+        profilePic?: string | null;
+        lastSeen?: Date;
+        status?: Status;
+        hasStory?: boolean;
+    };
     chatId: number;
 };
 export type MemberSummary = Pick<

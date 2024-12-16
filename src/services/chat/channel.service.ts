@@ -36,6 +36,11 @@ export const getChannelMembers = async (chatId: number): Promise<MemberSummary[]
                 },
             },
         },
+        orderBy: {
+            channelParticipant: {
+                isAdmin: "desc",
+            },
+        },
     });
     return chatParticipants.map((participant) => ({
         ...participant.user,
