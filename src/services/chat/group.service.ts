@@ -12,7 +12,7 @@ export const getSettings = async (chatId: number) => {
             isPrivate: true,
         },
     });
-    return { public: channel?.isPrivate, inviteLink: channel?.maxSize };
+    return { public: channel?.isPrivate, maxSize: channel?.maxSize };
 };
 
 export const deleteGroup = async (chatId: number) => {
