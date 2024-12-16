@@ -10,5 +10,6 @@ router
     .post(asyncHandler(groupController.setPermissions));
 
 router.route("/:chatId/size/:maxSize").put(asyncHandler(groupController.setSizeLimit));
+router.route("/:chatId/settings").get(asyncHandler(groupController.getSettings));
 
 export default router;

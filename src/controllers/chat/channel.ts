@@ -10,6 +10,12 @@ import jwt from "jsonwebtoken";
 import * as chatHandler from "@socket/handlers/chat.handlers";
 import { UserType } from "@models/user.models";
 
+export const getSettings = async (req: Request, res: Response) => {
+    const chatId = Number(req.params.chatId);
+    const settings = channelService.getSettings(chatId);
+    res.status(200).json({ settings });
+};
+
 export const getChannelMembers = async (userId: number, chatId: number) => {
     const isAdmin = await channelService.isAdmin({ userId, chatId });
     if (!isAdmin) throw new Error("You're not an admin");

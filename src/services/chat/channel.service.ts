@@ -3,6 +3,19 @@ import jwt from "jsonwebtoken";
 import { ChatUserSummary, CreatedChat, MemberSummary } from "@models/chat.models";
 import HttpError from "@src/errors/HttpError";
 
+export const getSettings = async (chatId: number) => {
+    const channel = await db.channel.findUnique({
+        where: {
+            chatId,
+        },
+        select: {
+            inviteLink: true,
+            isPrivate: true,
+        },
+    });
+    return { public: channel?.isPrivate, inviteLink: channel?.inviteLink };
+};
+
 export const getChannelMembers = async (chatId: number): Promise<MemberSummary[]> => {
     //add privacy to last seen and hasStory
     const chatParticipants = await db.chatParticipant.findMany({

@@ -2,6 +2,19 @@ import db from "@DB";
 import { ChatUserSummary, CreatedChat, MemberSummary } from "@models/chat.models";
 import HttpError from "@src/errors/HttpError";
 
+export const getSettings = async (chatId: number) => {
+    const channel = await db.group.findUnique({
+        where: {
+            chatId,
+        },
+        select: {
+            maxSize: true,
+            isPrivate: true,
+        },
+    });
+    return { public: channel?.isPrivate, inviteLink: channel?.maxSize };
+};
+
 export const deleteGroup = async (chatId: number) => {
     try {
         await db.chat.delete({

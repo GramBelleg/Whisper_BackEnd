@@ -7,6 +7,12 @@ import { getAddPermission } from "@services/user/user.service";
 import HttpError from "@src/errors/HttpError";
 import { Request, Response } from "express";
 
+export const getSettings = async (req: Request, res: Response) => {
+    const chatId = Number(req.params.chatId);
+    const settings = groupService.getSettings(chatId);
+    res.status(200).json({ settings });
+};
+
 export const deleteGroup = async (userId: number, chatId: number) => {
     const isAdmin = await groupService.isAdmin({ userId, chatId });
     if (!isAdmin) throw new Error("You're not an admin");
