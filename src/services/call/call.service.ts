@@ -86,17 +86,34 @@ export const joinCall = async (chatId: string) => {
     return lastCall.id;
 };
 
-const callDuration = (call: Call) => {
+const callDuration = (call: Call): string => {
     const join = new Date(call.joinedAt!);
-    const end = new Date(call.endedAt!);
+    const end = new Date();
+
+    console.log(join);
+    console.log(end);
+
     const diff = Math.abs(end.getTime() - join.getTime());
-    const seconds = Math.floor(diff / 1000);
-    return seconds;
-}
+    
+    console.log(diff);
+
+    const totalSeconds = Math.floor(diff / 1000);
+    console.log(totalSeconds);
+    const minutes = Math.floor(totalSeconds / 60);
+    console.log(minutes);
+    const seconds = totalSeconds % 60;
+    console.log(seconds);
+    // Zero-pad minutes and seconds
+    const formattedMinutes = minutes.toString().padStart(2, '0');
+    const formattedSeconds = seconds.toString().padStart(2, '0');
+
+    return `${formattedMinutes}m , ${formattedSeconds}s`;
+};
 
 export const leaveCall = async (chatId: string, endStatus: any) => {
     const lastCall = await findCall(chatId);
     const leave = await updateEndTime(lastCall.id, endStatus);
+    console.log(endStatus);
     if (!leave) {
         throw new HttpError("Call not found", 404);
     }
@@ -104,14 +121,28 @@ export const leaveCall = async (chatId: string, endStatus: any) => {
     if(endStatus === "JOINED")
     {
         const duration = callDuration(lastCall);
-        const editedMessage = await editMessage(lastCall.messageId, "Call Ended " + duration);
-        callLog(participants, {id: editedMessage.id, content: editedMessage.content, chatId: editedMessage.chatId});
+        const editedMessage = await editMessage(lastCall.messageId, "Duration " + duration);
+        callLog(participants, {
+            id: editedMessage.id,
+            content: editedMessage.content,
+            chatId: lastCall.chatId,
+        });
         return {duration: duration};
     }
-    const editedMessage = await editMessage(lastCall.messageId, "Call Ended");
-    if(endStatus === "CANCELED")
-        cancelCall(participants, {chatId: chatId});
-    callLog(participants, {id: editedMessage.id, content: editedMessage.content, chatId: editedMessage.chatId});
+    let content = "Call Ended";
+    
+    if(endStatus === "CANCELED") {
+        content = "Call Canceled";
+        cancelCall(participants, {chatId: lastCall.chatId});
+    }
+
+    const editedMessage = await editMessage(lastCall.messageId,content);
+
+    callLog(participants, {
+        id: editedMessage.id,
+        content: editedMessage.content,
+        chatId: lastCall.chatId,
+    });
     return {duration: null};
 };
 
@@ -120,7 +151,9 @@ const findCall = async (chatId: string) => {
     const call = await db.call.findFirst({
         where: {
             chatId: chatIdNum,
-            endedAt: null,
+        },
+        orderBy: {
+            id: "desc",
         },
     });
     if(!call){

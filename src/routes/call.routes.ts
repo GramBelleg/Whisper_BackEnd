@@ -8,7 +8,7 @@ import { join } from "path";
 //router.get("/token/:chatId", asyncHandler(generateToken));
 router.get("/:chatId", asyncHandler(makeCall));
 router.post("/join/:chatId", asyncHandler(joinCall));
-router.post("/leave/:chatId/:endStatus", asyncHandler(leaveCall));
+router.post("/leave/:chatId", asyncHandler(leaveCall));
 
 export default router;
 

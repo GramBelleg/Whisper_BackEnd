@@ -42,6 +42,7 @@ export const callLog = (participants: number[], message: any) => {
 }
 
 export const cancelCall = (participants: number[], message: any) => {
+    console.log("cancel call");
     callHandler.cancelCall(clients, participants, message);
 }
 
