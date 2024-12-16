@@ -14,13 +14,9 @@ class RedisSubscriber {
                 port: parseInt((process.env.REDIS_PORT as string) || "6379", 10),
             });
 
-            RedisSubscriber.instance.on("connect", () => {
-                console.log("Connected to Redis Subscriber!");
-            });
+            RedisSubscriber.instance.on("connect", () => {});
 
-            RedisSubscriber.instance.on("error", (err) => {
-                console.error("Redis Subscriber connection error:", err);
-            });
+            RedisSubscriber.instance.on("error", (err) => {});
         }
         return RedisSubscriber.instance;
     }
@@ -29,7 +25,6 @@ class RedisSubscriber {
         if (RedisSubscriber.instance) {
             await RedisSubscriber.instance.quit();
             RedisSubscriber.instance = null; // Reset instance after quitting
-            console.log("Redis Subscriber connection closed.");
         }
     }
 }

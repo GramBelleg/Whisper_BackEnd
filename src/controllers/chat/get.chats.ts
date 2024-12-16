@@ -1,7 +1,12 @@
 import { Request, Response } from "express";
-import { getChatsSummaries } from "@services/chat/chat.service";
+import * as chatService from "@services/chat/chat.service";
 
-
+export const getAddableUsers = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const chatId = Number(req.params.chatId);
+    const users = await chatService.getAddableUsers(userId, chatId);
+    res.status(200).json({ users });
+};
 export const handleGetAllChats = async (req: Request, res: Response) => {
     const userId = req.userId;
 
@@ -20,8 +25,6 @@ export const handleGetAllChats = async (req: Request, res: Response) => {
 
     let chats;
     const usersOnlyType = usersOnly ? "DM" : null;
-    chats = await getChatsSummaries(userId, usersOnlyType, noKey);
+    chats = await chatService.getChatsSummaries(userId, usersOnlyType, noKey);
     res.status(200).json(chats);
 };
-
-

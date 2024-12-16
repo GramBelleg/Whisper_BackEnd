@@ -16,6 +16,10 @@ import { Message } from "@prisma/client";
 type HandlerFunction = (key: string, clients: Map<number, Socket>) => any;
 const clients: Map<number, Socket> = new Map();
 
+export const getClients = () => {
+    return clients;
+};
+
 const handlers: Record<string, HandlerFunction> = {
     messageId: messageHandler.notifyExpiry,
     storyExpired: storyHandler.notifyExpiry,
@@ -81,11 +85,8 @@ export const initWebSocketServer = (server: HTTPServer) => {
 
         setupStatusEvents(socket, userId, clients);
 
-        socket.on(
-            "disconnect",
-            socketWrapper(async () => {
-                if (userId) await connectionHandler.endConnection(userId, clients);
-            })
-        );
+        socket.on("disconnect", () => {
+            if (userId) connectionHandler.endConnection(userId, clients);
+        });
     });
 };

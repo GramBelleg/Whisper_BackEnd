@@ -10,36 +10,36 @@ enum Status {
 }
 
 model User {
-  id                 Int                  @id @default(autoincrement())
-  email              String               @unique
-  userName           String               @unique //*CHANGE THIS* it has to be unique but fix with oAuth
-  name               String?
-  password           String               @db.VarChar(256)
-  phoneNumber        String?              @unique
-  loggedInDevices    Int                  @default(0)
-  profilePic         String?
-  lastSeen           DateTime             @default(now())
-  hasStory           Boolean              @default(false)
-  bio                String?
-  status             Status               @default(Online)
-  autoDownloadSize   Int                  @default(0) //in MB
-  readReceipts       Boolean              @default(true)
-  lastSeenPrivacy    Privacy              @default(Everyone)
-  pfpPrivacy         Privacy              @default(Everyone)
-  storyPrivacy       Privacy              @default(Everyone)
-  Messages           Message[]
-  chatParticipant    ChatParticipant[]
-  groupParticipant   GroupParticipant[]
-  channelParticipant ChannelParticipant[]
-  tokens             UserToken[]
-  messageStatus      MessageStatus[]
-  story              Story[]
-  relating           Relates[]            @relation("relating")
-  relatedBy          Relates[]            @relation("relatedBy")
-  storyView          storyView[]
-  Publickeys         PublicKey[]
-  forwards           Message[]            @relation("ForwardedMessage")
-  //calls              Call[]
+  id                        Int                  @id @default(autoincrement())
+  email                     String               @unique
+  userName                  String               @unique //*CHANGE THIS* it has to be unique but fix with oAuth
+  name                      String?
+  password                  String               @db.VarChar(256)
+  phoneNumber               String?              @unique
+  loggedInDevices           Int                  @default(0)
+  addPermission             Boolean              @default(true)
+  profilePic                String?
+  lastSeen                  DateTime             @default(now())
+  hasStory                  Boolean              @default(false)
+  bio                       String?
+  status                    Status               @default(Online)
+  autoDownloadSize          Int                  @default(0) //in MB
+  readReceipts              Boolean              @default(true)
+  lastSeenPrivacy           Privacy              @default(Everyone)
+  pfpPrivacy                Privacy              @default(Everyone)
+  storyPrivacy              Privacy              @default(Everyone)
+  Messages                  Message[]
+  chatParticipant           ChatParticipant[]
+  tokens                    UserToken[]
+  messageStatus             MessageStatus[]
+  story                     Story[]
+  relating                  Relates[]            @relation("relating")
+  relatedBy                 Relates[]            @relation("relatedBy")
+  storyView                 storyView[]
+  Publickeys                PublicKey[]          
+  forwards                  Message[]            @relation("ForwardedMessage")
+  comments                  Comment[]
+  commentStatus             CommentStatus[]
 }
 
 model PublicKey {

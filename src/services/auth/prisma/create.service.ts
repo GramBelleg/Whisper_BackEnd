@@ -35,7 +35,6 @@ async function createUserToken(token: string, expireAt: Date, userId: number) {
             },
         });
     } catch (err: any) {
-        console.log(err.message);
         throw new HttpError("User token creation failed", 409);
     }
 }

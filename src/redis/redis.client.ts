@@ -14,13 +14,9 @@ class RedisClient {
                 port: parseInt((process.env.REDIS_PORT as string) || "6379", 10),
             });
 
-            RedisClient.instance.on("connect", () => {
-                console.log("Connected to Redis!");
-            });
+            RedisClient.instance.on("connect", () => {});
 
-            RedisClient.instance.on("error", (err) => {
-                console.error("Redis connection error:", err);
-            });
+            RedisClient.instance.on("error", (err) => {});
         }
         return RedisClient.instance;
     }
@@ -29,7 +25,6 @@ class RedisClient {
         if (RedisClient.instance) {
             await RedisClient.instance.quit();
             RedisClient.instance = null; // Reset instance after quitting
-            console.log("Redis connection closed.");
         }
     }
 }

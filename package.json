@@ -4,7 +4,7 @@
     "description": "",
     "main": "app.js",
     "scripts": {
-        "test": "dotenv -e .env.test jest",
+        "test": "dotenv -e .env.test -- jest",
         "test:watch": "jest --watch",
         "build": "tsc --build",
         "start": "node -r module-alias/register ./dist/server.js",
@@ -89,6 +89,7 @@
         "globals": "^15.13.0",
         "jest": "^29.7.0",
         "jest-mock-extended": "^4.0.0-beta1",
+        "jest-serial-runner": "^1.2.1",
         "nodemon": "^3.1.4",
         "prettier": "^3.3.3",
         "prisma": "^5.20.0",

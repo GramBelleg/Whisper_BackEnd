@@ -5,85 +5,75 @@ enum ChatType {
 }
 
 model Chat {
-  id           Int               @id @default(autoincrement())
-  type         ChatType
-  messages     Message[]
-  participants ChatParticipant[]
-  group        Group?
-  channel      Channel?
-  call         Call[]
+  id            Int               @id @default(autoincrement())
+  type          ChatType
+  messages      Message[]
+  participants  ChatParticipant[]
+  group         Group?
+  channel       Channel?
 }
 
 model Group {
   chatId  Int    @id
   name    String
-  maxSize Int
-  privacy String
-  chat    Chat   @relation(fields: [chatId], references: [id])
-
-  participants GroupParticipant[]
+  picture String?
+  maxSize Int    @default(1000)
+  isPrivate Boolean @default(true)
+  chat    Chat   @relation(fields: [chatId], references: [id],onDelete: Cascade)
 }
 
 model Channel {
   chatId     Int    @id
-  privacy    String
-  inviteLink String
-  chat       Chat   @relation(fields: [chatId], references: [id])
+  name    String
+  picture String?
+  isPrivate    Boolean @default(false)
+  inviteLink String @default("")
+  chat       Chat   @relation(fields: [chatId], references: [id],onDelete: Cascade)
 
-  participants ChannelParticipant[]
 }
 
 model ChatParticipant {
-  userId               Int
-  chatId               Int
-  isArchived           Boolean        @default(false)
-  unreadMessageCount   Int            @default(0)
-  lastMessageId        Int?
-  isContact            Boolean        @default(false)
-  isMuted              Boolean        @default(false)
-  draftContent         String         @default("")
-  draftTime            DateTime?
-  draftParentMessageId Int?
-  draftParentContent   String?
-  draftParentMedia     String?
-  draftParentExtension String?
-  draftParentType      String?
-  keyId                Int?
-  publicKey            PublicKey?     @relation(fields: [keyId], references: [id])
-  parentMessage        Message?       @relation("DraftReplyToMessage", fields: [draftParentMessageId], references: [id])
-  lastMessage          MessageStatus? @relation("LastMessageForChatParticipant", fields: [lastMessageId], references: [id])
-  chat                 Chat           @relation(fields: [chatId], references: [id])
-  user                 User           @relation(fields: [userId], references: [id])
+  id                    Int               @id @default(autoincrement())
+  userId                Int
+  chatId                Int
+  isArchived            Boolean           @default(false)
+  unreadMessageCount    Int               @default(0)
+  lastMessageId         Int?             
+  isMuted               Boolean           @default(false)
+  draftContent          String            @default("")
+  draftTime             DateTime?
+  draftParentMessageId  Int?
+  draftParentContent    String?
+  draftParentMedia      String?
+  draftParentExtension  String?
+  draftParentType       String?
+  keyId                 Int?
+  publicKey             PublicKey?        @relation(fields: [keyId], references: [id])
+  parentMessage         Message?          @relation("DraftReplyToMessage", fields: [draftParentMessageId], references: [id])
+  lastMessage           MessageStatus?    @relation("LastMessageForChatParticipant", fields: [lastMessageId], references: [id])
+  chat                  Chat              @relation(fields: [chatId], references: [id],onDelete: Cascade)
+  user                  User              @relation(fields: [userId], references: [id],onDelete: Cascade)
+  groupParticipant      GroupParticipant?
+  channelParticipant      ChannelParticipant?
 
   @@unique([chatId, userId])
 }
 
 model GroupParticipant {
-  id          Int     @id @default(autoincrement())
-  groupId     Int
-  userId      Int
-  isAdmin     Boolean @default(false)
-  isMuted     Boolean @default(false)
+  id          Int     @id @unique
+  isAdmin     Boolean  @default(false)
   canDownload Boolean @default(true)
   canDelete   Boolean @default(true)
   canPost     Boolean @default(true)
   canEdit     Boolean @default(true)
-  group       Group   @relation(fields: [groupId], references: [chatId])
-  participant User    @relation(fields: [userId], references: [id])
-
-  @@unique([groupId, userId])
+  chatParticipant          ChatParticipant @relation(fields:[id],references: [id],onDelete: Cascade)
 }
 
 model ChannelParticipant {
-  id          Int     @id @default(autoincrement())
-  channelId   Int
-  userId      Int
+  id          Int     @id @unique
   isAdmin     Boolean @default(false)
-  isMuted     Boolean @default(false)
   canDownload Boolean @default(true)
   canComment  Boolean @default(true)
-  Channel     Channel @relation(fields: [channelId], references: [chatId])
-  participant User    @relation(fields: [userId], references: [id])
+  chatParticipant ChatParticipant    @relation(fields: [id], references: [id],onDelete: Cascade)
 
-  @@unique([channelId, userId])
 }

@@ -4,6 +4,6 @@ import addSticker from "@controllers/stickers/add.sticker.controller";
 import asyncHandler from "express-async-handler";
 
 const router: Router = Router();
-router.post("/", asyncHandler(getStickers));
+router.get("/", asyncHandler(getStickers));
 router.post("/add", asyncHandler(addSticker));
 export default router;

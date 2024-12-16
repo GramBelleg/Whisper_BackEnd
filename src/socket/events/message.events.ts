@@ -6,6 +6,10 @@ import * as editController from "@controllers/messages/edit.message";
 import * as deleteController from "@controllers/messages/delete.message";
 import * as messageHandler from "@socket/handlers/message.handlers";
 import { sendToClient } from "@socket/utils/socket.utils";
+import * as groupHandler from "@socket/handlers/group.handlers";
+import * as channelHandler from "@socket/handlers/channel.handlers";
+import { handleChatPermissions } from "@socket/handlers/chat.handlers";
+import { displayedUser } from "@services/user/user.service";
 import { clearMessageNotification } from "@services/notifications/notification.service";
 
 export const setupMessageEvents = (
@@ -16,6 +20,12 @@ export const setupMessageEvents = (
     socket.on(
         "message",
         socketWrapper(async (message: types.OmitSender<types.SentMessage>) => {
+            await handleChatPermissions(
+                userId,
+                message.chatId,
+                groupHandler.handlePostPermissions,
+                channelHandler.handlePostPermissions
+            );
             const savedMessage = await sendController.handleSend(userId, {
                 ...message,
                 senderId: userId,
@@ -35,7 +45,14 @@ export const setupMessageEvents = (
     socket.on(
         "editMessage",
         socketWrapper(async (message: types.OmitSender<types.EditableMessage>) => {
+            await handleChatPermissions(
+                userId,
+                message.chatId,
+                groupHandler.handleEditPermissions,
+                null
+            );
             const editedMessage = await editController.handleEditContent(
+                userId,
                 message.id,
                 message.content
             );
@@ -52,7 +69,7 @@ export const setupMessageEvents = (
     socket.on(
         "pinMessage",
         socketWrapper(async (message: types.MessageReference) => {
-            const pinnedMessage = await editController.handlePinMessage(message.id);
+            const pinnedMessage = await editController.handlePinMessage(userId, message.id);
             if (pinnedMessage) {
                 await messageHandler.broadCast(message.chatId, clients, "pinMessage", {
                     id: pinnedMessage,
@@ -65,7 +82,7 @@ export const setupMessageEvents = (
     socket.on(
         "unpinMessage",
         socketWrapper(async (message: types.MessageReference) => {
-            const unpinnedMessage = await editController.handleUnpinMessage(message.id);
+            const unpinnedMessage = await editController.handleUnpinMessage(userId, message.id);
             if (unpinnedMessage) {
                 await messageHandler.broadCast(message.chatId, clients, "unpinMessage", {
                     id: unpinnedMessage,
@@ -78,6 +95,7 @@ export const setupMessageEvents = (
     socket.on(
         "deleteMessage",
         socketWrapper(async ({ messages, chatId }: { messages: number[]; chatId: number }) => {
+            await handleChatPermissions(userId, chatId, groupHandler.handleDeletePermissions, null);
             await deleteController.deleteMessagesForAllUsers(messages, chatId);
             await messageHandler.broadCast(chatId, clients, "deleteMessage", { messages, chatId });
         })
@@ -122,6 +140,35 @@ export const setupMessageEvents = (
                 }
                 messageHandler.sendReadAndDeliveredGroups(clients, directTo, "readMessage");
             }
+        })
+    );
+
+    socket.on(
+        "comment",
+        socketWrapper(async (comment: types.SentComment) => {
+            await channelHandler.handleCommentPermissions(userId, comment.chatId);
+            const user = await displayedUser(userId);
+            const sentComments = await sendController.saveComment(
+                { ...comment, userName: user.userName },
+                userId
+            );
+            if (sentComments) {
+                await messageHandler.userBroadCast(
+                    userId,
+                    comment.chatId,
+                    clients,
+                    "comment",
+                    sentComments
+                );
+            }
+        })
+    );
+
+    socket.on(
+        "deleteComment",
+        socketWrapper(async (comments: { ids: number[]; chatId: number; messageId: number }) => {
+            await deleteController.deleteComments(comments.ids, userId);
+            await messageHandler.broadCast(comments.chatId, clients, "deleteComment", comments);
         })
     );
 };
