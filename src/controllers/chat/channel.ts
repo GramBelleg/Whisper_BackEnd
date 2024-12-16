@@ -12,8 +12,8 @@ import { UserType } from "@models/user.models";
 
 export const getSettings = async (req: Request, res: Response) => {
     const chatId = Number(req.params.chatId);
-    const settings = channelService.getSettings(chatId);
-    res.status(200).json({ settings });
+    const settings = await channelService.getSettings(chatId);
+    res.status(200).json(settings);
 };
 
 export const getChannelMembers = async (userId: number, chatId: number) => {

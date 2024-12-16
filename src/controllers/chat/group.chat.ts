@@ -9,8 +9,8 @@ import { Request, Response } from "express";
 
 export const getSettings = async (req: Request, res: Response) => {
     const chatId = Number(req.params.chatId);
-    const settings = groupService.getSettings(chatId);
-    res.status(200).json({ settings });
+    const settings = await groupService.getSettings(chatId);
+    res.status(200).json(settings);
 };
 
 export const deleteGroup = async (userId: number, chatId: number) => {

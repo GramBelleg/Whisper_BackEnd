@@ -96,7 +96,7 @@ export const setPermissions = async (userId: number, chatId: number, permissions
                         data: {
                             canDelete: permissions.canDelete,
                             canDownload: permissions.canDownload,
-                            canEdit: permissions.canDelete,
+                            canEdit: permissions.canEdit,
                             canPost: permissions.canPost,
                         },
                     },
