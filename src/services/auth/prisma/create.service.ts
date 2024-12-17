@@ -20,7 +20,7 @@ async function createRandomUser() {
         });
         return newUser;
     } catch (err: any) {
-        console.log("Random user creation failed");
+        console.error(err);
         throw new HttpError("Random user creation failed", 409);
     }
 }
