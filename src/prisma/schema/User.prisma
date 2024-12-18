@@ -20,7 +20,9 @@ model User {
   addPermission             Boolean              @default(true)
   profilePic                String?
   lastSeen                  DateTime             @default(now())
-  hasStory                  Boolean              @default(false)
+  storyCount                Int                  @default(0)
+  contactStory              Int                  @default(0)
+  everyOneStory             Int                  @default(0)
   bio                       String?
   status                    Status               @default(Online)
   autoDownloadSize          Int                  @default(0) //in MB

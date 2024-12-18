@@ -19,7 +19,7 @@ export const getSettings = async (req: Request, res: Response) => {
 export const getChannelMembers = async (userId: number, chatId: number) => {
     const isAdmin = await channelService.isAdmin({ userId, chatId });
     if (!isAdmin) throw new Error("You're not an admin");
-    return channelService.getChannelMembers(chatId);
+    return channelService.getChannelMembers(userId, chatId);
 };
 
 export const deleteChannel = async (userId: number, chatId: number) => {

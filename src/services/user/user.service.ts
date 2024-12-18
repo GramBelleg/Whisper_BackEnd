@@ -430,15 +430,16 @@ export const getPrivateProfilePic = async (viewerId: number, viewedId: number) =
         },
     });
     if (!user) throw new Error("User doesn't exist");
-    const canView = await db.relates.findUnique({
+    const relation = await db.relates.findUnique({
         where: {
             relatingId_relatedById: { relatingId: viewedId, relatedById: viewerId },
-            isContact: true,
-            isBlocked: false,
         },
     });
 
-    if (user.pfpPrivacy == "Everyone" || (user.pfpPrivacy == "Contacts" && canView))
+    if (
+        (user.pfpPrivacy == "Everyone" && (!relation || !relation.isBlocked)) ||
+        (user.pfpPrivacy == "Contacts" && relation?.isContact)
+    )
         return user.profilePic;
     return null;
 };
@@ -454,15 +455,36 @@ export const getPrivateStatus = async (viewerId: number, viewedId: number) => {
         },
     });
     if (!user) throw new Error("User doesn't exist");
-    const canView = await db.relates.findUnique({
+    const relation = await db.relates.findUnique({
         where: {
             relatingId_relatedById: { relatingId: viewedId, relatedById: viewerId },
-            isContact: true,
-            isBlocked: false,
         },
     });
 
-    if (user.lastSeenPrivacy == "Everyone" || (user.lastSeenPrivacy == "Contacts" && canView))
+    if (
+        (user.lastSeenPrivacy == "Everyone" && (!relation || !relation.isBlocked)) ||
+        (user.lastSeenPrivacy == "Contacts" && relation?.isContact)
+    )
         return { lastSeen: user.lastSeen, status: user.status };
-    return null;
+    return { lastSeen: null, status: null };
+};
+
+export const getHasStory = async (viewerId: number, viewedId: number) => {
+    const user = await db.user.findUnique({
+        where: {
+            id: viewedId,
+        },
+    });
+    const relation = await db.relates.findUnique({
+        where: {
+            relatingId_relatedById: { relatingId: viewedId, relatedById: viewerId },
+        },
+    });
+    if (!user) throw Error("User Not Foun");
+    if (
+        (user.contactStory && relation?.isContact && !relation?.isBlocked) ||
+        (user.everyOneStory && (!relation || !relation.isBlocked))
+    )
+        return true;
+    return false;
 };

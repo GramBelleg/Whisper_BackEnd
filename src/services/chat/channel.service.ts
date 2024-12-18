@@ -2,6 +2,7 @@ import db from "@DB";
 import jwt from "jsonwebtoken";
 import { ChatUserSummary, CreatedChat, MemberSummary } from "@models/chat.models";
 import HttpError from "@src/errors/HttpError";
+import { getHasStory, getPrivateProfilePic, getPrivateStatus } from "@services/user/user.service";
 
 export const getSettings = async (chatId: number) => {
     const channel = await db.channel.findUnique({
@@ -16,7 +17,10 @@ export const getSettings = async (chatId: number) => {
     return { public: channel?.isPrivate, inviteLink: channel?.inviteLink };
 };
 
-export const getChannelMembers = async (chatId: number): Promise<MemberSummary[]> => {
+export const getChannelMembers = async (
+    userId: number,
+    chatId: number
+): Promise<MemberSummary[]> => {
     //add privacy to last seen and hasStory
     const chatParticipants = await db.chatParticipant.findMany({
         where: { chatId },
@@ -25,9 +29,6 @@ export const getChannelMembers = async (chatId: number): Promise<MemberSummary[]
                 select: {
                     id: true,
                     userName: true,
-                    profilePic: true,
-                    lastSeen: true,
-                    hasStory: true,
                 },
             },
             channelParticipant: {
@@ -42,10 +43,24 @@ export const getChannelMembers = async (chatId: number): Promise<MemberSummary[]
             },
         },
     });
-    return chatParticipants.map((participant) => ({
-        ...participant.user,
-        isAdmin: participant.channelParticipant?.isAdmin,
-    }));
+    const members: MemberSummary[] = await Promise.all(
+        chatParticipants.map(async (participant) => {
+            const profilePic = await getPrivateProfilePic(userId, participant.user.id);
+            const privateStatus = await getPrivateStatus(userId, participant.user.id);
+            const hasStory = await getHasStory(userId, participant.user.id);
+
+            return {
+                id: participant.user.id,
+                userName: participant.user.userName,
+                profilePic: profilePic,
+                hasStory: hasStory,
+                isAdmin: participant.channelParticipant?.isAdmin ?? false,
+                lastSeen: privateStatus.lastSeen,
+                status: privateStatus.status,
+            };
+        })
+    );
+    return members;
 };
 
 export const getAdmins = async (chatId: number) => {

@@ -45,7 +45,9 @@ export type ChatUser = {
     };
     chatId: number;
 };
-export type MemberSummary = Pick<
-    User,
-    "id" | "userName" | "profilePic" | "lastSeen" | "hasStory"
-> & { isAdmin?: boolean };
+export type MemberSummary = Pick<User, "id" | "userName" | "profilePic"> & {
+    isAdmin?: boolean;
+    hasStory: boolean;
+    lastSeen: Date | null;
+    status: Status | null;
+};
