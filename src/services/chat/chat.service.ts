@@ -3,7 +3,12 @@ import { ChatSummary, CreatedChat, LastMessage } from "@models/chat.models";
 import { ChatType } from "@prisma/client";
 import { getDraftedMessage, getMessage } from "./message.service";
 import { MemberSummary } from "@models/chat.models";
-import { getLastMessageSender } from "@services/user/user.service";
+import {
+    getHasStory,
+    getLastMessageSender,
+    getPrivateProfilePic,
+    getPrivateStatus,
+} from "@services/user/user.service";
 import { buildDraftedMessage } from "@controllers/messages/format.message";
 import * as groupService from "@services/chat/group.service";
 import * as channelService from "@services/chat/channel.service";
@@ -167,7 +172,7 @@ export const isUserAllowedToAccessMessage = async (userId: number, messageId: nu
     return result ? true : false;
 };
 
-export const getChatMembers = async (chatId: number): Promise<MemberSummary[]> => {
+export const getChatMembers = async (userId: number, chatId: number): Promise<MemberSummary[]> => {
     //add privacy to last seen and hasStory
     const chatParticipants = await db.chatParticipant.findMany({
         where: { chatId },
@@ -176,14 +181,27 @@ export const getChatMembers = async (chatId: number): Promise<MemberSummary[]> =
                 select: {
                     id: true,
                     userName: true,
-                    profilePic: true,
-                    lastSeen: true,
-                    hasStory: true,
                 },
             },
         },
     });
-    return chatParticipants.map((participant) => participant.user);
+    const members: MemberSummary[] = await Promise.all(
+        chatParticipants.map(async (participant) => {
+            const profilePic = await getPrivateProfilePic(userId, participant.user.id);
+            const privateStatus = await getPrivateStatus(userId, participant.user.id);
+            const hasStory = await getHasStory(userId, participant.user.id);
+
+            return {
+                id: participant.user.id,
+                userName: participant.user.userName,
+                profilePic: profilePic,
+                hasStory: hasStory,
+                lastSeen: privateStatus.lastSeen,
+                status: privateStatus.status,
+            };
+        })
+    );
+    return members;
 };
 
 export const createChatParticipants = async (
@@ -247,7 +265,7 @@ export const getOtherUserId = async (excludedUserId: number, chatId: number) => 
 };
 //TODO: Set condition on lastSeen and profilePic based on privacy
 const getOtherChatParticipants = async (chatId: number, excludeUserId: number) => {
-    return await db.chatParticipant.findMany({
+    const chatParticipants = await db.chatParticipant.findMany({
         where: {
             chatId,
             userId: {
@@ -259,13 +277,27 @@ const getOtherChatParticipants = async (chatId: number, excludeUserId: number) =
                 select: {
                     id: true,
                     userName: true,
-                    profilePic: true,
-                    lastSeen: true,
-                    hasStory: true,
                 },
             },
         },
     });
+    const members: MemberSummary[] = await Promise.all(
+        chatParticipants.map(async (participant) => {
+            const profilePic = await getPrivateProfilePic(excludeUserId, participant.user.id);
+            const privateStatus = await getPrivateStatus(excludeUserId, participant.user.id);
+            const hasStory = await getHasStory(excludeUserId, participant.user.id);
+
+            return {
+                id: participant.user.id,
+                userName: participant.user.userName,
+                profilePic: profilePic,
+                hasStory: hasStory,
+                lastSeen: privateStatus.lastSeen,
+                status: privateStatus.status,
+            };
+        })
+    );
+    return members;
 };
 
 const getDMContent = async (participant: any, chatId: number) => {

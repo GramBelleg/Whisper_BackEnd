@@ -441,7 +441,8 @@ export const getPrivateProfilePic = async (viewerId: number, viewedId: number) =
 
     if (
         (user.pfpPrivacy == "Everyone" && (!relation || !relation.isBlocked)) ||
-        (user.pfpPrivacy == "Contacts" && relation?.isContact)
+        (user.pfpPrivacy == "Contacts" && relation?.isContact) ||
+        viewerId == viewedId
     )
         return user.profilePic;
     return null;
@@ -466,7 +467,8 @@ export const getPrivateStatus = async (viewerId: number, viewedId: number) => {
 
     if (
         (user.lastSeenPrivacy == "Everyone" && (!relation || !relation.isBlocked)) ||
-        (user.lastSeenPrivacy == "Contacts" && relation?.isContact)
+        (user.lastSeenPrivacy == "Contacts" && relation?.isContact) ||
+        viewerId == viewedId
     )
         return { lastSeen: user.lastSeen, status: user.status };
     return { lastSeen: null, status: null };
@@ -486,7 +488,8 @@ export const getHasStory = async (viewerId: number, viewedId: number) => {
     if (!user) throw Error("User Not Foun");
     if (
         (user.contactStory && relation?.isContact && !relation?.isBlocked) ||
-        (user.everyOneStory && (!relation || !relation.isBlocked))
+        (user.everyOneStory && (!relation || !relation.isBlocked)) ||
+        (user.storyCount && viewerId == viewedId)
     )
         return true;
     return false;

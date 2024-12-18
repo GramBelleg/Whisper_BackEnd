@@ -1,5 +1,6 @@
 import db from "@DB";
 import { ChatUserSummary, CreatedChat, MemberSummary } from "@models/chat.models";
+import { getHasStory, getPrivateProfilePic, getPrivateStatus } from "@services/user/user.service";
 import HttpError from "@src/errors/HttpError";
 
 export const getSettings = async (chatId: number) => {
@@ -213,7 +214,7 @@ export const isAdmin = async (admin: ChatUserSummary) => {
     }
 };
 
-export const getGroupMembers = async (chatId: number): Promise<MemberSummary[]> => {
+export const getGroupMembers = async (userId: number, chatId: number): Promise<MemberSummary[]> => {
     //add privacy to last seen and hasStory
     const chatParticipants = await db.chatParticipant.findMany({
         where: { chatId },
@@ -222,9 +223,6 @@ export const getGroupMembers = async (chatId: number): Promise<MemberSummary[]> 
                 select: {
                     id: true,
                     userName: true,
-                    profilePic: true,
-                    lastSeen: true,
-                    hasStory: true,
                 },
             },
             groupParticipant: {
@@ -239,10 +237,24 @@ export const getGroupMembers = async (chatId: number): Promise<MemberSummary[]> 
             },
         },
     });
-    return chatParticipants.map((participant) => ({
-        ...participant.user,
-        isAdmin: participant.groupParticipant?.isAdmin,
-    }));
+    const members: MemberSummary[] = await Promise.all(
+        chatParticipants.map(async (participant) => {
+            const profilePic = await getPrivateProfilePic(userId, participant.user.id);
+            const privateStatus = await getPrivateStatus(userId, participant.user.id);
+            const hasStory = await getHasStory(userId, participant.user.id);
+
+            return {
+                id: participant.user.id,
+                userName: participant.user.userName,
+                profilePic: profilePic,
+                hasStory: hasStory,
+                isAdmin: participant.groupParticipant?.isAdmin ?? false,
+                lastSeen: privateStatus.lastSeen,
+                status: privateStatus.status,
+            };
+        })
+    );
+    return members;
 };
 
 export const getGroupContent = async (chatId: number, userId: number) => {
