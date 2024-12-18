@@ -9,7 +9,7 @@ import { sendToClient } from "@socket/utils/socket.utils";
 import * as groupHandler from "@socket/handlers/group.handlers";
 import * as channelHandler from "@socket/handlers/channel.handlers";
 import { handleChatPermissions } from "@socket/handlers/chat.handlers";
-import { displayedUser } from "@services/user/user.service";
+import { displayedUser, userInfo } from "@services/user/user.service";
 import { clearMessageNotification } from "@services/notifications/notification.service";
 
 export const setupMessageEvents = (
@@ -147,7 +147,7 @@ export const setupMessageEvents = (
         "comment",
         socketWrapper(async (comment: types.SentComment) => {
             await channelHandler.handleCommentPermissions(userId, comment.chatId);
-            const user = await displayedUser(userId);
+            const user = await userInfo(userId);
             const sentComments = await sendController.saveComment(
                 { ...comment, userName: user.userName },
                 userId

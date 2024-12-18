@@ -64,12 +64,11 @@ export const invite = async (req: Request, res: Response) => {
     const clients = getClients();
     if (!clients) throw new HttpError("Failed to retrieve clients", 400);
 
-    const user = await displayedUser(userId);
     const { participants, userChat } = await joinChannel(userId, chatId);
-    console.log(participants);
-    console.log(userChat);
+
     for (let i = 0; i < participants.length; i++) {
         if (participants[i] !== userId) {
+            const user = await displayedUser(participants[i], userId);
             await chatHandler.broadCast(participants[i], clients, "addUser", { user, chatId });
         } else {
             await chatHandler.broadCast(participants[i], clients, "createChat", userChat);

@@ -39,8 +39,8 @@ export type ChatUser = {
         id: number;
         userName: string;
         profilePic?: string | null;
-        lastSeen?: Date;
-        status?: Status;
+        lastSeen?: Date | null;
+        status?: Status | null;
         hasStory?: boolean;
     };
     chatId: number;

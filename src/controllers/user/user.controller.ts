@@ -86,9 +86,10 @@ const userInfo = async (req: Request, res: Response) => {
     });
 };
 const otherUserInfo = async (req: Request, res: Response) => {
+    const myId = req.userId;
     const userId: number = Number(req.params.userId);
     if (isNaN(userId)) throw new HttpError("Invalid userId", 400);
-    const user = await userServices.partialUserInfo(userId);
+    const user = await userServices.partialUserInfo(myId, userId);
     res.status(200).json({
         ...user,
     });

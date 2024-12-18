@@ -6,7 +6,7 @@ import * as groupController from "@controllers/chat/group.chat";
 import * as channelController from "@controllers/chat/channel";
 import * as chatHandler from "@socket/handlers/chat.handlers";
 import { UserType } from "@models/user.models";
-import { displayedUser } from "@services/user/user.service";
+import { displayedUser, userInfo } from "@services/user/user.service";
 import { getChatType } from "@services/chat/chat.service";
 import { ChatType } from "@prisma/client";
 import { channel } from "diagnostics_channel";
@@ -55,10 +55,10 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
             }
 
             if (!participants) throw new Error("No participants found");
-            chatUser.user = await displayedUser(chatUser.user.id);
 
             for (let i = 0; i < participants.length; i++) {
                 if (participants[i] !== chatUser.user.id) {
+                    chatUser.user = await displayedUser(participants[i], chatUser.user.id);
                     await chatHandler.broadCast(participants[i], clients, "addUser", chatUser);
                 } else {
                     await chatHandler.broadCast(participants[i], clients, "createChat", userChat);
@@ -80,7 +80,7 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
                     remove.chatId
                 );
             if (!participants) throw new Error("No participants found");
-            const user = await displayedUser(userId);
+            const user = await userInfo(userId);
             for (let i = 0; i < participants.length; i++) {
                 await chatHandler.broadCast(participants[i], clients, "removeUser", {
                     user: remove.user,
@@ -102,7 +102,7 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
                 participants = await channelController.leaveChannel(userId, leave.chatId);
             if (!participants) throw new Error("No participants found");
 
-            const user = await displayedUser(userId);
+            const user = await userInfo(userId);
             for (let i = 0; i < participants.length; i++) {
                 await chatHandler.broadCast(participants[i], clients, "leaveChat", {
                     userName: user.userName,
@@ -136,9 +136,9 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
                 userId,
                 chatUser.chatId
             );
-            chatUser.user = await displayedUser(chatUser.user.id);
             for (let i = 0; i < participants.length; i++) {
                 if (participants[i] !== chatUser.user.id) {
+                    chatUser.user = await displayedUser(participants[i], chatUser.user.id);
                     await chatHandler.broadCast(participants[i], clients, "addUser", chatUser);
                 } else {
                     await chatHandler.broadCast(participants[i], clients, "createChat", userChat);

@@ -81,48 +81,51 @@ export const userInfo = async (id: number): Promise<any> => {
             storyPrivacy: true,
             pfpPrivacy: true,
             lastSeenPrivacy: true,
-            hasStory: true,
+            storyCount: true,
         },
     });
     if (!user) {
         throw new Error("user not found");
     }
-    return user;
+    const hasStory = user.storyCount > 0 ? true : false;
+    return { ...user, hasStory };
 };
-export const partialUserInfo = async (id: number) => {
+export const partialUserInfo = async (viewerId: number, viewedId: number) => {
     const user = await db.user.findUnique({
-        where: { id },
+        where: { id: viewedId },
         select: {
             userName: true,
-            profilePic: true,
             phoneNumber: true,
             bio: true,
-            lastSeen: true,
-            status: true,
-            hasStory: true,
         },
     });
     if (!user) {
         throw new Error("user not found");
     }
-    return user;
+    return {
+        ...user,
+        profilePic: await getPrivateProfilePic(viewerId, viewedId),
+        ...(await getPrivateStatus(viewerId, viewedId)),
+        hasStory: await getHasStory(viewerId, viewedId),
+    };
 };
-export const displayedUser = async (id: number) => {
+export const displayedUser = async (viewerId: number, viewedId: number) => {
     const user = await db.user.findUnique({
-        where: { id },
+        where: { id: viewerId },
         select: {
             id: true,
             userName: true,
-            profilePic: true,
-            hasStory: true,
-            lastSeen: true,
-            status: true,
         },
     });
     if (!user) {
         throw new Error("user not found");
     }
-    return user;
+    return {
+        ...user,
+        profilePic: await getPrivateProfilePic(viewerId, viewedId),
+        ...(await getPrivateStatus(viewerId, viewedId)),
+        hasStory: await getHasStory(viewerId, viewedId),
+    };
 };
 
 export const changePic = async (id: number, profilePic: string): Promise<string | null> => {
