@@ -303,11 +303,11 @@ const getOtherChatParticipants = async (chatId: number, excludeUserId: number) =
 const getDMContent = async (participant: any, chatId: number) => {
     const participantKeys = await getChatKeys(chatId);
     return {
-        othersId: participant.user.id,
-        name: participant.user.userName,
-        picture: participant.user.profilePic,
-        hasStory: participant.user.hasStory,
-        lastSeen: participant.user.lastSeen,
+        othersId: participant.id,
+        name: participant.userName,
+        picture: participant.profilePic,
+        hasStory: participant.hasStory,
+        lastSeen: participant.lastSeen,
         participantKeys,
         status: participant.status,
     };
