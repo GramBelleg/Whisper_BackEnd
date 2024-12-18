@@ -418,3 +418,51 @@ export const isBlocked = async (relatingId: number, relatedById: number) => {
     if (!result) return false;
     return result.isBlocked;
 };
+
+export const getPrivateProfilePic = async (viewerId: number, viewedId: number) => {
+    const user = await db.user.findUnique({
+        where: {
+            id: viewedId,
+        },
+        select: {
+            pfpPrivacy: true,
+            profilePic: true,
+        },
+    });
+    if (!user) throw new Error("User doesn't exist");
+    const canView = await db.relates.findUnique({
+        where: {
+            relatingId_relatedById: { relatingId: viewedId, relatedById: viewerId },
+            isContact: true,
+            isBlocked: false,
+        },
+    });
+
+    if (user.pfpPrivacy == "Everyone" || (user.pfpPrivacy == "Contacts" && canView))
+        return user.profilePic;
+    return null;
+};
+export const getPrivateStatus = async (viewerId: number, viewedId: number) => {
+    const user = await db.user.findUnique({
+        where: {
+            id: viewedId,
+        },
+        select: {
+            lastSeenPrivacy: true,
+            lastSeen: true,
+            status: true,
+        },
+    });
+    if (!user) throw new Error("User doesn't exist");
+    const canView = await db.relates.findUnique({
+        where: {
+            relatingId_relatedById: { relatingId: viewedId, relatedById: viewerId },
+            isContact: true,
+            isBlocked: false,
+        },
+    });
+
+    if (user.lastSeenPrivacy == "Everyone" || (user.lastSeenPrivacy == "Contacts" && canView))
+        return { lastSeen: user.lastSeen, status: user.status };
+    return null;
+};
