@@ -43,11 +43,10 @@ export const leaveChannel = async (userId: number, chatId: number) => {
 
 export const joinChannel = async (userId: number, chatId: number) => {
     const participants = await channelService.getAdmins(chatId);
-
     await channelService.addUser(userId, chatId);
 
     const userChat = await getChat(userId, chatId);
-    participants.push(userId);
+    if (participants) participants.push(userId);
     return { participants, userChat };
 };
 export const invite = async (req: Request, res: Response) => {
@@ -65,15 +64,15 @@ export const invite = async (req: Request, res: Response) => {
     if (!clients) throw new HttpError("Failed to retrieve clients", 400);
 
     const { participants, userChat } = await joinChannel(userId, chatId);
-
-    for (let i = 0; i < participants.length; i++) {
-        if (participants[i] !== userId) {
-            const user = await displayedUser(participants[i], userId);
-            await chatHandler.broadCast(participants[i], clients, "addUser", { user, chatId });
-        } else {
-            await chatHandler.broadCast(participants[i], clients, "createChat", userChat);
+    if (participants)
+        for (let i = 0; i < participants.length; i++) {
+            if (participants[i] !== userId) {
+                const user = await displayedUser(participants[i], userId);
+                await chatHandler.broadCast(participants[i], clients, "addUser", { user, chatId });
+            } else {
+                await chatHandler.broadCast(participants[i], clients, "createChat", userChat);
+            }
         }
-    }
 
     res.status(200).json({ chatId });
 };
@@ -134,7 +133,7 @@ export const addUser = async (userId: number, chatUser: ChatUser) => {
     await channelService.addUser(chatUser.user.id, chatUser.chatId);
 
     const userChat = await getChat(chatUser.user.id, chatUser.chatId);
-    participants.push(chatUser.user.id);
+    if (participants) participants.push(chatUser.user.id);
 
     return { participants, userChat };
 };
