@@ -181,7 +181,7 @@ export const leaveCall = async (chatId: string, endStatus: any) => {
     }
     let content = "Call Ended";
 
-    if (endStatus === "CANCELED") {
+    if (endStatus === "CANCELLED") {
         content = "Call Canceled";
         cancelCall(participants, { chatId: lastCall.chatId });
     }
