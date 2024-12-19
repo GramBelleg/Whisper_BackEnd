@@ -19,8 +19,10 @@ export const handleCreateChat = async (userId: number, chat: CreatedChat, users:
 
     if (!chat.type) throw new Error("Missing Chat type");
     if (!chat.users) throw new Error("Missing Chat participants");
+
     if (!isValidSize(users.length, chat.type)) throw new Error("Can't Create Chat invalid size");
     const result = await createChat(users, userId, chat.senderKey, chat.type);
+
     if (chat.type == ChatType.GROUP)
         await createGroup(result.id, result.participants, chat, userId);
     else if (chat.type == ChatType.CHANNEL)

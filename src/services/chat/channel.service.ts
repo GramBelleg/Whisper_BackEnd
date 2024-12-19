@@ -14,7 +14,7 @@ export const getSettings = async (chatId: number) => {
             isPrivate: true,
         },
     });
-    return { public: channel?.isPrivate, inviteLink: channel?.inviteLink };
+    return { public: !channel?.isPrivate, inviteLink: channel?.inviteLink };
 };
 
 export const getChannelMembers = async (
