@@ -4,7 +4,6 @@ import * as groupService from "@services/chat/group.service";
 import { createRandomUser } from "@services/auth/prisma/create.service";
 import { ChatType } from "@prisma/client";
 import { clearDB } from "@src/prisma/clear";
-import { getPermissions } from "@controllers/chat/group.chat";
 import { MAX_GROUP_SIZE } from "@config/constants.config";
 
 const createChat = async () => {
@@ -276,7 +275,7 @@ describe("setPermissions", () => {
             canPost: false,
             canDelete: true,
         };
-        await expect(groupService.setPermissions(-1, chat.id, getPermissions)).rejects.toThrow(
+        await expect(groupService.setPermissions(-1, chat.id, permissions)).rejects.toThrow(
             "Participant or group participant not found."
         );
     });

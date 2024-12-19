@@ -10,6 +10,7 @@ import { displayedUser, userInfo } from "@services/user/user.service";
 import { getChatType } from "@services/chat/chat.service";
 import { ChatType } from "@prisma/client";
 import { channel } from "diagnostics_channel";
+import { parseArgs } from "util";
 
 export const setupChatEvents = (socket: Socket, userId: number, clients: Map<number, Socket>) => {
     socket.on(
@@ -136,14 +137,20 @@ export const setupChatEvents = (socket: Socket, userId: number, clients: Map<num
                 userId,
                 chatUser.chatId
             );
-            for (let i = 0; i < participants.length; i++) {
-                if (participants[i] !== chatUser.user.id) {
-                    chatUser.user = await displayedUser(participants[i], chatUser.user.id);
-                    await chatHandler.broadCast(participants[i], clients, "addUser", chatUser);
-                } else {
-                    await chatHandler.broadCast(participants[i], clients, "createChat", userChat);
+            if (participants)
+                for (let i = 0; i < participants.length; i++) {
+                    if (participants[i] !== chatUser.user.id) {
+                        chatUser.user = await displayedUser(participants[i], chatUser.user.id);
+                        await chatHandler.broadCast(participants[i], clients, "addUser", chatUser);
+                    } else {
+                        await chatHandler.broadCast(
+                            participants[i],
+                            clients,
+                            "createChat",
+                            userChat
+                        );
+                    }
                 }
-            }
         })
     );
 };

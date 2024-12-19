@@ -281,7 +281,6 @@ export const createGroup = async (
         if (err.code === "P2002") {
             throw new Error("Group with the specified chatId already exists.");
         }
-        throw err;
     }
 };
 
