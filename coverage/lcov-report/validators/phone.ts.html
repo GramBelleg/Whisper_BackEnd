@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">92.3% </span>
+                <span class="strong">23.07% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>12/13</span>
+                <span class='fraction'>3/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">66.66% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>2/3</span>
+                <span class='fraction'>0/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">92.3% </span>
+                <span class="strong">23.07% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>12/13</span>
+                <span class='fraction'>3/13</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -82,42 +82,42 @@
 <a name='L17'></a><a href='#L17'>17</a>
 <a name='L18'></a><a href='#L18'>18</a>
 <a name='L19'></a><a href='#L19'>19</a>
-<a name='L20'></a><a href='#L20'>20</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L20'></a><a href='#L20'>20</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span></td><td class="text"><pre class="prettyprint lang-js">import { phone } from "phone";
+<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">import { phone } from "phone";
 import HttpError from "@src/errors/HttpError";
 &nbsp;
-function checkPhoneNumber(phoneNumber: string) {
-    const regx = /^\+[0-9\-\s]+$/;
-    if (!regx.test(phoneNumber)) {
-        throw new HttpError("Phone number structure is not valid", 422);
-    }
-    const { countryIso3 } = phone(phoneNumber);
-    if (!countryIso3) {
-        throw new HttpError("Phone number structure is not valid", 422);
-    }
-    const phoneValidate = phone(phoneNumber, { country: countryIso3 });
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (!phoneValidate.isValid) {
+function <span class="fstat-no" title="function not covered" >checkPhoneNumber(</span>phoneNumber: string) {
+    const regx = <span class="cstat-no" title="statement not covered" >/^\+[0-9\-\s]+$/;</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!regx.test(phoneNumber)) {</span>
 <span class="cstat-no" title="statement not covered" >        throw new HttpError("Phone number structure is not valid", 422);</span>
     }
-    return phoneValidate.phoneNumber;
+    const { countryIso3 } = <span class="cstat-no" title="statement not covered" >phone(phoneNumber);</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!countryIso3) {</span>
+<span class="cstat-no" title="statement not covered" >        throw new HttpError("Phone number structure is not valid", 422);</span>
+    }
+    const phoneValidate = <span class="cstat-no" title="statement not covered" >phone(phoneNumber, { country: countryIso3 });</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!phoneValidate.isValid) {</span>
+<span class="cstat-no" title="statement not covered" >        throw new HttpError("Phone number structure is not valid", 422);</span>
+    }
+<span class="cstat-no" title="statement not covered" >    return phoneValidate.phoneNumber;</span>
 }
 &nbsp;
 export { checkPhoneNumber };</pre></td></tr></table></pre>
@@ -127,7 +127,7 @@ export { checkPhoneNumber };</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-12-09T17:31:32.994Z
+                at 2024-12-19T23:46:49.831Z
             </div>
         <script src="../prettify.js"></script>
         <script>

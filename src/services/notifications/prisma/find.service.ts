@@ -61,6 +61,7 @@ export const findUnmutedGroupUsers = async (userIds: number[], chatId: number) =
             }
         },
     });
+    if(users.length === 0) return {groupName: '', unmutedUsers: []};
     return {groupName: users[0].group.name, unmutedUsers: users.map((user) => user.participant.id)};
 }
 

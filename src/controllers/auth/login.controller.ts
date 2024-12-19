@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { createTokenCookie, createAddToken } from "@services/auth/token.service";
 import { checkEmailExistDB, checkPasswordCorrect } from "@services/auth/login.service";
 import { validateEmail, validatePassword } from "@validators/auth";
-import { profile } from "console";
 
 const login = async (req: Request, res: Response) => {
     req.body.email = req.body.email?.trim().toLowerCase();
