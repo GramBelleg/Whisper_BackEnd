@@ -24,23 +24,25 @@ describe("PUT /email Route", () => {
 
     it("should update the email and return success response", async () => {
         (userServices.updateEmail as jest.Mock).mockResolvedValue(undefined);
-        const response = await request(app).put("/api/user/email").send({ email });
-        expect(userServices.updateEmail).toHaveBeenCalledWith(1, email, "");
+        const response = await request(app).put("/api/user/email").send({ email, code: "123" });
+        expect(userServices.updateEmail).toHaveBeenCalledWith(1, email, "123");
         expect(userServices.updateEmail).toHaveBeenCalledTimes(1);
         expect(response.status).toBe(200);
         expect(response.body.status).toBe("success");
         expect(response.body.data).toBe(email);
     });
 
-    it("should fail to update the email", async () => {
-        (userServices.updateEmail as jest.Mock).mockRejectedValue(
-            new HttpError("Email is required", 400)
-        );
-        const response = await request(app).put("/api/user/email").send({ email: "" });
-        expect(userServices.updateEmail).toHaveBeenCalledWith(1, "", "");
-        expect(userServices.updateEmail).toHaveBeenCalledTimes(1);
-        expect(response.status).toBe(400);
-        expect(response.body.success).toBe(false);
-        expect(response.body.message).toBe("Email is required");
+    it("should throw error due to unspecified email", async () => {
+        (userServices.updateEmail as jest.Mock).mockResolvedValue(undefined);
+        const response = await request(app).put("/api/user/email").send({code: "1234"});
+        expect(response.status).toBe(404);
+        expect(response.body.message).toEqual("Email or code not specified");
     });
+    it("should throw error due to unspecified code", async () => {
+        (userServices.updateEmail as jest.Mock).mockResolvedValue(undefined);
+        const response = await request(app).put("/api/user/email").send({email:"test@test.com"});
+        expect(response.status).toBe(404);
+        expect(response.body.message).toEqual("Email or code not specified");
+    });
+
 });

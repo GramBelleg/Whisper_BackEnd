@@ -1,17 +1,19 @@
 import request from "supertest";
 import { app, closeApp } from "@src/app"; // Assuming app is your Express app
 import { getContacts } from "@services/user/user.service";
+import userAuth from "@middlewares/auth.middleware";
 
 
 // Mocking the services and utility functions
 jest.mock("@services/user/user.service");
 
-jest.mock("@src/middlewares/auth.middleware", () => {
-    return jest.fn((req, res, next) => {
-        req.userId = 1;
-        next();
-    });
-});
+// jest.mock("@src/middlewares/auth.middleware", () => {
+//     return jest.fn((req, res, next) => {
+//         req.userId = 1;
+//         next();
+//     });
+// });
+jest.mock("@src/middlewares/auth.middleware");
 
 afterEach(() => {
     jest.clearAllMocks();
@@ -37,6 +39,10 @@ describe("get /contcat", () => {
             }
         ];
         (getContacts as jest.Mock).mockResolvedValue({ users });
+        (userAuth as jest.Mock).mockImplementation((req, res, next) => {
+            req.userId = 1;
+            next();
+        });
         const response = await request(app).get("/api/user/contact");
         expect(getContacts).toHaveBeenCalledWith(1);
         expect(response.status).toBe(200);
@@ -48,5 +54,14 @@ describe("get /contcat", () => {
                 ]
             }
         });
+    });
+    it ("should throw error due to Unauthorized user", async () => {
+        (userAuth as jest.Mock).mockImplementation((req, res, next) => {
+            req.userId = null;
+            next();
+        });   
+        const response = await request(app).get("/api/user/contact");
+        expect(response.status).toBe(401);
+        expect(response.body.message).toEqual("Unauthorized User");
     });
 });
