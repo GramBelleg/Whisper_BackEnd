@@ -17,7 +17,7 @@ export const deleteGroup = async (userId: number, chatId: number) => {
     const isAdmin = await groupService.isAdmin({ userId, chatId });
     if (!isAdmin) throw new Error("You're not an admin");
 
-    const participants = getChatParticipantsIds(chatId);
+    const participants = await getChatParticipantsIds(chatId);
 
     await groupService.deleteGroup(chatId);
 
