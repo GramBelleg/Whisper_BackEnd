@@ -2,6 +2,7 @@ import db from "@DB";
 import * as chatService from "@services/chat/chat.service";
 import { createRandomUser } from "@services/auth/prisma/create.service";
 import { createChat } from "@services/chat/chat.service";
+import { clearDB } from "@src/prisma/clear";
 
 describe("setNewLastMessage", () => {
     afterAll(async () => {
@@ -9,7 +10,8 @@ describe("setNewLastMessage", () => {
         jest.restoreAllMocks();
     });
 
-    beforeEach(() => {
+    beforeEach(async () => {
+        await clearDB();
         jest.restoreAllMocks();
     });
 
