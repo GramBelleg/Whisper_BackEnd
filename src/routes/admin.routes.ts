@@ -11,7 +11,7 @@ const router: Router = Router();
 
 router.route("/users").get(asyncHandler(handleGetAllUsers));
 router.route("/groups").get(asyncHandler(handleGetAllGroups));
-router.route("/ban/:ban/user/:userId").get(asyncHandler(handleBanUser));
-router.route("/filter/:filter/group/:groupId").get(asyncHandler(handleFilterGroup));
+router.route("/ban/:ban/user/:userId").put(asyncHandler(handleBanUser));
+router.route("/filter/:filter/group/:groupId").put(asyncHandler(handleFilterGroup));
 
 export default router;
