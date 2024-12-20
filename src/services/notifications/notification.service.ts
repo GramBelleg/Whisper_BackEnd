@@ -12,7 +12,8 @@ import HttpError from "@src/errors/HttpError";
 export const pushMessageNotification = async (
     receivers: number[],
     chatId: number,
-    message: any
+    message: any,
+    type: string
 ): Promise<void> => {
     try {
         let title: string | undefined;
@@ -48,11 +49,10 @@ export const pushMessageNotification = async (
                 body: message.text,
             },
             data: {
-                type: "new_message",
+                type,
                 messageId: message.id.toString(),
             },
         };
-
         await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
             tokens: deviceTokenList,
             notification: payload.notification,
