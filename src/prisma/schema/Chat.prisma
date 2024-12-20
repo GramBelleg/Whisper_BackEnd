@@ -21,6 +21,7 @@ model Group {
   maxSize Int    @default(1000)
   isPrivate Boolean @default(true)
   chat    Chat   @relation(fields: [chatId], references: [id],onDelete: Cascade)
+  @@index([name])
 }
 
 model Channel {
@@ -30,6 +31,7 @@ model Channel {
   isPrivate    Boolean @default(false)
   inviteLink String @default("")
   chat       Chat   @relation(fields: [chatId], references: [id],onDelete: Cascade)
+  @@index([name])
 
 }
 
