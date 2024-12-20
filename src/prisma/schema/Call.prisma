@@ -1,6 +1,6 @@
 enum CallEndStatus {
     MISSED
-    CANCELLED
+    CANCELED
     JOINED
 }
 
