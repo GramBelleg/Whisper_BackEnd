@@ -73,6 +73,14 @@ export const handleGlobalSearch = async (req: Request, res: Response) => {
     const userId = req.userId;
     const query = String(req.query.query);
     const type = req.query.type as MessageType;
-    const messages = await searchService.getMessages(userId, query, type);
+    const messages = await searchService.getGlobalMessages(userId, query, type);
+    res.status(200).json(messages);
+};
+export const handleMessageSearch = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const chatId = Number(req.params.chatId);
+    const query = String(req.query.query);
+    const type = req.query.type as MessageType;
+    const messages = await searchService.getMessages(userId, chatId, query, type);
     res.status(200).json(messages);
 };

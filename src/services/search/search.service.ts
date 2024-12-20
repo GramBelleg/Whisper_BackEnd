@@ -190,7 +190,7 @@ export const getChats = async (userId: number, query: string) => {
     return { chats };
 };
 
-export const getMessages = async (userId: number, query: string, type: MessageType) => {
+export const getGlobalMessages = async (userId: number, query: string, type: MessageType) => {
     const messages = await db.message.findMany({
         where: {
             type,
@@ -284,6 +284,71 @@ export const getMessages = async (userId: number, query: string, type: MessageTy
                 media: message.media,
                 type: message.type,
                 chat: message.chat,
+                sender: message.sender,
+                attachmentName: message.attachmentName,
+            };
+        })
+    );
+    return { messages: returnedMessages };
+};
+export const getMessages = async (
+    userId: number,
+    chatId: number,
+    query: string,
+    type: MessageType
+) => {
+    const messages = await db.message.findMany({
+        where: {
+            chatId,
+            type,
+            chat: {
+                participants: {
+                    some: { userId },
+                },
+            },
+            OR: [
+                {
+                    content: {
+                        contains: query,
+                        mode: "insensitive",
+                    },
+                },
+                {
+                    attachmentName: {
+                        contains: query,
+                        mode: "insensitive",
+                    },
+                },
+            ],
+        },
+        select: {
+            sender: {
+                select: {
+                    id: true,
+                    userName: true,
+                },
+            },
+            chat: {
+                select: {
+                    id: true,
+                    type: true,
+                },
+            },
+            type: true,
+            media: true,
+            content: true,
+            id: true,
+            attachmentName: true,
+        },
+    });
+    const returnedMessages = await Promise.all(
+        messages.map(async (message: any) => {
+            return {
+                id: message.id,
+                content: message.content,
+                media: message.media,
+                type: message.type,
+                chatId: message.chat.id,
                 sender: message.sender,
                 attachmentName: message.attachmentName,
             };

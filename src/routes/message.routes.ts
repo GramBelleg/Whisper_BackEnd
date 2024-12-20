@@ -6,6 +6,7 @@ import {
     handleGetLastMessage,
     handleGetMessage,
     handleGlobalSearch,
+    handleMessageSearch,
 } from "@controllers/messages/get.messages";
 import { handleGetMessageStatus } from "@controllers/messages/edit.message";
 import {
@@ -27,5 +28,6 @@ router
     .get(asyncHandler(handleGetDraftedMessage));
 router.route("/:chatId/undraftMessage").put(asyncHandler(handleUndraftMessage));
 router.route("/global/search").get(asyncHandler(handleGlobalSearch));
+router.route("/:chatId/searchMessages").get(asyncHandler(handleMessageSearch));
 
 export default router;
