@@ -232,7 +232,7 @@ const getContacts = async (req: Request, res: Response) => {
     const userId = req.userId;
     if (!userId) throw new HttpError("Unauthorized User", 401);
     const users = await userServices.getContacts(userId);
-    res.status(200).json({ users });
+    res.status(200).json({users: users});
 };
 export {
     getContacts,

@@ -23,7 +23,6 @@ afterAll(async () => {
 
 
 describe("get /contcat", () => {
-
     it("should return all contacts", async () => {
         const users = [
             {
@@ -37,7 +36,7 @@ describe("get /contcat", () => {
                 email: "test2@test.com"
             }
         ];
-        (getContacts as jest.Mock).mockResolvedValue({users});
+        (getContacts as jest.Mock).mockResolvedValue({ users });
         const response = await request(app).get("/api/user/contact");
         expect(getContacts).toHaveBeenCalledWith(1);
         expect(response.status).toBe(200);
@@ -51,5 +50,3 @@ describe("get /contcat", () => {
         });
     });
 });
-
-
