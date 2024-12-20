@@ -9,7 +9,19 @@ const passwords: string[] = ["abcdefgh", "12345678", "aaaabbbb", "1111111", "222
 // Utility function to create random users
 async function createUsers(numUsers: number) {
     const users: User[] = [];
-    for (let i = 0; i < numUsers - 1; i++) {
+    const admin: User = await db.user.create({
+        data: {
+            email: faker.internet.email().toLowerCase(),
+            userName: faker.internet.username().toLowerCase(),
+            name: faker.person.fullName().toLowerCase(),
+            password: bcrypt.hashSync(passwords[0], 10),
+            role: "Admin",
+            bio: faker.lorem.sentence(),
+            phoneNumber: faker.phone.number({ style: "international" }),
+        },
+    });
+    users.push(admin);
+    for (let i = 1; i < numUsers - 1; i++) {
         const user: User = await db.user.create({
             data: {
                 email: faker.internet.email().toLowerCase(),

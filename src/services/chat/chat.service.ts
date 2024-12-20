@@ -27,6 +27,7 @@ const getUserChats = async (userId: number, type: ChatType | null, noKey: number
             chat: {
                 select: {
                     type: true,
+                    selfDestruct: true,
                 },
             },
         },

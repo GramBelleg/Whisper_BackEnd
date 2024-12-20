@@ -71,6 +71,7 @@ export type SentMessage = Pick<Message, "chatId" | "senderId" | "content" | "sen
     >;
 
 export type SenderIdRecord = Record<number, { chatId: number; messageIds: number[] }[]>;
+
 export type OmitSender<T> = Omit<T, "senderId">;
 
 export type MessageReference = Pick<Message, "senderId" | "chatId"> & { id: number };
