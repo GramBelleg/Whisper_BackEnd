@@ -18,7 +18,7 @@ const findBlockedUsers = async (userId: number) => {
         }
     });
 }
-
+// check if userId1 is blocked by userId2
 const areUsersBlocked = async (userId1: number, userId2: number) => {
     const blockedRelations = await db.relates.findMany({
         where: {

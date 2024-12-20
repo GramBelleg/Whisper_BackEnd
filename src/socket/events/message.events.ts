@@ -8,6 +8,8 @@ import * as messageHandler from "@socket/handlers/message.handlers";
 import { sendToClient } from "@socket/utils/socket.utils";
 import * as groupHandler from "@socket/handlers/group.handlers";
 import { handleChatPermissions } from "@socket/handlers/chat.handlers";
+import { getChatType, getChatParticipantsIds } from "@services/chat/chat.service";
+import { areUsersBlocked } from "@services/user/prisma/find.service";
 
 export const setupMessageEvents = (
     socket: Socket,
@@ -17,6 +19,13 @@ export const setupMessageEvents = (
     socket.on(
         "message",
         socketWrapper(async (message: types.OmitSender<types.SentMessage>) => {
+            if (await getChatType(message.chatId) === "DM") {
+                const participants = await getChatParticipantsIds(message.chatId);
+                const receiver = participants.filter((participant) => participant != userId)[0];
+                if(await areUsersBlocked(userId, receiver) || await areUsersBlocked(receiver, userId)) {
+                    return;
+                }
+            }
             await handleChatPermissions(userId, message.chatId, groupHandler.handlePostPermissions);
             const savedMessage = await sendController.handleSend(userId, {
                 ...message,

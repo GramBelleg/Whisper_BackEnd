@@ -14,7 +14,7 @@ const login = async (req: Request, res: Response) => {
     const { password: hashedPassword, ...userWithoutPassword } = user;
     checkPasswordCorrect(password, user.password);
 
-    const userToken = await createAddToken(user.id);
+    const userToken = await createAddToken(user.id, user.role);
     createTokenCookie(res, userToken);
     res.status(200).json({
         status: "success",

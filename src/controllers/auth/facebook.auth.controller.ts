@@ -21,7 +21,7 @@ async function facebookAuth(req: Request, res: Response): Promise<void> {
         console.log(userData);
         const user: User = await upsertUser(userData);
 
-        const userToken = await createAddToken(user.id);
+        const userToken = await createAddToken(user.id, user.role);
         createTokenCookie(res, userToken);
 
         res.status(200).json({

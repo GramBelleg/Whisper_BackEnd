@@ -20,10 +20,10 @@ function clearTokenCookie(res: Response) {
     });
 }
 
-async function createAddToken(userId: number) {
+async function createAddToken(userId: number, userRole: string) {
     try {
         const userToken: string = jwt.sign(
-            { id: userId, timestamp: Date.now() },
+            { id: userId, role: userRole, timestamp: Date.now() },
             process.env.JWT_SECRET as string,
             {
                 expiresIn: process.env.JWT_EXPIRE,

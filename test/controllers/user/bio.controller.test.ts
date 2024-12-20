@@ -5,6 +5,7 @@ import * as userServices from "@services/user/user.service";
 jest.mock("@src/middlewares/auth.middleware", () => {
     return jest.fn((req, res, next) => {
         req.userId = 1; // Mock the authenticated user ID
+        req.userRole = "User"; // Mock the authenticated user role
         next();
     });
 });

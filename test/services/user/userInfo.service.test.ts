@@ -37,6 +37,6 @@ describe('userInfo', () => {
 
     it('should throw an error if user does not exist', async () => {
         const nonExistentId = 999999;
-        await expect(userInfo(nonExistentId)).rejects.toThrow('User not found');
+        await expect(userInfo(nonExistentId)).rejects.toThrow(new Error('User not found'));
     });
 });
