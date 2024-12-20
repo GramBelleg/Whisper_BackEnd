@@ -72,6 +72,7 @@ async function createChats(numChats: number, users: any[]) {
 
         // Add participants to chat
         for (const user of participants) {
+            if(user.role === "Admin") continue;
             await db.chatParticipant.create({
                 data: {
                     chatId: chat.id,
@@ -131,6 +132,7 @@ async function createChatMessages(chats: Array<{ chat: Chat; participants: User[
 
 const createStories = async (users: User[], numStories: number) => {
     for (const user of users) {
+        if(user.role === "Admin") continue;
         for (let i = 0; i < numStories; i += 1) {
             await db.story.create({
                 data: {

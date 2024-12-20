@@ -55,9 +55,11 @@ export const initWebSocketServer = (server: HTTPServer) => {
     });
 
     io.on("connection", async (socket: Socket) => {
-        socket.data.userId = await socketWrapper(validateCookie)(socket);
+        ({ userId: socket.data.userId, userRole: socket.data.userRole } = await socketWrapper(validateCookie)(socket));
 
         const userId = socket.data.userId;
+        const userRole = socket.data.userRole;
+        
         if (!userId) {
             socket.disconnect(true);
             return;

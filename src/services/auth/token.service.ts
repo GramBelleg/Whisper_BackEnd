@@ -57,16 +57,15 @@ function getToken(req: Request) {
 async function verifyUserToken(userToken: string) {
     let userId: number | undefined = undefined;
     try {
-        userId = (
-            jwt.verify(userToken, process.env.JWT_SECRET as string, {
-                ignoreExpiration: true,
-            }) as Record<string, any>
-        ).id;
+        const { id: userId, role: userRole } = jwt.verify(
+            userToken,
+            process.env.JWT_SECRET as string
+        ) as Record<string, any>;
         if (!userId) throw new Error();
         await checkUserTokenExist(userId, userToken);
         // check expiration of token
         jwt.verify(userToken, process.env.JWT_SECRET as string);
-        return userId;
+        return { userId, userRole };
     } catch (err: any) {
         if (err instanceof TokenExpiredError) {
             console.log("expired");
