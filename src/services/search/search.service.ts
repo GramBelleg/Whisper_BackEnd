@@ -1,5 +1,6 @@
 import db from "@DB";
 import { MemberSummary } from "@models/chat.models";
+import { MessageType } from "@prisma/client";
 import { getHasStory, getPrivateProfilePic, getPrivateStatus } from "@services/user/user.service";
 
 export const getMembers = async (userId: number, chatId: number, query: string) => {
@@ -120,60 +121,60 @@ export const getChannels = async (userId: number, query: string) => {
     });
 };
 export const getDms = async (userId: number, query: string) => {
-    const dms = await db.chat.findMany({
+    const dms = await db.user.findMany({
         where: {
-            type: "DM", // Filter by DM type
-            participants: {
-                some: {
-                    userId: userId, // Make sure the user is a participant
+            OR: [
+                {
+                    userName: {
+                        contains: query,
+                        mode: "insensitive",
+                    },
                 },
-            },
+                {
+                    name: {
+                        contains: query,
+                        mode: "insensitive",
+                    },
+                },
+                {
+                    phoneNumber: {
+                        contains: query,
+                        mode: "insensitive",
+                    },
+                },
+                {
+                    email: {
+                        contains: query,
+                        mode: "insensitive",
+                    },
+                },
+            ],
         },
         select: {
             id: true,
-            participants: {
-                where: {
-                    userId: { not: userId }, // Exclude the current user
-                },
-                select: {
-                    user: {
-                        select: {
-                            id: true,
-                            userName: true,
-                            email: true,
-                            phoneNumber: true,
-                            name: true,
-                        },
-                    },
-                },
-            },
+            userName: true,
+            email: true,
+            phoneNumber: true,
+            name: true,
         },
     });
 
     const users = await Promise.all(
         dms.map(async (dm) => {
-            const user = dm.participants[0].user;
-            if (
-                !(
-                    user.userName.toLowerCase().includes(query.toLowerCase()) ||
-                    user.name?.toLowerCase().includes(query.toLowerCase()) ||
-                    user.email.toLowerCase().includes(query.toLowerCase()) ||
-                    user.phoneNumber?.includes(query)
-                )
-            )
-                return null;
+            const user = dm;
             const profilePic = await getPrivateProfilePic(userId, user.id);
             const privateStatus = await getPrivateStatus(userId, user.id);
             const hasStory = await getHasStory(userId, user.id);
 
             return {
-                id: dm.id,
+                id: null,
                 othersId: user.id,
                 name: user.userName,
                 picture: profilePic,
                 hasStory: hasStory,
                 lastSeen: privateStatus.lastSeen,
                 status: privateStatus.status,
+                type: "DM",
             };
         })
     );
@@ -187,4 +188,106 @@ export const getChats = async (userId: number, query: string) => {
     const chats = [...groups, ...channels, ...dms];
 
     return { chats };
+};
+
+export const getMessages = async (userId: number, query: string, type: MessageType) => {
+    const messages = await db.message.findMany({
+        where: {
+            type,
+            OR: [
+                {
+                    content: {
+                        contains: query,
+                        mode: "insensitive",
+                    },
+                    OR: [
+                        { chat: { type: "GROUP", group: { isPrivate: false } } },
+                        { chat: { type: "CHANNEL", channel: { isPrivate: false } } },
+                        {
+                            chat: {
+                                participants: {
+                                    some: { userId },
+                                },
+                            },
+                        },
+                    ],
+                },
+                {
+                    attachmentName: {
+                        contains: query,
+                        mode: "insensitive",
+                    },
+                    OR: [
+                        { chat: { type: "GROUP", group: { isPrivate: false } } },
+                        { chat: { type: "CHANNEL", channel: { isPrivate: false } } },
+                        {
+                            chat: {
+                                participants: {
+                                    some: { userId },
+                                },
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+        select: {
+            sender: {
+                select: {
+                    id: true,
+                    userName: true,
+                },
+            },
+            chat: {
+                select: {
+                    id: true,
+                    type: true,
+                },
+            },
+            type: true,
+            media: true,
+            content: true,
+            id: true,
+            attachmentName: true,
+        },
+    });
+    const returnedMessages = await Promise.all(
+        messages.map(async (message: any) => {
+            if (message.chat.type == "GROUP") {
+                const chat = await db.group.findUnique({
+                    where: {
+                        chatId: message.chat.id,
+                    },
+                    select: {
+                        name: true,
+                        picture: true,
+                    },
+                });
+                message.chat.name = chat?.name;
+                message.chat.picture = chat?.picture;
+            } else if (message.chat.type == "CHANNEL") {
+                const chat = await db.channel.findUnique({
+                    where: {
+                        chatId: message.chat.id,
+                    },
+                    select: {
+                        name: true,
+                        picture: true,
+                    },
+                });
+                message.chat.name = chat?.name;
+                message.chat.picture = chat?.picture;
+            }
+            return {
+                id: message.id,
+                content: message.content,
+                media: message.media,
+                type: message.type,
+                chat: message.chat,
+                sender: message.sender,
+                attachmentName: message.attachmentName,
+            };
+        })
+    );
+    return { messages: returnedMessages };
 };
