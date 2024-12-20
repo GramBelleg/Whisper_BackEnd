@@ -7,6 +7,7 @@ import {
     userIsSender,
 } from "@services/chat/chat.service";
 import { CreatedChat } from "@models/chat.models";
+import { MAX_GROUP_SIZE } from "@config/constants.config";
 
 export const validateChatAndUser = async (
     userId: number,
@@ -63,6 +64,10 @@ export const validateChatUserIds = (userId: number, users: number[], chat: Creat
     if (chat.type == "DM") {
         if (users.length != 2) {
             throw new Error("DM chat must have 2 users");
+        }
+    } else if (chat.type == "GROUP") {
+        if (users.length > MAX_GROUP_SIZE) {
+            throw new Error("Group size must be smaller");
         }
     }
 };
