@@ -8,6 +8,8 @@ import messagesRouter from "@routes/message.routes";
 import stickersRouter from "@routes/sticker.routes";
 import encryptionRouter from "@routes/encryption.routes";
 import groupRouter from "@routes/group.routes";
+import adminMiddleware from "@middlewares/permissions.middleware";
+import adminRouter from "@routes/admin.routes";
 const router: Router = Router();
 
 router.use("/auth", authenticationRouter);
@@ -19,5 +21,7 @@ router.use("/groups", groupRouter);
 router.use("/messages", messagesRouter);
 router.use("/stickers", stickersRouter);
 router.use("/encrypt", encryptionRouter);
+router.use(adminMiddleware);
+router.use("/admin", adminRouter);
 
 export default router;

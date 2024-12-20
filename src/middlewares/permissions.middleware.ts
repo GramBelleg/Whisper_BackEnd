@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { Role } from "@prisma/client";
 
-export const adminMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+const adminMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     if (req.userRole !== Role.Admin) {
         res.status(403).json({
             status: "failed",
@@ -10,3 +10,5 @@ export const adminMiddleware = async (req: Request, res: Response, next: NextFun
     }
     next();
 };
+
+export default adminMiddleware;

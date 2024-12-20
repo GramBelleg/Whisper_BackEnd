@@ -1,10 +1,9 @@
 import db from "@src/prisma/PrismaClient";
 import { validatePhoneNumber } from "@validators/auth";
 import RedisOperation from "@src/@types/redis.operation";
-import { Prisma, Privacy, Status, Story } from "@prisma/client";
+import { Prisma, Privacy, Status } from "@prisma/client";
 import { verifyCode } from "@services/auth/code.service";
 import HttpError from "@src/errors/HttpError";
-import { stat } from "fs";
 
 export const updateBio = async (id: number, bio: string): Promise<string> => {
     try {
@@ -16,6 +15,14 @@ export const updateBio = async (id: number, bio: string): Promise<string> => {
     } catch (error) {
         throw new Error("Unable to update bio");
     }
+};
+
+export const isBanned = async (userId: number): Promise<boolean> => {
+    const user = await db.user.findUnique({
+        where: { id: userId },
+        select: { banned: true },
+    });
+    return user!.banned;
 };
 
 export const updateName = async (id: number, name: string): Promise<string> => {

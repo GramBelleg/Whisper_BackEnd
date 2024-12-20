@@ -35,6 +35,10 @@ export const updateChatSettings = async (chatId: number) => {
     await sendChatSummary(chatId, clients);
 };
 
+export const removeUserSocket = async (userId: number) => {
+    await connectionHandler.endConnection(userId, clients);
+};
+
 export const initWebSocketServer = (server: HTTPServer) => {
     const io = new IOServer(server, {
         cors: {
@@ -70,8 +74,11 @@ export const initWebSocketServer = (server: HTTPServer) => {
 
         setupStatusEvents(socket, userId, clients);
 
-        socket.on("disconnect", () => {
-            if (userId) connectionHandler.endConnection(userId, clients);
-        });
+        socket.on(
+            "disconnect",
+            socketWrapper(async () => {
+                if (userId) await connectionHandler.endConnection(userId, clients);
+            })
+        );
     });
 };

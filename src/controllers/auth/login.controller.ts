@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { createTokenCookie, createAddToken } from "@services/auth/token.service";
 import { checkEmailExistDB, checkPasswordCorrect } from "@services/auth/login.service";
 import { validateEmail, validatePassword } from "@validators/auth";
-import { profile } from "console";
 
 const login = async (req: Request, res: Response) => {
     req.body.email = req.body.email?.trim().toLowerCase();
@@ -11,6 +10,15 @@ const login = async (req: Request, res: Response) => {
     validatePassword(password);
 
     const user = await checkEmailExistDB(email);
+    if (user.banned) {
+        res.status(403).json({
+            status: "error",
+            message: "Your account is suspended. Please contact support",
+            user: null,
+            userToken: null,
+        });
+        return;
+    }
     const { password: hashedPassword, ...userWithoutPassword } = user;
     checkPasswordCorrect(password, user.password);
 

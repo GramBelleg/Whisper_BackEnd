@@ -32,6 +32,7 @@ model User {
   lastSeenPrivacy           Privacy              @default(Everyone)
   pfpPrivacy                Privacy              @default(Everyone)
   storyPrivacy              Privacy              @default(Everyone)
+  banned                    Boolean              @default(false)
   Messages                  Message[]
   chatParticipant           ChatParticipant[]
   tokens                    UserToken[]
