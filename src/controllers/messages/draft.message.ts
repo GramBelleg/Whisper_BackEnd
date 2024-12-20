@@ -2,10 +2,12 @@ import { Request, Response } from "express";
 import { draftMessage, getDraftedMessage, undraftMessage } from "@services/chat/message.service";
 import { DraftMessage } from "@models/messages.models";
 import { buildDraftedMessage } from "./format.message";
+import { validateChatAndUser } from "@validators/chat";
 
 export const handleDraftMessage = async (req: Request, res: Response) => {
     const userId = req.userId;
     const chatId = Number(req.params.chatId);
+    if (!(await validateChatAndUser(userId, chatId, res))) return;
     const message: DraftMessage = req.body;
     await draftMessage(userId, chatId, message);
     res.status(200).json("Drafted message successfully");
@@ -14,6 +16,7 @@ export const handleDraftMessage = async (req: Request, res: Response) => {
 export const handleGetDraftedMessage = async (req: Request, res: Response) => {
     const userId = req.userId;
     const chatId = Number(req.params.chatId);
+    if (!(await validateChatAndUser(userId, chatId, res))) return;
     const result = await getDraftedMessage(userId, chatId);
     if (!result || result?.draftContent === "") {
         res.status(404).json({ message: "No drafted message found" });
@@ -26,6 +29,7 @@ export const handleGetDraftedMessage = async (req: Request, res: Response) => {
 export const handleUndraftMessage = async (req: Request, res: Response) => {
     const userId = req.userId;
     const chatId = Number(req.params.chatId);
+    if (!(await validateChatAndUser(userId, chatId, res))) return;
     await undraftMessage(userId, chatId);
     res.status(200).json("Undrafted message successfully");
 };

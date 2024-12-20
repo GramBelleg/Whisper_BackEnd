@@ -110,21 +110,30 @@ describe("test find unmuted group users prisma query", () => {
                 },
                 name: "group",
                 maxSize: 10,
-                privacy: "PUBLIC",
             },
         });
-        await db.groupParticipant.create({
+        const chatParticipant1 = await db.chatParticipant.create({
             data: {
                 userId: user.id,
-                groupId: group.chatId,
+                chatId: group.chatId,
                 isMuted: false,
             },
         });
-        await db.groupParticipant.create({
+        const chatParticipant2 = await db.chatParticipant.create({
             data: {
                 userId: user2.id,
-                groupId: group.chatId,
+                chatId: group.chatId,
                 isMuted: true,
+            },
+        });
+        await db.groupParticipant.create({
+            data: {
+                id: chatParticipant1.id,
+            },
+        });
+        await db.groupParticipant.create({
+            data: {
+                id: chatParticipant2.id,
             },
         });
         const users = await findUnmutedGroupUsers([user.id, user2.id], group.chatId);
@@ -143,21 +152,30 @@ describe("test find unmuted group users prisma query", () => {
                 },
                 name: "group",
                 maxSize: 10,
-                privacy: "PUBLIC",
             },
         });
-        await db.groupParticipant.create({
+        const chatParticipant1 = await db.chatParticipant.create({
             data: {
                 userId: user.id,
-                groupId: group.chatId,
+                chatId: group.chatId,
+                isMuted: true,
+            },
+        });
+        const chatParticipant2 = await db.chatParticipant.create({
+            data: {
+                userId: user2.id,
+                chatId: group.chatId,
                 isMuted: true,
             },
         });
         await db.groupParticipant.create({
             data: {
-                userId: user2.id,
-                groupId: group.chatId,
-                isMuted: true,
+               id: chatParticipant1.id,
+            },
+        });
+        await db.groupParticipant.create({
+            data: {
+                id: chatParticipant2.id,
             },
         });
         const users = await findUnmutedGroupUsers([user.id, user2.id], group.chatId);
@@ -176,22 +194,32 @@ describe("test find unmuted channel users prisma query", () => {
                         type: 'CHANNEL',
                     },
                 },
-                privacy: "PUBLIC",
                 inviteLink: "inviteLink",
+                name: "channel",
             },
         });
-        await db.channelParticipant.create({
+        const chatParticipant1 = await db.chatParticipant.create({
             data: {
                 userId: user.id,
-                channelId: channel.chatId,
+                chatId: channel.chatId,
                 isMuted: false,
             },
         });
-        await db.channelParticipant.create({
+        const chatParticipant2 = await db.chatParticipant.create({
             data: {
                 userId: user2.id,
-                channelId: channel.chatId,
+                chatId: channel.chatId,
                 isMuted: true,
+            },
+        });
+        await db.channelParticipant.create({
+            data: {
+                id: chatParticipant1.id,
+            },
+        });
+        await db.channelParticipant.create({
+            data: {
+                id: chatParticipant2.id,
             },
         });
         const users = await findUnmutedChannelUsers([user.id, user2.id], channel.chatId);
@@ -208,22 +236,32 @@ describe("test find unmuted channel users prisma query", () => {
                         type: 'CHANNEL',
                     },
                 },
-                privacy: "PUBLIC",
                 inviteLink: "inviteLink",
+                name: "channel",
             },
         });
-        await db.channelParticipant.create({
+        const chatParticipant1 = await db.chatParticipant.create({
             data: {
                 userId: user.id,
-                channelId: channel.chatId,
+                chatId: channel.chatId,
+                isMuted: true,
+            },
+        });
+        const chatParticipant2 = await db.chatParticipant.create({
+            data: {
+                userId: user2.id,
+                chatId: channel.chatId,
                 isMuted: true,
             },
         });
         await db.channelParticipant.create({
             data: {
-                userId: user2.id,
-                channelId: channel.chatId,
-                isMuted: true,
+                id: chatParticipant1.id,
+            },
+        });
+        await db.channelParticipant.create({
+            data: {
+               id: chatParticipant2.id,
             },
         });
         const users = await findUnmutedChannelUsers([user.id, user2.id], channel.chatId);

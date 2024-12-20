@@ -8,9 +8,11 @@ import { DuplicateUserInfo } from "@models/user.models";
 import axios from "axios";
 
 async function fetchRobotTokenData(robotToken: string) {
-    const verificationURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCAPTCHA_SECRET}&response=${robotToken}`;
+    let reCAPTCHA_SECRET;
+    if (process.env.NODE_ENV != "production") reCAPTCHA_SECRET = process.env.test_reCAPTCHA_SECRET;
+    else reCAPTCHA_SECRET = process.env.reCAPTCHA_SECRET;
+    const verificationURL = `https://www.google.com/recaptcha/api/siteverify?secret=${reCAPTCHA_SECRET}&response=${robotToken}`;
     const response = await axios.post(verificationURL);
-    console.log("response", response.data);
     return response.data;
 }
 

@@ -2,7 +2,6 @@ import { Socket } from "socket.io";
 import { archiveStory, getStoryPrivacy, getStoryUserId } from "@services/story/story.service";
 import { sendToClient } from "@socket/utils/socket.utils";
 import redisClient from "@src/redis/redis.client";
-import { SaveableStory } from "@models/story.models";
 import * as userServices from "@services/user/user.service";
 import { Privacy, Story } from "@prisma/client";
 
@@ -113,11 +112,13 @@ const likeStory = async (
 ): Promise<void> => {
     try {
         const storyUserId = await getStoryUserId(data.storyId);
+        const user = await userServices.displayedUser(data.userId, storyUserId);
         sendToClient(storyUserId, clients, emitEvent, {
             userId: data.userId,
             storyId: data.storyId,
-            userName: data.userName,
-            profilePic: data.profilePic,
+            userName: user.userName,
+            profilePic: user.profilePic,
+            hasStory: user.hasStory,
             liked: data.liked,
         });
     } catch (error: any) {
@@ -131,11 +132,13 @@ const viewStory = async (
     data: any
 ): Promise<void> => {
     const storyUserId = await getStoryUserId(data.storyId);
+    const user = await userServices.displayedUser(data.userId, storyUserId);
     sendToClient(storyUserId, clients, emitEvent, {
         userId: data.userId,
         storyId: data.storyId,
-        userName: data.userName,
-        profilePic: data.profilePic,
+        userName: user.userName,
+        profilePic: user.profilePic,
+        hasStory: user.hasStory,
     });
 };
 

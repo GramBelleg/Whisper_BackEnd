@@ -1,6 +1,11 @@
 import FirebaseAdmin from "@src/FCM/admin";
-import { findDeviceTokens, findUnmutedDMUsers, findUnmutedChannelUsers, findUnmutedGroupUsers } from "@src/services/notifications/prisma/find.service";
-import { chatType as findChatType } from "@services/chat/chat.service";
+import {
+    findDeviceTokens,
+    findUnmutedDMUsers,
+    findUnmutedChannelUsers,
+    findUnmutedGroupUsers,
+} from "@src/services/notifications/prisma/find.service";
+import { getChatType } from "@services/chat/chat.service";
 import { ChatType } from "@prisma/client";
 import HttpError from "@src/errors/HttpError";
 
@@ -11,19 +16,23 @@ export const pushMessageNotification = async (
     type: string
 ): Promise<void> => {
     try {
-        let title: string;
+        let title: string | undefined;
         let unmutedUsers: number[] = [];
-        const chatType = await findChatType(chatId);
+        const chatType = await getChatType(chatId);
         if (chatType === ChatType.DM) {
             title = message.sender.userName;
             unmutedUsers = await findUnmutedDMUsers(receivers, chatId);
         } else if (chatType === ChatType.GROUP) {
-            const { groupName, unmutedUsers: groupUnmutedUsers } = await findUnmutedGroupUsers(receivers, chatId);
+            const { groupName, unmutedUsers: groupUnmutedUsers } = await findUnmutedGroupUsers(
+                receivers,
+                chatId
+            );
             title = groupName;
             unmutedUsers = groupUnmutedUsers;
         } else {
             unmutedUsers = await findUnmutedChannelUsers(receivers, chatId);
-            title = message.sender.userName;
+            if (message.sender) title = message.sender.userName;
+            else if (message.userName) title = message.userName;
         }
         if (unmutedUsers.length === 0) return;
         const deviceTokens = await findDeviceTokens(unmutedUsers);
@@ -42,7 +51,7 @@ export const pushMessageNotification = async (
             data: {
                 type,
                 messageId: message.id.toString(),
-            }
+            },
         };
         await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
             tokens: deviceTokenList,
@@ -52,9 +61,12 @@ export const pushMessageNotification = async (
     } catch (error: any) {
         throw new HttpError(`Error in pushNotification`, 500);
     }
-}
+};
 
-export const clearMessageNotification = async (userId: number, messageIds: number[]): Promise<void> => {
+export const clearMessageNotification = async (
+    userId: number,
+    messageIds: number[]
+): Promise<void> => {
     try {
         const deviceTokens = await findDeviceTokens([userId]);
         const deviceTokenList = [] as string[];
@@ -67,9 +79,9 @@ export const clearMessageNotification = async (userId: number, messageIds: numbe
         for (const messageId of messageIds) {
             const payload = {
                 data: {
-                    type: 'clear_message',
+                    type: "clear_message",
                     messageId: messageId.toString(),
-                }
+                },
             };
             await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
                 tokens: deviceTokenList,
@@ -79,9 +91,13 @@ export const clearMessageNotification = async (userId: number, messageIds: numbe
     } catch (error: any) {
         throw new HttpError(`Error in clearNotification`, 500);
     }
-}
+};
 
-export const pushVoiceNofication = async (participants: number[], tokens: string[], channelName: string): Promise<void> => {
+export const pushVoiceNofication = async (
+    participants: number[],
+    tokens: string[],
+    notification: any
+): Promise<void> => {
     try {
         const deviceTokens = await findDeviceTokens(participants);
         for (let i = 0; i < participants.length; i++) {
@@ -94,15 +110,16 @@ export const pushVoiceNofication = async (participants: number[], tokens: string
             if (userDeviceTokens.length === 0) continue;
             const payload = {
                 notification: {
-                    title: 'Voice Call',
-                    body: 'Incoming Call',
+                    title: "Voice Call",
+                    body: "Incoming Call",
                 },
                 data: {
-                    type: 'voice_call',
+                    type: "voice_call",
                     token: tokens[i],
-                    channelName,
-                }
+                    ...notification,
+                },
             };
+            if (userDeviceTokens.length === 0) continue;
             await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
                 tokens: userDeviceTokens,
                 notification: payload.notification,
@@ -112,4 +129,4 @@ export const pushVoiceNofication = async (participants: number[], tokens: string
     } catch (err: any) {
         throw new HttpError(`Error in pushNotification`, 500);
     }
-}
+};

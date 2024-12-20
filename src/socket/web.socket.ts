@@ -11,9 +11,14 @@ import { socketWrapper } from "./handlers/error.handler";
 import { setupPfpEvents } from "./events/pfp.events";
 import { setupStatusEvents } from "./events/status.events";
 import { setupChatEvents } from "./events/chat.events";
+import { Message } from "@prisma/client";
 
 type HandlerFunction = (key: string, clients: Map<number, Socket>) => any;
 const clients: Map<number, Socket> = new Map();
+
+export const getClients = () => {
+    return clients;
+};
 
 const handlers: Record<string, HandlerFunction> = {
     messageId: messageHandler.notifyExpiry,
@@ -32,9 +37,18 @@ export const notifyExpiry = (key: string) => {
     }
 };
 
-export const callSocket = (participants: number[],tokens: string[], channelName: string) => {
-    callHandler.call(clients, participants, tokens, channelName);
+export const callSocket = (participants: number[],tokens: string[], notification: any, message: Message, userId: number) => {
+    callHandler.startCall(clients, participants, tokens, notification, message, userId);
 };
+
+export const callLog = (participants: number[], message: any) => {
+    callHandler.callLog(clients, participants, message);
+}
+
+export const cancelCall = (participants: number[], message: any) => {
+    console.log("cancel call");
+    callHandler.cancelCall(clients, participants, message);
+}
 
 export const initWebSocketServer = (server: HTTPServer) => {
     const io = new IOServer(server, {
@@ -71,11 +85,8 @@ export const initWebSocketServer = (server: HTTPServer) => {
 
         setupStatusEvents(socket, userId, clients);
 
-        socket.on(
-            "disconnect",
-            socketWrapper(async () => {
-                if (userId) await connectionHandler.endConnection(userId, clients);
-            })
-        );
+        socket.on("disconnect", () => {
+            if (userId) connectionHandler.endConnection(userId, clients);
+        });
     });
 };

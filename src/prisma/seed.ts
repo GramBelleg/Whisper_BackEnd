@@ -5,11 +5,14 @@ import db from "./PrismaClient";
 
 // Passwords of 5 users in order.
 const passwords: string[] = ["abcdefgh", "12345678", "aaaabbbb", "1111111", "22222222"];
+const numUsers = 6;
+const numChats = 3;
+const numStories = 3;
 
 // Utility function to create random users
 async function createUsers(numUsers: number) {
     const users: User[] = [];
-    for (let i = 0; i < numUsers; i++) {
+    for (let i = 0; i < numUsers - 1; i++) {
         const user: User = await db.user.create({
             data: {
                 email: faker.internet.email().toLowerCase(),
@@ -21,6 +24,26 @@ async function createUsers(numUsers: number) {
             },
         });
         users.push(user);
+    }
+    const user: User = await db.user.create({
+        data: {
+            email: "whispertest@mailsac.com",
+            userName: faker.internet.username().toLowerCase(),
+            name: faker.person.fullName().toLowerCase(),
+            password: bcrypt.hashSync("Whi$per45", 10),
+            bio: faker.lorem.sentence(),
+            phoneNumber: faker.phone.number({ style: "international" }),
+        },
+    });
+    users.push(user);
+    for (let i = 1; i < 4; i++) {
+        await db.relates.create({
+            data: {
+                relatingId: user.id,
+                relatedById: users[i].id,
+                isBlocked: true,
+            },
+        });
     }
     return users;
 }
@@ -50,6 +73,70 @@ async function createChats(numChats: number, users: any[]) {
 
         chats.push({ chat, participants });
     }
+    {
+        const chat: Chat = await db.chat.create({
+            data: {
+                type: ChatType.GROUP,
+            },
+        });
+
+        await db.group.create({
+            data: {
+                chatId: chat.id,
+                picture: null,
+                name: "bahebak",
+            },
+        });
+        for (const user of users) {
+            const p = await db.chatParticipant.create({
+                data: {
+                    chatId: chat.id,
+                    userId: user.id,
+                },
+            });
+            let isAdmin = false;
+            if (user.id == users[0].id) isAdmin = true;
+            const g = await db.groupParticipant.create({
+                data: {
+                    id: p.id,
+                    isAdmin,
+                },
+            });
+        }
+        const participants: User[] = users;
+        chats.push({ chat, participants });
+    }
+    const chat: Chat = await db.chat.create({
+        data: {
+            type: ChatType.CHANNEL,
+        },
+    });
+
+    await db.channel.create({
+        data: {
+            chatId: chat.id,
+            picture: null,
+            name: "awy",
+        },
+    });
+    for (const user of users) {
+        const p = await db.chatParticipant.create({
+            data: {
+                chatId: chat.id,
+                userId: user.id,
+            },
+        });
+        let isAdmin = false;
+        if (user.id == users[0].id) isAdmin = true;
+        const g = await db.channelParticipant.create({
+            data: {
+                id: p.id,
+                isAdmin,
+            },
+        });
+    }
+    const participants: User[] = users;
+    chats.push({ chat, participants });
     return chats;
 }
 
@@ -74,7 +161,7 @@ async function createChatMessages(chats: Array<{ chat: Chat; participants: User[
             for (const participant of chat.participants) {
                 // Skip the sender
 
-                await db.messageStatus.create({
+                const messageStatus = await db.messageStatus.create({
                     data: {
                         messageId: message.id, // Use the message ID
                         userId: participant.id, // Ensure the participant's userId is used
@@ -84,14 +171,18 @@ async function createChatMessages(chats: Array<{ chat: Chat; participants: User[
                         deleted: faker.datatype.boolean(),
                     },
                 });
-
+                const lastMessageId = messageStatus.id;
                 // Update the chat with the created message
-                await db.chatParticipant.update({
-                    where: { chatId_userId: { chatId: chat.chat.id, userId: participant.id } },
-                    data: {
-                        lastMessageId: message.id,
-                    },
-                });
+                try {
+                    await db.chatParticipant.update({
+                        where: { chatId_userId: { chatId: chat.chat.id, userId: participant.id } },
+                        data: {
+                            lastMessageId,
+                        },
+                    });
+                } catch (err: any) {
+                    console.error(err);
+                }
             }
         }
     }
@@ -109,13 +200,19 @@ const createStories = async (users: User[], numStories: number) => {
                 },
             });
         }
+        await db.user.update({
+            where: {
+                id: user.id,
+            },
+            data: {
+                storyCount: numStories,
+                everyOneStory: numStories,
+            },
+        });
     }
 };
 // Main function to implement the seeding
 async function main() {
-    const numUsers = 5;
-    const numChats = 3;
-    const numStories = 3;
     //Create Users
     const users = await createUsers(numUsers);
     console.log(`Created ${users.length} users.`);

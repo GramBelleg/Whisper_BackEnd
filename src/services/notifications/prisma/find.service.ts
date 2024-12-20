@@ -1,4 +1,4 @@
-import db from '@DB';
+import db from "@DB";
 
 export const findDeviceTokens = async (userIds: number[]) => {
     const deviceToken = await db.userToken.findMany({
@@ -14,14 +14,13 @@ export const findDeviceTokens = async (userIds: number[]) => {
     return deviceToken;
 };
 
-
 export const findUnmutedDMUsers = async (userIds: number[], chatId: number) => {
     const users = await db.chatParticipant.findMany({
         where: {
             userId: { in: userIds },
             chatId,
             chat: {
-                type: 'DM',
+                type: "DM",
             },
             isMuted: false,
         },
@@ -34,56 +33,59 @@ export const findUnmutedDMUsers = async (userIds: number[], chatId: number) => {
         },
     });
     return users.map((user) => user.user.id);
-}
+};
 
 export const findUnmutedGroupUsers = async (userIds: number[], chatId: number) => {
-    const users = await db.groupParticipant.findMany({
+    const users = await db.chatParticipant.findMany({
         where: {
             userId: { in: userIds },
-            groupId: chatId,
-            group: {
-                chat: {
-                    type: 'GROUP',
-                }
+            chatId,
+            chat: {
+                type: "GROUP",
             },
             isMuted: false,
         },
         select: {
-            participant: {
+            user: {
                 select: {
                     id: true,
                 },
             },
-            group: {
+            chat: {
                 select: {
-                    name: true,
-                }
-            }
+                    group: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                },
+            },
         },
     });
     if(users.length === 0) return {groupName: '', unmutedUsers: []};
-    return {groupName: users[0].group.name, unmutedUsers: users.map((user) => user.participant.id)};
-}
+    return {
+        groupName: users[0].chat.group?.name,
+        unmutedUsers: users.map((user) => user.user.id),
+    };
+};
 
 export const findUnmutedChannelUsers = async (userIds: number[], chatId: number) => {
-    const users = await db.channelParticipant.findMany({
+    const users = await db.chatParticipant.findMany({
         where: {
             userId: { in: userIds },
-            channelId: chatId,
-            Channel: {
-                chat: {
-                    type: 'CHANNEL',
-                }
+            chatId,
+            chat: {
+                type: "CHANNEL",
             },
             isMuted: false,
         },
         select: {
-            participant: {
+            user: {
                 select: {
                     id: true,
                 },
-            }
+            },
         },
     });
-    return users.map((user) => user.participant.id);
-}
+    return users.map((user) => user.user.id);
+};

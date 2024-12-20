@@ -51,7 +51,7 @@ export const updateEmail = async (id: number, email: string, code: string): Prom
 
 //TODO: check the structure of the phone number
 export const updatePhone = async (id: number, phoneNumber: string): Promise<string> => {
-    const phone = validatePhoneNumber(phoneNumber);    
+    const phone = validatePhoneNumber(phoneNumber);
     try {
         await db.user.update({
             where: { id },
@@ -65,7 +65,7 @@ export const updatePhone = async (id: number, phoneNumber: string): Promise<stri
 
 //TODO: check the type of the return value
 export const userInfo = async (id: number): Promise<any> => {
-    const User = await db.user.findUnique({
+    const user = await db.user.findUnique({
         where: { id },
         select: {
             name: true,
@@ -81,26 +81,51 @@ export const userInfo = async (id: number): Promise<any> => {
             storyPrivacy: true,
             pfpPrivacy: true,
             lastSeenPrivacy: true,
-            hasStory: true,
+            storyCount: true,
         },
     });
-    if (!User) {
-        throw new Error("User not found");
+    if (!user) {
+        throw new Error("user not found");
     }
-    return User;
+    const hasStory = user.storyCount > 0 ? true : false;
+    return { ...user, hasStory };
 };
-export const partialUserInfo = async (id: number): Promise<any> => {
-    const User = await db.user.findUnique({
-        where: { id },
+export const partialUserInfo = async (viewerId: number, viewedId: number) => {
+    const user = await db.user.findUnique({
+        where: { id: viewedId },
         select: {
             userName: true,
-            profilePic: true,
+            phoneNumber: true,
+            bio: true,
         },
     });
-    if (!User) {
-        throw new Error("User not found");
+    if (!user) {
+        throw new Error("user not found");
     }
-    return User;
+    return {
+        ...user,
+        profilePic: await getPrivateProfilePic(viewerId, viewedId),
+        ...(await getPrivateStatus(viewerId, viewedId)),
+        hasStory: await getHasStory(viewerId, viewedId),
+    };
+};
+export const displayedUser = async (viewerId: number, viewedId: number) => {
+    const user = await db.user.findUnique({
+        where: { id: viewerId },
+        select: {
+            id: true,
+            userName: true,
+        },
+    });
+    if (!user) {
+        throw new Error("user not found");
+    }
+    return {
+        ...user,
+        profilePic: await getPrivateProfilePic(viewerId, viewedId),
+        ...(await getPrivateStatus(viewerId, viewedId)),
+        hasStory: await getHasStory(viewerId, viewedId),
+    };
 };
 
 export const changePic = async (id: number, profilePic: string): Promise<string | null> => {
@@ -110,10 +135,8 @@ export const changePic = async (id: number, profilePic: string): Promise<string 
             data: { profilePic: profilePic },
         });
         if (!user) throw new HttpError("User Not Found", 404);
-        if (user.profilePic == null) throw new HttpError("PFP Not Found", 404);
         return user.profilePic;
     } catch (error) {
-        console.error("Error updating profile picture:", error);
         throw new Error("Unable to update profile picture");
     }
 };
@@ -269,8 +292,21 @@ export const savedBy = async (userId: number): Promise<number[]> => {
 
 export const addContact = async (relatingId: number, relatedById: number) => {
     try {
-        await db.relates.create({
-            data: { relatingId, relatedById, isContact: true },
+        await db.relates.upsert({
+            where: {
+                relatingId_relatedById: {
+                    relatingId,
+                    relatedById,
+                },
+            },
+            update: {
+                isContact: true,
+            },
+            create: {
+                relatingId,
+                relatedById,
+                isContact: true,
+            },
         });
     } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
@@ -317,21 +353,142 @@ export const getSenderInfo = async (id: number) => {
             id: true,
             userName: true,
             profilePic: true,
+            name: true,
         },
     });
 };
 
+export const updateAddPermission = async (id: number, addPermission: boolean) => {
+    await db.user.update({
+        where: {
+            id,
+        },
+        data: {
+            addPermission,
+        },
+    });
+};
+export const getAddPermission = async (id: number) => {
+    const user = await db.user.findUnique({
+        where: {
+            id,
+        },
+        select: {
+            addPermission: true,
+        },
+    });
+    if (!user) throw new Error("User Not Found");
+    return user.addPermission;
+};
+
+export const getContacts = async (id: number) => {
+    const contacts = await db.relates.findMany({
+        where: {
+            relatingId: id,
+            isContact: true,
+            isBlocked: false,
+        },
+        select: {
+            relatedBy: {
+                select: {
+                    id: true,
+                    userName: true,
+                    profilePic: true,
+                },
+            },
+        },
+    });
+    return contacts.map((contact) => ({
+        id: contact.relatedBy.id,
+        userName: contact.relatedBy.userName,
+        profilePic: contact.relatedBy.profilePic,
+    }));
+};
+
 export const isBlocked = async (relatingId: number, relatedById: number) => {
     const result = await db.relates.findFirst({
-        where: { 
+        where: {
             OR: [
                 { relatingId: relatingId, relatedById: relatedById },
-                { relatingId: relatedById, relatedById: relatingId }
+                { relatingId: relatedById, relatedById: relatingId },
             ],
-            AND: { isBlocked: true }
+            AND: { isBlocked: true },
         },
         select: { isBlocked: true },
     });
     if (!result) return false;
     return result.isBlocked;
-}
+};
+
+export const getPrivateProfilePic = async (viewerId: number, viewedId: number) => {
+    const user = await db.user.findUnique({
+        where: {
+            id: viewedId,
+        },
+        select: {
+            pfpPrivacy: true,
+            profilePic: true,
+        },
+    });
+    if (!user) throw new Error("User doesn't exist");
+    const relation = await db.relates.findUnique({
+        where: {
+            relatingId_relatedById: { relatingId: viewedId, relatedById: viewerId },
+        },
+    });
+
+    if (
+        (user.pfpPrivacy == "Everyone" && (!relation || !relation.isBlocked)) ||
+        (user.pfpPrivacy == "Contacts" && relation?.isContact) ||
+        viewerId == viewedId
+    )
+        return user.profilePic;
+    return null;
+};
+export const getPrivateStatus = async (viewerId: number, viewedId: number) => {
+    const user = await db.user.findUnique({
+        where: {
+            id: viewedId,
+        },
+        select: {
+            lastSeenPrivacy: true,
+            lastSeen: true,
+            status: true,
+        },
+    });
+    if (!user) throw new Error("User doesn't exist");
+    const relation = await db.relates.findUnique({
+        where: {
+            relatingId_relatedById: { relatingId: viewedId, relatedById: viewerId },
+        },
+    });
+
+    if (
+        (user.lastSeenPrivacy == "Everyone" && (!relation || !relation.isBlocked)) ||
+        (user.lastSeenPrivacy == "Contacts" && relation?.isContact) ||
+        viewerId == viewedId
+    )
+        return { lastSeen: user.lastSeen, status: user.status };
+    return { lastSeen: null, status: null };
+};
+
+export const getHasStory = async (viewerId: number, viewedId: number) => {
+    const user = await db.user.findUnique({
+        where: {
+            id: viewedId,
+        },
+    });
+    const relation = await db.relates.findUnique({
+        where: {
+            relatingId_relatedById: { relatingId: viewedId, relatedById: viewerId },
+        },
+    });
+    if (!user) throw Error("User Not Foun");
+    if (
+        (user.contactStory && relation?.isContact && !relation?.isBlocked) ||
+        (user.everyOneStory && (!relation || !relation.isBlocked)) ||
+        (user.storyCount && viewerId == viewedId)
+    )
+        return true;
+    return false;
+};

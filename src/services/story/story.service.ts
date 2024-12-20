@@ -9,12 +9,23 @@ const saveStory = async (story: storyType.omitId): Promise<Story> => {
     try {
         const user = await db.user.findUnique({
             where: { id: story.userId },
-            select: { storyPrivacy: true },
         });
+        if (!user) throw Error("User Not Found");
         const createdStory: Story = await db.story.create({
             data: {
                 ...story,
-                privacy: user?.storyPrivacy,
+                privacy: user.storyPrivacy,
+            },
+        });
+        if (user.storyPrivacy == "Contacts") user.contactStory += 1;
+        if (user.storyPrivacy == "Everyone") user.everyOneStory += 1;
+        user.storyCount += 1;
+        await db.user.update({
+            where: { id: story.userId },
+            data: {
+                contactStory: user.contactStory,
+                everyOneStory: user.everyOneStory,
+                storyCount: user.storyCount,
             },
         });
         return createdStory;
@@ -25,6 +36,11 @@ const saveStory = async (story: storyType.omitId): Promise<Story> => {
 
 const archiveStory = async (userId: number, storyId: number): Promise<void> => {
     try {
+        const user = await db.user.findUnique({
+            where: { id: userId },
+        });
+        if (!user) throw Error("User Not Found");
+
         const archivedStory: Story = await db.story.update({
             where: {
                 id: storyId,
@@ -35,6 +51,18 @@ const archiveStory = async (userId: number, storyId: number): Promise<void> => {
             },
         });
         if (!archivedStory) throw new Error("Failed to archive story");
+
+        if (archivedStory.privacy == "Contacts") user.contactStory -= 1;
+        if (archivedStory.privacy == "Everyone") user.everyOneStory -= 1;
+        user.storyCount -= 1;
+        await db.user.update({
+            where: { id: userId },
+            data: {
+                contactStory: user.contactStory,
+                everyOneStory: user.everyOneStory,
+                storyCount: user.storyCount,
+            },
+        });
     } catch (error: any) {
         throw new Error(`Error in archiveStory: ${error.message}`);
     }
@@ -42,6 +70,11 @@ const archiveStory = async (userId: number, storyId: number): Promise<void> => {
 
 const deleteStory = async (userId: number, storyId: number): Promise<Story> => {
     try {
+        const user = await db.user.findUnique({
+            where: { id: userId },
+        });
+        if (!user) throw Error("User Not Found");
+
         const deletedStory: Story = await db.story.delete({
             where: {
                 id: storyId,
@@ -49,6 +82,18 @@ const deleteStory = async (userId: number, storyId: number): Promise<Story> => {
             },
         });
         if (!deletedStory) throw new Error("Failed to delete story");
+
+        if (deletedStory.privacy == "Contacts") user.contactStory -= 1;
+        if (deletedStory.privacy == "Everyone") user.everyOneStory -= 1;
+        user.storyCount -= 1;
+        await db.user.update({
+            where: { id: userId },
+            data: {
+                contactStory: user.contactStory,
+                everyOneStory: user.everyOneStory,
+                storyCount: user.storyCount,
+            },
+        });
         return deletedStory;
     } catch (error: any) {
         throw new Error(`Error in deleteStory: ${error.message}`);
@@ -229,10 +274,7 @@ const getStoryUsers = async (userId: number): Promise<any> => {
                 },
                 distinct: ["id"], // Ensure users are unique by their `id`
             });
-            return {
-                //stories,
-                users,
-            };
+            return users;
         } catch (error: any) {
             throw new Error(`Error in getStories: ${error.message}`);
         }

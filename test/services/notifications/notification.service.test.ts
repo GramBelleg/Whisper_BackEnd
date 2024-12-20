@@ -5,7 +5,7 @@ import {
     findUnmutedChannelUsers,
     findUnmutedGroupUsers
 } from "@src/services/notifications/prisma/find.service";
-import { chatType as findChatType } from "@services/chat/chat.service";
+import { getChatType as findChatType } from "@services/chat/chat.service";
 import { ChatType } from "@prisma/client";
 import HttpError from "@src/errors/HttpError";
 
@@ -266,7 +266,7 @@ describe("test pushVoiceNofication", () => {
             { userId: 2, deviceToken: "token2" },
         ]);
 
-        await pushVoiceNofication(participants, tokens, channelName);
+        await pushVoiceNofication(participants, tokens, { channelName });
 
         expect(findDeviceTokens).toHaveBeenCalledWith(participants);
         expect(mockSendEachForMulticast).toHaveBeenNthCalledWith(1, {
@@ -301,7 +301,7 @@ describe("test pushVoiceNofication", () => {
         const channelName = "Channel 1";
         (findDeviceTokens as jest.Mock).mockResolvedValue([]);
 
-        await pushVoiceNofication(participants, tokens, channelName);
+        await pushVoiceNofication(participants, tokens, { channelName });
 
         expect(findDeviceTokens).toHaveBeenCalledWith(participants);
         expect(mockSendEachForMulticast).not.toHaveBeenCalled();
@@ -313,7 +313,7 @@ describe("test pushVoiceNofication", () => {
         const channelName = "Channel 1";
         (findDeviceTokens as jest.Mock).mockResolvedValue([]);
 
-        await pushVoiceNofication(participants, tokens, channelName);
+        await pushVoiceNofication(participants, tokens, { channelName });
 
         expect(findDeviceTokens).toHaveBeenCalled();
         expect(mockSendEachForMulticast).not.toHaveBeenCalled();
@@ -325,7 +325,7 @@ describe("test pushVoiceNofication", () => {
         const channelName = "Channel 1";
         (findDeviceTokens as jest.Mock).mockRejectedValue(new Error("Database error"));
 
-        await expect(pushVoiceNofication(participants, tokens, channelName))
+        await expect(pushVoiceNofication(participants, tokens, { channelName }))
             .rejects.toThrow(HttpError);
 
         expect(findDeviceTokens).toHaveBeenCalledWith(participants);

@@ -12,7 +12,6 @@ import { MAX_UPLOAD_SIZE } from "@config/constants.config";
 import { Privacy } from "@prisma/client";
 
 const updateBio = async (req: Request, res: Response) => {
-    console.log(req.body);
     let { bio = "" }: { bio: string } = req.body;
     let id: number = req.userId;
     await userServices.updateBio(id, bio);
@@ -87,9 +86,10 @@ const userInfo = async (req: Request, res: Response) => {
     });
 };
 const otherUserInfo = async (req: Request, res: Response) => {
+    const myId = req.userId;
     const userId: number = Number(req.params.userId);
     if (isNaN(userId)) throw new HttpError("Invalid userId", 400);
-    const user = await userServices.partialUserInfo(userId);
+    const user = await userServices.partialUserInfo(myId, userId);
     res.status(200).json({
         ...user,
     });
@@ -216,7 +216,27 @@ const getStoryViews = async (req: Request, res: Response) => {
     });
 };
 
+const updateAddPermission = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    if (!userId) throw new HttpError("Unauthorized User", 401);
+    const addPermission = req.body.addPermission;
+    if (addPermission == undefined) throw new HttpError("addPermission missing", 404);
+    await userServices.updateAddPermission(userId, addPermission);
+    res.status(200).json({
+        success: true,
+        message: "Add To Group Permission Updated Successfully",
+    });
+};
+
+const getContacts = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    if (!userId) throw new HttpError("Unauthorized User", 401);
+    const users = await userServices.getContacts(userId);
+    res.status(200).json({ users });
+};
 export {
+    getContacts,
+    updateAddPermission,
     userInfo,
     otherUserInfo,
     updateBio,

@@ -23,7 +23,7 @@ describe("test facebook auth controller", () => {
             id: 1,
             name: faker.person.fullName(),
             email: faker.internet.email(),
-            userName: faker.internet.userName(),
+            userName: faker.internet.username(),
         };
 
         (getAccessToken as jest.Mock).mockResolvedValue("access_token");
