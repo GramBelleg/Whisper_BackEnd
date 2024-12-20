@@ -5,7 +5,15 @@ import db from "@DB";
 import { getForwardedFromMessage } from "@services/chat/message.service";
 
 describe("forwardMessages", () => {
-    let user1: User, user2: User, chat: { id: number };
+    let user1: User,
+        user2: User,
+        chat: {
+            chatId: number;
+            participants: {
+                id: number;
+                userId: number;
+            }[];
+        };
 
     beforeEach(async () => {
         user1 = await createRandomUser();
@@ -14,7 +22,7 @@ describe("forwardMessages", () => {
     });
 
     afterAll(async () => {
-        db.$disconnect();
+        await db.$disconnect();
     });
 
     it("should return null when message is not forwarded", async () => {

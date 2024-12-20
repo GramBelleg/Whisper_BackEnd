@@ -19,7 +19,7 @@ describe("setNewLastMessage", () => {
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         const message = await db.message.create({
             data: {
-                chatId: chat.id,
+                chatId: chat.chatId,
                 content: "Hello",
                 senderId: user1.id,
                 sentAt: new Date(),
@@ -34,10 +34,10 @@ describe("setNewLastMessage", () => {
             },
         });
 
-        await chatService.setNewLastMessage(chat.id);
+        await chatService.setNewLastMessage(chat.chatId);
 
         const participant = await db.chatParticipant.findFirst({
-            where: { chatId: chat.id, userId: user1.id },
+            where: { chatId: chat.chatId, userId: user1.id },
             select: { lastMessageId: true },
         });
 

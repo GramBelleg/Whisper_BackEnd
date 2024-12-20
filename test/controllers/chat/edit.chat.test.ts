@@ -21,7 +21,7 @@ describe("Chat Mute and Unmute Handlers", () => {
             next();
         });
 
-        const response = await request(app).post(`/api/chats/${chat.id}/muteChat`).send();
+        const response = await request(app).post(`/api/chats/${chat.chatId}/muteChat`).send();
 
         expect(response.status).toBe(200);
     });
@@ -38,7 +38,7 @@ describe("Chat Mute and Unmute Handlers", () => {
 
         const duration = 3600;
         const response = await request(app)
-            .post(`/api/chats/${chat.id}/muteChat`)
+            .post(`/api/chats/${chat.chatId}/muteChat`)
             .send({ duration });
 
         expect(response.status).toBe(200);
@@ -55,7 +55,7 @@ describe("Chat Mute and Unmute Handlers", () => {
             next();
         });
 
-        const response = await request(app).post(`/api/chats/${chat.id}/unmuteChat`).send();
+        const response = await request(app).post(`/api/chats/${chat.chatId}/unmuteChat`).send();
 
         expect(response.status).toBe(200);
         expect(response.body.Message).toBeUndefined();
@@ -72,7 +72,7 @@ describe("Chat Mute and Unmute Handlers", () => {
             next();
         });
 
-        const response = await request(app).post(`/api/chats/${chat.id}/muteChat`).send();
+        const response = await request(app).post(`/api/chats/${chat.chatId}/muteChat`).send();
 
         expect(response.status).toBe(403);
         expect(response.body.Message).toBeUndefined();
@@ -89,7 +89,7 @@ describe("Chat Mute and Unmute Handlers", () => {
             next();
         });
 
-        const response = await request(app).post(`/api/chats/${chat.id}/unmuteChat`).send();
+        const response = await request(app).post(`/api/chats/${chat.chatId}/unmuteChat`).send();
 
         expect(response.status).toBe(403);
         expect(response.body.Message).toBeUndefined();

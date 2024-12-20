@@ -24,6 +24,8 @@ describe("handleCreateChat", () => {
         const chatPayload: CreatedChat = {
             users,
             senderKey: 12345,
+            name: "Chat",
+            picture: "empty",
             type: "DM",
         };
 
@@ -61,6 +63,8 @@ describe("handleCreateChat", () => {
         const chatPayload: CreatedChat = {
             users,
             senderKey: 12345,
+            name: "Chat",
+            picture: "empty",
             type: "DM",
         };
 
@@ -78,6 +82,8 @@ describe("handleCreateChat", () => {
         const chatPayload: CreatedChat = {
             users,
             senderKey: 12345,
+            name: "Chat",
+            picture: "empty",
             type: "DM",
         };
 
@@ -93,6 +99,8 @@ describe("handleCreateChat", () => {
         const chatPayload: CreatedChat = {
             users,
             senderKey: 12345,
+            name: "Chat",
+            picture: "empty",
             type: "DM",
         };
 
@@ -107,6 +115,8 @@ describe("handleCreateChat", () => {
         const chatPayload: CreatedChat = {
             users,
             senderKey: 12345,
+            name: "Chat",
+            picture: "empty",
             type: "DM",
         };
 

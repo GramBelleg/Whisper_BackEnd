@@ -18,7 +18,7 @@ describe("chatParticipants", () => {
         const user2 = await createRandomUser();
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
 
-        const members = await chatService.getChatMembers(chat.id);
+        const members = await chatService.getChatMembers(chat.chatId);
 
         expect(members).toHaveLength(2);
         expect(members).toEqual(
@@ -34,7 +34,7 @@ describe("chatParticipants", () => {
         const user2 = await createRandomUser();
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
 
-        const otherUserId = await chatService.getOtherUserId(user1.id, chat.id);
+        const otherUserId = await chatService.getOtherUserId(user1.id, chat.chatId);
 
         expect(otherUserId).toBe(user2.id);
     });
@@ -45,7 +45,7 @@ describe("chatParticipants", () => {
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
 
         const participants = await db.chatParticipant.findMany({
-            where: { chatId: chat.id },
+            where: { chatId: chat.chatId },
         });
 
         expect(participants).toHaveLength(2);

@@ -5,7 +5,16 @@ import db from "@DB";
 import { deleteMessagesForAll, deleteMessagesForUser } from "@services/chat/message.service";
 
 describe("deleteMessages", () => {
-    let user1: User, user2: User, chat: { id: number }, message: Message;
+    let user1: User,
+        user2: User,
+        chat: {
+            chatId: number;
+            participants: {
+                id: number;
+                userId: number;
+            }[];
+        },
+        message: Message;
 
     beforeEach(async () => {
         await db.message.deleteMany();
@@ -14,7 +23,7 @@ describe("deleteMessages", () => {
         chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         message = await db.message.create({
             data: {
-                chatId: chat.id,
+                chatId: chat.chatId,
                 content: "Hello @user2",
                 senderId: user1.id,
                 sentAt: new Date(),
@@ -24,7 +33,7 @@ describe("deleteMessages", () => {
     });
 
     afterAll(async () => {
-        db.$disconnect();
+        await db.$disconnect();
     });
 
     it("should mark message as deleted for the user", async () => {

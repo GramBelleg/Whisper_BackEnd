@@ -24,14 +24,14 @@ describe("POST /messages/:chatId/draftMessage and PUT undraftMessage", () => {
         });
 
         const response = await request(app)
-            .post(`/api/messages/${chat.id}/draftMessage`)
+            .post(`/api/messages/${chat.chatId}/draftMessage`)
             .send(draft);
 
         expect(response.status).toBe(200);
         const result = await db.chatParticipant.findUnique({
             where: {
                 chatId_userId: {
-                    chatId: chat.id,
+                    chatId: chat.chatId,
                     userId: user1.id,
                 },
             },
@@ -53,13 +53,13 @@ describe("POST /messages/:chatId/draftMessage and PUT undraftMessage", () => {
             next();
         });
 
-        const response = await request(app).put(`/api/messages/${chat.id}/undraftMessage`);
+        const response = await request(app).put(`/api/messages/${chat.chatId}/undraftMessage`);
 
         expect(response.status).toBe(200);
         const result = await db.chatParticipant.findUnique({
             where: {
                 chatId_userId: {
-                    chatId: chat.id,
+                    chatId: chat.chatId,
                     userId: user1.id,
                 },
             },
@@ -81,7 +81,7 @@ describe("POST /messages/:chatId/draftMessage and PUT undraftMessage", () => {
         await db.chatParticipant.update({
             where: {
                 chatId_userId: {
-                    chatId: chat.id,
+                    chatId: chat.chatId,
                     userId: user1.id,
                 },
             },
@@ -92,7 +92,7 @@ describe("POST /messages/:chatId/draftMessage and PUT undraftMessage", () => {
             next();
         });
 
-        const response = await request(app).get(`/api/messages/${chat.id}/draftMessage`);
+        const response = await request(app).get(`/api/messages/${chat.chatId}/draftMessage`);
 
         expect(response.status).toBe(200);
         expect(response.body).toEqual({
@@ -111,7 +111,7 @@ describe("POST /messages/:chatId/draftMessage and PUT undraftMessage", () => {
             next();
         });
 
-        const response = await request(app).get(`/api/messages/${chat.id}/draftMessage`);
+        const response = await request(app).get(`/api/messages/${chat.chatId}/draftMessage`);
 
         expect(response.status).toBe(404);
         expect(response.body).toEqual({ message: "No drafted message found" });
@@ -128,7 +128,7 @@ describe("POST /messages/:chatId/draftMessage and PUT undraftMessage", () => {
         });
 
         const response = await request(app)
-            .post(`/api/messages/${chat.id}/draftMessage`)
+            .post(`/api/messages/${chat.chatId}/draftMessage`)
             .send(draft);
 
         expect(response.status).toBe(403);
@@ -143,7 +143,7 @@ describe("POST /messages/:chatId/draftMessage and PUT undraftMessage", () => {
             next();
         });
 
-        const response = await request(app).put(`/api/messages/${chat.id}/undraftMessage`);
+        const response = await request(app).put(`/api/messages/${chat.chatId}/undraftMessage`);
 
         expect(response.status).toBe(403);
     });
@@ -170,7 +170,7 @@ describe("POST /messages/:chatId/draftMessage and PUT undraftMessage", () => {
             next();
         });
 
-        const response = await request(app).get(`/api/messages/${chat.id}/draftMessage`);
+        const response = await request(app).get(`/api/messages/${chat.chatId}/draftMessage`);
 
         expect(response.status).toBe(403);
     });

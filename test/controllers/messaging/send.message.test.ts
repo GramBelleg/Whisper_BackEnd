@@ -17,11 +17,10 @@ describe("sendMessage", () => {
         const message = await handleSend(user1.id, {
             content: "Hello",
             type: "TEXT",
-            chatId: chat.id,
+            chatId: chat.chatId,
             senderId: user1.id,
             key: null,
             sentAt: new Date(),
-            selfDestruct: true,
             expiresAfter: 5,
         });
         expect(message![0]).toHaveProperty("id");
@@ -34,7 +33,7 @@ describe("sendMessage", () => {
         const message = await handleSend(user1.id, {
             content: "Hello",
             type: "TEXT",
-            chatId: chat.id,
+            chatId: chat.chatId,
             senderId: user1.id,
             key: null,
             sentAt: new Date(),
@@ -52,7 +51,7 @@ describe("sendMessage", () => {
             handleSend(user3.id, {
                 content: "Hello",
                 type: "TEXT",
-                chatId: chat.id,
+                chatId: chat.chatId,
                 senderId: user1.id,
                 key: null,
                 sentAt: new Date(),

@@ -21,12 +21,12 @@ export const handleFilterGroup = async (req: Request, res: Response): Promise<vo
     res.status(200).send({ message: "Group filter status updated successfully" });
 };
 
-export const handleGetAllGroups = async (req: Request, res: Response): Promise<void> => {
+export const handleGetAllGroups = async (_req: Request, res: Response): Promise<void> => {
     const groups = await getAllGroups();
     res.status(200).send(groups);
 };
 
-export const handleGetAllUsers = async (req: Request, res: Response): Promise<void> => {
+export const handleGetAllUsers = async (_req: Request, res: Response): Promise<void> => {
     const users = await getAllUsers();
     res.status(200).send(users);
 };

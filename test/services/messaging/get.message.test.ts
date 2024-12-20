@@ -11,7 +11,16 @@ import {
 } from "@services/chat/message.service";
 
 describe("getMessage", () => {
-    let user1: User, user2: User, chat: { id: number }, message: Message;
+    let user1: User,
+        user2: User,
+        chat: {
+            chatId: number;
+            participants: {
+                id: number;
+                userId: number;
+            }[];
+        },
+        message: Message;
 
     beforeEach(async () => {
         user1 = await createRandomUser();
@@ -19,7 +28,7 @@ describe("getMessage", () => {
         chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         message = await db.message.create({
             data: {
-                chatId: chat.id,
+                chatId: chat.chatId,
                 content: "Hello @user2",
                 senderId: user1.id,
                 sentAt: new Date(),
@@ -29,7 +38,7 @@ describe("getMessage", () => {
     });
 
     afterAll(async () => {
-        db.$disconnect();
+        await db.$disconnect();
     });
 
     it("should return null summary for non-existent message", async () => {
@@ -105,7 +114,7 @@ describe("getMessage", () => {
                 time: new Date(),
             },
         });
-        const returnedMessage = await getMessages(user1.id, chat.id);
+        const returnedMessage = await getMessages(user1.id, chat.chatId);
         expect(returnedMessage).toBeInstanceOf(Array);
     });
 });

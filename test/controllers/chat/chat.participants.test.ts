@@ -16,7 +16,7 @@ describe("GET /chats/:chatId/getMembers Route", () => {
         const user2 = await createRandomUser();
 
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
-        const chatId = chat.id;
+        const chatId = chat.chatId;
 
         const chatMembers = [
             {
@@ -60,7 +60,7 @@ describe("GET /chats/:chatId/getMembers Route", () => {
         const user3 = await createRandomUser();
 
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
-        const chatId = chat.id;
+        const chatId = chat.chatId;
 
         jest.spyOn(authMiddleware, "default").mockImplementation(async (req, _res, next) => {
             req.userId = user3.id;

@@ -15,7 +15,13 @@ import {
 describe("readMessage", () => {
     let user1: User,
         user2: User,
-        chat: { id: number },
+        chat: {
+            chatId: number;
+            participants: {
+                id: number;
+                userId: number;
+            }[];
+        },
         message: Message,
         messageStatus1: MessageStatus,
         messageStatus2: MessageStatus;
@@ -26,7 +32,7 @@ describe("readMessage", () => {
         chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         message = await db.message.create({
             data: {
-                chatId: chat.id,
+                chatId: chat.chatId,
                 content: "Hello @user2",
                 senderId: user1.id,
                 sentAt: new Date(),
@@ -50,7 +56,7 @@ describe("readMessage", () => {
     });
 
     afterAll(async () => {
-        db.$disconnect();
+        await db.$disconnect();
     });
 
     it("should get read users for a message", async () => {
@@ -68,7 +74,7 @@ describe("readMessage", () => {
     });
 
     it("should update read message statuses", async () => {
-        const result = await updateReadMessagesStatuses(false, user2.id, [], chat.id);
+        const result = await updateReadMessagesStatuses(false, user2.id, [], chat.chatId);
         expect(result).toEqual([message.id]);
         const getRead = await db.messageStatus.findUnique({
             where: { id: messageStatus2.id },
@@ -98,7 +104,7 @@ describe("readMessage", () => {
     });
 
     it("should mark all messages as read for a user in a chat", async () => {
-        await readAllMessages(user2.id, chat.id);
+        await readAllMessages(user2.id, chat.chatId);
         const readMessage = await db.message.findUnique({
             where: { id: message.id },
             select: { read: true },
@@ -112,7 +118,7 @@ describe("readMessage", () => {
     });
 
     it("should mark specific messages as read for a user in a chat", async () => {
-        await readMessages(user2.id, [message.id], chat.id);
+        await readMessages(user2.id, [message.id], chat.chatId);
         const readMessage = await db.message.findUnique({
             where: { id: message.id },
             select: { read: true },
@@ -132,7 +138,7 @@ describe("readMessage", () => {
         ]);
     });
     it("should filter allowed messages to read", async () => {
-        const filter = await filterAllowedMessagestoRead(user2.id, [message.id], chat.id);
+        const filter = await filterAllowedMessagestoRead(user2.id, [message.id], chat.chatId);
         expect(filter).toEqual([message.id]);
     });
 });

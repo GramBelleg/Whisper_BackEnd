@@ -5,7 +5,16 @@ import db from "@DB";
 import { getPinnedMessages, pinMessage, unpinMessage } from "@services/chat/message.service";
 
 describe("pinMessage", () => {
-    let user1: User, user2: User, chat: { id: number }, message: Message;
+    let user1: User,
+        user2: User,
+        chat: {
+            chatId: number;
+            participants: {
+                id: number;
+                userId: number;
+            }[];
+        },
+        message: Message;
 
     beforeEach(async () => {
         user1 = await createRandomUser();
@@ -13,7 +22,7 @@ describe("pinMessage", () => {
         chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         message = await db.message.create({
             data: {
-                chatId: chat.id,
+                chatId: chat.chatId,
                 content: "Hello @user2",
                 senderId: user1.id,
                 sentAt: new Date(),
@@ -23,7 +32,7 @@ describe("pinMessage", () => {
     });
 
     afterAll(async () => {
-        db.$disconnect();
+        await db.$disconnect();
     });
 
     it("should retrieve pinned messages", async () => {
@@ -33,7 +42,7 @@ describe("pinMessage", () => {
                 pinned: true,
             },
         });
-        const pinnedMessages = await getPinnedMessages(chat.id);
+        const pinnedMessages = await getPinnedMessages(chat.chatId);
         expect(pinnedMessages).toEqual([{ id: message.id, content: message.content }]);
     });
     it("should pin a message successfully", async () => {

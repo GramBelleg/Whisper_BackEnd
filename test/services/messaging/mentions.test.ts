@@ -5,7 +5,15 @@ import db from "@DB";
 import { getMentions } from "@services/chat/message.service";
 
 describe("mentions", () => {
-    let user1: User, user2: User, chat: { id: number };
+    let user1: User,
+        user2: User,
+        chat: {
+            chatId: number;
+            participants: {
+                id: number;
+                userId: number;
+            }[];
+        };
 
     beforeEach(async () => {
         user1 = await createRandomUser();
@@ -14,13 +22,13 @@ describe("mentions", () => {
     });
 
     afterAll(async () => {
-        db.$disconnect();
+        await db.$disconnect();
     });
 
     it("should return mentions for a valid message", async () => {
         const message = await db.message.create({
             data: {
-                chatId: chat.id,
+                chatId: chat.chatId,
                 content: "Hello @user2",
                 senderId: user1.id,
                 sentAt: new Date(),

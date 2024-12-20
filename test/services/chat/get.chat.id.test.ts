@@ -20,7 +20,7 @@ describe("getChatId", () => {
 
         const message = await db.message.create({
             data: {
-                chatId: chat.id,
+                chatId: chat.chatId,
                 content: "Hello",
                 senderId: user1.id,
                 sentAt: new Date(),
@@ -29,7 +29,7 @@ describe("getChatId", () => {
         });
 
         const chatId = await chatService.getChatId(message.id);
-        expect(chatId).toBe(chat.id);
+        expect(chatId).toBe(chat.chatId);
     });
 
     it("should return null if no chat exists for the given message", async () => {

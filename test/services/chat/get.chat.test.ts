@@ -18,8 +18,8 @@ describe("getChat", () => {
         const user2 = await createRandomUser();
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
 
-        const fetchedChat = await chatService.getChat(user1.id, chat.id);
-        expect(fetchedChat).toHaveProperty("id", chat.id);
+        const fetchedChat = await chatService.getChat(user1.id, chat.chatId);
+        expect(fetchedChat).toHaveProperty("id", chat.chatId);
         expect(fetchedChat).toHaveProperty("type", "DM");
     });
 
@@ -35,6 +35,6 @@ describe("getChat", () => {
         const user2 = await createRandomUser();
         const chat = await createChat([user2.id], user2.id, null, "DM");
 
-        await expect(chatService.getChat(user1.id, chat.id)).resolves.toBeNull();
+        await expect(chatService.getChat(user1.id, chat.chatId)).resolves.toBeNull();
     });
 });

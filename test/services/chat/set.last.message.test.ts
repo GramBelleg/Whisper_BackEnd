@@ -19,7 +19,7 @@ describe("setLastMessage", () => {
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         const message = await db.message.create({
             data: {
-                chatId: chat.id,
+                chatId: chat.chatId,
                 content: "Hello",
                 senderId: user1.id,
                 sentAt: new Date(),
@@ -41,22 +41,22 @@ describe("setLastMessage", () => {
             },
         });
 
-        await chatService.setLastMessage(chat.id, message.id);
+        await chatService.setLastMessage(chat.chatId, message.id);
 
         const participant1 = await db.chatParticipant.findFirst({
-            where: { chatId: chat.id, userId: user1.id },
+            where: { chatId: chat.chatId, userId: user1.id },
             select: { lastMessageId: true },
         });
 
         const participant2 = await db.chatParticipant.findFirst({
-            where: { chatId: chat.id, userId: user2.id },
+            where: { chatId: chat.chatId, userId: user2.id },
             select: { lastMessageId: true },
         });
 
         expect(participant1?.lastMessageId).toBe(messageStatus1.id);
         expect(participant2?.lastMessageId).toBe(messageStatus2.id);
 
-        const lastMessage = await chatService.getLastMessage(user1.id, chat.id);
+        const lastMessage = await chatService.getLastMessage(user1.id, chat.chatId);
         expect(lastMessage?.id).toBe(message.id);
         expect(lastMessage?.id).toBe(message.id);
     });

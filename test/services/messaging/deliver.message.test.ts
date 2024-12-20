@@ -18,7 +18,13 @@ import {
 describe("deliverMessage", () => {
     let user1: User,
         user2: User,
-        chat: { id: number },
+        chat: {
+            chatId: number;
+            participants: {
+                id: number;
+                userId: number;
+            }[];
+        },
         message: Message,
         messageStatus1: MessageStatus,
         messageStatus2: MessageStatus;
@@ -29,7 +35,7 @@ describe("deliverMessage", () => {
         chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         message = await db.message.create({
             data: {
-                chatId: chat.id,
+                chatId: chat.chatId,
                 content: "Hello @user2",
                 senderId: user1.id,
                 sentAt: new Date(),
@@ -53,7 +59,7 @@ describe("deliverMessage", () => {
     });
 
     afterAll(async () => {
-        db.$disconnect();
+        await db.$disconnect();
     });
 
     it("should update message statuses for a user", async () => {
