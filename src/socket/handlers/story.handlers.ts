@@ -54,14 +54,7 @@ const postStory = async (
     try {
         const participants = await storyParticipants(emitStory, clients);
         for (const participant of participants) {
-            sendToClient(participant, clients, emitEvent, {
-                id: emitStory.id,
-                userId: emitStory.userId,
-                content: emitStory.content,
-                media: emitStory.media,
-                type: emitStory.type,
-                date: emitStory.date,
-            });
+            sendToClient(participant, clients, emitEvent, emitStory);
         }
     } catch (error: any) {
         throw new Error(`Error in postStory: ${error.message}`);
