@@ -3,9 +3,9 @@ import { ChatUser, ChatUserSummary } from "@models/chat.models";
 import { UserType } from "@models/user.models";
 import { getChat, getChatParticipantsIds } from "@services/chat/chat.service";
 import * as groupService from "@services/chat/group.service";
-import { getAddPermission } from "@services/user/user.service";
 import HttpError from "@src/errors/HttpError";
 import { Request, Response } from "express";
+import { canUserBeAdded } from "@validators/chat";
 
 export const getSettings = async (req: Request, res: Response) => {
     const chatId = Number(req.params.chatId);
@@ -22,12 +22,6 @@ export const deleteGroup = async (userId: number, chatId: number) => {
     await groupService.deleteGroup(chatId);
 
     return participants;
-};
-
-const canUserBeAdded = async (chatUser: ChatUser, adderId: number) => {
-    const addPermission = await getAddPermission(chatUser.user.id);
-    const isAdmin = await groupService.isAdmin({ userId: adderId, chatId: chatUser.chatId });
-    return (isAdmin && !addPermission) || addPermission;
 };
 export const leaveGroup = async (userId: number, chatId: number) => {
     const participants = getChatParticipantsIds(chatId);
@@ -52,7 +46,6 @@ export const addAdmin = async (userId: number, admin: ChatUserSummary) => {
 export const addUser = async (userId: number, chatUser: ChatUser) => {
     const userCanBeAdded = await canUserBeAdded(chatUser, userId);
     if (!userCanBeAdded) throw new Error("You Don't have permission to add this user");
-
     const participants = await getChatParticipantsIds(chatUser.chatId);
 
     const maxSize = await groupService.getSizeLimit(chatUser.chatId);
@@ -81,7 +74,7 @@ export const getPermissions = async (req: Request, res: Response) => {
     if (!userId || isNaN(userId)) throw new HttpError("Invalid user id", 404);
 
     const chatId = Number(req.params.chatId);
-    if (!chatId || isNaN(chatId)) throw new HttpError("Invalid user id", 404);
+    if (!chatId || isNaN(chatId)) throw new HttpError("Invalid chat id", 404);
 
     const permissions = await groupService.getPermissions(userId, chatId);
 
@@ -89,7 +82,6 @@ export const getPermissions = async (req: Request, res: Response) => {
 };
 export const setPermissions = async (req: Request, res: Response) => {
     const adminId = Number(req.userId);
-    if (!adminId) throw new HttpError("User Not Authorized", 401);
 
     const userId = Number(req.params.userId);
     if (!userId) throw new HttpError("userId missing", 404);
@@ -101,7 +93,6 @@ export const setPermissions = async (req: Request, res: Response) => {
     if (!isAdmin) throw new HttpError("You're not an admin", 401);
 
     const permissions = req.body;
-    console.log(permissions);
     if (
         !permissions ||
         permissions.canDelete == undefined ||
@@ -117,10 +108,9 @@ export const setPermissions = async (req: Request, res: Response) => {
 
 export const setSizeLimit = async (req: Request, res: Response) => {
     const adminId = Number(req.userId);
-    if (!adminId || isNaN(adminId)) throw new HttpError("Invalid user id", 401);
 
     const chatId = Number(req.params.chatId);
-    if (!chatId || isNaN(chatId)) throw new HttpError("Invalid user id", 404);
+    if (!chatId || isNaN(chatId)) throw new HttpError("Invalid chat id", 404);
 
     const maxSize = Number(req.params.maxSize);
     if (!maxSize || isNaN(maxSize)) throw new HttpError("Invalid Size", 404);
