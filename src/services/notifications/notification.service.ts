@@ -1,41 +1,109 @@
 import FirebaseAdmin from "@src/FCM/admin";
 import {
     findDeviceTokens,
-    findUnmutedDMUsers,
-    findUnmutedChannelUsers,
-    findUnmutedGroupUsers,
+    findUnperviewedMessageUsers,
+    findUserIdsByUsernames,
+    findUnmutedUsers,
+    findChatName
 } from "@src/services/notifications/prisma/find.service";
 import { getChatType } from "@services/chat/chat.service";
 import { ChatType } from "@prisma/client";
 import HttpError from "@src/errors/HttpError";
 
 export const pushMessageNotification = async (
+    userId: number,
     receivers: number[],
     chatId: number,
     message: any,
-    type: string
 ): Promise<void> => {
     try {
-        let title: string | undefined;
-        let unmutedUsers: number[] = [];
+        let repliedUserId: number | undefined = undefined;
+        let mentionedUsers: number[] = [];
         const chatType = await getChatType(chatId);
-        if (chatType === ChatType.DM) {
-            title = message.sender.userName;
-            unmutedUsers = await findUnmutedDMUsers(receivers, chatId);
-        } else if (chatType === ChatType.GROUP) {
-            const { groupName, unmutedUsers: groupUnmutedUsers } = await findUnmutedGroupUsers(
-                receivers,
-                chatId
-            );
-            title = groupName;
-            unmutedUsers = groupUnmutedUsers;
-        } else {
-            unmutedUsers = await findUnmutedChannelUsers(receivers, chatId);
-            if (message.sender) title = message.sender.userName;
-            else if (message.userName) title = message.userName;
+        const unpreviwedMessageUsers = await findUnperviewedMessageUsers(receivers);
+        if (message.parentMessage && receivers.includes(message.parentMessage.senderId) && message.parentMessage.senderId !== userId) {
+            repliedUserId = message.parentMessage.senderId;
+            receivers = receivers.filter((receiver) => receiver !== repliedUserId);
+        }
+        if (message.mentions && message.mentions.length > 0) {
+            mentionedUsers = await findUserIdsByUsernames(message.mentions);
+            receivers = receivers.filter((receiver) => !mentionedUsers.includes(receiver));
+            mentionedUsers = mentionedUsers.filter((mentionedUser) => mentionedUser !== userId);
+        }
+        const { groupName, channelName } = await findChatName(chatId, chatType);
+        const unmutedUsers = await findUnmutedUsers(receivers, chatId, chatType);
+        const payload = await handleNotificationPayload(message, chatType, groupName, channelName);
+        if (repliedUserId) {
+            await handleReplyNotification(structuredClone(payload), repliedUserId, unpreviwedMessageUsers);
+        }
+        if (mentionedUsers.length > 0) {
+            await handleMentionNotification(structuredClone(payload), mentionedUsers, unpreviwedMessageUsers);
         }
         if (unmutedUsers.length === 0) return;
         const deviceTokens = await findDeviceTokens(unmutedUsers);
+        for (let i = 0; i < unmutedUsers.length; i++) {
+            const copyPayload = structuredClone(payload);
+            const userDeviceTokens = [] as string[];
+            deviceTokens.forEach((deviceToken) => {
+                if (deviceToken.userId === unmutedUsers[i] && deviceToken.deviceToken) {
+                    userDeviceTokens.push(deviceToken.deviceToken);
+                }
+            });
+            if (userDeviceTokens.length === 0) continue;
+            if (unpreviwedMessageUsers.includes(unmutedUsers[i])) {
+                copyPayload.notification.body = "New Message";
+            }
+            await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
+                tokens: userDeviceTokens,
+                notification: copyPayload.notification,
+                data: copyPayload.data,
+            });
+        }
+    } catch (error: any) {
+        throw new HttpError(`Error in pushNotification`, 500);
+    }
+};
+
+export const handleNotificationPayload = async (
+    message: any,
+    chatType: ChatType,
+    groupName: string | undefined,
+    channelName: string | undefined
+) => {
+    const payload = {
+        notification: {
+            title: message.sender.userName,
+            body: message.content,
+        },
+        data: {
+            type: "new_message",
+            message_type: "Decrypted Message",
+            messageId: message.id.toString(),
+        },
+    };
+    if (message.type !== 'TEXT') {
+        payload.notification.body = message.type + '\n' + message.content;
+    }
+    if (chatType === ChatType.DM) {
+        if (message.isSecret)
+            payload.notification.body = "New Message";
+        else
+            payload.data.message_type = "Encrypted Message";
+    } else if (chatType === ChatType.GROUP) {
+        payload.notification.title = groupName;
+    } else {
+        payload.notification.title = channelName;
+    }
+    return payload;
+}
+
+export const handleReplyNotification = async (
+    payload: Record<string, any>,
+    receiver: number,
+    unpreviwedMessageUsers: number[]
+) => {
+    try {
+        const deviceTokens = await findDeviceTokens([receiver]);
         const deviceTokenList = [] as string[];
         deviceTokens.forEach((deviceToken) => {
             if (deviceToken.deviceToken) {
@@ -43,25 +111,48 @@ export const pushMessageNotification = async (
             }
         });
         if (deviceTokenList.length === 0) return;
-        const payload = {
-            notification: {
-                title,
-                body: message.text,
-            },
-            data: {
-                type,
-                messageId: message.id.toString(),
-            },
-        };
+        if (unpreviwedMessageUsers.includes(receiver)) {
+            payload.notification.body = "New Message";
+        }
         await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
             tokens: deviceTokenList,
             notification: payload.notification,
             data: payload.data,
         });
     } catch (error: any) {
-        throw new HttpError(`Error in pushNotification`, 500);
+        throw new HttpError(`Error in handleReplyNotification`, 500);
     }
-};
+}
+
+export const handleMentionNotification = async (
+    payload: Record<string, any>,
+    receivers: number[],
+    unpreviwedMessageUsers: number[]
+) => {
+    try {
+        const deviceTokens = await findDeviceTokens(receivers);
+        for (let i = 0; i < receivers.length; i++) {
+            const copyPayload = structuredClone(payload);
+            const deviceTokenList = [] as string[];
+            deviceTokens.forEach((deviceToken) => {
+                if (deviceToken.userId === receivers[i] && deviceToken.deviceToken) {
+                    deviceTokenList.push(deviceToken.deviceToken);
+                }
+            });
+            if (deviceTokenList.length === 0) continue;
+            if (unpreviwedMessageUsers.includes(receivers[i])) {
+                copyPayload.notification.body = "New Message";
+            }
+            await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
+                tokens: deviceTokenList,
+                notification: copyPayload.notification,
+                data: copyPayload.data,
+            });
+        }
+    } catch (error: any) {
+        throw new HttpError(`Error in handleMentionNotification`, 500);
+    }
+}
 
 export const clearMessageNotification = async (
     userId: number,
