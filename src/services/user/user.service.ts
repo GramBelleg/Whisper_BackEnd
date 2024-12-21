@@ -90,6 +90,7 @@ export const userInfo = async (id: number): Promise<any> => {
             pfpPrivacy: true,
             lastSeenPrivacy: true,
             hasStory: true,
+            role: true,
         },
     });
     if (!user) {
