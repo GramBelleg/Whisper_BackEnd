@@ -65,6 +65,7 @@ export const findChatName = async (chatId: number, chatType: ChatType) => {
     const chat = await db.chat.findUnique({
         where: {
             id: chatId,
+            type: chatType,
         },
         select: {
             channel: {

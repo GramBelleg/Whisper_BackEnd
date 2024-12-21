@@ -82,6 +82,7 @@ export const userInfo = async (id: number): Promise<any> => {
             pfpPrivacy: true,
             lastSeenPrivacy: true,
             storyCount: true,
+            messagePreview: true,
         },
     });
     if (!user) {

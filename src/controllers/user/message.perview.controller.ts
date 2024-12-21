@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { updateMessagePerview } from "@services/user/prisma/update.service";
 import HttpError from "@src/errors/HttpError";
 
-const handleMessagePerView = async (req: Request, res: Response) => {
+const handleMessagePreview = async (req: Request, res: Response) => {
     const { messagePreview } = req.body;
     if(messagePreview === undefined) {
         throw new HttpError("Message preview is required", 400);
@@ -14,4 +14,4 @@ const handleMessagePerView = async (req: Request, res: Response) => {
     });
 }
 
-export { handleMessagePerView };
+export { handleMessagePreview };
