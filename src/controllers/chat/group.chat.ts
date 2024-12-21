@@ -39,7 +39,12 @@ export const leaveGroup = async (userId: number, chatId: number) => {
 export const addAdmin = async (userId: number, admin: ChatUserSummary) => {
     const isAdmin = await groupService.isAdmin({ userId, chatId: admin.chatId });
     if (!isAdmin) throw new Error("You're not an admin");
-
+    await groupService.setPermissions(admin.userId, admin.chatId, {
+        canDownload: true,
+        canEdit: true,
+        canPost: true,
+        canDelete: true,
+    });
     await groupService.addAdmin(admin);
 
     return getChatParticipantsIds(admin.chatId);

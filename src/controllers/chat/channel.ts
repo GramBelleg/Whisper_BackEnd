@@ -115,6 +115,10 @@ export const addAdmin = async (userId: number, admin: ChatUserSummary) => {
     const isAdmin = await channelService.isAdmin({ userId, chatId: admin.chatId });
     if (!isAdmin) throw new Error("You're not an admin");
 
+    await channelService.setPermissions(admin.userId, admin.chatId, {
+        canDownload: true,
+        canComment: true,
+    });
     await channelService.addAdmin(admin);
 
     return channelService.getAdmins(admin.chatId);
