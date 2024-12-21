@@ -4,8 +4,7 @@ import bcrypt from "bcrypt";
 import db from "./PrismaClient";
 
 // Passwords of 5 users in order.
-const passwords: string[] = ["abcdefgh", "12345678", "aaaabbbb", "1111111", "22222222"];
-const numUsers = 6;
+const numUsers = 20;
 const numChats = 3;
 const numStories = 3;
 
@@ -18,7 +17,7 @@ async function createUsers(numUsers: number) {
                 email: faker.internet.email().toLowerCase(),
                 userName: faker.internet.username().toLowerCase(),
                 name: faker.person.fullName().toLowerCase(),
-                password: bcrypt.hashSync(passwords[i], 10),
+                password: bcrypt.hashSync("abcdefgh", 10),
                 bio: faker.lorem.sentence(),
                 phoneNumber: faker.phone.number({ style: "international" }),
             },

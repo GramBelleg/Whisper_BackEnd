@@ -76,6 +76,8 @@ model Message {
   messageStatus         MessageStatus[]
   comments              Comment[]
   call                Call?
+  @@index([content])
+  @@index([attachmentName])
 }
 
 model MessageStatus {
