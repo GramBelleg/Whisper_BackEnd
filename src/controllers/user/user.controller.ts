@@ -12,7 +12,9 @@ import { MAX_UPLOAD_SIZE } from "@config/constants.config";
 import { Privacy } from "@prisma/client";
 
 const updateBio = async (req: Request, res: Response) => {
-    let { bio = "" }: { bio: string } = req.body;
+    let { bio }: { bio: string } = req.body;
+    if (!bio) 
+        throw new HttpError("Bio not specified", 400);
     let id: number = req.userId;
     await userServices.updateBio(id, bio);
     res.status(200).json({
@@ -22,7 +24,9 @@ const updateBio = async (req: Request, res: Response) => {
 };
 
 const updateName = async (req: Request, res: Response) => {
-    let { name = "" }: { name: string } = req.body;
+    let { name }: { name: string } = req.body;
+    if (!name) 
+        throw new HttpError("Name not specified", 400);
     let id: number = req.userId;
     await userServices.updateName(id, name);
     res.status(200).json({
@@ -32,7 +36,8 @@ const updateName = async (req: Request, res: Response) => {
 };
 
 const updateEmail = async (req: Request, res: Response) => {
-    let { email = "", code = "" }: { email: string; code: string } = req.body;
+    let { email, code}: { email: string; code: string } = req.body;
+    if(!email || !code) throw new HttpError("Email or code not specified", 400);
     let id: number = req.userId;
     await userServices.updateEmail(id, email, code);
     res.status(200).json({
@@ -96,7 +101,9 @@ const otherUserInfo = async (req: Request, res: Response) => {
 };
 
 const changeUserName = async (req: Request, res: Response) => {
-    let { userName = "" }: { userName: string } = req.body;
+    let { userName }: { userName: string } = req.body;
+    if (!userName) 
+        throw new HttpError("Username not specified", 400);
     let id: number = req.userId;
     await userServices.changeUserName(id, userName);
     res.status(200).json({
@@ -118,7 +125,7 @@ const changeAutoDownloadSize = async (req: Request, res: Response) => {
     const size = req.body.size;
     const userId = req.userId;
     if (size == undefined || size == null)
-        throw new HttpError("Automatic Download Size not specified", 404);
+        throw new HttpError("Automatic Download Size not specified", 400);
     if (size > MAX_UPLOAD_SIZE) throw new HttpError("Invalid file size specified", 400);
     await userServices.changeAutoDownloadSize(userId, size);
     res.status(200).json({
@@ -220,7 +227,8 @@ const updateAddPermission = async (req: Request, res: Response) => {
     const userId = req.userId;
     if (!userId) throw new HttpError("Unauthorized User", 401);
     const addPermission = req.body.addPermission;
-    if (addPermission == undefined) throw new HttpError("addPermission missing", 404);
+    if (addPermission == undefined) throw new HttpError("addPermission missing", 400);
+    if (typeof addPermission !== "boolean") throw new HttpError("Invalid addPermission", 400);
     await userServices.updateAddPermission(userId, addPermission);
     res.status(200).json({
         success: true,

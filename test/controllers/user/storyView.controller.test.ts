@@ -36,7 +36,7 @@ describe("get user/story/getViews/:storyId", () => {
             }
           ];
         (getStoryViews as jest.Mock).mockResolvedValue(views);
-        const response = await request(app).get(`/user/story/getViews/${storyId}`);
+        const response = await request(app).get(`/api/user/story/getViews/${storyId}`);
         expect(response.status).toBe(200);
         expect(response.body).toEqual({users: views});
     });

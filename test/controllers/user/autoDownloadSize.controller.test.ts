@@ -25,14 +25,14 @@ describe("PUT /setAutoDownloadSize", () => {
     it("should throw error due to null size", async () => {
         const newSize = null
         const response = await request(app).put("/api/user/setAutoDownloadSize").send({ size: newSize });
-        expect(response.status).toBe(404);
+        expect(response.status).toBe(400);
         expect(response.body.message).toBe("Automatic Download Size not specified");
     });
 
     it("should throw error due to undefined size", async () => {
         const newSize = undefined;
         const response = await request(app).put("/api/user/setAutoDownloadSize").send({ size: newSize });
-        expect(response.status).toBe(404);
+        expect(response.status).toBe(400);
         expect(response.body.message).toBe("Automatic Download Size not specified");
     });
 
