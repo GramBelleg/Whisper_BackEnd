@@ -10,6 +10,7 @@ import { ChatUser, CreatedChat } from "@models/chat.models";
 import { MAX_GROUP_SIZE } from "@config/constants.config";
 import { getAddPermission } from "@services/user/user.service";
 import * as groupService from "@services/chat/group.service";
+import * as channelService from "@services/chat/channel.service";
 
 export const validateChatAndUser = async (
     userId: number,
@@ -77,5 +78,11 @@ export const validateChatUserIds = (userId: number, users: number[], chat: Creat
 export const canUserBeAdded = async (chatUser: ChatUser, adderId: number) => {
     const addPermission = await getAddPermission(chatUser.user.id);
     const isAdmin = await groupService.isAdmin({ userId: adderId, chatId: chatUser.chatId });
+    return (isAdmin && !addPermission) || addPermission;
+};
+
+export const canUserBeAddedToChannel = async (chatUser: ChatUser, adderId: number) => {
+    const addPermission = await getAddPermission(chatUser.user.id);
+    const isAdmin = await channelService.isAdmin({ userId: adderId, chatId: chatUser.chatId });
     return (isAdmin && !addPermission) || addPermission;
 };
