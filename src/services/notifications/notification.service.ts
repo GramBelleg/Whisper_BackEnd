@@ -53,13 +53,14 @@ export const pushMessageNotification = async (
             if (unpreviwedMessageUsers.includes(unmutedUsers[i])) {
                 copyPayload.notification.body = "New Message";
             }
-            await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
+            const cloudMessaging = await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
                 tokens: userDeviceTokens,
                 notification: copyPayload.notification,
                 data: copyPayload.data,
             });
         }
     } catch (error: any) {
+        console.log(error);
         throw new HttpError(`Error in pushNotification`, 500);
     }
 };
@@ -77,7 +78,7 @@ export const handleNotificationPayload = async (
         },
         data: {
             type: "new_message",
-            message_type: "Decrypted Message",
+            messageType: "Decrypted Message",
             messageId: message.id.toString(),
         },
     };
@@ -88,9 +89,9 @@ export const handleNotificationPayload = async (
         if (message.isSecret)
             payload.notification.body = "New Message";
         else
-            payload.data.message_type = "Encrypted Message";
+            payload.data.messageType = "Encrypted Message";
     } else if (chatType === ChatType.GROUP) {
-        payload.notification.title = groupName;
+        payload.notification.title = groupName + ": " + message.sender.userName;
     } else {
         payload.notification.title = channelName;
     }
@@ -114,7 +115,8 @@ export const handleReplyNotification = async (
         if (unpreviwedMessageUsers.includes(receiver)) {
             payload.notification.body = "New Message";
         }
-        await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
+        payload.data.type = "reply_message";
+        const cloudMessaging = await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
             tokens: deviceTokenList,
             notification: payload.notification,
             data: payload.data,
@@ -143,7 +145,8 @@ export const handleMentionNotification = async (
             if (unpreviwedMessageUsers.includes(receivers[i])) {
                 copyPayload.notification.body = "New Message";
             }
-            await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
+            payload.data.type = 'mention_message';
+            const cloudMessaging = await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
                 tokens: deviceTokenList,
                 notification: copyPayload.notification,
                 data: copyPayload.data,
