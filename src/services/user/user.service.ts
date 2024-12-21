@@ -111,7 +111,7 @@ export const partialUserInfo = async (viewerId: number, viewedId: number) => {
 };
 export const displayedUser = async (viewerId: number, viewedId: number) => {
     const user = await db.user.findUnique({
-        where: { id: viewerId },
+        where: { id: viewedId },
         select: {
             id: true,
             userName: true,
