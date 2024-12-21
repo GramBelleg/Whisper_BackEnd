@@ -67,6 +67,7 @@ export type SentMessage = Pick<Message, "chatId" | "senderId" | "content" | "sen
             | "parentMessageId"
             | "forwardedFromUserId"
             | "key"
+            | "isSafe"
         >
     >;
 

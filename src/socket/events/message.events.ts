@@ -20,18 +20,18 @@ export const setupMessageEvents = (
         socketWrapper(async (message: types.OmitSender<types.SentMessage>) => {
             const chatType = await getChatType(message.chatId);
             if (chatType === "DM") {
-                if(await messageHandler.handleBlockedMessages(userId, message)) return;
+                if (await messageHandler.handleBlockedMessages(userId, message)) return;
             }
-            if (chatType === "GROUP") {
-                const filteredMessage = await groupHandler.handleMessageSafety(
-                    message.chatId,
-                    message
-                );
-                if (!filteredMessage.isSafe) {
-                    sendToClient(userId, clients, "message", filteredMessage);
-                    return;
-                }
+            const filteredMessage = await groupHandler.handleMessageSafety(
+                message.chatId,
+                message,
+                chatType
+            );
+            if (!filteredMessage.isSafe) {
+                sendToClient(userId, clients, "message", filteredMessage);
+                return;
             }
+            message.isSafe = filteredMessage.isSafe;
             await handleChatPermissions(userId, message.chatId, groupHandler.handlePostPermissions);
             const savedMessage = await sendController.handleSend(userId, {
                 ...message,
