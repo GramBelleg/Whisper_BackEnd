@@ -1,6 +1,7 @@
 import db from "@DB";
 import { MemberSummary } from "@models/chat.models";
 import { MessageType } from "@prisma/client";
+import { getMessageStatus } from "@services/chat/message.service";
 import { getHasStory, getPrivateProfilePic, getPrivateStatus } from "@services/user/user.service";
 
 export const getMembers = async (userId: number, chatId: number, query: string) => {
@@ -297,6 +298,8 @@ export const getMessages = async (
     query: string,
     type: MessageType
 ) => {
+    console.log(type);
+
     const messages = await db.message.findMany({
         where: {
             chatId,
@@ -343,6 +346,11 @@ export const getMessages = async (
     });
     const returnedMessages = await Promise.all(
         messages.map(async (message: any) => {
+            const messageStatus = await db.messageStatus.findUnique({
+                where: {
+                    messageId_userId: { messageId: message.id, userId },
+                },
+            });
             return {
                 id: message.id,
                 content: message.content,
@@ -351,6 +359,9 @@ export const getMessages = async (
                 chatId: message.chat.id,
                 sender: message.sender,
                 attachmentName: message.attachmentName,
+                time: messageStatus?.time,
+                read: messageStatus?.read,
+                delivered: messageStatus?.delivered,
             };
         })
     );
