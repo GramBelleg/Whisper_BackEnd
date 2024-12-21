@@ -18,10 +18,10 @@ describe("muteChat", () => {
         const user2 = await createRandomUser();
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
 
-        await chatService.muteChat(chat.chatId, user1.id);
+        await chatService.muteChat(chat.id, user1.id);
 
         const participant = await db.chatParticipant.findFirst({
-            where: { chatId: chat.chatId, userId: user1.id },
+            where: { chatId: chat.id, userId: user1.id },
             select: { isMuted: true },
         });
 
@@ -33,11 +33,11 @@ describe("muteChat", () => {
         const user2 = await createRandomUser();
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
 
-        await chatService.muteChat(chat.chatId, user1.id);
-        await chatService.unmuteChat(chat.chatId, user1.id);
+        await chatService.muteChat(chat.id, user1.id);
+        await chatService.unmuteChat(chat.id, user1.id);
 
         const participant = await db.chatParticipant.findFirst({
-            where: { chatId: chat.chatId, userId: user1.id },
+            where: { chatId: chat.id, userId: user1.id },
             select: { isMuted: true },
         });
 

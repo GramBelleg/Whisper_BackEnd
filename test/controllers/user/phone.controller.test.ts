@@ -3,7 +3,6 @@ import { app, closeApp } from "@src/app";
 import * as userServices from "@services/user/user.service";
 import HttpError from "@src/errors/HttpError";
 
-
 jest.mock("@src/middlewares/auth.middleware", () => {
     return jest.fn((req, res, next) => {
         req.userId = 1;
@@ -18,7 +17,6 @@ afterAll(async () => {
     await closeApp();
 });
 
-
 describe("PUT /phone Route", () => {
     const phone = "+201002003000";
 
@@ -31,7 +29,6 @@ describe("PUT /phone Route", () => {
         const response = await request(app)
             .put("/api/user/phoneNumber")
             .send({ phoneNumber: phone });
-        console.log(response.body);
         expect(userServices.updatePhone).toHaveBeenCalledWith(1, phone);
         expect(userServices.updatePhone).toHaveBeenCalledTimes(1);
         expect(response.status).toBe(200);
@@ -40,7 +37,9 @@ describe("PUT /phone Route", () => {
     });
 
     it("should give error due to the existed phone number", async () => {
-        (userServices.updatePhone as jest.Mock).mockRejectedValue(new HttpError("Unable to update phone", 500));
+        (userServices.updatePhone as jest.Mock).mockRejectedValue(
+            new HttpError("Unable to update phone", 500)
+        );
         const response = await request(app)
             .put("/api/user/phoneNumber")
             .send({ phonNumber: "+201062039478" });
@@ -50,7 +49,9 @@ describe("PUT /phone Route", () => {
     });
 
     it("should throw error due to wrong phone structure", async () => {
-        (userServices.updatePhone as jest.Mock).mockRejectedValue(new HttpError("phone number structure is not valid", 422));
+        (userServices.updatePhone as jest.Mock).mockRejectedValue(
+            new HttpError("phone number structure is not valid", 422)
+        );
         const response = await request(app)
             .put("/api/user/phoneNumber")
             .send({ phonNumber: "12345" });

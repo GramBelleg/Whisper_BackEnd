@@ -26,8 +26,8 @@ describe("getChatSummaries", () => {
         expect(summaries).toHaveLength(2);
         expect(summaries).toEqual(
             expect.arrayContaining([
-                expect.objectContaining({ id: chat1.chatId, type: "DM" }),
-                expect.objectContaining({ id: chat2.chatId, type: "DM" }),
+                expect.objectContaining({ id: chat1.id, type: "DM" }),
+                expect.objectContaining({ id: chat2.id, type: "DM" }),
             ])
         );
 
@@ -35,8 +35,8 @@ describe("getChatSummaries", () => {
         expect(summaries2).toHaveLength(2);
         expect(summaries2).toEqual(
             expect.arrayContaining([
-                expect.objectContaining({ id: chat1.chatId, type: "DM" }),
-                expect.objectContaining({ id: chat2.chatId, type: "DM" }),
+                expect.objectContaining({ id: chat1.id, type: "DM" }),
+                expect.objectContaining({ id: chat2.id, type: "DM" }),
             ])
         );
 
@@ -44,8 +44,8 @@ describe("getChatSummaries", () => {
         expect(summaries3).toHaveLength(2);
         expect(summaries3).toEqual(
             expect.arrayContaining([
-                expect.objectContaining({ id: chat1.chatId, type: "DM" }),
-                expect.objectContaining({ id: chat2.chatId, type: "DM" }),
+                expect.objectContaining({ id: chat1.id, type: "DM" }),
+                expect.objectContaining({ id: chat2.id, type: "DM" }),
             ])
         );
     });
@@ -56,11 +56,11 @@ describe("getChatSummaries", () => {
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
 
         const summary = await chatService.getChatSummary(
-            { chatId: chat.chatId, unreadMessageCount: 0, chat: { type: "DM" } },
+            { chatId: chat.id, unreadMessageCount: 0, chat: { type: "DM" } },
             user1.id
         );
 
-        expect(summary).toHaveProperty("id", chat.chatId);
+        expect(summary).toHaveProperty("id", chat.id);
         expect(summary).toHaveProperty("type", "DM");
     });
 

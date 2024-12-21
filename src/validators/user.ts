@@ -41,4 +41,19 @@ const validateReadReceipt = (readReceipts: boolean) => {
     }
 }
 
-export { validateBlockData, validateReadReceipt };
+const validateFCMToken = (fcmToken: string) => {
+    const schema: ObjectSchema = Joi.object({
+        fcmToken: Joi.string().required().messages({
+            "any.required": "FCM token is required",
+            "string.base": "FCM token must be a string",
+        }),
+    });
+    const error: ValidationError | undefined = schema.validate({ fcmToken }, {
+        abortEarly: false,
+    }).error;
+    if (error) {
+        throw new HttpError(error.details[0].message, 422);
+    }
+}
+
+export { validateBlockData, validateReadReceipt, validateFCMToken };

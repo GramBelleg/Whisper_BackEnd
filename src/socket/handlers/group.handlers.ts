@@ -1,4 +1,4 @@
-import { getPermissions } from "@services/chat/group.service";
+import { getPermissions, isAdmin } from "@services/chat/group.service";
 import { isFilteredGroup } from "@services/admin/admin.service";
 import { moderateText } from "@services/admin/text.filteration";
 import { OmitSender, SentMessage } from "@models/messages.models";
@@ -23,6 +23,9 @@ export const handlePostPermissions = async (userId: number, chatId: number) => {
 
     if (!permissions) throw new Error("Couldn't get User Permissions");
     if (!permissions.canPost) throw new Error("You don't have post permission");
+};
+export const handlePinPermissions = async (userId: number, chatId: number) => {
+    if (!(await isAdmin({ userId, chatId }))) throw new Error("You don't have pin permission");
 };
 
 export const handleMessageSafety = async (

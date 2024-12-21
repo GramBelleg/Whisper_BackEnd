@@ -28,7 +28,7 @@ describe("draftMessage", () => {
         await db.chatParticipant.update({
             where: {
                 chatId_userId: {
-                    chatId: chat.chatId,
+                    chatId: chat.id,
                     userId: user1.id,
                 },
             },
@@ -39,7 +39,7 @@ describe("draftMessage", () => {
             },
         });
 
-        const draftedMessage = await chatService.formatDraftedMessage(user1.id, chat.chatId);
+        const draftedMessage = await chatService.formatDraftedMessage(user1.id, chat.id);
 
         expect(draftedMessage).toEqual({
             draftContent: "Hello",
@@ -54,7 +54,7 @@ describe("draftMessage", () => {
         const user2 = await createRandomUser();
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
 
-        const draftedMessage = await chatService.formatDraftedMessage(user1.id, chat.chatId);
+        const draftedMessage = await chatService.formatDraftedMessage(user1.id, chat.id);
 
         expect(draftedMessage).toEqual({
             draftContent: "",
@@ -82,7 +82,7 @@ describe("draftMessage", () => {
         const time = new Date();
         const message = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 content: "Hello @user2",
                 senderId: user1.id,
                 sentAt: new Date(),
@@ -94,7 +94,7 @@ describe("draftMessage", () => {
         await db.chatParticipant.update({
             where: {
                 chatId_userId: {
-                    chatId: chat.chatId,
+                    chatId: chat.id,
                     userId: user1.id,
                 },
             },
@@ -112,7 +112,7 @@ describe("draftMessage", () => {
         const time = new Date();
         const message = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 content: "Hello @user2",
                 senderId: user1.id,
                 sentAt: new Date(),
@@ -132,13 +132,13 @@ describe("draftMessage", () => {
         await db.chatParticipant.update({
             where: {
                 chatId_userId: {
-                    chatId: chat.chatId,
+                    chatId: chat.id,
                     userId: user1.id,
                 },
             },
             data: { ...draft },
         });
-        const result = await getDraftParentMessageContent(user1.id, chat.chatId);
+        const result = await getDraftParentMessageContent(user1.id, chat.id);
         expect(result).toHaveProperty("content", draft.draftParentContent);
         expect(result).toHaveProperty("media", draft.draftParentMedia);
         expect(result).toHaveProperty("extension", draft.draftParentExtension);
@@ -151,11 +151,11 @@ describe("draftMessage", () => {
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         const time = new Date();
         const draft = { draftContent: "Hello", draftParentMessageId: null, draftTime: time };
-        await draftMessage(user1.id, chat.chatId, draft);
+        await draftMessage(user1.id, chat.id, draft);
         const result = await db.chatParticipant.findUnique({
             where: {
                 chatId_userId: {
-                    chatId: chat.chatId,
+                    chatId: chat.id,
                     userId: user1.id,
                 },
             },
@@ -176,17 +176,17 @@ describe("draftMessage", () => {
         await db.chatParticipant.update({
             where: {
                 chatId_userId: {
-                    chatId: chat.chatId,
+                    chatId: chat.id,
                     userId: user1.id,
                 },
             },
             data: { ...draft },
         });
-        await undraftMessage(user1.id, chat.chatId);
+        await undraftMessage(user1.id, chat.id);
         const result = await db.chatParticipant.findUnique({
             where: {
                 chatId_userId: {
-                    chatId: chat.chatId,
+                    chatId: chat.id,
                     userId: user1.id,
                 },
             },

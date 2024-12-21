@@ -6,6 +6,9 @@ import { CreatedChat } from "@models/chat.models";
 jest.mock("@services/chat/chat.service");
 
 describe("handleCreateChat", () => {
+    beforeEach(() => {
+        jest.resetAllMocks();
+    });
     it("should create a chat and return chat summaries for all users", async () => {
         const user1 = await createRandomUser();
         const user2 = await createRandomUser();
@@ -27,6 +30,96 @@ describe("handleCreateChat", () => {
             name: "Chat",
             picture: "empty",
             type: "DM",
+        };
+
+        const result = await handleCreateChat(user1.id, chatPayload, users);
+
+        expect(result).toBeInstanceOf(Array);
+        expect(result?.length).toBe(2);
+
+        result?.forEach((chat: any) => {
+            expect(chat).toHaveProperty("id");
+            expect(chat).toHaveProperty("chatId");
+            expect(chat).toHaveProperty("name");
+        });
+
+        expect(createChat).toHaveBeenCalledWith(
+            users,
+            user1.id,
+            chatPayload.senderKey,
+            chatPayload.type
+        );
+        expect(createChat).toHaveBeenCalledTimes(1);
+        expect(getChat).toHaveBeenCalledTimes(2);
+        users.forEach((user) => {
+            expect(getChat).toHaveBeenCalledWith(user, createdChat.id);
+        });
+    });
+    it("should create a group and return chat summaries for all users", async () => {
+        const user1 = await createRandomUser();
+        const user2 = await createRandomUser();
+        const users = [user1.id, user2.id];
+
+        const createdChat = { id: 123 };
+        const chatSummary1 = { id: user1.id, chatId: createdChat.id, name: "Chat1" };
+        const chatSummary2 = { id: user2.id, chatId: createdChat.id, name: "Chat2" };
+
+        (createChat as jest.Mock).mockResolvedValue(createdChat);
+        (getChat as jest.Mock).mockImplementation((userId) => {
+            if (userId === user1.id) return Promise.resolve(chatSummary1);
+            if (userId === user2.id) return Promise.resolve(chatSummary2);
+        });
+
+        const chatPayload: CreatedChat = {
+            users,
+            senderKey: 12345,
+            type: "GROUP",
+            name: "group name",
+        };
+
+        const result = await handleCreateChat(user1.id, chatPayload, users);
+
+        expect(result).toBeInstanceOf(Array);
+        expect(result?.length).toBe(2);
+
+        result?.forEach((chat: any) => {
+            expect(chat).toHaveProperty("id");
+            expect(chat).toHaveProperty("chatId");
+            expect(chat).toHaveProperty("name");
+        });
+
+        expect(createChat).toHaveBeenCalledWith(
+            users,
+            user1.id,
+            chatPayload.senderKey,
+            chatPayload.type
+        );
+        expect(createChat).toHaveBeenCalledTimes(1);
+        expect(getChat).toHaveBeenCalledTimes(2);
+        users.forEach((user) => {
+            expect(getChat).toHaveBeenCalledWith(user, createdChat.id);
+        });
+    });
+    it("should create a channel and return chat summaries for all users", async () => {
+        const user1 = await createRandomUser();
+        const user2 = await createRandomUser();
+        const users = [user1.id, user2.id];
+
+        const createdChat = { id: 123 };
+        const chatSummary1 = { id: user1.id, chatId: createdChat.id, name: "Chat1" };
+        const chatSummary2 = { id: user2.id, chatId: createdChat.id, name: "Chat2" };
+
+        (createChat as jest.Mock).mockResolvedValue(createdChat);
+        (getChat as jest.Mock).mockImplementation((userId) => {
+            if (userId === user1.id) return Promise.resolve(chatSummary1);
+            if (userId === user2.id) return Promise.resolve(chatSummary2);
+        });
+
+        const chatPayload: CreatedChat = {
+            users,
+            senderKey: 12345,
+            type: "CHANNEL",
+            name: "channel name",
         };
 
         const result = await handleCreateChat(user1.id, chatPayload, users);

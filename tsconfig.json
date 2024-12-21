@@ -41,7 +41,8 @@
             "@routes/*": ["src/routes/*"],
             "@socket/*": ["src/socket/*"],
             "@models/*": ["src/models/*"],
-            "@src/*": ["src/*"]
+            "@src/*": ["src/*"],
+            "@agora/*": ["src/agora/*"],
         },
         // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
         "typeRoots": [

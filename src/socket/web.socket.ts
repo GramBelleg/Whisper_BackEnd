@@ -4,15 +4,21 @@ import { validateCookie } from "@validators/socket";
 import * as messageHandler from "./handlers/message.handlers";
 import * as connectionHandler from "./handlers/connection.handlers";
 import * as storyHandler from "./handlers/story.handlers";
+import * as callHandler from "./handlers/call.handlers";
 import { setupMessageEvents } from "./events/message.events";
 import { setupStoryEvents } from "./events/story.events";
 import { socketWrapper } from "./handlers/error.handler";
 import { setupPfpEvents } from "./events/pfp.events";
 import { setupStatusEvents } from "./events/status.events";
 import { sendChatSummary, setupChatEvents } from "./events/chat.events";
+import { Message } from "@prisma/client";
 
 type HandlerFunction = (key: string, clients: Map<number, Socket>) => any;
 const clients: Map<number, Socket> = new Map();
+
+export const getClients = () => {
+    return clients;
+};
 
 const handlers: Record<string, HandlerFunction> = {
     messageId: messageHandler.notifyExpiry,
@@ -30,6 +36,19 @@ export const notifyExpiry = (key: string) => {
         console.warn(`No handler found for key: ${key}`);
     }
 };
+
+export const callSocket = (participants: number[],tokens: string[], notification: any, message: Message, userId: number) => {
+    callHandler.startCall(clients, participants, tokens, notification, message, userId);
+};
+
+export const callLog = (participants: number[], message: any) => {
+    callHandler.callLog(clients, participants, message);
+}
+
+export const cancelCall = (participants: number[], message: any) => {
+    console.log("cancel call");
+    callHandler.cancelCall(clients, participants, message);
+}
 
 export const updateChatSettings = async (chatId: number) => {
     await sendChatSummary(chatId, clients);
@@ -58,7 +77,7 @@ export const initWebSocketServer = (server: HTTPServer) => {
         ({ userId: socket.data.userId, userRole: socket.data.userRole } = await socketWrapper(validateCookie)(socket));
 
         const userId = socket.data.userId;
-        const userRole = socket.data.userRole;
+        // const userRole = socket.data.userRole;
         
         if (!userId) {
             socket.disconnect(true);

@@ -16,7 +16,7 @@ describe("readMessage", () => {
     let user1: User,
         user2: User,
         chat: {
-            chatId: number;
+            id: number;
             participants: {
                 id: number;
                 userId: number;
@@ -32,7 +32,7 @@ describe("readMessage", () => {
         chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         message = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 content: "Hello @user2",
                 senderId: user1.id,
                 sentAt: new Date(),
@@ -74,7 +74,7 @@ describe("readMessage", () => {
     });
 
     it("should update read message statuses", async () => {
-        const result = await updateReadMessagesStatuses(false, user2.id, [], chat.chatId);
+        const result = await updateReadMessagesStatuses(false, user2.id, [], chat.id);
         expect(result).toEqual([message.id]);
         const getRead = await db.messageStatus.findUnique({
             where: { id: messageStatus2.id },
@@ -104,7 +104,7 @@ describe("readMessage", () => {
     });
 
     it("should mark all messages as read for a user in a chat", async () => {
-        await readAllMessages(user2.id, chat.chatId);
+        await readAllMessages(user2.id, chat.id);
         const readMessage = await db.message.findUnique({
             where: { id: message.id },
             select: { read: true },
@@ -118,7 +118,7 @@ describe("readMessage", () => {
     });
 
     it("should mark specific messages as read for a user in a chat", async () => {
-        await readMessages(user2.id, [message.id], chat.chatId);
+        await readMessages(user2.id, [message.id], chat.id);
         const readMessage = await db.message.findUnique({
             where: { id: message.id },
             select: { read: true },
@@ -138,7 +138,7 @@ describe("readMessage", () => {
         ]);
     });
     it("should filter allowed messages to read", async () => {
-        const filter = await filterAllowedMessagestoRead(user2.id, [message.id], chat.chatId);
+        const filter = await filterAllowedMessagestoRead(user2.id, [message.id], chat.id);
         expect(filter).toEqual([message.id]);
     });
 });

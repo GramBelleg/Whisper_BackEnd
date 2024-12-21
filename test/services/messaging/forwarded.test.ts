@@ -8,7 +8,7 @@ describe("forwardMessages", () => {
     let user1: User,
         user2: User,
         chat: {
-            chatId: number;
+            id: number;
             participants: {
                 id: number;
                 userId: number;

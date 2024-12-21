@@ -6,7 +6,10 @@ import {
     messageExists,
     userIsSender,
 } from "@services/chat/chat.service";
-import { CreatedChat } from "@models/chat.models";
+import { ChatUser, CreatedChat } from "@models/chat.models";
+import { MAX_GROUP_SIZE } from "@config/constants.config";
+import { getAddPermission } from "@services/user/user.service";
+import * as groupService from "@services/chat/group.service";
 
 export const validateChatAndUser = async (
     userId: number,
@@ -64,5 +67,15 @@ export const validateChatUserIds = (userId: number, users: number[], chat: Creat
         if (users.length != 2) {
             throw new Error("DM chat must have 2 users");
         }
+    } else if (chat.type == "GROUP") {
+        if (users.length > MAX_GROUP_SIZE) {
+            throw new Error("Group size must be smaller");
+        }
     }
+};
+
+export const canUserBeAdded = async (chatUser: ChatUser, adderId: number) => {
+    const addPermission = await getAddPermission(chatUser.user.id);
+    const isAdmin = await groupService.isAdmin({ userId: adderId, chatId: chatUser.chatId });
+    return (isAdmin && !addPermission) || addPermission;
 };

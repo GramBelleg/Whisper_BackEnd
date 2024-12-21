@@ -7,6 +7,17 @@ module.exports = {
     testTimeout: 15000,
     collectCoverage: true,
     coverageDirectory: "coverage",
+    coveragePathIgnorePatterns: [
+        "/node_modules/",
+        "/src/agora/",
+        "/src/config/",
+        "/src/prisma/",
+        "/src/models/",
+        "/src/errors/",
+        "/src/FCM/",
+        "/src/docs/",
+        "/src/redis/",
+    ],
     moduleNameMapper: {
         "^@services/(.*)$": "<rootDir>/src/services/$1",
         "^@controllers/(.*)$": "<rootDir>/src/controllers/$1",
@@ -17,6 +28,7 @@ module.exports = {
         "^@routes/(.*)$": "<rootDir>/src/routes/$1",
         "^@src/(.*)$": "<rootDir>/src/$1",
         "^@socket/(.*)$": "<rootDir>/src/socket/$1",
+        "@agora/(.*)$": "<rootDir>/src/agora/$1",
     },
-    globalSetup: "./jest.setup.js", // Path to the setup script
+    globalSetup: "./jest.setup.js", // Path to the setup script
 };

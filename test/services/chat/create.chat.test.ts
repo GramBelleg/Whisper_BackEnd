@@ -22,8 +22,17 @@ describe("createChat", () => {
 
         expect(chat).toHaveProperty("chatId");
 
-        const savedChat = await db.chat.findUnique({ where: { id: chat.chatId } });
-        expect(savedChat).toMatchObject({ id: chat.chatId, type: chatType });
+        const savedChat = await db.chat.findUnique({ where: { id: chat.id } });
+        expect(savedChat).toMatchObject({ id: chat.id, type: chatType });
+    });
+
+    //it should throw an error
+    it("should throw error no particiapnts found", async () => {
+        const user1 = await createRandomUser();
+        const userIds: number[] = [];
+        const chatType = "GROUP";
+
+        await expect(chatService.createChat(userIds, user1.id, null, chatType)).rejects.toThrow;
     });
 
     it("should create a group chat with no participants initially", async () => {
@@ -35,8 +44,8 @@ describe("createChat", () => {
 
         expect(chat).toHaveProperty("chatId");
 
-        const savedChat = await db.chat.findUnique({ where: { id: chat.chatId } });
-        expect(savedChat).toMatchObject({ id: chat.chatId, type: chatType });
+        const savedChat = await db.chat.findUnique({ where: { id: chat.id } });
+        expect(savedChat).toMatchObject({ id: chat.id, type: chatType });
     });
 
     it("should handle creating a chat with a senderKey", async () => {
@@ -56,8 +65,8 @@ describe("createChat", () => {
 
         expect(chat).toHaveProperty("chatId");
 
-        const savedChat = await db.chat.findUnique({ where: { id: chat.chatId } });
-        expect(savedChat).toMatchObject({ id: chat.chatId, type: chatType });
+        const savedChat = await db.chat.findUnique({ where: { id: chat.id } });
+        expect(savedChat).toMatchObject({ id: chat.id, type: chatType });
     });
 
     it("should handle duplicate participant IDs", async () => {

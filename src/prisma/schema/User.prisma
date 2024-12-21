@@ -3,6 +3,7 @@ enum Privacy {
   Contacts
   Nobody
 }
+
 enum Status {
   Offline
   Online
@@ -24,7 +25,9 @@ model User {
   addPermission             Boolean              @default(true)
   profilePic                String?
   lastSeen                  DateTime             @default(now())
-  hasStory                  Boolean              @default(false)
+  storyCount                Int                  @default(0)
+  contactStory              Int                  @default(0)
+  everyOneStory             Int                  @default(0)
   bio                       String?
   status                    Status               @default(Online)
   autoDownloadSize          Int                  @default(0) //in MB
@@ -43,24 +46,32 @@ model User {
   storyView                 storyView[]
   Publickeys                PublicKey[]          
   forwards                  Message[]            @relation("ForwardedMessage")
+  comments                  Comment[]
+  commentStatus             CommentStatus[]
+  @@index([userName])
+  @@index([name])
+  @@index([email])
+  @@index([phoneNumber])
 }
 
 model PublicKey {
-  id                Int              @id @default(autoincrement())
+  id                Int               @id @default(autoincrement())
   userId            Int
   key               String
   participantUserId Int?
   chatId            Int?
-  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   participant       ChatParticipant[]
+
   @@index([userId])
 }
 
 model UserToken {
-  userId   Int
-  token    String
-  expireAt DateTime
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId      Int
+  token       String
+  deviceToken String?
+  expireAt    DateTime
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@unique([userId, token])
   @@index([userId])
@@ -74,7 +85,7 @@ model Story {
   isArchived Boolean     @default(false)
   content    String
   media      String?
-  type      String?
+  type       String?
   views      Int         @default(0)
   likes      Int         @default(0)
   privacy    Privacy     @default(Everyone)
@@ -82,13 +93,13 @@ model Story {
 }
 
 model storyView {
-  storyId Int
-  userId  Int
-  user    User     @relation(fields: [userId], references: [id])
-  story   Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
-  liked Boolean  @default(false)
-  viewedAgain Boolean @default(false)
-  date    DateTime @default(now())
+  storyId     Int
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  story       Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  liked       Boolean  @default(false)
+  viewedAgain Boolean  @default(false)
+  date        DateTime @default(now())
 
   @@id([storyId, userId])
 }
@@ -96,8 +107,8 @@ model storyView {
 model Relates {
   relatingId  Int
   relatedById Int
-  isBlocked   Boolean  @default(false)
-  isContact   Boolean  @default(false)
+  isBlocked   Boolean @default(false)
+  isContact   Boolean @default(false)
   relating    User    @relation("relating", fields: [relatingId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   relatedBy   User    @relation("relatedBy", fields: [relatedById], references: [id], onDelete: Cascade, onUpdate: Cascade)
 

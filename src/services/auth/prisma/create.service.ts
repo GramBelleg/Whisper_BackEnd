@@ -20,7 +20,7 @@ async function createRandomUser() {
         });
         return newUser;
     } catch (err: any) {
-        console.log("Random user creation failed");
+        console.error(err);
         throw new HttpError("Random user creation failed", 409);
     }
 }
@@ -35,7 +35,6 @@ async function createUserToken(token: string, expireAt: Date, userId: number) {
             },
         });
     } catch (err: any) {
-        console.log(err.message);
         throw new HttpError("User token creation failed", 409);
     }
 }

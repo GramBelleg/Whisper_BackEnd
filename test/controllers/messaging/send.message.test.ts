@@ -1,7 +1,7 @@
 import { createRandomUser } from "@services/auth/prisma/create.service";
 import { createChat } from "@services/chat/chat.service";
 import db from "@DB";
-import handleSend from "@controllers/messages/send.message";
+import { handleSend } from "@controllers/messages/send.message";
 import { closeApp } from "@src/app";
 
 describe("sendMessage", () => {
@@ -17,7 +17,7 @@ describe("sendMessage", () => {
         const message = await handleSend(user1.id, {
             content: "Hello",
             type: "TEXT",
-            chatId: chat.chatId,
+            chatId: chat.id,
             senderId: user1.id,
             key: null,
             sentAt: new Date(),
@@ -33,7 +33,7 @@ describe("sendMessage", () => {
         const message = await handleSend(user1.id, {
             content: "Hello",
             type: "TEXT",
-            chatId: chat.chatId,
+            chatId: chat.id,
             senderId: user1.id,
             key: null,
             sentAt: new Date(),
@@ -51,7 +51,7 @@ describe("sendMessage", () => {
             handleSend(user3.id, {
                 content: "Hello",
                 type: "TEXT",
-                chatId: chat.chatId,
+                chatId: chat.id,
                 senderId: user1.id,
                 key: null,
                 sentAt: new Date(),

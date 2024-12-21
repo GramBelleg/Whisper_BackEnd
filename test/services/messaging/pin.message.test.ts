@@ -8,7 +8,7 @@ describe("pinMessage", () => {
     let user1: User,
         user2: User,
         chat: {
-            chatId: number;
+            id: number;
             participants: {
                 id: number;
                 userId: number;
@@ -22,7 +22,7 @@ describe("pinMessage", () => {
         chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         message = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 content: "Hello @user2",
                 senderId: user1.id,
                 sentAt: new Date(),
@@ -42,7 +42,7 @@ describe("pinMessage", () => {
                 pinned: true,
             },
         });
-        const pinnedMessages = await getPinnedMessages(chat.chatId);
+        const pinnedMessages = await getPinnedMessages(chat.id);
         expect(pinnedMessages).toEqual([{ id: message.id, content: message.content }]);
     });
     it("should pin a message successfully", async () => {

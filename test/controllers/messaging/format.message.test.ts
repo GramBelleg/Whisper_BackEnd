@@ -21,7 +21,7 @@ describe("formatMessage", () => {
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         const message = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 senderId: user1.id,
                 content: "Hello",
                 sentAt: new Date(),
@@ -73,7 +73,7 @@ describe("formatMessage", () => {
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         const parent = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 senderId: user1.id,
                 content: "Hello from Parent",
                 sentAt: new Date(),
@@ -107,7 +107,7 @@ describe("formatMessage", () => {
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         const parent = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 senderId: user1.id,
                 content: "Hello from Parent",
                 sentAt: new Date(),
@@ -116,7 +116,7 @@ describe("formatMessage", () => {
         });
         const message = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 senderId: user1.id,
                 content: "Hello",
                 sentAt: new Date(),
@@ -136,7 +136,7 @@ describe("formatMessage", () => {
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         const parent = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 senderId: user1.id,
                 content: "Hello from Parent",
                 sentAt: new Date(),
@@ -147,7 +147,7 @@ describe("formatMessage", () => {
         await db.chatParticipant.update({
             where: {
                 chatId_userId: {
-                    chatId: chat.chatId,
+                    chatId: chat.id,
                     userId: user1.id,
                 },
             },
@@ -157,7 +157,7 @@ describe("formatMessage", () => {
                 draftTime: time,
             },
         });
-        const result = await buildDraftParentMessage(user1.id, chat.chatId, parent.id);
+        const result = await buildDraftParentMessage(user1.id, chat.id, parent.id);
         expect(result).toHaveProperty("id", parent.id);
     });
 
@@ -167,7 +167,7 @@ describe("formatMessage", () => {
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         const parent = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 senderId: user1.id,
                 content: "Hello from Parent",
                 sentAt: new Date(),
@@ -176,7 +176,7 @@ describe("formatMessage", () => {
         });
         const message = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 senderId: user1.id,
                 content: "Hello",
                 sentAt: new Date(),
@@ -208,7 +208,7 @@ describe("formatMessage", () => {
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         const parent = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 senderId: user1.id,
                 content: "Hello from Parent",
                 sentAt: new Date(),
@@ -217,7 +217,7 @@ describe("formatMessage", () => {
         });
         const message = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 senderId: user1.id,
                 content: "Hello",
                 sentAt: new Date(),
@@ -234,7 +234,7 @@ describe("formatMessage", () => {
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         const parent = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 senderId: user1.id,
                 content: "Hello from Parent",
                 sentAt: new Date(),
@@ -246,7 +246,7 @@ describe("formatMessage", () => {
         await db.chatParticipant.update({
             where: {
                 chatId_userId: {
-                    chatId: chat.chatId,
+                    chatId: chat.id,
                     userId: user1.id,
                 },
             },
@@ -255,7 +255,7 @@ describe("formatMessage", () => {
             },
         });
 
-        const result = await buildDraftedMessage(user1.id, chat.chatId, draft);
+        const result = await buildDraftedMessage(user1.id, chat.id, draft);
         expect(result).toHaveProperty("draftParentMessageId", parent.id);
     });
 });

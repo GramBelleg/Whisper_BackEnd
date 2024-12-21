@@ -11,7 +11,7 @@ describe("replyandParentMessage", () => {
     let user1: User,
         user2: User,
         chat: {
-            chatId: number;
+            id: number;
             participants: {
                 id: number;
                 userId: number;
@@ -31,7 +31,7 @@ describe("replyandParentMessage", () => {
     it("should retrieve parent message content correctly", async () => {
         const message = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 content: "Hello @user2",
                 senderId: user1.id,
                 sentAt: new Date(),
@@ -60,7 +60,7 @@ describe("replyandParentMessage", () => {
     it("should enrich message with parent content correctly", async () => {
         const parentMessage = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 content: "Hello @user2",
                 senderId: user1.id,
                 sentAt: new Date(),
@@ -70,7 +70,7 @@ describe("replyandParentMessage", () => {
         });
         const message = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 content: "Hello @user2",
                 senderId: user1.id,
                 sentAt: new Date(),
@@ -89,7 +89,7 @@ describe("replyandParentMessage", () => {
     it("should handle message without parent content correctly", async () => {
         const message = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 content: "Hello @user2",
                 senderId: user1.id,
                 sentAt: new Date(),

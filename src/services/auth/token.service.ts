@@ -68,7 +68,6 @@ async function verifyUserToken(userToken: string) {
         return { userId, userRole };
     } catch (err: any) {
         if (err instanceof TokenExpiredError) {
-            console.log("expired");
             if (userId) deleteUserToken(userId, userToken);
         }
         throw new Error("Login again.");

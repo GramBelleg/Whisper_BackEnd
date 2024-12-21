@@ -1,7 +1,142 @@
 import db from "@DB";
 import { Message } from "@prisma/client";
 import { getChatParticipantsIds } from "@services/chat/chat.service";
-import { DraftMessage, MessageReference, SentMessage } from "@models/messages.models";
+import {
+    DraftMessage,
+    MessageReference,
+    SavedComment,
+    SentComment,
+    SentMessage,
+} from "@models/messages.models";
+import { handleSaveMessage } from "@controllers/messages/send.message";
+
+export const deleteComments = async (userId: number, ids: number[]) => {
+    const messages = await db.comment.findMany({
+        where: { id: { in: ids } },
+        select: { messageId: true },
+    });
+
+    const messageIds: number[] = messages
+        .map((message) => message?.messageId)
+        .filter((id): id is number => id !== undefined);
+
+    await db.message.updateMany({
+        where: { id: { in: messageIds } },
+        data: {
+            replyCount: {
+                decrement: 1,
+            },
+        },
+    });
+    await db.comment.deleteMany({
+        where: {
+            id: { in: ids },
+        },
+    });
+};
+
+export const getReplies = async (userId: number, commentId: number) => {
+    const comments = await db.commentStatus.findMany({
+        where: {
+            userId,
+            comment: {
+                parentCommentId: commentId,
+            },
+        },
+        select: {
+            time: true,
+            comment: {
+                select: {
+                    id: true,
+                    senderId: true,
+                    messageId: true,
+                    parentCommentId: true,
+                    content: true,
+                    replyCount: true,
+                },
+            },
+        },
+        orderBy: {
+            time: "asc",
+        },
+    });
+    return comments.map((comment) => ({
+        ...comment.comment,
+        time: comment.time,
+    }));
+};
+export const getComments = async (userId: number, messageId: number) => {
+    const comments = await db.commentStatus.findMany({
+        where: {
+            userId,
+            comment: {
+                messageId,
+            },
+            deleted: false,
+        },
+        select: {
+            time: true,
+            comment: {
+                select: {
+                    id: true,
+                    sender: {
+                        select: {
+                            id: true,
+                            userName: true,
+                        },
+                    },
+                    messageId: true,
+                    parentCommentId: true,
+                    content: true,
+                },
+            },
+        },
+        orderBy: {
+            time: "asc",
+        },
+    });
+    return comments.map((comment) => ({
+        ...comment.comment,
+        senderId: comment.comment.sender.id,
+        userName: comment.comment.sender.userName,
+        time: comment.time,
+    }));
+};
+export const saveCommentStatus = async (
+    comment: SavedComment,
+    userId: number,
+    participantIds: number[]
+) => {
+    const time = new Date().toISOString();
+    await db.commentStatus.createMany({
+        data: participantIds.map((participantId) => ({
+            userId: participantId,
+            commentId: comment.id,
+            time: participantId == userId ? comment.sentAt : time,
+        })),
+    });
+    return time;
+};
+export const saveComment = async (comment: SentComment, userId: number) => {
+    await db.message.update({
+        where: {
+            id: comment.messageId,
+        },
+        data: {
+            replyCount: { increment: 1 },
+        },
+    });
+    const savedComment: SavedComment = await db.comment.create({
+        data: {
+            senderId: userId,
+            messageId: comment.messageId,
+            content: comment.content,
+            parentCommentId: comment.parentCommentId,
+            sentAt: comment.sentAt,
+        },
+    });
+    return { ...savedComment, userName: comment.userName };
+};
 
 export const getOtherMessageTime = async (excludeUserId: number, messageId: number) => {
     return await db.messageStatus.findFirst({
@@ -221,7 +356,6 @@ export const enrichMessageWithParentContent = async (message: SentMessage) => {
         parentType: parentContentAndMedia!.type,
     };
 };
-
 
 export const saveMessage = async (userId: number, message: SentMessage): Promise<Message> => {
     const messageData = await enrichMessageWithParentContent(message);
@@ -549,35 +683,43 @@ export const enrichDraftWithParentContent = async (message: DraftMessage) => {
 };
 
 export const draftMessage = async (userId: number, chatId: number, message: DraftMessage) => {
-    const messageData = await enrichDraftWithParentContent(message);
+    try {
+        const messageData = await enrichDraftWithParentContent(message);
 
-    await db.chatParticipant.update({
-        where: {
-            chatId_userId: {
-                chatId,
-                userId,
+        await db.chatParticipant.update({
+            where: {
+                chatId_userId: {
+                    chatId,
+                    userId,
+                },
             },
-        },
-        data: {
-            ...messageData,
-        },
-    });
+            data: {
+                ...messageData,
+            },
+        });
+    } catch (err: any) {
+        console.error(err);
+    }
 };
 
 export const undraftMessage = async (userId: number, chatId: number) => {
-    await db.chatParticipant.update({
-        where: {
-            chatId_userId: {
-                chatId,
-                userId,
+    try {
+        await db.chatParticipant.update({
+            where: {
+                chatId_userId: {
+                    chatId,
+                    userId,
+                },
             },
-        },
-        data: {
-            draftContent: "",
-            draftTime: null,
-            draftParentMessageId: null,
-        },
-    });
+            data: {
+                draftContent: "",
+                draftTime: null,
+                draftParentMessageId: null,
+            },
+        });
+    } catch (err: any) {
+        console.error(err);
+    }
 };
 
 export const getDraftedMessage = async (
@@ -597,4 +739,25 @@ export const getDraftedMessage = async (
             draftParentMessageId: true,
         },
     });
+};
+
+export const createVoiceCallMessage = async (userId: number, chatId: number, content: string) => {
+    // return await db.message.create({
+    //     data: {
+    //         chatId,
+    //         senderId: userId,
+    //         content,
+    //         type: "CALL",
+    //         sentAt: new Date().toISOString(),
+    //     },
+    // });
+    const message: SentMessage = {
+        key: null,
+        chatId: chatId,
+        content: content,
+        senderId: userId,
+        type: "CALL",
+        sentAt: new Date(),
+    };
+    return await handleSaveMessage(userId, message);
 };

@@ -86,7 +86,7 @@ describe("Key Management Handlers", () => {
             next();
         });
 
-        const response = await request(app).put(`/api/encrypt/${chat.chatId}?keyId=${keyId}`).send();
+        const response = await request(app).put(`/api/encrypt/${chat.id}?keyId=${keyId}`).send();
 
         expect(response.status).toBe(200);
         expect(response.body).toBe("Key associated successfully");
@@ -102,7 +102,7 @@ describe("Key Management Handlers", () => {
             next();
         });
 
-        const response = await request(app).put(`/api/encrypt/${chat.chatId}?keyId=invalid`).send();
+        const response = await request(app).put(`/api/encrypt/${chat.id}?keyId=invalid`).send();
 
         expect(response.status).toBe(400);
         expect(response.body).toHaveProperty("message", "Invalid keyId");
@@ -124,7 +124,7 @@ describe("Key Management Handlers", () => {
 
         await db.chatParticipant.update({
             where: {
-                chatId_userId: { chatId: chat.chatId, userId: user2.id },
+                chatId_userId: { chatId: chat.id, userId: user2.id },
             },
             data: {
                 keyId,
@@ -136,7 +136,7 @@ describe("Key Management Handlers", () => {
             next();
         });
 
-        const response = await request(app).get(`/api/encrypt/${chat.chatId}`).send();
+        const response = await request(app).get(`/api/encrypt/${chat.id}`).send();
 
         expect(response.status).toBe(200);
         expect(response.body).toBe(key);
@@ -152,7 +152,7 @@ describe("Key Management Handlers", () => {
             next();
         });
 
-        const response = await request(app).get(`/api/encrypt/${chat.chatId}`).send();
+        const response = await request(app).get(`/api/encrypt/${chat.id}`).send();
 
         expect(response.status).toBe(404);
         expect(response.body).toHaveProperty("message", "Key not found");
@@ -169,7 +169,7 @@ describe("Key Management Handlers", () => {
             next();
         });
 
-        const response = await request(app).put(`/api/encrypt/${chat.chatId}?keyId=${keyId}`).send();
+        const response = await request(app).put(`/api/encrypt/${chat.id}?keyId=${keyId}`).send();
 
         expect(response.status).toBe(403);
     });
@@ -197,7 +197,7 @@ describe("Key Management Handlers", () => {
             next();
         });
 
-        const response = await request(app).get(`/api/encrypt/${chat.chatId}`).send();
+        const response = await request(app).get(`/api/encrypt/${chat.id}`).send();
 
         expect(response.status).toBe(403);
     });

@@ -8,7 +8,7 @@ describe("mentions", () => {
     let user1: User,
         user2: User,
         chat: {
-            chatId: number;
+            id: number;
             participants: {
                 id: number;
                 userId: number;
@@ -28,7 +28,7 @@ describe("mentions", () => {
     it("should return mentions for a valid message", async () => {
         const message = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 content: "Hello @user2",
                 senderId: user1.id,
                 sentAt: new Date(),

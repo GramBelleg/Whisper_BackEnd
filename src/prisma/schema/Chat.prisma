@@ -12,25 +12,29 @@ model Chat {
   participants  ChatParticipant[]
   group         Group?
   channel       Channel?
+  call         Call[]
 }
 
 model Group {
-  chatId      Int       @id
-  name        String
-  picture     String?
-  maxSize     Int       @default(1000)
-  isPrivate   Boolean   @default(true)
+  chatId  Int    @id
+  name    String
+  picture String?
+  maxSize Int    @default(1000)
+  isPrivate Boolean @default(true)
   filtered    Boolean   @default(false)
-  chat        Chat      @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  chat    Chat   @relation(fields: [chatId], references: [id],onDelete: Cascade)
+  @@index([name])
 }
 
 model Channel {
-  chatId      Int        @id
-  name        String
-  picture     String?
-  isPrivate   Boolean    @default(false)
-  inviteLink  String     @default("")
-  chat        Chat       @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  chatId     Int    @id
+  name    String
+  picture String?
+  isPrivate    Boolean @default(false)
+  inviteLink String @default("")
+  chat       Chat   @relation(fields: [chatId], references: [id],onDelete: Cascade)
+  @@index([name])
+
 }
 
 model ChatParticipant {
@@ -52,8 +56,8 @@ model ChatParticipant {
   publicKey             PublicKey?        @relation(fields: [keyId], references: [id])
   parentMessage         Message?          @relation("DraftReplyToMessage", fields: [draftParentMessageId], references: [id])
   lastMessage           MessageStatus?    @relation("LastMessageForChatParticipant", fields: [lastMessageId], references: [id])
-  chat                  Chat              @relation(fields: [chatId], references: [id])
-  user                  User              @relation(fields: [userId], references: [id])
+  chat                  Chat              @relation(fields: [chatId], references: [id],onDelete: Cascade)
+  user                  User              @relation(fields: [userId], references: [id],onDelete: Cascade)
   groupParticipant      GroupParticipant?
   channelParticipant    ChannelParticipant?
 

@@ -6,6 +6,7 @@ import { getChatParticipantsIds } from "@services/chat/chat.service";
 import { handleDeliverAllMessages } from "@controllers/messages/edit.message";
 import { OmitSender, SenderIdRecord, SentMessage } from "@models/messages.models";
 import { areUsersBlocked } from "@services/user/prisma/find.service";
+import { pushMessageNotification } from "@services/notifications/notification.service";
 
 export const broadCast = async (
     chatId: number,
@@ -41,6 +42,7 @@ export const userBroadCast = async (
         sendToClient(userId, clients, emitEvent, emitMessage[0]);
 
         if (receivers) {
+            pushMessageNotification(receivers, chatId, emitMessage[1], 'new_message');
             for (const receiver of receivers) {
                 sendToClient(receiver, clients, emitEvent, emitMessage[1]);
             }

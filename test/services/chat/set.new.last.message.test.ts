@@ -2,6 +2,7 @@ import db from "@DB";
 import * as chatService from "@services/chat/chat.service";
 import { createRandomUser } from "@services/auth/prisma/create.service";
 import { createChat } from "@services/chat/chat.service";
+import { clearDB } from "@src/prisma/clear";
 
 describe("setNewLastMessage", () => {
     afterAll(async () => {
@@ -9,7 +10,8 @@ describe("setNewLastMessage", () => {
         jest.restoreAllMocks();
     });
 
-    beforeEach(() => {
+    beforeEach(async () => {
+        await clearDB();
         jest.restoreAllMocks();
     });
 
@@ -19,7 +21,7 @@ describe("setNewLastMessage", () => {
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         const message = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 content: "Hello",
                 senderId: user1.id,
                 sentAt: new Date(),
@@ -34,13 +36,12 @@ describe("setNewLastMessage", () => {
             },
         });
 
-        await chatService.setNewLastMessage(chat.chatId);
+        await chatService.setNewLastMessage(chat.id);
 
-        const participant = await db.chatParticipant.findFirst({
-            where: { chatId: chat.chatId, userId: user1.id },
+        const participant = await db.chatParticipant.findUnique({
+            where: { chatId_userId: { chatId: chat.id, userId: user1.id } },
             select: { lastMessageId: true },
         });
-
         expect(participant?.lastMessageId).toBe(messageStatus.id);
     });
 });

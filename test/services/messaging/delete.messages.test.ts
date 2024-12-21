@@ -8,7 +8,7 @@ describe("deleteMessages", () => {
     let user1: User,
         user2: User,
         chat: {
-            chatId: number;
+            id: number;
             participants: {
                 id: number;
                 userId: number;
@@ -23,7 +23,7 @@ describe("deleteMessages", () => {
         chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         message = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 content: "Hello @user2",
                 senderId: user1.id,
                 sentAt: new Date(),

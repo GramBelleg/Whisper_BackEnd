@@ -3,13 +3,61 @@ import { ChatSummary, CreatedChat, LastMessage } from "@models/chat.models";
 import { ChatType } from "@prisma/client";
 import { getDraftedMessage, getMessage } from "./message.service";
 import { MemberSummary } from "@models/chat.models";
-import { getLastMessageSender } from "@services/user/user.service";
+import {
+    getHasStory,
+    getLastMessageSender,
+    getPrivateProfilePic,
+    getPrivateStatus,
+} from "@services/user/user.service";
 import { buildDraftedMessage } from "@controllers/messages/format.message";
 import * as groupService from "@services/chat/group.service";
 import * as channelService from "@services/chat/channel.service";
 import HttpError from "@src/errors/HttpError";
 import { areUsersBlocked } from "@services/user/prisma/find.service";
 
+export const getAddableUsers = async (userId: number, chatId: number) => {
+    const users = [];
+    const chats = await db.chatParticipant.findMany({
+        where: {
+            userId,
+            chat: { type: "DM" },
+        },
+        select: {
+            chatId: true,
+        },
+    });
+    for (const chat of chats) {
+        users.push(
+            await db.chatParticipant.findMany({
+                where: {
+                    chatId: chat.chatId,
+                    userId: {
+                        not: userId,
+                    },
+                },
+                select: {
+                    user: {
+                        select: {
+                            id: true,
+                            userName: true,
+                            profilePic: true,
+                        },
+                    },
+                },
+            })
+        );
+    }
+    const filteredUsers = [];
+    for (const user of users) {
+        const participant = await db.chatParticipant.findUnique({
+            where: {
+                chatId_userId: { chatId, userId: user[0].user.id },
+            },
+        });
+        if (!participant) filteredUsers.push(user[0].user);
+    }
+    return filteredUsers;
+};
 const getUserChats = async (userId: number, type: ChatType | null, noKey: number | boolean) => {
     let whereClause: Record<string, any>;
     if (noKey) {
@@ -23,6 +71,7 @@ const getUserChats = async (userId: number, type: ChatType | null, noKey: number
         where: whereClause,
         select: {
             chatId: true,
+            isMuted: true,
             unreadMessageCount: true,
             chat: {
                 select: {
@@ -40,17 +89,25 @@ const getUserChats = async (userId: number, type: ChatType | null, noKey: number
 };
 
 export const muteChat = async (chatId: number, userId: number): Promise<void> => {
-    await db.chatParticipant.update({
-        where: { chatId_userId: { chatId, userId } },
-        data: { isMuted: true },
-    });
+    try {
+        await db.chatParticipant.update({
+            where: { chatId_userId: { chatId, userId } },
+            data: { isMuted: true },
+        });
+    } catch (err: any) {
+        console.error(err);
+    }
 };
 
 export const unmuteChat = async (chatId: number, userId: number): Promise<void> => {
-    await db.chatParticipant.update({
-        where: { chatId_userId: { chatId, userId } },
-        data: { isMuted: false },
-    });
+    try {
+        await db.chatParticipant.update({
+            where: { chatId_userId: { chatId, userId } },
+            data: { isMuted: false },
+        });
+    } catch (err: any) {
+        console.error(err);
+    }
 };
 
 export const chatExists = async (chatId: number): Promise<boolean> => {
@@ -131,7 +188,7 @@ export const isUserAllowedToAccessMessage = async (userId: number, messageId: nu
     return result ? true : false;
 };
 
-export const getChatMembers = async (chatId: number): Promise<MemberSummary[]> => {
+export const getChatMembers = async (userId: number, chatId: number): Promise<MemberSummary[]> => {
     //add privacy to last seen and hasStory
     const chatParticipants = await db.chatParticipant.findMany({
         where: { chatId },
@@ -140,40 +197,27 @@ export const getChatMembers = async (chatId: number): Promise<MemberSummary[]> =
                 select: {
                     id: true,
                     userName: true,
-                    profilePic: true,
-                    lastSeen: true,
-                    hasStory: true,
                 },
             },
         },
     });
-    return chatParticipants.map((participant) => participant.user);
-};
-export const getGroupMembers = async (chatId: number): Promise<MemberSummary[]> => {
-    //add privacy to last seen and hasStory
-    const chatParticipants = await db.chatParticipant.findMany({
-        where: { chatId },
-        select: {
-            user: {
-                select: {
-                    id: true,
-                    userName: true,
-                    profilePic: true,
-                    lastSeen: true,
-                    hasStory: true,
-                },
-            },
-            groupParticipant: {
-                select: {
-                    isAdmin: true,
-                },
-            },
-        },
-    });
-    return chatParticipants.map((participant) => ({
-        ...participant.user,
-        isAdmin: participant.groupParticipant?.isAdmin,
-    }));
+    const members: MemberSummary[] = await Promise.all(
+        chatParticipants.map(async (participant) => {
+            const profilePic = await getPrivateProfilePic(userId, participant.user.id);
+            const privateStatus = await getPrivateStatus(userId, participant.user.id);
+            const hasStory = await getHasStory(userId, participant.user.id);
+
+            return {
+                id: participant.user.id,
+                userName: participant.user.userName,
+                profilePic: profilePic,
+                hasStory: hasStory,
+                lastSeen: privateStatus.lastSeen,
+                status: privateStatus.status,
+            };
+        })
+    );
+    return members;
 };
 
 export const createChatParticipants = async (
@@ -187,12 +231,19 @@ export const createChatParticipants = async (
         chatId,
         keyId: currentUserId === userId ? senderKey : null,
     }));
-    const chatParticipantIds = await db.$queryRawUnsafe<{ id: number; userId: number }[]>(`
-        INSERT INTO "ChatParticipant" ("chatId", "userId")
-        VALUES ${participantsData.map((p) => `(${p.chatId}, ${p.userId})`).join(", ")}
-        RETURNING "id", "userId";
-    `);
+    await db.chatParticipant.createMany({
+        data: participantsData,
+    });
 
+    const chatParticipantIds = await db.chatParticipant.findMany({
+        where: {
+            chatId,
+        },
+        select: {
+            id: true,
+            userId: true,
+        },
+    });
     return chatParticipantIds;
 };
 
@@ -211,7 +262,7 @@ export const createChat = async (
         },
     });
     const participants = await createChatParticipants(users, userId, senderKey, chat.id);
-    return { chatId: chat.id, participants };
+    return { id: chat.id, participants };
 };
 
 export const getOtherUserId = async (excludedUserId: number, chatId: number) => {
@@ -230,7 +281,7 @@ export const getOtherUserId = async (excludedUserId: number, chatId: number) => 
 };
 //TODO: Set condition on lastSeen and profilePic based on privacy
 const getOtherChatParticipants = async (chatId: number, excludeUserId: number) => {
-    return await db.chatParticipant.findMany({
+    const chatParticipants = await db.chatParticipant.findMany({
         where: {
             chatId,
             userId: {
@@ -238,40 +289,58 @@ const getOtherChatParticipants = async (chatId: number, excludeUserId: number) =
             },
         },
         select: {
-            isMuted: true,
             user: {
                 select: {
                     id: true,
                     userName: true,
-                    profilePic: true,
-                    lastSeen: true,
-                    hasStory: true,
                 },
             },
         },
     });
+    const members: MemberSummary[] = await Promise.all(
+        chatParticipants.map(async (participant) => {
+            const profilePic = await getPrivateProfilePic(excludeUserId, participant.user.id);
+            const privateStatus = await getPrivateStatus(excludeUserId, participant.user.id);
+            const hasStory = await getHasStory(excludeUserId, participant.user.id);
+
+            return {
+                id: participant.user.id,
+                userName: participant.user.userName,
+                profilePic: profilePic,
+                hasStory: hasStory,
+                lastSeen: privateStatus.lastSeen,
+                status: privateStatus.status,
+            };
+        })
+    );
+    return members;
 };
 
 const getDMContent = async (participant: any, chatId: number) => {
     const participantKeys = await getChatKeys(chatId);
     return {
-        othersId: participant.user.id,
-        name: participant.user.userName,
-        picture: participant.user.profilePic,
-        hasStory: participant.user.hasStory,
-        lastSeen: participant.user.lastSeen,
+        othersId: participant.id,
+        name: participant.userName,
+        picture: participant.profilePic,
+        hasStory: participant.hasStory,
+        lastSeen: participant.lastSeen,
         participantKeys,
         status: participant.status,
     };
 };
 
-const getTypeDependantContent = async (type: ChatType, participant: any, chatId: number) => {
+const getTypeDependantContent = async (
+    type: ChatType,
+    participant: any,
+    chatId: number,
+    userId: number
+) => {
     if (type === "DM") {
         return getDMContent(participant, chatId);
     } else if (type === "GROUP") {
-        return groupService.getGroupContent(chatId);
+        return groupService.getGroupContent(chatId, userId);
     } else {
-        return channelService.getChannelContent(chatId);
+        return channelService.getChannelContent(chatId, userId);
     }
 };
 
@@ -301,18 +370,20 @@ export const getChatSummary = async (
     const typeDependantContent = await getTypeDependantContent(
         userChat.chat.type,
         participant,
-        userChat.chatId
+        userChat.chatId,
+        userId
     );
     let isBlocked = false;
-    if (await areUsersBlocked(userId, participant.user.id)) {
+    if (await areUsersBlocked(userId, participant.id)) {
         isBlocked = true;
     }
     let makeBlocked = false;
-    if (await areUsersBlocked(participant.user.id, userId)) {
+    if (await areUsersBlocked(participant.id, userId)) {
         makeBlocked = true;
     }
     const chatSummary = {
         id: userChat.chatId,
+        isMuted: userChat.isMuted,
         ...typeDependantContent,
         type: userChat.chat.type,
         selfDestruct: userChat.chat.selfDestruct,
@@ -416,10 +487,14 @@ export const setLastMessage = async (chatId: number, messageId: number): Promise
         select: { id: true, userId: true },
     });
     for (const status of messageStatuses) {
-        await db.chatParticipant.update({
-            where: { chatId_userId: { chatId, userId: status.userId } },
-            data: { lastMessageId: status.id },
-        });
+        try {
+            await db.chatParticipant.update({
+                where: { chatId_userId: { chatId, userId: status.userId } },
+                data: { lastMessageId: status.id },
+            });
+        } catch (err: any) {
+            console.error(err);
+        }
     }
 };
 
@@ -433,36 +508,16 @@ export const setNewLastMessage = async (chatId: number): Promise<void> => {
             orderBy: { time: "desc" },
         });
         if (messageStatus) {
-            await db.chatParticipant.update({
-                where: { chatId_userId: { chatId, userId: participantId } },
-                data: { lastMessageId: messageStatus.id },
-            });
+            try {
+                await db.chatParticipant.update({
+                    where: { chatId_userId: { chatId, userId: participantId } },
+                    data: { lastMessageId: messageStatus.id },
+                });
+            } catch (err: any) {
+                console.error(err);
+            }
         }
     });
-};
-
-export const setChatPrivacy = async (id: number, isPrivate: boolean) => {
-    try {
-        await db.chat.update({
-            where: {
-                id,
-            },
-            data: {
-                group: {
-                    update: {
-                        data: {
-                            isPrivate,
-                        },
-                    },
-                },
-            },
-        });
-    } catch (err: any) {
-        if (err.code === "P2025") {
-            throw new HttpError("Group Not Found", 404);
-        }
-        throw err;
-    }
 };
 
 export const getChatType = async (id: number) => {

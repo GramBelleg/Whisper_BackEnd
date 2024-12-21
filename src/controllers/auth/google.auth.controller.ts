@@ -5,38 +5,30 @@ import { createTokenCookie, createAddToken } from "@services/auth/token.service"
 import { User } from "@prisma/client";
 
 async function googleAuth(req: Request, res: Response): Promise<void> {
-    try {
-        const authCode: string | undefined = req.body.code;
-        if (!authCode) {
-            throw new Error("There is no Authorization Code");
-        }
-
-        const accessToken = await getAccessToken(authCode);
-
-        const userData: Record<string, any> | undefined = await getUserData(accessToken);
-        if (!userData) {
-            throw new Error("Invalid Access Token");
-        }
-
-        const user: User = await upsertUser(userData);
-        const { password, ...userWithoutPassword } = user;
-
-        const userToken = await createAddToken(user.id, user.role);
-        //*IMPORTANT* Make sure frontend sets withcredential: true so that the cookies are sent with the request
-        createTokenCookie(res, userToken);
-
-        res.status(200).json({
-            status: "success",
-            user: userWithoutPassword,
-            userToken,
-        });
-    } catch (err: any) {
-        console.log(err.message);
-        res.status(400).json({
-            status: "failed",
-            message: err.message,
-        });
+    const authCode: string | undefined = req.body.code;
+    if (!authCode) {
+        throw new Error("There is no Authorization Code");
     }
+
+    const accessToken = await getAccessToken(authCode);
+
+    const userData: Record<string, any> | undefined = await getUserData(accessToken);
+    if (!userData) {
+        throw new Error("Invalid Access Token");
+    }
+
+    const user: User = await upsertUser(userData);
+    const { password, ...userWithoutPassword } = user;
+
+    const userToken = await createAddToken(user.id, user.role);
+    //*IMPORTANT* Make sure frontend sets withcredential: true so that the cookies are sent with the request
+    createTokenCookie(res, userToken);
+
+    res.status(200).json({
+        status: "success",
+        user: userWithoutPassword,
+        userToken,
+    });
 }
 
 export default googleAuth;

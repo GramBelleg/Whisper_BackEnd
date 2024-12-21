@@ -19,7 +19,7 @@ describe("getMessage", () => {
             const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
             const message1 = await db.message.create({
                 data: {
-                    chatId: chat.chatId,
+                    chatId: chat.id,
                     senderId: user1.id,
                     content: "Hello",
                     sentAt: new Date(),
@@ -44,7 +44,7 @@ describe("getMessage", () => {
                 req.userId = user1.id;
                 next();
             });
-            const response = await request(app).get(`/api/messages/${chat.chatId}`);
+            const response = await request(app).get(`/api/messages/${chat.id}`);
             expect(response.status).toBe(200);
             expect(response.body.messages[0]).toHaveProperty("id", message1.id);
         });
@@ -65,7 +65,7 @@ describe("getMessage", () => {
             const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
             const message1 = await db.message.create({
                 data: {
-                    chatId: chat.chatId,
+                    chatId: chat.id,
                     senderId: user1.id,
                     content: "Hello",
                     sentAt: new Date(),
@@ -111,7 +111,7 @@ describe("getMessage", () => {
             const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
             const message = await db.message.create({
                 data: {
-                    chatId: chat.chatId,
+                    chatId: chat.id,
                     senderId: user1.id,
                     content: "Hello",
                     sentAt: new Date(),
@@ -126,14 +126,14 @@ describe("getMessage", () => {
                 },
             });
             await db.chatParticipant.update({
-                where: { chatId_userId: { chatId: chat.chatId, userId: user1.id } },
+                where: { chatId_userId: { chatId: chat.id, userId: user1.id } },
                 data: { lastMessageId: messageStatus.id },
             });
             jest.spyOn(authMiddleware, "default").mockImplementation(async (req, _res, next) => {
                 req.userId = user1.id;
                 next();
             });
-            const response = await request(app).get(`/api/messages/${chat.chatId}/lastMessage`);
+            const response = await request(app).get(`/api/messages/${chat.id}/lastMessage`);
             expect(response.status).toBe(200);
             expect(response.body).toHaveProperty("id", message.id);
         });

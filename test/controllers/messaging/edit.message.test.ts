@@ -27,7 +27,7 @@ describe("editMessage", () => {
             const user2 = await createRandomUser();
 
             const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
-            const chatId = chat.chatId;
+            const chatId = chat.id;
             const message = await db.message.create({
                 data: {
                     chatId,
@@ -83,7 +83,7 @@ describe("editMessage", () => {
             const user2 = await createRandomUser();
             const user3 = await createRandomUser();
             const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
-            const chatId = chat.chatId;
+            const chatId = chat.id;
             const message = await db.message.create({
                 data: {
                     chatId,
@@ -107,7 +107,7 @@ describe("editMessage", () => {
             const user1 = await createRandomUser();
             const user2 = await createRandomUser();
             const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
-            const chatId = chat.chatId;
+            const chatId = chat.id;
             const message = await db.message.create({
                 data: {
                     chatId,
@@ -132,7 +132,7 @@ describe("editMessage", () => {
         const user1 = await createRandomUser();
         const user2 = await createRandomUser();
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
-        const chatId = chat.chatId;
+        const chatId = chat.id;
         const message = await db.message.create({
             data: {
                 chatId,
@@ -156,7 +156,7 @@ describe("editMessage", () => {
         const user1 = await createRandomUser();
         const user2 = await createRandomUser();
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
-        const chatId = chat.chatId;
+        const chatId = chat.id;
         const message = await db.message.create({
             data: {
                 chatId,
@@ -172,7 +172,7 @@ describe("editMessage", () => {
         const user1 = await createRandomUser();
         const user2 = await createRandomUser();
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
-        const chatId = chat.chatId;
+        const chatId = chat.id;
         const message = await db.message.create({
             data: {
                 chatId,
@@ -192,7 +192,7 @@ describe("editMessage", () => {
         const user1 = await createRandomUser();
         const user2 = await createRandomUser();
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
-        const chatId = chat.chatId;
+        const chatId = chat.id;
         const message = await db.message.create({
             data: {
                 chatId,
@@ -223,7 +223,7 @@ describe("editMessage", () => {
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         const message = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 content: "Hello @user2",
                 senderId: user1.id,
                 sentAt: new Date(),
@@ -262,7 +262,7 @@ describe("editMessage", () => {
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         const message = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 content: "Hello @user2",
                 senderId: user1.id,
                 sentAt: new Date(),
@@ -298,7 +298,7 @@ describe("editMessage", () => {
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         const message = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 content: "Hello @user2",
                 senderId: user1.id,
                 sentAt: new Date(),
@@ -312,7 +312,7 @@ describe("editMessage", () => {
                 time: new Date(),
             },
         });
-        await handleReadMessages(user2.id, [message.id], chat.chatId);
+        await handleReadMessages(user2.id, [message.id], chat.id);
         const readMessage = await db.message.findUnique({
             where: { id: message.id },
             select: { read: true },
@@ -330,7 +330,7 @@ describe("editMessage", () => {
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
         const message = await db.message.create({
             data: {
-                chatId: chat.chatId,
+                chatId: chat.id,
                 content: "Hello @user2",
                 senderId: user1.id,
                 sentAt: new Date(),
@@ -344,7 +344,7 @@ describe("editMessage", () => {
                 time: new Date(),
             },
         });
-        await handleReadAllMessages(user2.id, chat.chatId);
+        await handleReadAllMessages(user2.id, chat.id);
         const readMessage = await db.message.findUnique({
             where: { id: message.id },
             select: { read: true },
@@ -361,6 +361,6 @@ describe("editMessage", () => {
         const user2 = await createRandomUser();
         const user3 = await createRandomUser();
         const chat = await createChat([user1.id, user2.id], user2.id, null, "DM");
-        await expect(handleReadAllMessages(user3.id, chat.chatId)).rejects.toThrow();
+        await expect(handleReadAllMessages(user3.id, chat.id)).rejects.toThrow();
     });
 });

@@ -41,15 +41,11 @@ describe("PUT /name Route", () => {
     });
 
     it("should fail to update the name", async () => {
-        (userServices.updateName as jest.Mock).mockRejectedValue(new HttpError("Name is required", 400));
         const response = await request(app)
             .put("/api/user/name")
-            .send({ name: "" });
-
-            expect(userServices.updateName).toHaveBeenCalledWith(1, "");
-            expect(userServices.updateName).toHaveBeenCalledTimes(1);
+            .send({});
             expect(response.status).toBe(400);
             expect(response.body.success).toBe(false);
-            expect(response.body.message).toBe("Name is required");
+            expect(response.body.message).toBe("Name not specified");
     });
 });

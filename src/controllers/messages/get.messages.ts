@@ -1,9 +1,32 @@
 import { Request, Response } from "express";
-import { getSingleMessage, getMessages, getPinnedMessages } from "@services/chat/message.service";
+import {
+    getSingleMessage,
+    getMessages,
+    getPinnedMessages,
+    getComments,
+    getReplies,
+} from "@services/chat/message.service";
 import { buildReceivedMessage } from "./format.message";
 import { getLastMessage } from "@services/chat/chat.service";
-import { Message } from "@prisma/client";
+import { Message, MessageType } from "@prisma/client";
 import { validateChatAndUser, validateMessageAndUser } from "@validators/chat";
+import * as searchService from "@services/search/search.service";
+
+export const handleGetReplies = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const commentId = Number(req.params.commentId);
+    console.log(commentId);
+    const result = await getReplies(userId, commentId);
+
+    res.status(200).json({ comments: result });
+};
+export const handleGetComments = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const messageId = Number(req.params.messageId);
+    const result = await getComments(userId, messageId);
+
+    res.status(200).json({ comments: result });
+};
 
 const getPerUserMessage = async (userId: number, message: Message) => {
     const senderIdx = userId === message.senderId ? 0 : 1;
@@ -44,4 +67,20 @@ export const handleGetLastMessage = async (req: Request, res: Response) => {
     if (!(await validateChatAndUser(userId, chatId, res))) return;
     const lastMessage = await getLastMessage(userId, chatId);
     res.status(200).json(lastMessage);
+};
+
+export const handleGlobalSearch = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const query = String(req.query.query);
+    const type = req.query.type as MessageType;
+    const messages = await searchService.getGlobalMessages(userId, query, type);
+    res.status(200).json(messages);
+};
+export const handleMessageSearch = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const chatId = Number(req.params.chatId);
+    const query = String(req.query.query);
+    const type = req.query.type as MessageType;
+    const messages = await searchService.getMessages(userId, chatId, query, type);
+    res.status(200).json(messages);
 };

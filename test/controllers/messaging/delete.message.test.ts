@@ -26,7 +26,7 @@ describe("deleteMessages", () => {
             const user2 = await createRandomUser();
 
             const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
-            const chatId = chat.chatId;
+            const chatId = chat.id;
             const message1 = await db.message.create({
                 data: {
                     chatId,
@@ -81,7 +81,7 @@ describe("deleteMessages", () => {
             const user2 = await createRandomUser();
 
             const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
-            const chatId = chat.chatId;
+            const chatId = chat.id;
 
             jest.spyOn(authMiddleware, "default").mockImplementation(async (req, _res, next) => {
                 req.userId = user1.id;
@@ -112,7 +112,7 @@ describe("deleteMessages", () => {
             const user2 = await createRandomUser();
 
             const chat = await createChat([user1.id], user1.id, null, "DM");
-            const chatId = chat.chatId;
+            const chatId = chat.id;
             const message1 = await db.message.create({
                 data: {
                     chatId,
@@ -166,7 +166,7 @@ describe("deleteMessages", () => {
         const user1 = await createRandomUser();
         const user2 = await createRandomUser();
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
-        const chatId = chat.chatId;
+        const chatId = chat.id;
         const message1 = await db.message.create({
             data: {
                 chatId,

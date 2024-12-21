@@ -16,22 +16,24 @@ describe("GET /chats/:chatId/getMembers Route", () => {
         const user2 = await createRandomUser();
 
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
-        const chatId = chat.chatId;
+        const chatId = chat.id;
 
         const chatMembers = [
             {
                 id: user1.id,
                 userName: user1.userName,
-                hasStory: user1.hasStory,
+                hasStory: false,
                 lastSeen: user1.lastSeen.toISOString(),
                 profilePic: user1.profilePic,
+                status: user1.status,
             },
             {
                 id: user2.id,
                 userName: user2.userName,
-                hasStory: user2.hasStory,
+                hasStory: false,
                 lastSeen: user2.lastSeen.toISOString(),
                 profilePic: user2.profilePic,
+                status: user2.status,
             },
         ];
 
@@ -60,7 +62,7 @@ describe("GET /chats/:chatId/getMembers Route", () => {
         const user3 = await createRandomUser();
 
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
-        const chatId = chat.chatId;
+        const chatId = chat.id;
 
         jest.spyOn(authMiddleware, "default").mockImplementation(async (req, _res, next) => {
             req.userId = user3.id;
