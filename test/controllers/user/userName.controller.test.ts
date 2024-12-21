@@ -54,5 +54,6 @@ describe("PUT /userName Route", () => {
         expect(response.status).toBe(400);
         expect(response.body.success).toBe(false);
         expect(response.body.message).toBe("Username not specified");
+        expect(response.body.message).toBe("Username not specified");
     });
 });
