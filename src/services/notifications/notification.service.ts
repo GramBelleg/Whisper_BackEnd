@@ -8,6 +8,7 @@ import {
 import { getChatType } from "@services/chat/chat.service";
 import { ChatType } from "@prisma/client";
 import HttpError from "@src/errors/HttpError";
+import { channel } from "diagnostics_channel";
 
 export const pushMessageNotification = async (
     receivers: number[],
@@ -116,7 +117,9 @@ export const pushVoiceNofication = async (
                 data: {
                     type: "voice_call",
                     token: tokens[i],
-                    ...notification,
+                    //...notification,
+                    channel: notification.channelName,
+                    userName: notification.userName,
                 },
             };
             if (userDeviceTokens.length === 0) continue;
