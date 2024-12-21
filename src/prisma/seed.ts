@@ -26,7 +26,6 @@ async function createUsers(numUsers: number) {
             phoneNumber: faker.phone.number({ style: "international" }),
         },
     });
-    users.push(admin);
     for (let i = 1; i < numUsers - 1; i++) {
         const user: User = await db.user.create({
             data: {
@@ -78,7 +77,6 @@ async function createChats(numChats: number, users: any[]) {
 
         // Add participants to chat
         for (const user of participants) {
-            if (user.role === "Admin") continue;
             await db.chatParticipant.create({
                 data: {
                     chatId: chat.id,
@@ -89,46 +87,72 @@ async function createChats(numChats: number, users: any[]) {
 
         chats.push({ chat, participants });
     }
-    const chat: Chat = await db.chat.create({
-        data: {
-            type: ChatType.GROUP,
-        },
-    });
+    {
+        const chat: Chat = await db.chat.create({
+            data: {
+                type: ChatType.GROUP,
+            },
+        });
 
-    // Randomly select participants for this chat
-    const participants: User[] = faker.helpers.arrayElements(users, 2); // Pick 2 random users
-    let adminId;
-    // Add participants to chat
-    for (const user of participants) {
-        if (user.role === "Admin") continue;
-        const participant = await db.chatParticipant.create({
+        await db.group.create({
             data: {
                 chatId: chat.id,
-                userId: user.id,
+                picture: null,
+                name: "bahebak",
             },
         });
-        adminId = participant.id;
-        await db.groupParticipant.create({
-            data: {
-                id: adminId,
-                isAdmin: false,
-            },
-        });
+        for (const user of users) {
+            const p = await db.chatParticipant.create({
+                data: {
+                    chatId: chat.id,
+                    userId: user.id,
+                },
+            });
+            let isAdmin = false;
+            if (user.id == users[0].id) isAdmin = true;
+            const g = await db.groupParticipant.create({
+                data: {
+                    id: p.id,
+                    isAdmin,
+                },
+            });
+        }
+        const participants: User[] = users;
+        chats.push({ chat, participants });
     }
-    await db.groupParticipant.update({
-        where: {
-            id: adminId,
-        },
-        data: {
-            isAdmin: true,
-        },
-    });
-    await db.group.create({
-        data: {
-            chatId: chat.id,
-            name: faker.lorem.words(),
-        },
-    });
+    {
+        const chat: Chat = await db.chat.create({
+            data: {
+                type: ChatType.CHANNEL,
+            },
+        });
+
+        await db.channel.create({
+            data: {
+                chatId: chat.id,
+                picture: null,
+                name: "awy",
+            },
+        });
+        for (const user of users) {
+            const p = await db.chatParticipant.create({
+                data: {
+                    chatId: chat.id,
+                    userId: user.id,
+                },
+            });
+            let isAdmin = false;
+            if (user.id == users[0].id) isAdmin = true;
+            const g = await db.channelParticipant.create({
+                data: {
+                    id: p.id,
+                    isAdmin,
+                },
+            });
+        }
+        const participants: User[] = users;
+        chats.push({ chat, participants });
+    }
     return chats;
 }
 
@@ -165,12 +189,16 @@ async function createChatMessages(chats: Array<{ chat: Chat; participants: User[
                 });
                 const lastMessageId = messageStatus.id;
                 // Update the chat with the created message
-                await db.chatParticipant.update({
-                    where: { chatId_userId: { chatId: chat.chat.id, userId: participant.id } },
-                    data: {
-                        lastMessageId,
-                    },
-                });
+                try {
+                    await db.chatParticipant.update({
+                        where: { chatId_userId: { chatId: chat.chat.id, userId: participant.id } },
+                        data: {
+                            lastMessageId,
+                        },
+                    });
+                } catch (err: any) {
+                    console.error(err);
+                }
             }
         }
     }
@@ -178,7 +206,6 @@ async function createChatMessages(chats: Array<{ chat: Chat; participants: User[
 
 const createStories = async (users: User[], numStories: number) => {
     for (const user of users) {
-        if (user.role === "Admin") continue;
         for (let i = 0; i < numStories; i += 1) {
             await db.story.create({
                 data: {
