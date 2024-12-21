@@ -69,6 +69,12 @@ export const setupMessageEvents = (
     socket.on(
         "pinMessage",
         socketWrapper(async (message: types.MessageReference) => {
+            await handleChatPermissions(
+                userId,
+                message.chatId,
+                groupHandler.handlePinPermissions,
+                channelHandler.handlePinPermissions
+            );
             const pinnedMessage = await editController.handlePinMessage(userId, message.id);
             if (pinnedMessage) {
                 await messageHandler.broadCast(message.chatId, clients, "pinMessage", {

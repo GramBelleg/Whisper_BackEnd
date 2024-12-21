@@ -1,4 +1,4 @@
-import { getPermissions } from "@services/chat/group.service";
+import { getPermissions, isAdmin } from "@services/chat/group.service";
 
 export const handleDeletePermissions = async (userId: number, chatId: number) => {
     const permissions = await getPermissions(userId, chatId);
@@ -19,4 +19,7 @@ export const handlePostPermissions = async (userId: number, chatId: number) => {
 
     if (!permissions) throw new Error("Couldn't get User Permissions");
     if (!permissions.canPost) throw new Error("You don't have post permission");
+};
+export const handlePinPermissions = async (userId: number, chatId: number) => {
+    if (!(await isAdmin({ userId, chatId }))) throw new Error("You don't have pin permission");
 };
