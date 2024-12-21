@@ -83,4 +83,11 @@ describe("test verify user token", () => {
         await expect(verifyUserToken("tokenTest")).rejects.toThrow("Login again.");
         expect(deleteUserToken).not.toHaveBeenCalled();
     });
+
+    it("should throw an error if userId is not found", async () => {
+        const userToken = jwt.sign({}, process.env.JWT_SECRET as string, {
+            expiresIn: "1h",
+        });
+        await expect(verifyUserToken(userToken)).rejects.toThrow("Login again.");
+    });
 });

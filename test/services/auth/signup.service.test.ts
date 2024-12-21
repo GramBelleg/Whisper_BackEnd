@@ -8,37 +8,38 @@ import {
     verifyRobotToken,
     isUniqueUser,
 } from "@src/services/auth/signup.service";
-
-// Cast automatically all functions in `fetch.apis.service` as Jest mocks in this test file only
-jest.mock("@src/services/auth/signup.service");
-
-// Cast `findUserByEmail`, `findUserByPhoneNumber`, and `findUserByUserName` as Jest mocks in this test file only
-jest.mock("@src/services/auth/prisma/find.service", () => ({
-    findUserByEmail: jest.fn(),
-    findUserByPhoneNumber: jest.fn(),
-    findUserByUserName: jest.fn(),
-}));
+import axios from "axios";
+jest.mock("@src/services/auth/prisma/find.service");
+jest.mock("axios");
 
 afterAll(() => {
     jest.clearAllMocks();
 });
 
+describe("test fetchRobotTokenData function", () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it("should fetch robot token data", async () => {
+        axios.post = jest.fn().mockImplementation(() => Promise.resolve({ data: { success: true } }));
+        const response = await fetchRobotTokenData("robotToken");
+        expect(response).toEqual({ success: true });
+    });
+});
+
 describe("test verifyRobotToken function", () => {
-    beforeEach(() => {
+    afterEach(() => {
         jest.clearAllMocks();
     });
     it("should verify the robot token", async () => {
-        (fetchRobotTokenData as jest.Mock).mockResolvedValue({
-            success: true,
-        });
+        axios.post = jest.fn().mockImplementation(() => Promise.resolve({ data: { success: true } }));
         const verification = await verifyRobotToken("robotToken");
         expect(verification).toBeUndefined();
     });
 
     it("should not verify the robot token", async () => {
-        (fetchRobotTokenData as jest.Mock).mockResolvedValue({
-            success: false,
-        });
+        axios.post = jest.fn().mockImplementation(() => Promise.resolve({ data: { success: false } }));
         try {
             await verifyRobotToken("robotToken");
         } catch (err: any) {
@@ -47,7 +48,7 @@ describe("test verifyRobotToken function", () => {
     });
 
     it("should be invalid robot token", async () => {
-        (fetchRobotTokenData as jest.Mock).mockRejectedValue(undefined);
+        axios.post = jest.fn().mockImplementation(() => Promise.resolve({ data: {} }));
         try {
             await verifyRobotToken("robotToken");
         } catch (err: any) {

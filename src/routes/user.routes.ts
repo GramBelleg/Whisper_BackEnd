@@ -44,7 +44,7 @@ router
     .get(asyncHandler(userController.getContacts));
 router.get("/logoutOne", asyncHandler(logoutOne));
 router.get("/logoutAll", asyncHandler(logoutAll));
-router.get("/sotryArchive", asyncHandler(userController.getStoryArchive));
+router.get("/storyArchive", asyncHandler(userController.getStoryArchive));
 router.get("/story", asyncHandler(userController.getStoryUsers));
 router.get("/story/:userId", asyncHandler(userController.getUserStories));
 router.get("/story/getViews/:storyId", asyncHandler(userController.getStoryViews));

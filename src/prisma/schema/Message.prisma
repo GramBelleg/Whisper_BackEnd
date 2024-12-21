@@ -67,7 +67,7 @@ model Message {
   parentType            MessageType?
   parentExtension       String?
   sender                User               @relation(fields: [senderId], references: [id])
-  chat                  Chat               @relation(fields: [chatId], references: [id])
+  chat                  Chat               @relation(fields: [chatId], references: [id],onDelete: Cascade)
   voiceMessage          VoiceMessage?
   parentMessage         Message?           @relation("ReplyToMessage", fields: [parentMessageId], references: [id])
   replies               Message[]          @relation("ReplyToMessage")
