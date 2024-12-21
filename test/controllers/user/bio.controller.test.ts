@@ -37,4 +37,13 @@ describe("PUT /bio Route", () => {
         // expect(updatedUser?.bio).toBe(bio);
         // expect(updatedUser?.bio).toBe(bio);
     });
+    
+    it("should throw error due to unspecified bio", async () => {
+        (userServices.updateBio as jest.Mock).mockResolvedValue(undefined);
+        (userServices.updateBio as jest.Mock).mockResolvedValue(undefined);
+        const response = await request(app).put("/api/user/bio").send({});
+        expect(response.status).toBe(400);
+        expect(response.body.message).toEqual("Bio not specified");
+    });
+
 });
