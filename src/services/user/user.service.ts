@@ -100,7 +100,7 @@ export const partialUserInfo = async (viewerId: number, viewedId: number) => {
         },
     });
     if (!user) {
-        throw new Error("user not found");
+        throw new HttpError("user not found", 404);
     }
     return {
         ...user,

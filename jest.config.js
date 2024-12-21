@@ -7,6 +7,17 @@ module.exports = {
     testTimeout: 15000,
     collectCoverage: true,
     coverageDirectory: "coverage",
+    coveragePathIgnorePatterns: [
+        "/node_modules/",
+        "/src/agora/",
+        "/src/config/",
+        "/src/prisma/",
+        "/src/models/",
+        "/src/errors/",
+        "/src/FCM/",
+        "/src/docs/",
+        "/src/redis/",
+    ],
     moduleNameMapper: {
         "^@services/(.*)$": "<rootDir>/src/services/$1",
         "^@controllers/(.*)$": "<rootDir>/src/controllers/$1",
