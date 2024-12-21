@@ -115,7 +115,7 @@ export const setSizeLimit = async (req: Request, res: Response) => {
     if (!adminId || isNaN(adminId)) throw new HttpError("Invalid user id", 401);
 
     const chatId = Number(req.params.chatId);
-    if (!chatId || isNaN(chatId)) throw new HttpError("Invalid user id", 404);
+    if (!chatId || isNaN(chatId)) throw new HttpError("Invalid chat id", 404);
 
     const maxSize = Number(req.params.maxSize);
     if (!maxSize || isNaN(maxSize)) throw new HttpError("Invalid Size", 404);
