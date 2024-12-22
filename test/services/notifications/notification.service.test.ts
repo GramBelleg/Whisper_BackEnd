@@ -1,9 +1,10 @@
 import { pushMessageNotification, clearMessageNotification, pushVoiceNofication } from "@src/services/notifications/notification.service";
 import {
     findDeviceTokens,
-    findUnmutedDMUsers,
-    findUnmutedChannelUsers,
-    findUnmutedGroupUsers
+    findUnperviewedMessageUsers,
+    findUserIdsByUsernames,
+    findUnmutedUsers,
+    findChatName
 } from "@src/services/notifications/prisma/find.service";
 import { getChatType as findChatType } from "@services/chat/chat.service";
 import { ChatType } from "@prisma/client";
@@ -27,156 +28,66 @@ jest.mock("@services/chat/chat.service");
 
 describe("test pushMessageNotification", () => {
     afterEach(() => {
-        // Reset all mocks before each test
         jest.clearAllMocks();
     });
 
-    it("should send a notification for DM chat type", async () => {
-        const receivers = [1, 2];
-        const chatId = 123;
-        const message = { sender: { userName: "John" }, text: "Hello!", id: 456 };
-        const type = "message";
-
-        (findChatType as jest.Mock).mockResolvedValue(ChatType.DM);
-        (findUnmutedDMUsers as jest.Mock).mockResolvedValue([1]);
-        (findDeviceTokens as jest.Mock).mockResolvedValue([
-            { userId: 1, deviceToken: "token1" },
-        ]);
-
-        await pushMessageNotification(receivers, chatId, message, type);
-
-        // Verify the intermediate function calls
-        expect(findChatType).toHaveBeenCalledWith(chatId);
-        expect(findUnmutedDMUsers).toHaveBeenCalledWith(receivers, chatId);
-        expect(findDeviceTokens).toHaveBeenCalledWith([1]);
-
-        // Verify the Firebase notification was sent with correct parameters
-        expect(mockSendEachForMulticast).toHaveBeenCalledWith({
-            tokens: ["token1"],
-            notification: {
-                title: "John",
-                body: "Hello!",
-            },
-            data: {
-                type: "message",
-                messageId: "456",
-            },
-        });
-    });
-
-    it("should send a notification for GROUP chat type", async () => {
-        const receivers = [1, 2];
-        const chatId = 123;
-        const message = { sender: { userName: "John" }, text: "Hello!", id: 456 };
-        const type = "message";
+    it("should send a message notification", async () => {
+        const userId = 1;
+        const receivers = [2, 3];
+        const chatId = 1;
+        const message = {
+            parentMessage: { senderId: 2 },
+            mentions: ["user3"],
+        };
 
         (findChatType as jest.Mock).mockResolvedValue(ChatType.GROUP);
-        (findUnmutedGroupUsers as jest.Mock).mockResolvedValue({
-            groupName: "Group 1",
-            unmutedUsers: [1],
-        });
-        (findDeviceTokens as jest.Mock).mockResolvedValue([
-            { userId: 1, deviceToken: "token1" },
-        ]);
+        (findUnperviewedMessageUsers as jest.Mock).mockResolvedValue([2, 3]);
+        (findUserIdsByUsernames as jest.Mock).mockResolvedValue([3]);
+        (findChatName as jest.Mock).mockResolvedValue({ groupName: "Group 1", channelName: "Channel 1" });
+        (findUnmutedUsers as jest.Mock).mockResolvedValue([2, 3]);
 
-        await pushMessageNotification(receivers, chatId, message, type);
+        await pushMessageNotification(userId, receivers, chatId, message);
 
         expect(findChatType).toHaveBeenCalledWith(chatId);
-        expect(findUnmutedGroupUsers).toHaveBeenCalledWith(receivers, chatId);
-        expect(findDeviceTokens).toHaveBeenCalledWith([1]);
-
+        expect(findUnperviewedMessageUsers).toHaveBeenCalledWith(receivers);
+        expect(findUserIdsByUsernames).toHaveBeenCalledWith(["user3"]);
+        expect(findChatName).toHaveBeenCalledWith(chatId, ChatType.GROUP);
+        expect(findUnmutedUsers).toHaveBeenCalledWith([2, 3]);
         expect(mockSendEachForMulticast).toHaveBeenCalledWith({
-            tokens: ["token1"],
+            tokens: ["deviceToken"],
             notification: {
                 title: "Group 1",
-                body: "Hello!",
+                body: "New Message",
             },
             data: {
                 type: "message",
-                messageId: "456",
-            },
-        });
-    });
-
-    it("should send a notification for CHANNEL chat type", async () => {
-        const receivers = [1, 2];
-        const chatId = 123;
-        const message = { sender: { userName: "John" }, text: "Hello!", id: 456 };
-        const type = "message";
-
-        (findChatType as jest.Mock).mockResolvedValue(ChatType.CHANNEL);
-        (findUnmutedChannelUsers as jest.Mock).mockResolvedValue([1]);
-        (findDeviceTokens as jest.Mock).mockResolvedValue([
-            { userId: 1, deviceToken: "token1" },
-        ]);
-
-        await pushMessageNotification(receivers, chatId, message, type);
-
-        expect(findChatType).toHaveBeenCalledWith(chatId);
-        expect(findUnmutedChannelUsers).toHaveBeenCalledWith(receivers, chatId);
-        expect(findDeviceTokens).toHaveBeenCalledWith([1]);
-
-        expect(mockSendEachForMulticast).toHaveBeenCalledWith({
-            tokens: ["token1"],
-            notification: {
-                title: "John",
-                body: "Hello!",
-            },
-            data: {
-                type: "message",
-                messageId: "456",
+                chatId: "1",
             },
         });
     });
 
     it("should not send a notification if no device tokens are found", async () => {
-        const receivers = [1, 2];
-        const chatId = 123;
-        const message = { sender: { userName: "John" }, text: "Hello!", id: 456 };
-        const type = "message";
+        const userId = 1;
+        const receivers = [2, 3];
+        const chatId = 1;
+        const message = {
+            parentMessage: { senderId: 2 },
+            mentions: ["user3"],
+        };
 
-        (findChatType as jest.Mock).mockResolvedValue(ChatType.DM);
-        (findUnmutedDMUsers as jest.Mock).mockResolvedValue([1]);
-        (findDeviceTokens as jest.Mock).mockResolvedValue([]);
+        (findChatType as jest.Mock).mockResolvedValue(ChatType.GROUP);
+        (findUnperviewedMessageUsers as jest.Mock).mockResolvedValue([2, 3]);
+        (findUserIdsByUsernames as jest.Mock).mockResolvedValue([3]);
+        (findChatName as jest.Mock).mockResolvedValue({ groupName: "Group 1", channelName: "Channel 1" });
+        (findUnmutedUsers as jest.Mock).mockResolvedValue([]);
 
-        await pushMessageNotification(receivers, chatId, message, type);
-
+        await pushMessageNotification(userId, receivers, chatId, message);
         expect(findChatType).toHaveBeenCalledWith(chatId);
-        expect(findUnmutedDMUsers).toHaveBeenCalledWith(receivers, chatId);
-        expect(findDeviceTokens).toHaveBeenCalledWith([1]);
+        expect(findUnperviewedMessageUsers).toHaveBeenCalledWith(receivers);
+        expect(findUserIdsByUsernames).toHaveBeenCalledWith(["user3"]);
+        expect(findChatName).toHaveBeenCalledWith(chatId, ChatType.GROUP);
+        expect(findUnmutedUsers).toHaveBeenCalledWith([2, 3]);
         expect(mockSendEachForMulticast).not.toHaveBeenCalled();
-    });
-
-    it("should not send a notification if no unmuted users are found", async () => {
-        const receivers = [1, 2];
-        const chatId = 123;
-        const message = { sender: { userName: "John" }, text: "Hello!", id: 456 };
-        const type = "message";
-
-        (findChatType as jest.Mock).mockResolvedValue(ChatType.DM);
-        (findUnmutedDMUsers as jest.Mock).mockResolvedValue([]);
-
-        await pushMessageNotification(receivers, chatId, message, type);
-
-        expect(findChatType).toHaveBeenCalledWith(chatId);
-        expect(findUnmutedDMUsers).toHaveBeenCalledWith(receivers, chatId);
-        expect(findDeviceTokens).not.toHaveBeenCalled();
-        expect(mockSendEachForMulticast).not.toHaveBeenCalled();
-    });
-
-    it("should throw an error if an exception occurs", async () => {
-        const receivers = [1, 2];
-        const chatId = 123;
-        const message = { sender: { userName: "John" }, text: "Hello!", id: 456 };
-        const type = "message";
-
-        (findChatType as jest.Mock).mockRejectedValue(new Error("Database error"));
-
-        await expect(pushMessageNotification(receivers, chatId, message, type))
-            .rejects.toThrow(HttpError);
-
-        expect(findChatType).toHaveBeenCalledWith(chatId);
-        expect(findUnmutedDMUsers).not.toHaveBeenCalled();
     });
 });
 

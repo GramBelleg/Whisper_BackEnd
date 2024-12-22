@@ -9,6 +9,7 @@ import {
 import { getChatType } from "@services/chat/chat.service";
 import { ChatType } from "@prisma/client";
 import HttpError from "@src/errors/HttpError";
+import { UserToken } from "@prisma/client";
 
 export const pushMessageNotification = async (
     userId: number,
@@ -21,6 +22,7 @@ export const pushMessageNotification = async (
         let mentionedUsers: number[] = [];
         const chatType = await getChatType(chatId);
         const unpreviwedMessageUsers = await findUnperviewedMessageUsers(receivers);
+        let deviceTokens = await findDeviceTokens(receivers);
         if (message.parentMessage && receivers.includes(message.parentMessage.senderId) && message.parentMessage.senderId !== userId) {
             repliedUserId = message.parentMessage.senderId;
             receivers = receivers.filter((receiver) => receiver !== repliedUserId);
@@ -34,13 +36,32 @@ export const pushMessageNotification = async (
         const unmutedUsers = await findUnmutedUsers(receivers, chatId, chatType);
         const payload = await handleNotificationPayload(message, chatType, groupName, channelName);
         if (repliedUserId) {
-            await handleReplyNotification(structuredClone(payload), repliedUserId, unpreviwedMessageUsers);
+            let remainingDeviceTokens: UserToken[] = [];
+            let repliedDeviceTokens: string[] = [];
+            deviceTokens.forEach((deviceToken) => {
+                if (deviceToken.userId === repliedUserId && deviceToken.deviceToken) {
+                    repliedDeviceTokens.push(deviceToken.deviceToken);
+                } else {
+                    remainingDeviceTokens.push(deviceToken);
+                }
+            });
+            deviceTokens = structuredClone(remainingDeviceTokens);
+            await handleReplyNotification(structuredClone(payload), repliedUserId, unpreviwedMessageUsers, repliedDeviceTokens);
         }
         if (mentionedUsers.length > 0) {
-            await handleMentionNotification(structuredClone(payload), mentionedUsers, unpreviwedMessageUsers);
+            let remainingDeviceTokens: UserToken[] = [];
+            let mentionedDeviceTokens: UserToken[] = [];
+            deviceTokens.forEach((deviceToken) => {
+                if (mentionedUsers.includes(deviceToken.userId) && deviceToken.deviceToken) {
+                    mentionedDeviceTokens.push(deviceToken);
+                } else {
+                    remainingDeviceTokens.push(deviceToken);
+                }
+            });
+            deviceTokens = structuredClone(remainingDeviceTokens);
+            await handleMentionNotification(structuredClone(payload), mentionedUsers, unpreviwedMessageUsers, mentionedDeviceTokens);
         }
         if (unmutedUsers.length === 0) return;
-        const deviceTokens = await findDeviceTokens(unmutedUsers);
         for (let i = 0; i < unmutedUsers.length; i++) {
             const copyPayload = structuredClone(payload);
             const userDeviceTokens = [] as string[];
@@ -60,8 +81,7 @@ export const pushMessageNotification = async (
             });
         }
     } catch (error: any) {
-        console.log(error);
-        throw new HttpError(`Error in pushNotification`, 500);
+        console.log('Error in pushNotification');
     }
 };
 
@@ -101,23 +121,17 @@ export const handleNotificationPayload = async (
 export const handleReplyNotification = async (
     payload: Record<string, any>,
     receiver: number,
-    unpreviwedMessageUsers: number[]
+    unpreviwedMessageUsers: number[],
+    deviceTokens: string[]
 ) => {
     try {
-        const deviceTokens = await findDeviceTokens([receiver]);
-        const deviceTokenList = [] as string[];
-        deviceTokens.forEach((deviceToken) => {
-            if (deviceToken.deviceToken) {
-                deviceTokenList.push(deviceToken.deviceToken);
-            }
-        });
-        if (deviceTokenList.length === 0) return;
+        if (deviceTokens.length === 0) return;
         if (unpreviwedMessageUsers.includes(receiver)) {
             payload.notification.body = "New Message";
         }
         payload.data.type = "reply_message";
         const cloudMessaging = await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
-            tokens: deviceTokenList,
+            tokens: deviceTokens,
             notification: payload.notification,
             data: payload.data,
         });
@@ -129,10 +143,10 @@ export const handleReplyNotification = async (
 export const handleMentionNotification = async (
     payload: Record<string, any>,
     receivers: number[],
-    unpreviwedMessageUsers: number[]
+    unpreviwedMessageUsers: number[],
+    deviceTokens: UserToken[]
 ) => {
     try {
-        const deviceTokens = await findDeviceTokens(receivers);
         for (let i = 0; i < receivers.length; i++) {
             const copyPayload = structuredClone(payload);
             const deviceTokenList = [] as string[];
@@ -183,7 +197,7 @@ export const clearMessageNotification = async (
             });
         }
     } catch (error: any) {
-        throw new HttpError(`Error in clearNotification`, 500);
+        console.log('Error in clearNotification');
     }
 };
 
@@ -221,6 +235,15 @@ export const pushVoiceNofication = async (
             });
         }
     } catch (err: any) {
-        throw new HttpError(`Error in pushNotification`, 500);
+        console.log('Error in pushVoiceNotification');
     }
 };
+
+
+export const handleUnseenMessageNotification = async (): Promise<void> => {
+    try {
+
+    } catch (error: any) {
+        console.log(`Error in handleUnseenMessageNotification`);
+    }
+}

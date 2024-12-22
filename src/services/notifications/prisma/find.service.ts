@@ -10,6 +10,9 @@ export const findDeviceTokens = async (userIds: number[]) => {
             expireAt: {
                 gte: new Date(),
             },
+            deviceToken: {
+                not: null,
+            },
         },
     });
     return deviceToken;

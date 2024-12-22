@@ -1,7 +1,8 @@
 import HttpError from '@src/errors/HttpError';
 import { createRandomUser } from '@src/services/auth/prisma/create.service';
 import db from "@src/prisma/PrismaClient";
-import { findDeviceTokens, findUnmutedDMUsers, findUnmutedGroupUsers, findUnmutedChannelUsers } from '@src/services/notifications/prisma/find.service';
+import { ChatType } from '@prisma/client';
+import { findDeviceTokens, findUnperviewedMessageUsers, findUserIdsByUsernames, findUnmutedUsers, findChatName } from '@src/services/notifications/prisma/find.service';
 
 describe("test find device tokens prisma query", () => {
     it("should find device tokens successfully", async () => {
@@ -38,233 +39,126 @@ describe("test find device tokens prisma query", () => {
     });
 });
 
-describe("test find unmuted DM users prisma query", () => {
-    it("should find unmuted DM users successfully", async () => {
+describe("test find unperviewed message users prisma query", () => {
+    it("should find unperviewed message users successfully", async () => {
         const user = await createRandomUser();
-        const user2 = await createRandomUser();
-        const chat = await db.chat.create({
-            data: {
-                type: 'DM',
-            },
+        await db.user.update({
+            where: { id: user.id },
+            data: { messagePreview: false },
         });
-        await db.chatParticipant.create({
-            data: {
-                userId: user.id,
-                chatId: chat.id,
-                isMuted: false,
-            },
-        });
-        await db.chatParticipant.create({
-            data: {
-                userId: user2.id,
-                chatId: chat.id,
-                isMuted: true,
-            },
-        });
-        const users = await findUnmutedDMUsers([user.id, user2.id], chat.id);
-        expect(users).toEqual([user.id]);
+        const users = await findUnperviewedMessageUsers([user.id]);
+        expect(users[0]).toEqual(user.id);
     });
 
-    it("should not find any unmuted DM users", async () => {
+    it("should not find any unperviewed message users", async () => {
         const user = await createRandomUser();
-        const user2 = await createRandomUser();
-        const chat = await db.chat.create({
-            data: {
-                type: 'DM',
-            },
-        });
-        await db.chatParticipant.create({
-            data: {
-                userId: user.id,
-                chatId: chat.id,
-                isMuted: true,
-            },
-        });
-        await db.chatParticipant.create({
-            data: {
-                userId: user2.id,
-                chatId: chat.id,
-                isMuted: true,
-            },
-        });
-        const users = await findUnmutedDMUsers([user.id, user2.id], chat.id);
-        expect(users).toEqual([]);
-    });
-
-    it("should not find any users", async () => {
-        const users = await findUnmutedDMUsers([], undefined as any);
+        const users = await findUnperviewedMessageUsers([user.id]);
         expect(users).toEqual([]);
     });
 });
 
-describe("test find unmuted group users prisma query", () => {
-    it("should find unmuted group users successfully", async () => {
+describe("test find user ids by usernames prisma query", () => {
+    it("should find user ids by usernames successfully", async () => {
         const user = await createRandomUser();
-        const user2 = await createRandomUser();
-        const group = await db.group.create({
-            data: {
-                chat: {
-                    create: {
-                        type: 'GROUP',
-                    },
-                },
-                name: "group",
-                maxSize: 10,
-            },
-        });
-        const chatParticipant1 = await db.chatParticipant.create({
-            data: {
-                userId: user.id,
-                chatId: group.chatId,
-                isMuted: false,
-            },
-        });
-        const chatParticipant2 = await db.chatParticipant.create({
-            data: {
-                userId: user2.id,
-                chatId: group.chatId,
-                isMuted: true,
-            },
-        });
-        await db.groupParticipant.create({
-            data: {
-                id: chatParticipant1.id,
-            },
-        });
-        await db.groupParticipant.create({
-            data: {
-                id: chatParticipant2.id,
-            },
-        });
-        const users = await findUnmutedGroupUsers([user.id, user2.id], group.chatId);
-        expect(users).toEqual({ unmutedUsers: [user.id], groupName: "group" });
+        const users = await findUserIdsByUsernames([user.userName]);
+        expect(users[0]).toEqual(user.id);
     });
 
-    it("should not find any unmuted group users", async () => {
-        const user = await createRandomUser();
-        const user2 = await createRandomUser();
-        const group = await db.group.create({
-            data: {
-                chat: {
-                    create: {
-                        type: 'GROUP',
-                    },
-                },
-                name: "group",
-                maxSize: 10,
-            },
-        });
-        const chatParticipant1 = await db.chatParticipant.create({
-            data: {
-                userId: user.id,
-                chatId: group.chatId,
-                isMuted: true,
-            },
-        });
-        const chatParticipant2 = await db.chatParticipant.create({
-            data: {
-                userId: user2.id,
-                chatId: group.chatId,
-                isMuted: true,
-            },
-        });
-        await db.groupParticipant.create({
-            data: {
-               id: chatParticipant1.id,
-            },
-        });
-        await db.groupParticipant.create({
-            data: {
-                id: chatParticipant2.id,
-            },
-        });
-        const users = await findUnmutedGroupUsers([user.id, user2.id], group.chatId);
-        expect(users).toEqual({ unmutedUsers: [], groupName: "" });
+    it("should not find any user ids by usernames", async () => {
+        const users = await findUserIdsByUsernames(["username"]);
+        expect(users).toEqual([]);
     });
 });
 
-describe("test find unmuted channel users prisma query", () => {
-    it("should find unmuted channel users successfully", async () => {
+describe("test find unmuted users prisma query", () => {
+    it("should find unmuted users successfully", async () => {
         const user = await createRandomUser();
-        const user2 = await createRandomUser();
-        const channel = await db.channel.create({
+        const chat = await db.chat.create({
             data: {
-                chat: {
+                type: ChatType.CHANNEL,
+                channel: {
                     create: {
-                        type: 'CHANNEL',
-                    },
-                },
-                inviteLink: "inviteLink",
-                name: "channel",
+                        name: 'chat'
+                    }
+                }
             },
         });
-        const chatParticipant1 = await db.chatParticipant.create({
+        await db.chatParticipant.create({
             data: {
                 userId: user.id,
-                chatId: channel.chatId,
+                chatId: chat.id,
                 isMuted: false,
             },
         });
-        const chatParticipant2 = await db.chatParticipant.create({
-            data: {
-                userId: user2.id,
-                chatId: channel.chatId,
-                isMuted: true,
-            },
-        });
-        await db.channelParticipant.create({
-            data: {
-                id: chatParticipant1.id,
-            },
-        });
-        await db.channelParticipant.create({
-            data: {
-                id: chatParticipant2.id,
-            },
-        });
-        const users = await findUnmutedChannelUsers([user.id, user2.id], channel.chatId);
-        expect(users).toEqual([user.id]);
+        const users = await findUnmutedUsers([user.id], chat.id, "CHANNEL");
+        expect(users[0]).toEqual(user.id);
     });
 
-    it("should not find any unmuted channel users", async () => {
+    it("should not find any unmuted users", async () => {
         const user = await createRandomUser();
-        const user2 = await createRandomUser();
-        const channel = await db.channel.create({
+        const chat = await db.chat.create({
             data: {
-                chat: {
+                type: ChatType.GROUP,
+                group: {
                     create: {
-                        type: 'CHANNEL',
-                    },
-                },
-                inviteLink: "inviteLink",
-                name: "channel",
+                        name: 'chat'
+                    }
+                }
             },
         });
-        const chatParticipant1 = await db.chatParticipant.create({
+        await db.chatParticipant.create({
             data: {
                 userId: user.id,
-                chatId: channel.chatId,
+                chatId: chat.id,
                 isMuted: true,
             },
         });
-        const chatParticipant2 = await db.chatParticipant.create({
-            data: {
-                userId: user2.id,
-                chatId: channel.chatId,
-                isMuted: true,
-            },
-        });
-        await db.channelParticipant.create({
-            data: {
-                id: chatParticipant1.id,
-            },
-        });
-        await db.channelParticipant.create({
-            data: {
-               id: chatParticipant2.id,
-            },
-        });
-        const users = await findUnmutedChannelUsers([user.id, user2.id], channel.chatId);
+        const users = await findUnmutedUsers([user.id], chat.id, "CHANNEL");
         expect(users).toEqual([]);
+    });
+
+    it("should not find any unmuted users if the chat type is not correct", async () => {
+        const user = await createRandomUser();
+        const chat = await db.chat.create({
+            data: {
+                type: ChatType.GROUP,
+                group: {
+                    create: {
+                        name: 'chat'
+                    }
+                }
+            },
+        });
+        await db.chatParticipant.create({
+            data: {
+                userId: user.id,
+                chatId: chat.id,
+                isMuted: false,
+            },
+        });
+        const users = await findUnmutedUsers([user.id], chat.id, "CHANNEL");
+        expect(users).toEqual([]);
+    });
+});
+
+describe("test find chat name prisma query", () => {
+    it("should find chat name successfully", async () => {
+        const chat = await db.chat.create({
+            data: {
+                type: ChatType.CHANNEL,
+                channel: {
+                    create: {
+                        name: 'chat'
+                    }
+                }
+            },
+        });
+        const chatName = await findChatName(chat.id, "CHANNEL");
+        expect(chatName.channelName).toEqual("chat");
+    });
+
+    it("should not find any chat name", async () => {
+        const chatName = await findChatName(1, "CHANNEL");
+        expect(chatName).toEqual({});
     });
 });
