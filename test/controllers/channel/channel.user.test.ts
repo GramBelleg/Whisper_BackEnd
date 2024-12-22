@@ -105,6 +105,36 @@ describe("leave channel", () => {
         expect(participants).toStrictEqual([1, 2, 3]);
     });
 });
+describe("join channel", () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it("should join channel", async () => {
+        const trueParticipants = [1, 2, 3];
+        const trueUserChat = {};
+        (channelService.addUser as jest.Mock).mockResolvedValue({ undefined });
+        (channelService.getAdmins as jest.Mock).mockResolvedValue(trueParticipants);
+        (chatService.getChat as jest.Mock).mockResolvedValue(trueUserChat);
+
+        const { participants, userChat } = await channelController.joinChannel(1, 3);
+
+        expect(participants).toStrictEqual(trueParticipants);
+        expect(userChat).toStrictEqual(trueUserChat);
+    });
+    it("should return no participants", async () => {
+        const trueParticipants = null;
+        const trueUserChat = {};
+        (channelService.addUser as jest.Mock).mockResolvedValue({ undefined });
+        (channelService.getAdmins as jest.Mock).mockResolvedValue(trueParticipants);
+        (chatService.getChat as jest.Mock).mockResolvedValue(trueUserChat);
+
+        const { participants, userChat } = await channelController.joinChannel(1, 3);
+
+        expect(participants).toStrictEqual(trueParticipants);
+        expect(userChat).toStrictEqual(trueUserChat);
+    });
+});
 describe("add user", () => {
     afterEach(() => {
         jest.clearAllMocks();

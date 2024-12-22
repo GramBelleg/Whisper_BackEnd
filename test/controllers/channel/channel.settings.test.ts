@@ -2,6 +2,7 @@ import request from "supertest";
 import { app, closeApp } from "@src/app";
 import * as channelService from "@services/chat/channel.service";
 import { NextFunction } from "express";
+import { getChannelMembers } from "@controllers/chat/channel";
 
 jest.mock("@src/middlewares/auth.middleware", () => {
     return (req: Request, res: Response, next: NextFunction) => {
@@ -10,6 +11,9 @@ jest.mock("@src/middlewares/auth.middleware", () => {
     };
 });
 jest.mock("@services/chat/channel.service.ts");
+jest.mock("jsonwebtoken");
+jest.mock("@socket/web.socket.ts");
+
 afterAll(async () => {
     await closeApp();
 });
@@ -30,20 +34,25 @@ describe("Get channel settings", () => {
         expect(response.body).toMatchObject({ inviteLink: "link", public: false });
     });
 });
-// describe("Invite Link", () => {
-//     afterEach(() => {
-//         jest.clearAllMocks();
-//     });
+describe("Get channel members", () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
 
-//     it("should add user to channel via invite link", async () => {
-//         (channelService.getSettings as jest.Mock).mockResolvedValue({
-//             inviteLink: "link",
-//             public: false,
-//         });
+    it("should get members of a channel", async () => {
+        const expectedMembers = [{ id: 32 }];
+        (channelService.isAdmin as jest.Mock).mockResolvedValue(true);
+        (channelService.getChannelMembers as jest.Mock).mockResolvedValue(expectedMembers);
 
-//         const response = await request(app).get(`/api/channels/1/settings`).send();
+        const members = await getChannelMembers(1, 3);
 
-//         expect(response.status).toBe(200);
-//         expect(response.body).toMatchObject({ inviteLink: "link", public: false });
-//     });
-// });
+        expect(members).toMatchObject(expectedMembers);
+    });
+    it("should throw error not an admin", async () => {
+        const expectedMembers = [{ id: 32 }];
+        (channelService.isAdmin as jest.Mock).mockResolvedValue(false);
+        (channelService.getChannelMembers as jest.Mock).mockResolvedValue(expectedMembers);
+
+        await expect(getChannelMembers(1, 3)).rejects.toThrow("You're not an admin");
+    });
+});
