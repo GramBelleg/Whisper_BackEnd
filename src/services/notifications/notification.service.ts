@@ -28,6 +28,7 @@ export const pushMessageNotification = async (
             receivers = receivers.filter((receiver) => receiver !== repliedUserId);
         }
         if (message.mentions && message.mentions.length > 0) {
+            message.content = message.content.replace(/@\[[^\]]+\]\(user:\d+\)/g, '').trim();
             mentionedUsers = await findUserIdsByUsernames(message.mentions);
             receivers = receivers.filter((receiver) => !mentionedUsers.includes(receiver));
             mentionedUsers = mentionedUsers.filter((mentionedUser) => mentionedUser !== userId);
@@ -85,6 +86,7 @@ export const pushMessageNotification = async (
     }
 };
 
+
 export const handleNotificationPayload = async (
     message: any,
     chatType: ChatType,
@@ -128,6 +130,8 @@ export const handleReplyNotification = async (
         if (deviceTokens.length === 0) return;
         if (unpreviwedMessageUsers.includes(receiver)) {
             payload.notification.body = "New Message";
+        }else{
+            payload.notification.body = 'Replied to your message ' + payload.notification.body;
         }
         payload.data.type = "reply_message";
         const cloudMessaging = await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
@@ -158,6 +162,8 @@ export const handleMentionNotification = async (
             if (deviceTokenList.length === 0) continue;
             if (unpreviwedMessageUsers.includes(receivers[i])) {
                 copyPayload.notification.body = "New Message";
+            }else{
+                copyPayload.notification.body = "Mentioned you " + copyPayload.notification.body;
             }
             payload.data.type = 'mention_message';
             const cloudMessaging = await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
