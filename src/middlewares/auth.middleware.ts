@@ -16,7 +16,7 @@ const userAuth = async (req: Request, res: Response, next: NextFunction): Promis
             status: "failed",
             message: e.message,
         });
-        res.status(401).redirect(redirect);
+        // res.status(401).redirect(redirect);
     }
 };
 
