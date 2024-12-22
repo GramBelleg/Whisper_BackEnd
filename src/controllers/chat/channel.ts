@@ -9,6 +9,7 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import * as chatHandler from "@socket/handlers/chat.handlers";
 import { UserType } from "@models/user.models";
+import { canUserBeAddedToChannel } from "@validators/chat";
 
 export const getSettings = async (req: Request, res: Response) => {
     const chatId = Number(req.params.chatId);
@@ -55,7 +56,7 @@ export const getPermissions = async (req: Request, res: Response) => {
     if (!userId || isNaN(userId)) throw new HttpError("Invalid user id", 404);
 
     const chatId = Number(req.params.chatId);
-    if (!chatId || isNaN(chatId)) throw new HttpError("Invalid user id", 404);
+    if (!chatId || isNaN(chatId)) throw new HttpError("Invalid chat id", 404);
 
     const permissions = await channelService.getPermissions(userId, chatId);
 
@@ -96,13 +97,8 @@ export const addAdmin = async (userId: number, admin: ChatUserSummary) => {
 
     return channelService.getAdmins(admin.chatId);
 };
-const canUserBeAdded = async (chatUser: ChatUser, adderId: number) => {
-    const addPermission = await getAddPermission(chatUser.user.id);
-    const isAdmin = await channelService.isAdmin({ userId: adderId, chatId: chatUser.chatId });
-    return (isAdmin && !addPermission) || addPermission;
-};
 export const addUser = async (userId: number, chatUser: ChatUser) => {
-    const userCanBeAdded = await canUserBeAdded(chatUser, userId);
+    const userCanBeAdded = await canUserBeAddedToChannel(chatUser, userId);
     if (!userCanBeAdded) throw new Error("You Don't have permission to add this user");
 
     const participants = await channelService.getAdmins(chatUser.chatId);
@@ -119,7 +115,7 @@ export const removeUser = async (userId: number, user: UserType, chatId: number)
     const isAdmin = await channelService.isAdmin({ userId, chatId });
     if (!isAdmin) throw new Error("You're not an admin");
 
-    const participants = await getChatParticipantsIds(chatId);
+    const participants = await channelService.getAdmins(chatId);
 
     await groupService.removeUser(user.id, chatId);
 

@@ -79,3 +79,8 @@ export const canUserBeAdded = async (chatUser: ChatUser, adderId: number) => {
     const isAdmin = await groupService.isAdmin({ userId: adderId, chatId: chatUser.chatId });
     return (isAdmin && !addPermission) || addPermission;
 };
+export const canUserBeAddedToChannel = async (chatUser: ChatUser, adderId: number) => {
+    const addPermission = await getAddPermission(chatUser.user.id);
+    const isAdmin = await groupService.isAdmin({ userId: adderId, chatId: chatUser.chatId });
+    return (isAdmin && !addPermission) || addPermission;
+};
