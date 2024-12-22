@@ -77,8 +77,8 @@ export const makeCall = async (userId: number, chatId: string) => {
     let someoneJoined = await channelHasUser(channelName);
     if (!someoneJoined) {
         console.log("sent socket and notification");
-        callSocket(participants, tokens, notification, message, userId);
-        pushVoiceNofication(participants, tokens, notification);
+        await callSocket(participants, tokens, notification, message, userId);
+        await pushVoiceNofication(participants, tokens, notification);
     }
     const token = callToken(userId, channelName);
     return token;

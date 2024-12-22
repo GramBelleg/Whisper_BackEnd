@@ -37,18 +37,23 @@ export const notifyExpiry = (key: string) => {
     }
 };
 
-export const callSocket = (participants: number[],tokens: string[], notification: any, message: Message, userId: number) => {
-    callHandler.startCall(clients, participants, tokens, notification, message, userId);
+export const callSocket = async (
+    participants: number[],
+    tokens: string[],
+    notification: any,
+    message: Message,
+    userId: number
+) => {
+    await callHandler.startCall(clients, participants, tokens, notification, message, userId);
 };
 
 export const callLog = (participants: number[], message: any) => {
     callHandler.callLog(clients, participants, message);
-}
+};
 
 export const cancelCall = (participants: number[], message: any) => {
-    console.log("cancel call");
     callHandler.cancelCall(clients, participants, message);
-}
+};
 
 export const updateChatSettings = async (chatId: number) => {
     await sendChatSummary(chatId, clients);
@@ -74,11 +79,16 @@ export const initWebSocketServer = (server: HTTPServer) => {
     });
 
     io.on("connection", async (socket: Socket) => {
-        ({ userId: socket.data.userId, userRole: socket.data.userRole } = await socketWrapper(validateCookie)(socket));
+        try {
+            ({ userId: socket.data.userId, userRole: socket.data.userRole } =
+                await socketWrapper(validateCookie)(socket));
+        } catch (err: any) {
+            console.error("failed to validate user");
+        }
 
         const userId = socket.data.userId;
         // const userRole = socket.data.userRole;
-        
+
         if (!userId) {
             socket.disconnect(true);
             return;
