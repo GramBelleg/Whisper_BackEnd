@@ -118,7 +118,7 @@ export const pushVoiceNofication = async (
                     type: "voice_call",
                     token: tokens[i],
                     //...notification,
-                    channel: notification.channelName,
+                    channelName: notification.channelName,
                     userName: notification.userName,
                 },
             };
