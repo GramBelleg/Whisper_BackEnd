@@ -13,6 +13,7 @@ import { deleteExpiredTokens } from "@services/auth/prisma/delete.service";
 import { deleteExtraRelates } from "@services/user/prisma/delete.service";
 import redisClient from "./redis/redis.client";
 import redisSubscriber from "./redis/redis.subscriber";
+import { handleUnseenMessageNotification } from "@services/notifications/notification.service";
 
 dotenv.config();
 
@@ -50,12 +51,45 @@ redisSubscribe();
 
 app.use(errorHandler);
 
-const deleteExpiredTokensTask: ScheduledTask = cron.schedule("0 3 * * *", deleteExpiredTokens); // delete expired tokens every day at 3 AM
-const deleteExtraRelatesTask: ScheduledTask = cron.schedule("0 3 * * *", () => deleteExtraRelates); // delete extra relates every day at 3 AM
+const deleteExpiredTokensTask: ScheduledTask = cron.schedule(
+    "0 3 * * *",
+    () => {
+        deleteExpiredTokens();
+    },
+    {
+        scheduled: true, 
+        timezone: "Africa/Cairo"
+    }
+); // delete expired tokens every day at 3 AM
+const deleteExtraRelatesTask: ScheduledTask = cron.schedule(
+    "0 3 * * *",
+    () => {
+        deleteExtraRelates();
+    },
+    {
+        scheduled: true, 
+        timezone: "Africa/Cairo"
+    }
+); // delete extra relates every day at 3 AM
+const handleUnseenNotificationsTask: ScheduledTask = cron.schedule(
+    "0 18 * * *",
+    () => {
+        handleUnseenMessageNotification();
+    },
+    {
+        scheduled: true, 
+        timezone: "Africa/Cairo"
+    }
+);  // handle unseen notifications every day at 6 PM
+
+deleteExpiredTokensTask.start();
+deleteExtraRelatesTask.start();
+handleUnseenNotificationsTask.start();
 
 const closeApp = async () => {
     deleteExpiredTokensTask.stop();
     deleteExtraRelatesTask.stop();
+    handleUnseenNotificationsTask.stop();
 
     if (redisClient.getInstance()) {
         await redisClient.quit();

@@ -30,5 +30,16 @@ const updateReadReceipt = async (userId: number, readReceipts: boolean) => {
     }
 }
 
+const updateMessagePerview = async (userId: number, messagePreview: boolean) => {
+    try {
+        await db.user.update({
+            where: { id: userId },
+            data: { messagePreview }
+        });
+    } catch (err) {
+        throw new HttpError("Message preview updating failed", 409);
+    }
+}
 
-export { updateBlockOfRelates, updateReadReceipt };
+
+export { updateBlockOfRelates, updateReadReceipt, updateMessagePerview };

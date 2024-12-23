@@ -43,7 +43,7 @@ describe("test github auth controller", () => {
         expect(getAccessToken).toHaveBeenCalledWith("code");
         expect(getUserData).toHaveBeenCalledWith("access_token");
         expect(upsertUser).toHaveBeenCalledWith(userData);
-        expect(createAddToken).toHaveBeenCalledWith(userData.id);
+        expect(createAddToken).toHaveBeenCalledWith(userData.id, undefined);
     });
 
     it("should github auth be unsuccessfully", async () => {

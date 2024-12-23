@@ -73,4 +73,5 @@ describe("test create relates prisma query", () => {
             expect(relatedUser.id).toBe(user.id);
         });
     });
+    
 });
