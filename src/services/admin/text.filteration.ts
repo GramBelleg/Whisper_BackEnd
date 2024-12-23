@@ -1,8 +1,9 @@
 import { HfInference } from "@huggingface/inference";
 import { Mistral } from "@mistralai/mistralai";
 import { inappropriateThreshold, whichModel } from "@config/apis.config";
+import { HUGGINGFACE } from "@config/constants.config";
 
-const huggingFaceKey = process.env.HUGGINGFACE_API_KEY;
+const huggingFaceKey = HUGGINGFACE;
 const hf = new HfInference(huggingFaceKey);
 const mistralKey = process.env.COHERE_API_KEY;
 const mistralClient = new Mistral({ apiKey: mistralKey });
