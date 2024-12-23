@@ -5,6 +5,7 @@ import * as storyController from "@controllers/story/story.controller";
 import { getBlockedUsers, handleUserBlocks } from "@controllers/user/block.controller";
 import { logoutAll, logoutOne } from "@controllers/auth/logout.controller";
 import { userInfo } from "@services/user/user.service";
+import { handleMessagePreview } from "@controllers/user/message.perview.controller";
 
 const router: Router = Router();
 
@@ -38,6 +39,7 @@ router.put("/lastSeen/privacy", asyncHandler(userController.changeLastSeenPrivac
 router.put("/pfp/privacy", asyncHandler(userController.changePfpPrivacy));
 router.put("/story/:storyId/privacy", asyncHandler(storyController.changeStoryPrivacy));
 router.put("/story/privacy", asyncHandler(userController.changeStoryPrivacy));
+router.put("/messagePreview", asyncHandler(handleMessagePreview));
 router
     .route("/contact")
     .post(asyncHandler(userController.addContact))

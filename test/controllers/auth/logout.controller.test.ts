@@ -40,7 +40,7 @@ describe("test logout from one device controller", () => {
 });
 
 describe("test logout from all devices controller", () => {
-    afterAll(() => {
+    afterEach(() => {
         jest.clearAllMocks();
     });
     it("should logout all be successfully", async () => {

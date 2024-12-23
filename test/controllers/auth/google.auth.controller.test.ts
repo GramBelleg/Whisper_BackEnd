@@ -36,7 +36,7 @@ describe("test google auth controller", () => {
         expect(getAccessToken).toHaveBeenCalledWith("code");
         expect(getUserData).toHaveBeenCalledWith("access_token");
         expect(upsertUser).toHaveBeenCalledWith(userData);
-        expect(createAddToken).toHaveBeenCalledWith(userData.id);
+        expect(createAddToken).toHaveBeenCalledWith(userData.id, undefined);
         expect(response.status).toEqual(200);
         expect(response.body.userToken).toEqual("token");
         expect(response.body.user.id).toEqual(userData.id);

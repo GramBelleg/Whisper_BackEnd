@@ -103,7 +103,7 @@ describe("test confirm email controller", () => {
         expect(addUser).toHaveBeenCalled();
         expect(addUser).toHaveBeenCalledWith(user);
         expect(createAddToken).toHaveBeenCalled();
-        expect(createAddToken).toHaveBeenCalledWith(user.id);
+        expect(createAddToken).toHaveBeenCalledWith(user.id, undefined);
         expect(createTokenCookie).toHaveBeenCalled();
     });
 
