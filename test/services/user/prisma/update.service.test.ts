@@ -1,4 +1,4 @@
-import { updateBlockOfRelates, updateReadReceipt } from "@services/user/prisma/update.service";
+import { updateBlockOfRelates, updateReadReceipt, updateMessagePerview } from "@services/user/prisma/update.service";
 import db from "@DB";
 import { createRandomUser } from "@src/services/auth/prisma/create.service";
 import HttpError from "@src/errors/HttpError";
@@ -104,6 +104,27 @@ describe("test update read receipt prisma query", () => {
             await updateReadReceipt(100 * user.id, false);
         } catch (err: any) {
             expect(err.message).toEqual("Read receipts updating failed");
+        }
+    });
+});
+
+describe("test update message perview prisma query", () => {
+    it("should update message perview successfully", async () => {
+        const user = await createRandomUser();
+        expect(user.messagePreview).toBe(true);
+        await updateMessagePerview(user.id, false);
+        const updatedUser = await db.user.findUnique({
+            where: { id: user.id },
+        });
+        expect(updatedUser?.messagePreview).toBe(false);
+    });
+
+    it("should throw error while updating message perview", async () => {
+        const user = await createRandomUser();
+        try {
+            await updateMessagePerview(100 * user.id, false);
+        } catch (err: any) {
+            expect(err.message).toEqual("Message preview updating failed");
         }
     });
 });

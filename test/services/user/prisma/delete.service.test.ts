@@ -51,4 +51,5 @@ describe("test deleteExtraRelates prisma query", () => {
         });
         expect(relatesAfterDeletion.length).toBe(0);
     });
+
 });

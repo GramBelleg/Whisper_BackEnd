@@ -1,4 +1,5 @@
 import db from "@DB";
+import { ChatType } from "@prisma/client";
 
 export const findDeviceTokens = async (userIds: number[]) => {
     const deviceToken = await db.userToken.findMany({
@@ -9,18 +10,46 @@ export const findDeviceTokens = async (userIds: number[]) => {
             expireAt: {
                 gte: new Date(),
             },
+            deviceToken: {
+                not: null,
+            },
         },
     });
     return deviceToken;
 };
 
-export const findUnmutedDMUsers = async (userIds: number[], chatId: number) => {
+export const findUnperviewedMessageUsers = async (userIds: number[]) => {
+    const users = await db.user.findMany({
+        where: {
+            id: { in: userIds },
+            messagePreview: false,
+        },
+        select: {
+            id: true,
+        },
+    });
+    return users.map((user) => user.id);
+};
+
+export const findUserIdsByUsernames = async (usernames: string[]) => {
+    const users = await db.user.findMany({
+        where: {
+            userName: { in: usernames },
+        },
+        select: {
+            id: true,
+        },
+    });
+    return users.map((user) => user.id);
+};
+
+export const findUnmutedUsers = async (userIds: number[], chatId: number, chatType: ChatType) => {
     const users = await db.chatParticipant.findMany({
         where: {
             userId: { in: userIds },
             chatId,
             chat: {
-                type: "DM",
+                type: chatType,
             },
             isMuted: false,
         },
@@ -35,57 +64,50 @@ export const findUnmutedDMUsers = async (userIds: number[], chatId: number) => {
     return users.map((user) => user.user.id);
 };
 
-export const findUnmutedGroupUsers = async (userIds: number[], chatId: number) => {
-    const users = await db.chatParticipant.findMany({
+export const findChatName = async (chatId: number, chatType: ChatType) => {
+    const chat = await db.chat.findUnique({
         where: {
-            userId: { in: userIds },
-            chatId,
-            chat: {
-                type: "GROUP",
-            },
-            isMuted: false,
+            id: chatId,
+            type: chatType,
         },
         select: {
-            user: {
+            channel: {
                 select: {
-                    id: true,
+                    name: true,
                 },
             },
-            chat: {
+            group: {
                 select: {
-                    group: {
-                        select: {
-                            name: true,
-                        },
-                    },
+                    name: true,
                 },
             },
         },
     });
-    if (users.length === 0) return { groupName: "", unmutedUsers: [] };
-    return {
-        groupName: users[0].chat.group?.name,
-        unmutedUsers: users.map((user) => user.user.id),
-    };
-};
+    return { groupName: chat?.group?.name, channelName: chat?.channel?.name };
+}
 
-export const findUnmutedChannelUsers = async (userIds: number[], chatId: number) => {
+
+export const findNewActivityUsers = async () => {
     const users = await db.chatParticipant.findMany({
         where: {
-            userId: { in: userIds },
-            chatId,
-            chat: {
-                type: "CHANNEL",
+            unreadMessageCount: {
+                not: 0,
             },
-            isMuted: false,
+            chat: {
+                type: {
+                    not: ChatType.DM,
+                }
+            }
         },
         select: {
-            user: {
+            userId: true,
+            chat: {
                 select: {
-                    id: true,
-                },
-            },
+                    group: { select: { name: true } },
+                    channel: { select: { name: true } }
+                }
+            }
         },
     });
-    return users.map((user) => user.user.id);
-};
+    return users;
+}
