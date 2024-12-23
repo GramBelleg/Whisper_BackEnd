@@ -11,7 +11,18 @@ const numStories = 3;
 // Utility function to create random users
 async function createUsers(numUsers: number) {
     const users: User[] = [];
-    for (let i = 0; i < numUsers - 1; i++) {
+    const admin: User = await db.user.create({
+        data: {
+            email: faker.internet.email().toLowerCase(),
+            userName: faker.internet.username().toLowerCase(),
+            name: faker.person.fullName().toLowerCase(),
+            role: "Admin",
+            password: bcrypt.hashSync("Abcdefgh12#", 10),
+            bio: faker.lorem.sentence(),
+            phoneNumber: faker.phone.number({ style: "international" }),
+        },
+    });
+    for (let i = 0; i < numUsers - 2; i++) {
         const user: User = await db.user.create({
             data: {
                 email: faker.internet.email().toLowerCase(),
