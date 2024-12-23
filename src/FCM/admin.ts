@@ -1,4 +1,4 @@
-import * as admin from 'firebase-admin';
+import * as admin from "firebase-admin";
 
 class FirebaseAdmin {
     private static instance: admin.app.App | null = null;
@@ -13,7 +13,7 @@ class FirebaseAdmin {
                 credential: admin.credential.cert({
                     projectId: process.env.FIREBASE_PROJECT_ID,
                     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-                    privateKey: process.env.FIREBASE_PRIVATE_KEY,
+                    privateKey: String(process.env.FIREBASE_PRIVATE_KEY).replace(/\\n/g, "\n"),
                 }),
             });
         }
@@ -24,7 +24,7 @@ class FirebaseAdmin {
         if (FirebaseAdmin.instance) {
             await FirebaseAdmin.instance.delete();
             FirebaseAdmin.instance = null;
-            console.log('Firebase Admin app has been deleted.');
+            console.log("Firebase Admin app has been deleted.");
         }
     }
 }

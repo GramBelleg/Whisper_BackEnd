@@ -5,7 +5,16 @@ import db from "@DB";
 import { editMessage } from "@services/chat/message.service";
 
 describe("saveMessage", () => {
-    let user1: User, user2: User, chat: { id: number }, message: Message;
+    let user1: User,
+        user2: User,
+        chat: {
+            id: number;
+            participants: {
+                id: number;
+                userId: number;
+            }[];
+        },
+        message: Message;
 
     beforeEach(async () => {
         user1 = await createRandomUser();
@@ -23,7 +32,7 @@ describe("saveMessage", () => {
     });
 
     afterAll(async () => {
-        db.$disconnect();
+        await db.$disconnect();
     });
 
     it("should edit a message successfulyy", async () => {

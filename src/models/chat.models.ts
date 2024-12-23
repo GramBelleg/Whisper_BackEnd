@@ -28,24 +28,30 @@ export type ChatSummary = {
     picture: string | null;
     status?: string;
     lastMessage: LastMessage;
+    selfDestruct: number | null;
+    isBlocked: boolean;
+    makeBlocked: boolean;
     unreadMessageCount: number;
     isMuted: number;
     isAdmin?: boolean;
 };
 
 export type ChatUserSummary = { userId: number; chatId: number };
+
 export type ChatUser = {
     user: {
         id: number;
         userName: string;
         profilePic?: string | null;
-        lastSeen?: Date;
-        status?: Status;
+        lastSeen?: Date | null;
+        status?: Status | null;
         hasStory?: boolean;
     };
     chatId: number;
 };
-export type MemberSummary = Pick<
-    User,
-    "id" | "userName" | "profilePic" | "lastSeen" | "hasStory"
-> & { isAdmin?: boolean };
+export type MemberSummary = Pick<User, "id" | "userName" | "profilePic"> & {
+    isAdmin?: boolean;
+    hasStory: boolean;
+    lastSeen: Date | null;
+    status: Status | null;
+};

@@ -1,4 +1,5 @@
 import authClient from "@config/google.config";
+import axios from "axios";
 
 //This is a service for making a request to get user data of google account based on specified scopes using google tokenThis is a service for making a request to get user data of google account based on specified scopes using google token
 
@@ -18,10 +19,10 @@ const getAccessToken = async (authCode: string): Promise<string> => {
 
 const getUserData = async (token: string): Promise<Record<string, any> | undefined> => {
     try {
-        const response: Response = await fetch(
+        const response = await axios.get(
             `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`
         );
-        const data: Record<string, any> = await response.json();
+        const data: Record<string, any> = response.data;
         const wantedData = { userName: data.name, email: data.email };
         return wantedData;
     } catch (err: any) {

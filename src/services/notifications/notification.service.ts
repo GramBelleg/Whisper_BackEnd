@@ -8,11 +8,13 @@ import {
 import { getChatType } from "@services/chat/chat.service";
 import { ChatType } from "@prisma/client";
 import HttpError from "@src/errors/HttpError";
+import { channel } from "diagnostics_channel";
 
 export const pushMessageNotification = async (
     receivers: number[],
     chatId: number,
-    message: any
+    message: any,
+    type: string
 ): Promise<void> => {
     try {
         let title: string | undefined;
@@ -48,11 +50,10 @@ export const pushMessageNotification = async (
                 body: message.text,
             },
             data: {
-                type: "new_message",
+                type,
                 messageId: message.id.toString(),
             },
         };
-
         await FirebaseAdmin.getInstance().messaging().sendEachForMulticast({
             tokens: deviceTokenList,
             notification: payload.notification,
@@ -117,7 +118,9 @@ export const pushVoiceNofication = async (
                 data: {
                     type: "voice_call",
                     token: tokens[i],
-                    ...notification,
+                    //...notification,
+                    channelName: notification.channelName,
+                    userName: notification.userName,
                 },
             };
             if (userDeviceTokens.length === 0) continue;

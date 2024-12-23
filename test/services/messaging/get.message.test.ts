@@ -11,7 +11,16 @@ import {
 } from "@services/chat/message.service";
 
 describe("getMessage", () => {
-    let user1: User, user2: User, chat: { id: number }, message: Message;
+    let user1: User,
+        user2: User,
+        chat: {
+            id: number;
+            participants: {
+                id: number;
+                userId: number;
+            }[];
+        },
+        message: Message;
 
     beforeEach(async () => {
         user1 = await createRandomUser();
@@ -29,7 +38,7 @@ describe("getMessage", () => {
     });
 
     afterAll(async () => {
-        db.$disconnect();
+        await db.$disconnect();
     });
 
     it("should return null summary for non-existent message", async () => {

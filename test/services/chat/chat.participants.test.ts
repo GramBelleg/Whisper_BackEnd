@@ -13,12 +13,12 @@ describe("chatParticipants", () => {
         jest.restoreAllMocks();
     });
 
-     it("should fetch chat members for a given chat", async () => {
+    it("should fetch chat members for a given chat", async () => {
         const user1 = await createRandomUser();
         const user2 = await createRandomUser();
         const chat = await createChat([user1.id, user2.id], user1.id, null, "DM");
 
-        const members = await chatService.getChatMembers(chat.id);
+        const members = await chatService.getChatMembers(user1.id, chat.id);
 
         expect(members).toHaveLength(2);
         expect(members).toEqual(
@@ -50,5 +50,4 @@ describe("chatParticipants", () => {
 
         expect(participants).toHaveLength(2);
     });
-
 });

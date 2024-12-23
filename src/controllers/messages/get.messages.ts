@@ -8,8 +8,9 @@ import {
 } from "@services/chat/message.service";
 import { buildReceivedMessage } from "./format.message";
 import { getLastMessage } from "@services/chat/chat.service";
-import { Message } from "@prisma/client";
+import { Message, MessageType } from "@prisma/client";
 import { validateChatAndUser, validateMessageAndUser } from "@validators/chat";
+import * as searchService from "@services/search/search.service";
 
 export const handleGetReplies = async (req: Request, res: Response) => {
     const userId = req.userId;
@@ -66,4 +67,20 @@ export const handleGetLastMessage = async (req: Request, res: Response) => {
     if (!(await validateChatAndUser(userId, chatId, res))) return;
     const lastMessage = await getLastMessage(userId, chatId);
     res.status(200).json(lastMessage);
+};
+
+export const handleGlobalSearch = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const query = String(req.query.query);
+    const type = req.query.type as MessageType;
+    const messages = await searchService.getGlobalMessages(userId, query, type);
+    res.status(200).json(messages);
+};
+export const handleMessageSearch = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const chatId = Number(req.params.chatId);
+    const query = String(req.query.query);
+    const type = req.query.type as MessageType;
+    const messages = await searchService.getMessages(userId, chatId, query, type);
+    res.status(200).json(messages);
 };

@@ -22,16 +22,18 @@ describe("GET /chats/:chatId/getMembers Route", () => {
             {
                 id: user1.id,
                 userName: user1.userName,
-                hasStory: user1.hasStory,
+                hasStory: false,
                 lastSeen: user1.lastSeen.toISOString(),
                 profilePic: user1.profilePic,
+                status: user1.status,
             },
             {
                 id: user2.id,
                 userName: user2.userName,
-                hasStory: user2.hasStory,
+                hasStory: false,
                 lastSeen: user2.lastSeen.toISOString(),
                 profilePic: user2.profilePic,
+                status: user2.status,
             },
         ];
 

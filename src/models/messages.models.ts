@@ -56,7 +56,6 @@ export type SentMessage = Pick<Message, "chatId" | "senderId" | "content" | "sen
         Pick<
             Message,
             | "forwarded"
-            | "selfDestruct"
             | "expiresAfter"
             | "media"
             | "extension"
@@ -69,10 +68,12 @@ export type SentMessage = Pick<Message, "chatId" | "senderId" | "content" | "sen
             | "parentMessageId"
             | "forwardedFromUserId"
             | "key"
+            | "isSafe"
         >
     >;
 
 export type SenderIdRecord = Record<number, { chatId: number; messageIds: number[] }[]>;
+
 export type OmitSender<T> = Omit<T, "senderId">;
 
 export type MessageReference = Pick<Message, "senderId" | "chatId"> & { id: number };

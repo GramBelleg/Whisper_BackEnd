@@ -54,14 +54,7 @@ const postStory = async (
     try {
         const participants = await storyParticipants(emitStory, clients);
         for (const participant of participants) {
-            sendToClient(participant, clients, emitEvent, {
-                id: emitStory.id,
-                userId: emitStory.userId,
-                content: emitStory.content,
-                media: emitStory.media,
-                type: emitStory.type,
-                date: emitStory.date,
-            });
+            sendToClient(participant, clients, emitEvent, emitStory);
         }
     } catch (error: any) {
         throw new Error(`Error in postStory: ${error.message}`);
@@ -112,11 +105,13 @@ const likeStory = async (
 ): Promise<void> => {
     try {
         const storyUserId = await getStoryUserId(data.storyId);
+        const user = await userServices.displayedUser(data.userId, storyUserId);
         sendToClient(storyUserId, clients, emitEvent, {
             userId: data.userId,
             storyId: data.storyId,
-            userName: data.userName,
-            profilePic: data.profilePic,
+            userName: user.userName,
+            profilePic: user.profilePic,
+            hasStory: user.hasStory,
             liked: data.liked,
         });
     } catch (error: any) {
@@ -130,11 +125,13 @@ const viewStory = async (
     data: any
 ): Promise<void> => {
     const storyUserId = await getStoryUserId(data.storyId);
+    const user = await userServices.displayedUser(data.userId, storyUserId);
     sendToClient(storyUserId, clients, emitEvent, {
         userId: data.userId,
         storyId: data.storyId,
-        userName: data.userName,
-        profilePic: data.profilePic,
+        userName: user.userName,
+        profilePic: user.profilePic,
+        hasStory: user.hasStory,
     });
 };
 

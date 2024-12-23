@@ -17,6 +17,7 @@ jest.mock("@services/user/user.service");
 jest.mock("@src/middlewares/auth.middleware", () => {
     return (req: Request, res: Response, next: NextFunction) => {
         (req as any).userId = 4;
+        req.userRole = "User"; // Mock the authenticated user role
         next();
     };
 });

@@ -1,7 +1,9 @@
 node_modules
 *.env*
 dist/
+coverage/
 tsconfig.tsbuildinfo
 package-lock.json
 backend.log
 coverage
+logs

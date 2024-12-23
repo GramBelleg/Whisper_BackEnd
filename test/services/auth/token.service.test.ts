@@ -53,7 +53,7 @@ describe("test create and add token in DB", () => {
         const expireAt = new Date(Date.now() + 3600 * 1000);
         (createUserToken as jest.Mock).mockResolvedValue(undefined);
         (jwt.sign as jest.Mock).mockReturnValue(userToken);
-        const result = await createAddToken(userId);
+        const result = await createAddToken(userId, 'User');
         expect(createUserToken).toHaveBeenCalledWith(userToken, expect.any(Date), userId);
         expect(result).toEqual(userToken);
     });
@@ -64,7 +64,7 @@ describe("test create and add token in DB", () => {
             throw new Error("Token creation failed");
         });
         try {
-            await createAddToken(userId);
+            await createAddToken(userId, 'User');
         } catch (err: any) {
             expect(err.message).toEqual("User token creation failed");
         }

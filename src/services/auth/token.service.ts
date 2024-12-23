@@ -20,10 +20,10 @@ function clearTokenCookie(res: Response) {
     });
 }
 
-async function createAddToken(userId: number) {
+async function createAddToken(userId: number, userRole: string) {
     try {
         const userToken: string = jwt.sign(
-            { id: userId, timestamp: Date.now() },
+            { id: userId, role: userRole, timestamp: Date.now() },
             process.env.JWT_SECRET as string,
             {
                 expiresIn: process.env.JWT_EXPIRE,
@@ -57,16 +57,15 @@ function getToken(req: Request) {
 async function verifyUserToken(userToken: string) {
     let userId: number | undefined = undefined;
     try {
-        userId = (
-            jwt.verify(userToken, process.env.JWT_SECRET as string, {
-                ignoreExpiration: true,
-            }) as Record<string, any>
-        ).id;
+        const { id: userId, role: userRole } = jwt.verify(
+            userToken,
+            process.env.JWT_SECRET as string
+        ) as Record<string, any>;
         if (!userId) throw new Error();
         await checkUserTokenExist(userId, userToken);
         // check expiration of token
         jwt.verify(userToken, process.env.JWT_SECRET as string);
-        return userId;
+        return { userId, userRole };
     } catch (err: any) {
         if (err instanceof TokenExpiredError) {
             if (userId) deleteUserToken(userId, userToken);

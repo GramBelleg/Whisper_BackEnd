@@ -9,6 +9,7 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import * as chatHandler from "@socket/handlers/chat.handlers";
 import { UserType } from "@models/user.models";
+import { canUserBeAddedToChannel } from "@validators/chat";
 
 export const getSettings = async (req: Request, res: Response) => {
     const chatId = Number(req.params.chatId);
@@ -19,14 +20,14 @@ export const getSettings = async (req: Request, res: Response) => {
 export const getChannelMembers = async (userId: number, chatId: number) => {
     const isAdmin = await channelService.isAdmin({ userId, chatId });
     if (!isAdmin) throw new Error("You're not an admin");
-    return channelService.getChannelMembers(chatId);
+    return channelService.getChannelMembers(userId, chatId);
 };
 
 export const deleteChannel = async (userId: number, chatId: number) => {
     const isAdmin = await channelService.isAdmin({ userId, chatId });
     if (!isAdmin) throw new Error("You're not an admin");
 
-    const participants = getChatParticipantsIds(chatId);
+    const participants = await getChatParticipantsIds(chatId);
 
     await groupService.deleteGroup(chatId);
 
@@ -43,40 +44,11 @@ export const leaveChannel = async (userId: number, chatId: number) => {
 
 export const joinChannel = async (userId: number, chatId: number) => {
     const participants = await channelService.getAdmins(chatId);
-
     await channelService.addUser(userId, chatId);
 
     const userChat = await getChat(userId, chatId);
-    participants.push(userId);
+    if (participants) participants.push(userId);
     return { participants, userChat };
-};
-export const invite = async (req: Request, res: Response) => {
-    const token = req.query.token;
-    const userId = req.userId;
-    if (!userId) throw new HttpError("Unauthorized user", 401);
-    if (!token || typeof token != "string") throw new HttpError("Invalid invite link", 404);
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string, {
-        ignoreExpiration: true,
-    }) as Record<string, any>;
-    const chatId = decoded.chatId;
-
-    const clients = getClients();
-    if (!clients) throw new HttpError("Failed to retrieve clients", 400);
-
-    const user = await displayedUser(userId);
-    const { participants, userChat } = await joinChannel(userId, chatId);
-    console.log(participants);
-    console.log(userChat);
-    for (let i = 0; i < participants.length; i++) {
-        if (participants[i] !== userId) {
-            await chatHandler.broadCast(participants[i], clients, "addUser", { user, chatId });
-        } else {
-            await chatHandler.broadCast(participants[i], clients, "createChat", userChat);
-        }
-    }
-
-    res.status(200).json({ chatId });
 };
 
 export const getPermissions = async (req: Request, res: Response) => {
@@ -84,7 +56,7 @@ export const getPermissions = async (req: Request, res: Response) => {
     if (!userId || isNaN(userId)) throw new HttpError("Invalid user id", 404);
 
     const chatId = Number(req.params.chatId);
-    if (!chatId || isNaN(chatId)) throw new HttpError("Invalid user id", 404);
+    if (!chatId || isNaN(chatId)) throw new HttpError("Invalid chat id", 404);
 
     const permissions = await channelService.getPermissions(userId, chatId);
 
@@ -117,17 +89,16 @@ export const addAdmin = async (userId: number, admin: ChatUserSummary) => {
     const isAdmin = await channelService.isAdmin({ userId, chatId: admin.chatId });
     if (!isAdmin) throw new Error("You're not an admin");
 
+    await channelService.setPermissions(admin.userId, admin.chatId, {
+        canDownload: true,
+        canComment: true,
+    });
     await channelService.addAdmin(admin);
 
     return channelService.getAdmins(admin.chatId);
 };
-const canUserBeAdded = async (chatUser: ChatUser, adderId: number) => {
-    const addPermission = await getAddPermission(chatUser.user.id);
-    const isAdmin = await channelService.isAdmin({ userId: adderId, chatId: chatUser.chatId });
-    return (isAdmin && !addPermission) || addPermission;
-};
 export const addUser = async (userId: number, chatUser: ChatUser) => {
-    const userCanBeAdded = await canUserBeAdded(chatUser, userId);
+    const userCanBeAdded = await canUserBeAddedToChannel(chatUser, userId);
     if (!userCanBeAdded) throw new Error("You Don't have permission to add this user");
 
     const participants = await channelService.getAdmins(chatUser.chatId);
@@ -135,7 +106,7 @@ export const addUser = async (userId: number, chatUser: ChatUser) => {
     await channelService.addUser(chatUser.user.id, chatUser.chatId);
 
     const userChat = await getChat(chatUser.user.id, chatUser.chatId);
-    participants.push(chatUser.user.id);
+    if (participants) participants.push(chatUser.user.id);
 
     return { participants, userChat };
 };
@@ -144,7 +115,7 @@ export const removeUser = async (userId: number, user: UserType, chatId: number)
     const isAdmin = await channelService.isAdmin({ userId, chatId });
     if (!isAdmin) throw new Error("You're not an admin");
 
-    const participants = await getChatParticipantsIds(chatId);
+    const participants = await channelService.getAdmins(chatId);
 
     await groupService.removeUser(user.id, chatId);
 
