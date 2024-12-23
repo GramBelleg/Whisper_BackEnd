@@ -45,7 +45,8 @@ export const userBroadCast = async (
             for (const receiver of receivers) {
                 sendToClient(receiver, clients, emitEvent, emitMessage[1]);
             }
-            await pushMessageNotification(userId, receivers, chatId, structuredClone(emitMessage[1]));
+            if (emitMessage[1].type !== 'EVENT')
+                await pushMessageNotification(userId, receivers, chatId, structuredClone(emitMessage[1]));
         }
     } catch (error: any) {
         throw new Error(`Error in broadCast: ${error.message}`);
