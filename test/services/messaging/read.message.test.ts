@@ -15,7 +15,13 @@ import {
 describe("readMessage", () => {
     let user1: User,
         user2: User,
-        chat: { id: number },
+        chat: {
+            id: number;
+            participants: {
+                id: number;
+                userId: number;
+            }[];
+        },
         message: Message,
         messageStatus1: MessageStatus,
         messageStatus2: MessageStatus;
@@ -50,7 +56,7 @@ describe("readMessage", () => {
     });
 
     afterAll(async () => {
-        db.$disconnect();
+        await db.$disconnect();
     });
 
     it("should get read users for a message", async () => {

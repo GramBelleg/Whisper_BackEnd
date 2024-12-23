@@ -13,6 +13,7 @@ import { buildDraftedMessage } from "@controllers/messages/format.message";
 import * as groupService from "@services/chat/group.service";
 import * as channelService from "@services/chat/channel.service";
 import HttpError from "@src/errors/HttpError";
+import { areUsersBlocked } from "@services/user/prisma/find.service";
 
 export const getAddableUsers = async (userId: number, chatId: number) => {
     const users = [];
@@ -75,6 +76,7 @@ const getUserChats = async (userId: number, type: ChatType | null, noKey: number
             chat: {
                 select: {
                     type: true,
+                    selfDestruct: true,
                 },
             },
         },
@@ -127,6 +129,20 @@ export const messageExists = async (messageId: number): Promise<boolean> => {
         where: { id: messageId },
     });
     return result ? true : false;
+};
+
+export const isDMChat = async (chatId: number): Promise<boolean> => {
+    const result = await db.chat.findFirst({
+        where: { id: chatId, type: "DM" },
+    });
+    return result ? true : false;
+};
+
+export const updateSelfDestruct = async (chatId: number, selfDestruct: number | null) => {
+    await db.chat.update({
+        where: { id: chatId },
+        data: { selfDestruct },
+    });
 };
 
 export const filterAllowedMessagestoRead = async (
@@ -357,14 +373,25 @@ export const getChatSummary = async (
         userChat.chatId,
         userId
     );
+    let isBlocked = false;
+    if (await areUsersBlocked(userId, participant.id)) {
+        isBlocked = true;
+    }
+    let makeBlocked = false;
+    if (await areUsersBlocked(participant.id, userId)) {
+        makeBlocked = true;
+    }
     const chatSummary = {
         id: userChat.chatId,
         isMuted: userChat.isMuted,
         ...typeDependantContent,
         type: userChat.chat.type,
+        selfDestruct: userChat.chat.selfDestruct,
         lastMessage,
         draftMessage,
         unreadMessageCount: userChat.unreadMessageCount,
+        isBlocked,
+        makeBlocked,
     };
     return chatSummary;
 };
@@ -379,6 +406,7 @@ const getUserChat = async (userId: number, chatId: number) => {
             chat: {
                 select: {
                     type: true,
+                    selfDestruct: true,
                 },
             },
         },
@@ -443,6 +471,14 @@ export const getLastMessage = async (
         return { ...lastMessage, ...lastMessageSender! };
     }
     return null;
+};
+
+export const getSelfDestruct = async (chatId: number) => {
+    const chat = await db.chat.findUnique({
+        where: { id: chatId },
+        select: { selfDestruct: true },
+    });
+    return chat?.selfDestruct;
 };
 
 export const setLastMessage = async (chatId: number, messageId: number): Promise<void> => {

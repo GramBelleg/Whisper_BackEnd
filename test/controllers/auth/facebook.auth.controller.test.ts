@@ -52,7 +52,7 @@ describe("test facebook auth controller", () => {
         expect(upsertUser).toHaveBeenCalled();
         expect(upsertUser).toHaveBeenCalledWith(userData);
         expect(createAddToken).toHaveBeenCalled();
-        expect(createAddToken).toHaveBeenCalledWith(userData.id);
+        expect(createAddToken).toHaveBeenCalledWith(userData.id, undefined);
         expect(createTokenCookie).toHaveBeenCalled();
     });
 

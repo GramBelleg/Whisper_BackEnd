@@ -9,8 +9,9 @@ import { sendToClient } from "@socket/utils/socket.utils";
 import * as groupHandler from "@socket/handlers/group.handlers";
 import * as channelHandler from "@socket/handlers/channel.handlers";
 import { handleChatPermissions } from "@socket/handlers/chat.handlers";
-import { displayedUser, userInfo } from "@services/user/user.service";
+import { userInfo } from "@services/user/user.service";
 import { clearMessageNotification } from "@services/notifications/notification.service";
+import { getChatType } from "@services/chat/chat.service";
 
 export const setupMessageEvents = (
     socket: Socket,
@@ -20,6 +21,20 @@ export const setupMessageEvents = (
     socket.on(
         "message",
         socketWrapper(async (message: types.OmitSender<types.SentMessage>) => {
+            const chatType = await getChatType(message.chatId);
+            if (chatType === "DM") {
+                if (await messageHandler.handleBlockedMessages(userId, message)) return;
+            }
+            const filteredMessage = await groupHandler.handleMessageSafety(
+                message.chatId,
+                message,
+                chatType
+            );
+            if (!filteredMessage.isSafe) {
+                sendToClient(userId, clients, "message", filteredMessage);
+                return;
+            }
+            message.isSafe = filteredMessage.isSafe;
             await handleChatPermissions(
                 userId,
                 message.chatId,
@@ -69,6 +84,12 @@ export const setupMessageEvents = (
     socket.on(
         "pinMessage",
         socketWrapper(async (message: types.MessageReference) => {
+            await handleChatPermissions(
+                userId,
+                message.chatId,
+                groupHandler.handlePinPermissions,
+                channelHandler.handlePinPermissions
+            );
             const pinnedMessage = await editController.handlePinMessage(userId, message.id);
             if (pinnedMessage) {
                 await messageHandler.broadCast(message.chatId, clients, "pinMessage", {

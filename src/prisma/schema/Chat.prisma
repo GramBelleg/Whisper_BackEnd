@@ -8,6 +8,7 @@ model Chat {
   id            Int               @id @default(autoincrement())
   type          ChatType
   messages      Message[]
+  selfDestruct  Int?
   participants  ChatParticipant[]
   group         Group?
   channel       Channel?
@@ -20,7 +21,9 @@ model Group {
   picture String?
   maxSize Int    @default(1000)
   isPrivate Boolean @default(true)
+  filtered    Boolean   @default(false)
   chat    Chat   @relation(fields: [chatId], references: [id],onDelete: Cascade)
+  @@index([name])
 }
 
 model Channel {
@@ -30,6 +33,7 @@ model Channel {
   isPrivate    Boolean @default(false)
   inviteLink String @default("")
   chat       Chat   @relation(fields: [chatId], references: [id],onDelete: Cascade)
+  @@index([name])
 
 }
 
@@ -55,26 +59,25 @@ model ChatParticipant {
   chat                  Chat              @relation(fields: [chatId], references: [id],onDelete: Cascade)
   user                  User              @relation(fields: [userId], references: [id],onDelete: Cascade)
   groupParticipant      GroupParticipant?
-  channelParticipant      ChannelParticipant?
+  channelParticipant    ChannelParticipant?
 
   @@unique([chatId, userId])
 }
 
 model GroupParticipant {
-  id          Int     @id @unique
-  isAdmin     Boolean  @default(false)
-  canDownload Boolean @default(true)
-  canDelete   Boolean @default(true)
-  canPost     Boolean @default(true)
-  canEdit     Boolean @default(true)
+  id          Int          @id @unique
+  isAdmin     Boolean      @default(false)
+  canDownload Boolean      @default(true)
+  canDelete   Boolean      @default(true)
+  canPost     Boolean      @default(true)
+  canEdit     Boolean      @default(true)
   chatParticipant          ChatParticipant @relation(fields:[id],references: [id],onDelete: Cascade)
 }
 
 model ChannelParticipant {
-  id          Int     @id @unique
-  isAdmin     Boolean @default(false)
-  canDownload Boolean @default(true)
-  canComment  Boolean @default(true)
+  id              Int                @id @unique
+  isAdmin         Boolean            @default(false)
+  canDownload     Boolean            @default(true)
+  canComment      Boolean            @default(true)
   chatParticipant ChatParticipant    @relation(fields: [id], references: [id],onDelete: Cascade)
-
 }

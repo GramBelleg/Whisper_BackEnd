@@ -38,7 +38,7 @@ model Comment{
 
 model Message {
   id                    Int                @id @default(autoincrement())
-  key                   String?            //SHOULD NOT BE OPTIONAL, BUT KEEPING IT FOR NOW UNTIL FRONT AND CROSS HAVE IT READY
+  key                   String?            
   chatId                Int
   senderId              Int
   content               String
@@ -48,7 +48,6 @@ model Message {
   forwarded             Boolean            @default(false)
   pinned                Boolean            @default(false)
   edited                Boolean            @default(false)
-  selfDestruct          Boolean            @default(false)
   isAnnouncement        Boolean            @default(false)
   isSecret              Boolean            @default(false)
   expiresAfter          Int?
@@ -66,6 +65,7 @@ model Message {
   replyCount            Int                @default(0)
   parentType            MessageType?
   parentExtension       String?
+  isSafe                Boolean            @default(true)
   sender                User               @relation(fields: [senderId], references: [id])
   chat                  Chat               @relation(fields: [chatId], references: [id],onDelete: Cascade)
   voiceMessage          VoiceMessage?
@@ -76,6 +76,8 @@ model Message {
   messageStatus         MessageStatus[]
   comments              Comment[]
   call                Call?
+  @@index([content])
+  @@index([attachmentName])
 }
 
 model MessageStatus {

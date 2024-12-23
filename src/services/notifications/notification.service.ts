@@ -140,7 +140,9 @@ export const pushVoiceNofication = async (
                 data: {
                     type: "voice_call",
                     token: tokens[i],
-                    ...notification,
+                    //...notification,
+                    channelName: notification.channelName,
+                    userName: notification.userName,
                 },
             };
             if (userDeviceTokens.length === 0) continue;

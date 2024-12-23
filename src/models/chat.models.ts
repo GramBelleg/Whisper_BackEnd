@@ -28,12 +28,16 @@ export type ChatSummary = {
     picture: string | null;
     status?: string;
     lastMessage: LastMessage;
+    selfDestruct: number | null;
+    isBlocked: boolean;
+    makeBlocked: boolean;
     unreadMessageCount: number;
     isMuted: number;
     isAdmin?: boolean;
 };
 
 export type ChatUserSummary = { userId: number; chatId: number };
+
 export type ChatUser = {
     user: {
         id: number;

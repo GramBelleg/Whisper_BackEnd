@@ -20,7 +20,7 @@ async function githubAuth(req: Request, res: Response): Promise<void> {
     const user: User = await upsertUser(userData);
     const { password, ...userWithoutPassword } = user;
 
-    const userToken = await createAddToken(user.id);
+    const userToken = await createAddToken(user.id, user.role);
     createTokenCookie(res, userToken);
 
     res.status(200).json({

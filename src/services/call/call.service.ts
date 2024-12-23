@@ -7,10 +7,7 @@ import HttpError from "@src/errors/HttpError";
 import { callSocket, callLog, cancelCall } from "@socket/web.socket";
 import { pushVoiceNofication } from "@services/notifications/notification.service";
 import { getSenderInfo } from "@services/user/user.service";
-import { Message } from "@prisma/client";
 import { createVoiceCallMessage, editMessage } from "@services/chat/message.service";
-import { handleSaveMessage } from "@controllers/messages/send.message";
-import { SentMessage } from "@models/messages.models";
 import axios from "axios";
 
 const RtcTokenBuilder = require("@agora/src/RtcTokenBuilder2").RtcTokenBuilder;
@@ -80,8 +77,8 @@ export const makeCall = async (userId: number, chatId: string) => {
     let someoneJoined = await channelHasUser(channelName);
     if (!someoneJoined) {
         console.log("sent socket and notification");
-        callSocket(participants, tokens, notification, message, userId);
-        pushVoiceNofication(participants, tokens, notification);
+        await callSocket(participants, tokens, notification, message, userId);
+        await pushVoiceNofication(participants, tokens, notification);
     }
     const token = callToken(userId, channelName);
     return token;

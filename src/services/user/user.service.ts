@@ -1,7 +1,7 @@
 import db from "@src/prisma/PrismaClient";
 import { validatePhoneNumber } from "@validators/auth";
 import RedisOperation from "@src/@types/redis.operation";
-import { Prisma, Privacy, Status, Story } from "@prisma/client";
+import { Prisma, Privacy, Status } from "@prisma/client";
 import { verifyCode } from "@services/auth/code.service";
 import HttpError from "@src/errors/HttpError";
 
@@ -15,6 +15,14 @@ export const updateBio = async (id: number, bio: string): Promise<string> => {
     } catch (error) {
         throw new Error("Unable to update bio");
     }
+};
+
+export const isBanned = async (userId: number): Promise<boolean> => {
+    const user = await db.user.findUnique({
+        where: { id: userId },
+        select: { banned: true },
+    });
+    return user!.banned;
 };
 
 export const updateName = async (id: number, name: string): Promise<string> => {
@@ -83,6 +91,7 @@ export const userInfo = async (id: number): Promise<any> => {
             lastSeenPrivacy: true,
             storyCount: true,
             messagePreview: true,
+            role: true,
         },
     });
     if (!user) {
@@ -101,7 +110,7 @@ export const partialUserInfo = async (viewerId: number, viewedId: number) => {
         },
     });
     if (!user) {
-        throw new Error("user not found");
+        throw new HttpError("user not found", 404);
     }
     return {
         ...user,
@@ -112,7 +121,7 @@ export const partialUserInfo = async (viewerId: number, viewedId: number) => {
 };
 export const displayedUser = async (viewerId: number, viewedId: number) => {
     const user = await db.user.findUnique({
-        where: { id: viewerId },
+        where: { id: viewedId },
         select: {
             id: true,
             userName: true,

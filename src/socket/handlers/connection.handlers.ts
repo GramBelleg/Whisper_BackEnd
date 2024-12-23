@@ -3,6 +3,7 @@ import * as userServices from "@services/user/user.service";
 import { Privacy, Status } from "@prisma/client";
 import { sendToClient } from "@socket/utils/socket.utils";
 import { deliverAllUserMessages } from "./message.handlers";
+import { isBanned } from "@services/user/user.service";
 
 export const getAllowedUsers = async (userId: number, clients: Map<number, Socket>) => {
     //includes the user himslef is that right?
@@ -27,6 +28,7 @@ export const startConnection = async (
     clients: Map<number, Socket>,
     socket: Socket
 ): Promise<void> => {
+    if (await isBanned(userId)) return;
     console.log(`User ${userId} connected`);
     clients.set(userId, socket);
     await broadCast(userId, clients, Status.Online);

@@ -9,7 +9,7 @@ export const handleSetChatPrivacy = async (req: Request, res: Response) => {
     if (!chatId) throw new HttpError("chatId missing", 404);
 
     const isPrivate = req.body.isPrivate;
-    if (isPrivate == undefined) throw new HttpError("chatId missing", 404);
+    if (isPrivate == undefined) throw new HttpError("privacy setting is missing", 404);
     const chatType = await getChatType(chatId);
     if (chatType == ChatType.GROUP) await setGroupPrivacy(chatId, isPrivate);
     if (chatType == ChatType.CHANNEL) await setChannelPrivacy(chatId, isPrivate);

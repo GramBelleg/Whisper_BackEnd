@@ -4,7 +4,8 @@ import { sendToClient } from "@socket/utils/socket.utils";
 import { deleteMessagesForAllUsers } from "@controllers/messages/delete.message";
 import { getChatParticipantsIds } from "@services/chat/chat.service";
 import { handleDeliverAllMessages } from "@controllers/messages/edit.message";
-import { SenderIdRecord } from "@models/messages.models";
+import { OmitSender, SenderIdRecord, SentMessage } from "@models/messages.models";
+import { areUsersBlocked } from "@services/user/prisma/find.service";
 import { pushMessageNotification } from "@services/notifications/notification.service";
 
 export const broadCast = async (
@@ -41,10 +42,10 @@ export const userBroadCast = async (
         sendToClient(userId, clients, emitEvent, emitMessage[0]);
 
         if (receivers) {
-            await pushMessageNotification(userId, receivers, chatId, structuredClone(emitMessage[1]));
             for (const receiver of receivers) {
                 sendToClient(receiver, clients, emitEvent, emitMessage[1]);
             }
+            await pushMessageNotification(userId, receivers, chatId, structuredClone(emitMessage[1]));
         }
     } catch (error: any) {
         throw new Error(`Error in broadCast: ${error.message}`);
@@ -63,6 +64,15 @@ export const sendReadAndDeliveredGroups = (
             sendToClient(senderId, clients, emitEvent, group);
         }
     }
+};
+
+export const handleBlockedMessages = async (userId: number, message: OmitSender<SentMessage>) => {
+    const participants = await getChatParticipantsIds(message.chatId);
+    const receiver = participants.filter((participant) => participant != userId)[0];
+    if ((await areUsersBlocked(userId, receiver)) || (await areUsersBlocked(receiver, userId))) {
+        return true;
+    }
+    return false;
 };
 
 export const deliverAllUserMessages = async (userId: number, clients: Map<number, Socket>) => {

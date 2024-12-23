@@ -20,7 +20,7 @@ async function googleAuth(req: Request, res: Response): Promise<void> {
     const user: User = await upsertUser(userData);
     const { password, ...userWithoutPassword } = user;
 
-    const userToken = await createAddToken(user.id);
+    const userToken = await createAddToken(user.id, user.role);
     //*IMPORTANT* Make sure frontend sets withcredential: true so that the cookies are sent with the request
     createTokenCookie(res, userToken);
 

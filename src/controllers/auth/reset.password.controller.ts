@@ -47,7 +47,7 @@ async function resetPassword(req: Request, res: Response) {
     const user: User = await updatePassword(email, password);
     const { password: userPassword, ...userWithoutPassword } = user;
 
-    const userToken = await createAddToken(user.id);
+    const userToken = await createAddToken(user.id, user.role);
     createTokenCookie(res, userToken);
 
     res.status(200).json({

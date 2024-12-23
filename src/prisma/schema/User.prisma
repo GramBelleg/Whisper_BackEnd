@@ -9,6 +9,11 @@ enum Status {
   Online
 }
 
+enum Role {
+  Admin
+  User
+}
+
 model User {
   id               Int               @id @default(autoincrement())
   email            String            @unique
@@ -16,6 +21,7 @@ model User {
   name             String?
   password         String            @db.VarChar(256)
   phoneNumber      String?           @unique
+  role             Role              @default(User)
   loggedInDevices  Int               @default(0)
   addPermission    Boolean           @default(true)
   profilePic       String?
@@ -31,6 +37,7 @@ model User {
   lastSeenPrivacy  Privacy           @default(Everyone)
   pfpPrivacy       Privacy           @default(Everyone)
   storyPrivacy     Privacy           @default(Everyone)
+  banned           Boolean           @default(false)
   Messages         Message[]
   chatParticipant  ChatParticipant[]
   tokens           UserToken[]
@@ -43,6 +50,11 @@ model User {
   forwards         Message[]         @relation("ForwardedMessage")
   comments         Comment[]
   commentStatus    CommentStatus[]
+
+  @@index([userName])
+  @@index([name])
+  @@index([email])
+  @@index([phoneNumber])
 }
 
 model PublicKey {

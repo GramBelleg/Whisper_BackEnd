@@ -1,4 +1,4 @@
-import * as admin from 'firebase-admin';
+import * as admin from "firebase-admin";
 
 class FirebaseAdmin {
     private static instance: admin.app.App | null = null;
@@ -24,7 +24,7 @@ class FirebaseAdmin {
         if (FirebaseAdmin.instance) {
             await FirebaseAdmin.instance.delete();
             FirebaseAdmin.instance = null;
-            console.log('Firebase Admin app has been deleted.');
+            console.log("Firebase Admin app has been deleted.");
         }
     }
 }

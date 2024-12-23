@@ -9,7 +9,15 @@ import db from "@DB";
 jest.mock("@src/middlewares/auth.middleware");
 
 describe("handleGetAllChats", () => {
-    let user1: User, user2: User, chat: { id: number };
+    let user1: User,
+        user2: User,
+        chat: {
+            id: number;
+            participants: {
+                id: number;
+                userId: number;
+            }[];
+        };
 
     beforeEach(async () => {
         user1 = await createRandomUser();
@@ -23,7 +31,7 @@ describe("handleGetAllChats", () => {
 
     afterAll(async () => {
         await closeApp();
-        db.$disconnect();
+        await db.$disconnect();
     });
 
     it("should return chats for a user with no filters", async () => {

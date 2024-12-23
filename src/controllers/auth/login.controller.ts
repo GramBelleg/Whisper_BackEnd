@@ -10,10 +10,19 @@ const login = async (req: Request, res: Response) => {
     validatePassword(password);
 
     const user = await checkEmailExistDB(email);
+    if (user.banned) {
+        res.status(403).json({
+            status: "error",
+            message: "Your account is suspended. Please contact support",
+            user: null,
+            userToken: null,
+        });
+        return;
+    }
     const { password: hashedPassword, ...userWithoutPassword } = user;
     checkPasswordCorrect(password, user.password);
 
-    const userToken = await createAddToken(user.id);
+    const userToken = await createAddToken(user.id, user.role);
     createTokenCookie(res, userToken);
     res.status(200).json({
         status: "success",
