@@ -1,7 +1,7 @@
 import { createRandomUser } from "@services/auth/prisma/create.service";
 import { createChat } from "@services/chat/chat.service";
 import db from "@DB";
-import handleSend from "@controllers/messages/send.message";
+import { handleSend } from "@controllers/messages/send.message";
 import { closeApp } from "@src/app";
 
 describe("sendMessage", () => {
@@ -21,7 +21,6 @@ describe("sendMessage", () => {
             senderId: user1.id,
             key: null,
             sentAt: new Date(),
-            selfDestruct: true,
             expiresAfter: 5,
         });
         expect(message![0]).toHaveProperty("id");

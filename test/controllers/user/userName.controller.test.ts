@@ -8,6 +8,7 @@ jest.mock("@services/user/user.service");
 jest.mock("@src/middlewares/auth.middleware", () => {
     return jest.fn((req, res, next) => {
         req.userId = 1;
+        req.userRole = "User"; // Mock the authenticated user role
         next();
     });
 });
@@ -48,13 +49,12 @@ describe("PUT /userName Route", () => {
     });
 
     it("should give error due to the empty userName", async () => {
-        (userServices.changeUserName as jest.Mock).mockRejectedValue(new HttpError("Username is required", 400));
-        const response = await request(app).put("/api/user/userName").send({ userName: "" });
-
-        expect(userServices.changeUserName).toHaveBeenCalled();
-        expect(userServices.changeUserName).toHaveBeenCalledWith(1, "");
+        const response = await request(app)
+            .put("/api/user/userName")
+            .send({});
         expect(response.status).toBe(400);
         expect(response.body.success).toBe(false);
-        expect(response.body.message).toBe("Username is required");
+        expect(response.body.message).toBe("Username not specified");
+        expect(response.body.message).toBe("Username not specified");
     });
 });

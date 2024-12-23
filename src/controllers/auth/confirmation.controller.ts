@@ -43,7 +43,7 @@ const confirmEmail = async (req: Request, res: Response): Promise<void> => {
 
     const user = await addUser(foundUser);
     const { password, ...userWithoutPassword } = user;
-    const userToken: string = await createAddToken(user.id);
+    const userToken: string = await createAddToken(user.id, user.role);
     createTokenCookie(res, userToken);
 
     res.status(200).json({

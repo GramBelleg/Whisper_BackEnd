@@ -8,7 +8,15 @@ import {
 } from "@services/chat/message.service";
 
 describe("replyandParentMessage", () => {
-    let user1: User, user2: User, chat: { id: number };
+    let user1: User,
+        user2: User,
+        chat: {
+            id: number;
+            participants: {
+                id: number;
+                userId: number;
+            }[];
+        };
 
     beforeEach(async () => {
         user1 = await createRandomUser();
@@ -17,7 +25,7 @@ describe("replyandParentMessage", () => {
     });
 
     afterAll(async () => {
-        db.$disconnect();
+        await db.$disconnect();
     });
 
     it("should retrieve parent message content correctly", async () => {
@@ -92,5 +100,4 @@ describe("replyandParentMessage", () => {
         const result = await enrichMessageWithParentContent(message);
         expect(result).toHaveProperty("id", message.id);
     });
-
 });

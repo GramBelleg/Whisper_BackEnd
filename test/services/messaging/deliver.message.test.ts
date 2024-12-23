@@ -18,7 +18,13 @@ import {
 describe("deliverMessage", () => {
     let user1: User,
         user2: User,
-        chat: { id: number },
+        chat: {
+            id: number;
+            participants: {
+                id: number;
+                userId: number;
+            }[];
+        },
         message: Message,
         messageStatus1: MessageStatus,
         messageStatus2: MessageStatus;
@@ -53,7 +59,7 @@ describe("deliverMessage", () => {
     });
 
     afterAll(async () => {
-        db.$disconnect();
+        await db.$disconnect();
     });
 
     it("should update message statuses for a user", async () => {

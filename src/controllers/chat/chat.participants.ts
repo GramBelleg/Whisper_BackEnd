@@ -12,8 +12,8 @@ export const handleGetChatMembers = async (req: Request, res: Response) => {
 
     const type = await getChatType(chatId);
     let chatMembers;
-    if (type == ChatType.DM) chatMembers = await getChatMembers(chatId);
-    else if (type == ChatType.GROUP) chatMembers = await getGroupMembers(chatId);
+    if (type == ChatType.DM) chatMembers = await getChatMembers(userId, chatId);
+    else if (type == ChatType.GROUP) chatMembers = await getGroupMembers(userId, chatId);
     else if (type == ChatType.CHANNEL) chatMembers = await getChannelMembers(userId, chatId);
     res.status(200).json(chatMembers);
 };

@@ -14,7 +14,11 @@ import {
     validateMessageAndUser,
     validateUserisSender,
 } from "@validators/chat";
-import { filterAllowedMessagestoRead } from "@services/chat/chat.service";
+import {
+    filterAllowedMessagestoRead,
+    updateSelfDestruct,
+    isDMChat,
+} from "@services/chat/chat.service";
 
 export const handleGetMessageStatus = async (req: Request, res: Response) => {
     const userId = req.userId;

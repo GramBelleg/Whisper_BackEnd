@@ -44,12 +44,9 @@ export const setupStoryEvents = (socket: Socket, userId: number, clients: Map<nu
                 liked: boolean;
             }) => {
                 await storyController.likeStory(userId, data.storyId, data.liked);
-                const user = await displayedUser(userId);
                 await storyHandler.likeStory(clients, "likeStory", {
                     userId,
                     storyId: data.storyId,
-                    userName: user.userName,
-                    profilePic: user.profilePic,
                     liked: data.liked,
                 });
             }
@@ -60,12 +57,9 @@ export const setupStoryEvents = (socket: Socket, userId: number, clients: Map<nu
         "viewStory",
         socketWrapper(async (data: { storyId: number; userName: string; profilePic: string }) => {
             await storyController.viewStory(userId, data.storyId);
-            const user = await displayedUser(userId);
             await storyHandler.viewStory(clients, "viewStory", {
                 userId,
                 storyId: data.storyId,
-                userName: user.userName,
-                profilePic: user.profilePic,
             });
         })
     );

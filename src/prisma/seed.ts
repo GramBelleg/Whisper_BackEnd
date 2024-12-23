@@ -4,7 +4,9 @@ import bcrypt from "bcrypt";
 import db from "./PrismaClient";
 
 // Passwords of 5 users in order.
-const passwords: string[] = ["abcdefgh", "12345678", "aaaabbbb", "1111111", "22222222"];
+const numUsers = 20;
+const numChats = 3;
+const numStories = 3;
 
 // Utility function to create random users
 async function createUsers(numUsers: number) {
@@ -15,7 +17,7 @@ async function createUsers(numUsers: number) {
                 email: faker.internet.email().toLowerCase(),
                 userName: faker.internet.username().toLowerCase(),
                 name: faker.person.fullName().toLowerCase(),
-                password: bcrypt.hashSync(passwords[i], 10),
+                password: bcrypt.hashSync("Abcdefgh12#", 10),
                 bio: faker.lorem.sentence(),
                 phoneNumber: faker.phone.number({ style: "international" }),
             },
@@ -197,13 +199,19 @@ const createStories = async (users: User[], numStories: number) => {
                 },
             });
         }
+        await db.user.update({
+            where: {
+                id: user.id,
+            },
+            data: {
+                storyCount: numStories,
+                everyOneStory: numStories,
+            },
+        });
     }
 };
 // Main function to implement the seeding
 async function main() {
-    const numUsers = 6;
-    const numChats = 3;
-    const numStories = 3;
     //Create Users
     const users = await createUsers(numUsers);
     console.log(`Created ${users.length} users.`);

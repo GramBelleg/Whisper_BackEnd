@@ -14,7 +14,16 @@ import {
 } from "@services/chat/message.service";
 
 describe("getMessageAttributes", () => {
-    let user1: User, user2: User, chat: { id: number }, message: Message;
+    let user1: User,
+        user2: User,
+        chat: {
+            id: number;
+            participants: {
+                id: number;
+                userId: number;
+            }[];
+        },
+        message: Message;
 
     beforeEach(async () => {
         user1 = await createRandomUser();
@@ -32,7 +41,7 @@ describe("getMessageAttributes", () => {
     });
 
     afterAll(async () => {
-        db.$disconnect();
+        await db.$disconnect();
     });
 
     it("should get other message time", async () => {

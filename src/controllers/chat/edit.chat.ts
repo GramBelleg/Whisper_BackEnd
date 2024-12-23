@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { muteChat, unmuteChat } from "@services/chat/chat.service";
+import { isDMChat, muteChat, unmuteChat, updateSelfDestruct } from "@services/chat/chat.service";
 import { saveMuteDuration } from "@services/chat/redis.service";
 import { validateChatAndUser } from "@validators/chat";
+import { updateChatSettings } from "@socket/web.socket";
 import HttpError from "@src/errors/HttpError";
 
 //duration = 1 => one week
@@ -26,4 +27,18 @@ export const handleUnmuteChat = async (req: Request, res: Response) => {
 
     await unmuteChat(chatId, userId);
     res.status(200).json({ message: `Chat ${chatId} unmuted successfully` });
+};
+
+export const handleSelfDestruct = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const chatId = Number(req.params.chatId);
+    if (!(await validateChatAndUser(userId, chatId, res))) return;
+    if (!(await isDMChat(chatId))) {
+        res.status(400).json({ message: "This feature is only available for DM chats" });
+        return;
+    }
+    const duration = req.body.duration;
+    await updateSelfDestruct(chatId, duration);
+    await updateChatSettings(chatId);
+    res.status(200).json({ message: `Chat ${chatId} self destruct time updated successfully` });
 };
