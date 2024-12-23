@@ -12,11 +12,11 @@ const userAuth = async (req: Request, res: Response, next: NextFunction): Promis
         next();
     } catch (e: any) {
         clearTokenCookie(res);
-        // res.status(401).json({
-        //     status: "failed",
-        //     message: e.message,
-        // });
-        res.status(401).redirect(redirect);
+        res.status(401).json({
+            status: "failed",
+            message: e.message,
+        });
+        // res.status(401).redirect(redirect);
     }
 };
 
