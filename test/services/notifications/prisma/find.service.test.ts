@@ -2,7 +2,14 @@ import HttpError from '@src/errors/HttpError';
 import { createRandomUser } from '@src/services/auth/prisma/create.service';
 import db from "@src/prisma/PrismaClient";
 import { ChatType } from '@prisma/client';
-import { findDeviceTokens, findUnperviewedMessageUsers, findUserIdsByUsernames, findUnmutedUsers, findChatName } from '@src/services/notifications/prisma/find.service';
+import {
+    findDeviceTokens,
+    findUnperviewedMessageUsers,
+    findUserIdsByUsernames,
+    findUnmutedUsers,
+    findChatName,
+    findNewActivityUsers
+} from '@src/services/notifications/prisma/find.service';
 
 describe("test find device tokens prisma query", () => {
     it("should find device tokens successfully", async () => {
@@ -161,4 +168,30 @@ describe("test find chat name prisma query", () => {
         const chatName = await findChatName(1, "CHANNEL");
         expect(chatName).toEqual({});
     });
+});
+
+describe("test find new activity users prisma query", () => {
+    it("should find new activity users successfully", async () => {
+        const user = await createRandomUser();
+        const chat = await db.chat.create({
+            data: {
+                type: ChatType.CHANNEL,
+                channel: {
+                    create: {
+                        name: 'chat'
+                    }
+                }
+            },
+        });
+        await db.chatParticipant.create({
+            data: {
+                userId: user.id,
+                chatId: chat.id,
+                unreadMessageCount: 1,
+            },
+        });
+        const users = await findNewActivityUsers();
+        expect(users[0].userId).toEqual(user.id);
+    });
+
 });

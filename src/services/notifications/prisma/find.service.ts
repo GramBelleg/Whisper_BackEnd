@@ -85,3 +85,29 @@ export const findChatName = async (chatId: number, chatType: ChatType) => {
     });
     return { groupName: chat?.group?.name, channelName: chat?.channel?.name };
 }
+
+
+export const findNewActivityUsers = async () => {
+    const users = await db.chatParticipant.findMany({
+        where: {
+            unreadMessageCount: {
+                not: 0,
+            },
+            chat: {
+                type: {
+                    not: ChatType.DM,
+                }
+            }
+        },
+        select: {
+            userId: true,
+            chat: {
+                select: {
+                    group: { select: { name: true } },
+                    channel: { select: { name: true } }
+                }
+            }
+        },
+    });
+    return users;
+}

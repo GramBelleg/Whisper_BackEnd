@@ -51,9 +51,40 @@ redisSubscribe();
 
 app.use(errorHandler);
 
-const deleteExpiredTokensTask: ScheduledTask = cron.schedule("0 3 * * *", deleteExpiredTokens); // delete expired tokens every day at 3 AM
-const deleteExtraRelatesTask: ScheduledTask = cron.schedule("0 3 * * *", () => deleteExtraRelates); // delete extra relates every day at 3 AM
-const handleUnseenNotificationsTask: ScheduledTask = cron.schedule("0 18 * * *", () => handleUnseenMessageNotification); // handle unseen notifications every day at 6 PM
+const deleteExpiredTokensTask: ScheduledTask = cron.schedule(
+    "0 3 * * *",
+    () => {
+        deleteExpiredTokens();
+    },
+    {
+        scheduled: true, 
+        timezone: "Africa/Cairo"
+    }
+); // delete expired tokens every day at 3 AM
+const deleteExtraRelatesTask: ScheduledTask = cron.schedule(
+    "0 3 * * *",
+    () => {
+        deleteExtraRelates();
+    },
+    {
+        scheduled: true, 
+        timezone: "Africa/Cairo"
+    }
+); // delete extra relates every day at 3 AM
+const handleUnseenNotificationsTask: ScheduledTask = cron.schedule(
+    "0 18 * * *",
+    () => {
+        handleUnseenMessageNotification();
+    },
+    {
+        scheduled: true, 
+        timezone: "Africa/Cairo"
+    }
+);  // handle unseen notifications every day at 6 PM
+
+deleteExpiredTokensTask.start();
+deleteExtraRelatesTask.start();
+handleUnseenNotificationsTask.start();
 
 const closeApp = async () => {
     deleteExpiredTokensTask.stop();

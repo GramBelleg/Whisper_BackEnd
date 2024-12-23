@@ -42,7 +42,6 @@ export const userBroadCast = async (
 
         if (receivers) {
             await pushMessageNotification(userId, receivers, chatId, structuredClone(emitMessage[1]));
-            console.log(emitMessage[1]);
             for (const receiver of receivers) {
                 sendToClient(receiver, clients, emitEvent, emitMessage[1]);
             }
