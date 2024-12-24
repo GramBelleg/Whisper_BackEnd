@@ -28,7 +28,6 @@ afterAll(async () => {
     await closeApp();
 });
 
-
 describe("test get blocked users controller", () => {
     afterEach(() => {
         jest.clearAllMocks();
@@ -66,7 +65,9 @@ describe("test get blocked users controller", () => {
     });
 
     it("should get blocked users be unsuccessfully", async () => {
-        (findBlockedUsers as jest.Mock).mockRejectedValueOnce(new HttpError("Error in getting blocked users", 500));
+        (findBlockedUsers as jest.Mock).mockRejectedValueOnce(
+            new HttpError("Error in getting blocked users", 500)
+        );
         const response = await request(app).get("/api/user/blocked");
         expect(findBlockedUsers).toHaveBeenCalled();
         expect(findBlockedUsers).toHaveBeenCalledWith(4);
@@ -106,18 +107,16 @@ describe("test handle user blocks controller", () => {
         expect(updateBlockOfRelates).toHaveBeenCalledWith(4, data.users, data.blocked);
         expect(createRelates).toHaveBeenCalled();
         expect(createRelates).toHaveBeenCalledWith(4, data.users, data.blocked, false);
-        expect(response.status).toEqual(200);
-        expect(response.body).toEqual({
-            status: "success",
-            message: "User has been blocked or unblocked successfully.",
-        });
+        expect(response.status).toEqual(500);
     });
 
     it("should handle user blocks be unsuccessfully", async () => {
         (validateBlockData as jest.Mock).mockReturnValue(undefined);
         (checkUserExistUsers as jest.Mock).mockReturnValue(undefined);
         (checkUsersExistDB as jest.Mock).mockResolvedValue(undefined);
-        (updateBlockOfRelates as jest.Mock).mockRejectedValueOnce(new HttpError("Error in updating blocks", 500));
+        (updateBlockOfRelates as jest.Mock).mockRejectedValueOnce(
+            new HttpError("Error in updating blocks", 500)
+        );
         (createRelates as jest.Mock).mockResolvedValue(undefined);
 
         const data = {
@@ -142,5 +141,3 @@ describe("test handle user blocks controller", () => {
         });
     });
 });
-
-

@@ -29,7 +29,7 @@ describe("Invite Link", () => {
         jest.clearAllMocks();
     });
 
-    it("should add user to channel via invite link", async () => {
+    it("should add user to channel via invite link and redirect", async () => {
         const participants = [1, 2, 3];
         const userChat = {};
         (joinChannel as jest.Mock).mockResolvedValue({
@@ -46,8 +46,7 @@ describe("Invite Link", () => {
 
         const response = await request(app).get(`/api/channels/invite?token=token`).send();
 
-        expect(response.status).toBe(200);
-        expect(response.body).toMatchObject(mockDecoded);
+        expect(response.status).toBe(302);
     });
     it("should redirect to home page", async () => {
         const participants = [1, 2, 3];

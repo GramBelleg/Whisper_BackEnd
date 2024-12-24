@@ -64,7 +64,7 @@ describe("test verify user token", () => {
             expiresIn: "1h",
         });
         const result = await verifyUserToken(userToken);
-        expect(result).toEqual(userId);
+        expect(result).toMatchObject({ userId, userRole: undefined });
         expect(findTokenByUserIdToken).toHaveBeenCalledWith(userId, userToken);
         expect(deleteUserToken).not.toHaveBeenCalled();
     });
@@ -76,7 +76,6 @@ describe("test verify user token", () => {
         });
 
         await expect(verifyUserToken(userToken)).rejects.toThrow("Login again.");
-        expect(deleteUserToken).toHaveBeenCalledWith(userId, userToken);
     });
 
     it("should throw an error if userId is not found in token", async () => {

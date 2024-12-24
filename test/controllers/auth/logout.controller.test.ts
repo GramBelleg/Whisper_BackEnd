@@ -2,9 +2,16 @@ import request from "supertest";
 import { clearTokenCookie, getToken } from "@services/auth/token.service";
 import { deleteUserToken, deleteAllUserTokens } from "@services/auth/prisma/delete.service";
 import { app, closeApp } from "@src/app";
+import { NextFunction } from "express";
 
 jest.mock("@services/auth/prisma/delete.service");
 jest.mock("@services/auth/token.service");
+jest.mock("@src/middlewares/auth.middleware", () => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        (req as any).userId = 1;
+        next();
+    };
+});
 
 afterAll(async () => {
     await closeApp();

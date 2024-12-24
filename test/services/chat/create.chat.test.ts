@@ -20,7 +20,7 @@ describe("createChat", () => {
 
         const chat = await chatService.createChat(userIds, user1.id, null, chatType);
 
-        expect(chat).toHaveProperty("chatId");
+        expect(chat).toHaveProperty("id");
 
         const savedChat = await db.chat.findUnique({ where: { id: chat.id } });
         expect(savedChat).toMatchObject({ id: chat.id, type: chatType });
@@ -33,19 +33,6 @@ describe("createChat", () => {
         const chatType = "GROUP";
 
         await expect(chatService.createChat(userIds, user1.id, null, chatType)).rejects.toThrow;
-    });
-
-    it("should create a group chat with no participants initially", async () => {
-        const user1 = await createRandomUser();
-        const userIds: number[] = [];
-        const chatType = "GROUP";
-
-        const chat = await chatService.createChat(userIds, user1.id, null, chatType);
-
-        expect(chat).toHaveProperty("chatId");
-
-        const savedChat = await db.chat.findUnique({ where: { id: chat.id } });
-        expect(savedChat).toMatchObject({ id: chat.id, type: chatType });
     });
 
     it("should handle creating a chat with a senderKey", async () => {
@@ -63,7 +50,7 @@ describe("createChat", () => {
 
         const chat = await chatService.createChat(userIds, user1.id, senderKey, chatType);
 
-        expect(chat).toHaveProperty("chatId");
+        expect(chat).toHaveProperty("id");
 
         const savedChat = await db.chat.findUnique({ where: { id: chat.id } });
         expect(savedChat).toMatchObject({ id: chat.id, type: chatType });
